@@ -1,0 +1,67 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title System Context Diagram for Visual Impact Platform
+
+' Primary Users
+Person(adSpaceOwner, "Ad Space Owner", "Business owner who lists available advertising spaces (TV screens, posters, digital displays) and receives ad placement notifications")
+Person(advertiser, "Advertiser", "Local business or marketer who browses available ad spaces and posts advertisements with content and duration")
+Person(admin, "System Administrator", "Platform administrator who manages users, moderates content, and monitors system analytics")
+
+' Main System
+System(visualImpact, "Visual Impact Platform", "Connects ad space owners with advertisers. Manages ad space listings, advertisement postings, and facilitates communication between parties via email notifications")
+
+' External Systems
+System_Ext(emailService, "Email Service Provider", "Third-party email service (e.g., SendGrid, AWS SES, Mailgun) that sends transactional emails including ad placement notifications to ad space owners")
+
+System_Ext(fileStorage, "Cloud File Storage", "Cloud storage service (e.g., AWS S3, Google Cloud Storage) that stores ad space photos and advertisement content (PNG files)")
+
+System_Ext(paymentGateway, "Payment Gateway", "Optional: Payment processing service (e.g., Stripe, PayPal) for handling transactions between advertisers and ad space owners")
+
+' Relationships - Ad Space Owner
+Rel(adSpaceOwner, visualImpact, "Lists ad spaces, uploads photos, views ad requests, confirms/rejects placements", "HTTPS")
+Rel(emailService, adSpaceOwner, "Sends notifications when new ads are posted for their spaces", "SMTP/Email")
+
+' Relationships - Advertiser
+Rel(advertiser, visualImpact, "Browses ad spaces, posts advertisements, uploads PNG content, sets display duration", "HTTPS")
+
+' Relationships - Admin
+Rel(admin, visualImpact, "Manages users, moderates content, views analytics, generates reports", "HTTPS")
+
+' Relationships - External Systems
+Rel(visualImpact, emailService, "Sends email notifications with ad details, space info, and content links", "SMTP/API")
+Rel(visualImpact, fileStorage, "Stores and retrieves ad space photos and advertisement PNG files", "HTTPS/API")
+Rel_Back(fileStorage, visualImpact, "Provides secure URLs for accessing stored files")
+
+Rel(visualImpact, paymentGateway, "Processes payments for ad placements (optional)", "HTTPS/API")
+Rel_Back(paymentGateway, visualImpact, "Sends payment confirmation webhooks")
+
+' Notes
+SHOW_LEGEND()
+
+note right of emailService
+  **Why External Email Service?**
+  ✓ High deliverability rates
+  ✓ Professional infrastructure
+  ✓ Built-in spam protection
+  ✓ Delivery tracking & analytics
+  ✓ Template management
+  ✓ Scalability without maintenance
+  
+  **Recommended for production**
+end note
+
+note left of visualImpact
+  **Core Responsibilities:**
+  • User authentication & authorization
+  • Ad space listing management
+  • Advertisement posting workflow
+  • Email notification orchestration
+  • Photo & file management
+  • Search & filtering
+  • Analytics & reporting
+end note
+
+@enduml
