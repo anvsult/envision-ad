@@ -14,11 +14,13 @@ Person(admin, "System Administrator", "Platform administrator who manages users,
 System(visualImpact, "Visual Impact Platform", "Connects ad space owners with advertisers. Manages ad space listings, advertisement postings, and facilitates communication between parties via email notifications")
 
 ' External Systems
-System_Ext(emailService, "Amazon Web Services Simple Email Service", "Third-party email service that sends transactional emails including ad placement notifications to ad space owners")
+System_Ext(emailService, "Gmail SMPT System", "The Google SMTP emailing system")
 
-System_Ext(fileStorage, "Amazon Web Services S3", "Cloud storage service that stores ad space photos and advertisement content (PNG files)")
+System_Ext(fileStorageService, "Cloudinary Service", "Cloud storage service that stores media and pdf reports")
 
-System_Ext(paymentGateway, "Stripe", "Payment processing service for handling transactions between advertisers and ad space owners")
+System_Ext(paymentHandlingService, "Stripe", "Payment processing service for handling transactions between advertisers and ad space owners")
+
+System_Ext(authenticationService, "Auth0", "Handles authentication, user login, registration, and provides secure access tokens")
 
 ' Relationships - Ad Space Owner
 Rel(adSpaceOwner, visualImpact, "Lists ad spaces, uploads photos, views ad requests, confirms/rejects placements", "HTTPS")
@@ -32,12 +34,13 @@ Rel(admin, visualImpact, "Manages users, moderates content, views analytics, gen
 
 ' Relationships - External Systems
 Rel(visualImpact, emailService, "Sends email notifications with ad details, space info, and content links", "SMTP/API")
-Rel(visualImpact, fileStorage, "Stores and retrieves ad space photos and advertisement PNG files", "HTTPS/API")
-Rel_Back(visualImpact, fileStorage, "Provides secure URLs for accessing stored files")
+Rel(visualImpact, fileStorageService, "Stores and retrieves ad space photos and advertisement PNG files", "HTTPS/API")
+Rel_Back(visualImpact, fileStorageService, "Provides secure URLs for accessing stored files", "HTTPS/API")
 
-Rel(visualImpact, paymentGateway, "Processes payments for ad placements (optional)", "HTTPS/API")
-Rel_Back(visualImpact, paymentGateway, "Sends payment confirmation webhooks")
+Rel(visualImpact, paymentHandlingService, "Processes payments for ad placements (optional)", "HTTPS/API")
+Rel_Back(visualImpact, paymentHandlingService, "Sends payment confirmation webhooks", "HTTPS/API")
 
+Rel(visualImpact, authenticationService, "Delegates user authentication and token validation", "HTTPS/OAuth2")
 ' Notes
 SHOW_LEGEND()
 
