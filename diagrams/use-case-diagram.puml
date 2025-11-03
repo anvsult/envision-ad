@@ -1,0 +1,64 @@
+@startuml
+left to right direction
+
+' === Actors (ordered to reduce crossings) ===
+actor Advertiser as ADV
+actor "Media Owner" as MO
+actor Admin as ADM
+
+rectangle "Envision Ad" {
+
+  ' --- Advertiser use cases ---
+  usecase "Browse Media Inventory" as Browse
+  usecase "Preview Ad on Media" as Preview
+  usecase "Submit Ad for Approval" as Submit
+  usecase "Make Ad Payment" as Pay
+
+  ' --- Media Owner use cases ---
+  usecase "Manage Media Listing" as ManageListing
+  usecase "List Media" as ListMedia
+  usecase "Approve/Deny Ad" as ApproveAd
+  usecase "Display Ad on Media" as DisplayAd
+  usecase "Provide Proof of Display" as Proof
+  usecase "Confirm Proof of Display" as ConfirmProof
+
+  ' --- Admin use cases ---
+  usecase "Approve/Deny Media Listing" as ApproveListing
+  usecase "Manage Users" as ManageUsers
+  usecase "Issue Content Warning" as ContentWarning
+
+  ' --- Notes placed near their targets ---
+  note right of ConfirmProof
+  <b>Precondition</b>
+  Proof of display must be first
+  provided by the Media Owner
+  end note
+
+  note right of DisplayAd
+  <b>Precondition</b>
+  Ad must be approved
+  by Media Owner
+  end note
+
+  ' --- Actor connections ---
+  ADV -- Browse
+  ADV -- Preview
+  ADV -- Submit
+  ADV -- ConfirmProof
+
+  MO -- ManageListing
+  MO -- ListMedia
+  MO -- ApproveAd
+  MO -- DisplayAd
+  MO -- Proof
+
+  ADM -- ApproveListing
+  ADM -- ManageUsers
+  ADM -- ContentWarning
+
+  ' --- Relationships ---
+  Submit ..> Pay : <<extend>>
+  Proof ..> ConfirmProof : <<extend>>
+  Submit ..> ApproveAd : <<extend>>
+}
+@enduml

@@ -44,5 +44,6 @@ Rel(visualImpact, authenticationService, "Delegates user authentication and toke
 ' Notes
 SHOW_LEGEND()
 
+'TODO Add SMS External System
 
 @enduml
