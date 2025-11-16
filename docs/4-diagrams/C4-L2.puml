@@ -1,0 +1,61 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Container.puml
+scale 0.4
+!$ICONURL = "https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v3.0.0/icons"
+!include $ICONURL/common.puml
+!include $ICONURL/devicons2/spring_original.puml
+!include $ICONURL/devicons/mysql.puml
+!include $ICONURL/devicons/react.puml
+!include $ICONURL/font-awesome-5/database.puml
+!include $ICONURL/font-awesome-5/user.puml
+
+AddElementTag("microService-java", $shape=EightSidedShape(), $bgColor="#6DB33F", $fontColor="black", $legendText="API Java \neight sided")
+AddElementTag("storage-mysql", $shape=RoundedBoxShape(), $bgColor="#00758f",$borderColor="Black", $fontColor="white", $legendText="MySQL Database")
+AddElementTag("framework-react", $shape=RoundedBoxShape(), $bgColor="#61DBFB", $fontColor="white", $legendText="React Single-Page Application")
+AddElementTag("webApp", $bgColor="#e34f26", $fontColor="white", $legendText="Web Application")
+
+LAYOUT_TOP_DOWN()
+'LAYOUT_WITH_LEGEND()
+SHOW_PERSON_OUTLINE()
+'HIDE_STEREOTYPE()
+
+
+title Container Diagram for Envision Ad System
+
+Person(mediaOwner, "Medias Owner", "Owns advertising spaces such as TV screens, posters, digital displays.")
+Person(advertiser, "Advertiser", "Local business or marketing agency who browses available medias and posts advertisements with content and duration.")
+Person(admin, "System Administrator", "Platform administrator who manages users, moderates content, and monitors system analytics.")
+
+System_Ext(emailService, "Gmail SMTP", "The Google SMTP emailing system")
+System_Ext(fileStorageService, "Cloudinary Service", "Cloud storage service that stores media and pdf reports")
+System_Ext(paymentHandlingService, "Stripe", "Payment processing service for handling transactions between advertisers and medias owners")
+System_Ext(authenticationService, "Auth0", "Handles authentication, user login, registration, and provides secure access tokens")
+System_Ext(smsService, "Twilio", "Reminding Media Owners to provide proof of displaying ads on their media")
+
+System_Boundary(c1, "Envision Ad System"){
+
+together {
+    Container(react_spa, "React Single-Page Application", "TypeScript, React", "Provides all the Envision Ad functionality to clients via their web browser.", $sprite="react", $tags = "framework-react")
+    Container(web_app, "Web Application", "HTML, CSS", "Delivers the static content and the react single page application.", $sprite="html5", $tags = "webApp")
+}
+
+Container(envision_ad, "Envision Ad API", "Java, Spring Boot", "Connects medias owners with advertisers. Manages medias listings, advertisement postings, and facilitates communication between parties via email notifications.", $sprite="spring_original", $tags = "microService-java")
+ContainerDb(envision_ad_db, "Envision Ad DB", "MySQL 5.7.x", "Stores information", $sprite="mysql" , $tags = "storage-mysql")
+
+Rel_R(web_app, react_spa, "Delivers to the user's web browser")
+Rel(react_spa, envision_ad, "Makes API calls to", "JSON/REST/HTTPS")
+Rel(envision_ad, envision_ad_db, "Reads from and writes to", "JDCB/SQL/TCP", $tags="blue-line")
+
+Rel(mediaOwner, web_app, "Visits Envision Ad using", "HTTPS")
+Rel(advertiser, web_app, "Visits Envision Ad using", "HTTPS")
+Rel(admin, web_app, "Visits Envision Ad using", "HTTPS")
+
+Rel(envision_ad, emailService, "Makes API calls to", "JSON/REST/HTTPS")
+Rel(envision_ad, fileStorageService, "Makes API calls to", "JSON/REST/HTTPS")
+Rel(envision_ad, paymentHandlingService, "Makes API calls to", "JSON/REST/HTTPS")
+Rel(envision_ad, authenticationService, "Makes API calls to", "JSON/REST/HTTPS")
+Rel(envision_ad, smsService, "Makes API calls to", "JSON/REST/HTTPS")
+
+SHOW_LEGEND()
+
+@enduml
