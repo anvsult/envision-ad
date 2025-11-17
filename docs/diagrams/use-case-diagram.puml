@@ -2,8 +2,8 @@
 left to right direction
 
 ' --- Increase spacing and make the box larger ---
-skinparam ranksep 30
-skinparam nodesep 30
+skinparam ranksep 40
+skinparam nodesep 20
 skinparam rectangle {
   Padding 40
   Margin 40
@@ -12,6 +12,7 @@ skinparam rectangle {
 actor Advertiser as ADV
 actor "Media Owner" as MO
 actor Admin as ADM
+actor "Guest User" as GU
 
 ' --- Hourglass actor for temporal use cases ---
 hide stereotypes
@@ -24,8 +25,8 @@ skinparam rectangle<<Temporal>> {
 
 rectangle "Envision Ad" {
   ' --- Advertiser use cases ---
-  usecase "Browse Media Inventory" as Browse
   usecase "Publish Ad" as PublishAd
+  usecase "Browse Media Inventory" as Browse
 
   ' --- Media Owner use cases ---
   usecase "Manage Media Listing" as ManageListing
@@ -39,7 +40,7 @@ rectangle "Envision Ad" {
   usecase "Issue Content Warning" as ContentWarning
   usecase "Select Media" as SelectMedia
 
-note bottom of PublishAd
+note top of PublishAd
   Detailed in separate diagram:
   "use-case-publish-ad.puml"
 end note
@@ -60,6 +61,7 @@ end note
 '  MO -[hidden]-> ApproveAd
 '  MO -[hidden]-> Proof
 '  MO -- ApproveAd
+  MO -- Browse
   MO -- ViewAd
   MO -- ManageListing
 
@@ -70,6 +72,8 @@ end note
   HG -- StartAd
   HG -- NotifyApproval
 
+  GU -- Browse
+  GU -[hidden]- PublishAd
   ' --- Relationships (dotted, no arrows, all contained) ---
   PublishAd ..> SelectMedia : <<includes>>
   PublishAd ..> Browse     : <<includes>>
