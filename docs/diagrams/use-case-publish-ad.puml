@@ -15,33 +15,34 @@ actor "Media Owner" as MO
 
 rectangle "Publish Ad" {
 ' --- Advertiser use cases ---
-  ' usecase "Preview Ad on Media" as Preview
+  usecase "Preview Ad on Media" as Preview
   usecase "Submit Ad for Approval" as Submit
   usecase "Confirm Proof of Display" as ConfirmProof
   usecase "Make Ad Payment" as Pay
+  usecase "Upload Ad Content" as UploadContent
+  usecase "Select Ad Start/End Dates" as SelectDates
 
   ' --- Media Owner use cases ---
   usecase "Approve/Deny Ad" as ApproveAd
-  usecase "Publish Ad on Media" as PublishAd
-  usecase "Provide Proof of Display" as Proof
+  usecase "Download Ad Content" as DownloadContent
+  usecase "Provide Proof of Display" as ProvideProof
+  usecase "Retrieve Ad for Display" as DisplayAd
 
-  ' --- Actor connections (solid lines) ---
+  ' --- Actor connections ---
   ADV -- Submit
   ADV -- ConfirmProof
-  ADV -- Pay
 
-  ' keep media owner lines inside rectangle
-'  MO -[hidden]-> ApproveAd
-'  MO -[hidden]-> Proof
-  ApproveAd -- MO
-  Proof -- MO
-  PublishAd -- MO
+  DisplayAd -- MO
+  ProvideProof  -- MO
 
-  ' --- Relationships (dotted, no arrows, all contained) ---
-  Submit <.. ApproveAd     : <<extends>>
-  ApproveAd <.. PublishAd   : <<extends>>
-  ConfirmProof ..> Proof   : <<includes>>
-  Proof ..> PublishAd : <<extends>>
-  Pay ..> ConfirmProof : <<extends>>
+  ' --- Relationships  ---
+  Submit <.. Preview : <<extends>>
+  Submit ..> SelectDates : <<includes>>
+  Submit ..> UploadContent : <<includes>>
+  Submit ..> Pay : <<includes>>
+  ConfirmProof ..> ProvideProof  : <<includes>>
+  DownloadContent <.. DisplayAd : <<includes>>
+  ApproveAd <.. DisplayAd : <<includes>>
+
 }
 @enduml

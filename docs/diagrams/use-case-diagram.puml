@@ -2,7 +2,7 @@
 left to right direction
 
 ' --- Increase spacing and make the box larger ---
-skinparam ranksep 40
+skinparam ranksep 30
 skinparam nodesep 30
 skinparam rectangle {
   Padding 40
@@ -13,31 +13,35 @@ actor Advertiser as ADV
 actor "Media Owner" as MO
 actor Admin as ADM
 
-rectangle "Envision Ad" {
+' --- Hourglass actor for temporal use cases ---
+hide stereotypes
+rectangle "<img:https://cdn-icons-png.flaticon.com/512/3889/3889548.png{scale=0.12}>" as HG <<Temporal>>
+skinparam rectangle<<Temporal>> {
+  BorderColor white
+  BackgroundColor white
+}
 
+
+rectangle "Envision Ad" {
   ' --- Advertiser use cases ---
   usecase "Browse Media Inventory" as Browse
-  ' usecase "Preview Ad on Media" as Preview
-  ' Extracted use case into another diagram "Publish Ad"
   usecase "Publish Ad" as PublishAd
-'  usecase "Make Ad Payment" as Pay
-'  usecase "Confirm Proof of Display" as ConfirmProof
 
   ' --- Media Owner use cases ---
   usecase "Manage Media Listing" as ManageListing
-  usecase "List Media" as ListMedia
-'  usecase "Approve/Deny Ad" as ApproveAd
-'  usecase "Publish Ad on Media" as PublishAdOnMedia
-'  usecase "Provide Proof of Display" as Proof
   usecase "View Ad Requests/History" as ViewAd
+  usecase "Notify Advertiser of Approval Decision" as NotifyApproval
+  usecase "Remind Media Owner to Update Media Content" as StartAd
+  usecase "Remind Media Owner to Send Proof of Display" as SendProofReminder
 
   ' --- Admin use cases ---
   usecase "Approve/Deny Media Listing" as ApproveListing
   usecase "Issue Content Warning" as ContentWarning
+  usecase "Select Media" as SelectMedia
 
-note right of PublishAd
+note bottom of PublishAd
   Detailed in separate diagram:
-  "Publish Ad – Use Case Detail"
+  "use-case-publish-ad.puml"
 end note
 
 '  ' --- Note ---
@@ -48,7 +52,7 @@ end note
 '  end note
 '
   ' --- Actor connections (solid lines) ---
-  ADV -- Browse
+'  ADV -- Browse
   ADV -- PublishAd
 '  ADV -- ConfirmProof
 
@@ -62,12 +66,16 @@ end note
   ADM -- ApproveListing
   ADM -- ContentWarning
 
+  HG -- SendProofReminder
+  HG -- StartAd
+  HG -- NotifyApproval
+
   ' --- Relationships (dotted, no arrows, all contained) ---
-'  PublishAd <-- Pay     : <<includes>>
+  PublishAd ..> SelectMedia : <<includes>>
+  PublishAd ..> Browse     : <<includes>>
 '  Request <-- ApproveAd     : <<extends>>
 '  ConfirmProof <-- Proof   : <<includes>>
 '  ApproveAd <-- Proof      : <<includes>>
-  ManageListing <-- ListMedia : <<extends>>
 '  ManageListing <-- PublishAdOnMedia : <<extends>>
 }
 @enduml
