@@ -109,7 +109,6 @@ package "Advertising Subdomain" #LightCoral {
 ' ===============================
 package "Transactions Subdomain" #LightPink {
   AGGREGATE_ROOT(Transaction) #LightBlue {
-    companyName: String
     amount: Decimal
     timestamp: DateTime
   }
@@ -144,7 +143,6 @@ package "Transactions Subdomain" #LightPink {
 ' ===============================
 package "Moderation Subdomain" #LightCyan {
   AGGREGATE_ROOT(UserReport) #LightBlue {
-    userId: UUID
     reason: String
     description: String
     proof: URL
@@ -167,9 +165,8 @@ package "Moderation Subdomain" #LightCyan {
 ' ===============================
 ' ANALYTICS
 ' ===============================
-package "ANALYTICS Subdomain" #LightGray {
+package "Analytics Subdomain" #lightyellow {
   AGGREGATE_ROOT(Report) #LightBlue {
-    userId: UUID
     generatedAt: DateTime
   }
 
@@ -191,5 +188,53 @@ package "ANALYTICS Subdomain" #LightGray {
   Report "1" o--> "1..*" ReportDataIdentifier
   ReportData "1" o--> "1" ReportDataIdentifier
 }
+
+' ===============================
+' CUSTOMER
+' ===============================
+package "Customer Subdomain" #Lavender {
+  AGGREGATE_ROOT(Customer) #LightBlue {
+    FirstName: String
+    LastName: String
+    email: String
+    phone: String
+  }
+
+  AGGREGATE(Business)  #LightBlue {
+    name: String
+    employees: int
+  }
+
+  VALUE_OBJECT(CustomerIdentifier) #Bisque {
+    customerId: UUID
+  }
+
+  VALUE_OBJECT(BusinessIdentifier) #Bisque {
+    businessId: UUID
+  }
+
+  VALUE_OBJECT(BillingAddress) #Bisque {
+    street: String
+    city: String
+    province: String
+    postalCode: String
+  }
+
+  Business "1" o--> "1..*" CustomerIdentifier
+  Customer "1" o--> "1" CustomerIdentifier
+
+  Business "1" o--> "1" BusinessIdentifier
+  Business "1" o--> "1" BillingAddress
+}
+
+' ===============================
+' REVIEWS
+' ===============================
+
+Report "1" o--> "1" BusinessIdentifier
+MediaAsset "1" o--> "1" BusinessIdentifier
+AdvertisementCampaign "1" o--> "1" BusinessIdentifier
+Transaction "1" o--> "1" BusinessIdentifier
+UserReport "1" o--> "1" BusinessIdentifier
 
 @enduml
