@@ -25,19 +25,19 @@ skinparam rectangle<<Temporal>> {
 
 rectangle "Envision Ad" {
   ' --- Advertiser use cases ---
-  usecase "Publish Ad" as PublishAd
-  usecase "Browse Media Inventory" as Browse
+  usecase "UC_02 Publish Ad" as PublishAd
+  usecase "UC_01 Browse Media Inventory" as Browse
 
   ' --- Media Owner use cases ---
-  usecase "Manage Media Listing" as ManageListing
-  usecase "View Ad Requests/History" as ViewAd
-  usecase "Notify Advertiser of Approval Decision" as NotifyApproval
-  usecase "Remind Media Owner to Update Media Content" as StartAd
-  usecase "Remind Media Owner to Send Proof of Display" as SendProofReminder
+  usecase "UC_09 Manage Media Listing" as ManageListing
+  usecase "UC_12 View Ad Requests/History" as ViewAd
+  usecase "UC_15 Notify Advertiser of Approval Decision" as NotifyApproval
+  usecase "UC_16 Remind Media Owner to Update Media Content" as StartAd
+  usecase "UC_17        Remind Media Owner to Send Proof of Display" as SendProofReminder
 
   ' --- Admin use cases ---
-  usecase "Approve/Deny Media Listing" as ApproveListing
-  usecase "Issue Content Warning" as ContentWarning
+  usecase "UC_08 Approve/Deny Media Listing" as ApproveListing
+  usecase "UC_10 Issue Content Warning" as ContentWarning
 
 note top of PublishAd
   Detailed in separate diagram:
