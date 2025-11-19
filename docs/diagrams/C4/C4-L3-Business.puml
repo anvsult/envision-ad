@@ -43,9 +43,9 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                 }
 
                 package "Advertising" {
-                    Container(advertisingController, "advertising Controller", "Component: Spring Boot Rest Controller", "Allows Advertisers and Admins to manage Advertisements and Advertisement Campaigns.", $sprite="java", $tags="java")
-                    Container(advertisingService, "advertising Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
-                    Container(advertisingRepo, "advertising Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
+                    Container(advertisingController, "Advertising Controller", "Component: Spring Boot Rest Controller", "Allows Advertisers and Admins to manage Advertisements and Advertisement Campaigns.", $sprite="java", $tags="java")
+                    Container(advertisingService, "Advertising Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
+                    Container(advertisingRepo, "Advertising Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
                     advertisingController -[dashed,#LimeGreen]-> advertisingService  : **Uses**
                     advertisingService -[dashed,#LimeGreen]-> advertisingRepo  : **Uses**
@@ -76,6 +76,15 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
 
                     reportController -[dashed,#LimeGreen]-> reportService  : **Uses**
                     reportService -[dashed,#LimeGreen]-> reportRepo  : **Uses**
+                }
+
+                package "Customers"{
+                    Container(customerController, "Customer Controller", "Component: Spring Boot Rest Controller", "Allows all users to manage their account", $sprite="java", $tags="java")
+                    Container(customerService, "Customer Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
+                    Container(customerRepo, "Customer Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
+
+                    customerController -[dashed,#LimeGreen]-> customerService  : **Uses**
+                    customerService -[dashed,#LimeGreen]-> customerRepo  : **Uses**
                 }
 
                 package "Email"{
@@ -109,6 +118,7 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                 advertisingService -[dashed]-> fileService  : **Get Files using**
                 MediaService -[dashed]-> fileService  : **Send Files using**
                 MediaService -[dashed]-> smsService  : **Send SMS using**
+                customerService -[dashed]-> authService  : **Uses**
 
                 transactionService  -[dashed]-> paymentService  : **Send Payment using**
 
@@ -118,6 +128,7 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                 securityFilter -[dashed,#RoyalBlue]-> MediaController  : **Direct Request**
                 securityFilter -[dashed,#RoyalBlue]-> transactionController  : **Direct Request**
                 securityFilter -[dashed,#RoyalBlue]-> "authService"  : **Direct Request**
+                securityFilter -[dashed,#RoyalBlue]-> customerController  : **Direct Request**
 
                 "authService" -[dashed,#Crimson]-> "auth"  : **Uses**\n[OAuth2/OpenID]
             SHOW_LEGEND()

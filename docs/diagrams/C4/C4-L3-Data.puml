@@ -173,6 +173,41 @@ database  "MySQL Database" as Database #DarkCyan {
                     $column("description"): VARCHAR(255)
                 }
 
+                $table("Customer", "customer_tb") {
+                    $pk("id"): VARCHAR(36) NOT NULL
+                    ---
+                    $fk("business_id"): VARCHAR(36) NOT NULL
+                    ---
+                    $column("customerId"): VARCHAR(36) NOT NULL
+
+                    $column("firstName"): VARCHAR(50) NOT NULL
+
+                    $column("lastName"): VARCHAR(50) NOT NULL
+
+                    $column("email"): VARCHAR(255) NOT NULL
+
+                    $column("phone"): VARCHAR(10) NOT NULL
+                }
+
+                $table("Business", "business_tb") {
+                    $pk("id"): VARCHAR(36) NOT NULL
+                    ---
+                    $column("business_id"): VARCHAR(36) NOT NULL
+
+                    $column("name"): VARCHAR(50) NOT NULL
+
+                    $column("employees"): INT NOT NULL
+
+                    $column("street"): VARCHAR(50) NOT NULL
+
+                    $column("city"): VARCHAR(50) NOT NULL
+
+                    $column("province"): VARCHAR(50) NOT NULL
+
+                    $column("postalCode"): VARCHAR(6) NOT NULL
+                }
+
+                "customer_tb" }o--o| "business_tb"
                 "media_asset_tb" |o--o| "media_type_tb"
                 "transaction_tb" |o--o| "invoice_tb"
                 "report_tb" |o--o{ "report_data_tb"

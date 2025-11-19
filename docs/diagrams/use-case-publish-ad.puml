@@ -12,7 +12,6 @@ skinparam rectangle {
 actor Advertiser as ADV
 actor "Media Owner" as MO
 
-
 rectangle "Publish Ad" {
 ' --- Advertiser use cases ---
   usecase "Preview Ad on Media" as Preview
