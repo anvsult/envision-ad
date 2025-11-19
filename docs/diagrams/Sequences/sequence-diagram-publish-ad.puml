@@ -3,33 +3,20 @@ title Publish Ad
 
 actor "Advertiser" as Advertiser
 participant "__:System__" as System
-actor "Media Owner" as MediaOwner
 
-' 1. The Advertiser browses available media listings and selects one.
 Advertiser -> System: getMedia()
-' 1.1 System retrieves details for the selected media listing and displays the details page.
-System --> Advertiser: displayMediaDetails()
+System --> Advertiser: MediaDetails
 
-' 2. The Advertiser clicks on the “Reserve” button.
 Advertiser -> System: reserveMedia()
-' 2.1 System displays a reservation modal.
-System --> Advertiser: showReservationModal()
+System --> Advertiser: ReservationModal
 
-' 3. The Advertiser selects an ad (or adds a new one), selects dates and presses next.
 Advertiser -> System: submitAd(mediaId, adImage, startDate, endDate)
-' 3.1 System shows a preview of the ad on the selected media.
-System --> Advertiser: showAdPreviewOnMedia()
+System --> Advertiser: AdPreviewOnMedia
 
-' 4. User presses the next button.
 Advertiser -> System: goToPayment()
-' 4.1 System shows the payment screen.
-System --> Advertiser: showPaymentScreen()
+System --> Advertiser: PaymentScreen
 
-' 5. User enters credit card info and clicks reserve.
 Advertiser -> System: confirmReservation(paymentDetails)
-' 5.1 System closes the modal in the frontend.
-System --> Advertiser: closeModalAndShowConfirmation()
-' 5.2 System backend processes the request and emails Media Owner.
-System -> MediaOwner: sendAdRequestEmail(adDetails)
+System --> Advertiser: closeModalAndShowConfirmation
 
 @enduml

@@ -38,7 +38,6 @@ rectangle "Envision Ad" {
   ' --- Admin use cases ---
   usecase "Approve/Deny Media Listing" as ApproveListing
   usecase "Issue Content Warning" as ContentWarning
-  usecase "Select Media" as SelectMedia
 
 note top of PublishAd
   Detailed in separate diagram:
@@ -75,7 +74,6 @@ end note
   GU -- Browse
   GU -[hidden]- PublishAd
   ' --- Relationships (dotted, no arrows, all contained) ---
-  PublishAd ..> SelectMedia : <<includes>>
   PublishAd ..> Browse     : <<includes>>
 '  Request <-- ApproveAd     : <<extends>>
 '  ConfirmProof <-- Proof   : <<includes>>
