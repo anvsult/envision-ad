@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: webservice
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+  jpa:
+    hibernate:
+      ddl-auto: validate        # use `update` only for dev; prefer migrations
+    properties:
+      hibernate:
+        format_sql: false
+    show-sql: false
+
