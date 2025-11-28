@@ -71,8 +71,6 @@ configuration:
       - any-glob-to-any-file: '.env*'
       - any-glob-to-any-file: 'webservice/src/main/resources/**'
       - any-glob-to-any-file: 'frontend/.env*'
-      - any-glob-to-any-file: '**/*.yml'
-      - any-glob-to-any-file: '**/*.yaml'
       - any-glob-to-any-file: '**/*.properties'
 
 security:
