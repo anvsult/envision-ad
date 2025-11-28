@@ -1,6 +1,4 @@
-import Image from "next/image";
-import '@mantine/core/styles.css';
-import { AppShell, AppShellHeader, AppShellMain, AppShellNavbar, Burger, createTheme, MantineProvider } from '@mantine/core';
+import { AppShell, AppShellHeader, AppShellMain, AppShellNavbar, createTheme, MantineProvider } from '@mantine/core';
 
 const theme = createTheme({
   colors: {
@@ -31,9 +29,9 @@ function Demo() {
   return (
     <MantineProvider theme={theme}>
       <AppShell
-      header={{ height: 60 }}
-      navbar={{ width: 250, breakpoint: "sm" }}
-    >
+        header={{ height: 60 }}
+        navbar={{ width: 250, breakpoint: "sm" }}
+      >
       <AppShellHeader>Header</AppShellHeader>
       <AppShellNavbar>Navbar</AppShellNavbar>
       <AppShellMain>Main content</AppShellMain>
