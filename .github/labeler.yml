@@ -1,0 +1,94 @@
+frontend:
+  - changed-files:
+      - any-glob-to-any-file: 'frontend/**'
+      - any-glob-to-any-file: 'frontend/public/**'
+
+nextjs:
+  - changed-files:
+      - any-glob-to-any-file: 'frontend/next.config.*'
+      - any-glob-to-any-file: 'frontend/src/**'
+
+typescript:
+  - changed-files:
+      - any-glob-to-any-file: 'frontend/**/*.ts'
+      - any-glob-to-any-file: 'frontend/**/*.tsx'
+      - any-glob-to-any-file: 'frontend/tsconfig.json'
+
+backend:
+  - changed-files:
+      - any-glob-to-any-file: 'webservice/**'
+      - any-glob-to-any-file: 'build.gradle'
+      - any-glob-to-any-file: 'gradle/**'
+      - any-glob-to-any-file: 'gradlew'
+      - any-glob-to-any-file: 'gradlew.bat'
+
+spring:
+  - changed-files:
+      - any-glob-to-any-file: 'webservice/src/main/java/**/com/**/webservice/**'
+      - any-glob-to-any-file: 'webservice/src/main/java/**/com/**/envisionad/**'
+
+java:
+  - changed-files:
+      - any-glob-to-any-file: 'webservice/src/**/*.java'
+
+docs:
+  - changed-files:
+      - any-glob-to-any-file: 'docs/**'
+      - any-glob-to-any-file: 'README.md'
+      - any-glob-to-any-file: 'pull_request_template.md'
+
+diagrams:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.puml'
+      - any-glob-to-any-file: 'docs/assets/**'
+
+ci:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**'
+      - any-glob-to-any-file: '.github/actions/**'
+
+infra:
+  - changed-files:
+      - any-glob-to-any-file: '.github/labeler.yml'
+      - any-glob-to-any-file: '.github/*.yml'
+      - any-glob-to-any-file: '.github/*.yaml'
+
+docker:
+  - changed-files:
+      - any-glob-to-any-file: 'docker-compose.yml'
+      - any-glob-to-any-file: 'Dockerfile'
+      - any-glob-to-any-file: 'frontend/Dockerfile'
+      - any-glob-to-any-file: 'webservice/Dockerfile'
+
+tests:
+  - changed-files:
+      - any-glob-to-any-file: 'webservice/src/test/**'
+      - any-glob-to-any-file: 'frontend/**/__tests__/**'
+      - any-glob-to-any-file: '**/*_test.*'
+
+configuration:
+  - changed-files:
+      - any-glob-to-any-file: '.env*'
+      - any-glob-to-any-file: 'webservice/src/main/resources/**'
+      - any-glob-to-any-file: 'frontend/.env*'
+      - any-glob-to-any-file: '**/*.properties'
+
+security:
+  - changed-files:
+      - any-glob-to-any-file: 'webservice/src/main/java/**/security/**'
+      - any-glob-to-any-file: 'webservice/src/main/java/**/configuration/security/**'
+
+feature:
+  - head-branch: ['^feat', '^feature', '^feat/']
+
+bug:
+  - head-branch: ['^bug', '^fix', '^hotfix']
+
+chore:
+  - changed-files:
+      - any-glob-to-any-file: '.idea/**'
+      - any-glob-to-any-file: '**/*.iml'
+
+assets:
+  - changed-files:
+      - any-glob-to-any-file: 'docs/assets/**'
