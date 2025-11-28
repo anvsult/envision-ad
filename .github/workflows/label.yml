@@ -18,5 +18,4 @@ jobs:
 
     steps:
     - uses: actions/labeler@v4
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      # No 'with:' block needed unless you have other parameters to set
