@@ -1,0 +1,58 @@
+.header {
+  height: 80px;
+  background-color: white;
+  border-bottom: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.logoLink {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s;
+}
+
+.logoLink:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  color: var(--mantine-color-blue-6);
+  display: flex;
+  align-items: center;
+}
+
+.logoText {
+  font-size: 20px;
+  letter-spacing: 0.5px;
+}
+
+.navLink {
+  text-decoration: none;
+}
+
+.navButton {
+  font-weight: 500;
+}
+
+.navButton:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+@media (max-width: $mantine-breakpoint-sm) {
+  .logoText {
+    font-size: 16px;
+  }
+  
+  .header {
+    height: 60px;
+  }
+}

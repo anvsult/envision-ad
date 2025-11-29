@@ -1,0 +1,15 @@
+.partnersSection {
+  max-width: 1200px;
+}
+
+.partnerLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.partnerLogo:hover {
+  opacity: 1;
+}
