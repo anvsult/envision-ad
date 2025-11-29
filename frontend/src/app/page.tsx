@@ -9,6 +9,7 @@ import {
   Button,
   Box,
 } from "@mantine/core";
+import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Partners } from "@/components/Partners";
 import classes from "./page.module.css";
@@ -67,14 +68,16 @@ export default function HomePage() {
               <Title order={3} size="h3" fw={700} mb="md">
                 Find Ad Spaces Now
               </Title>
-              <Button
-                size="lg"
-                radius="md"
-                color="blue.6"
-                className={classes.ctaButton}
-              >
-                Browse
-              </Button>
+              <Link href="/browse">
+                <Button
+                  size="lg"
+                  radius="md"
+                  color="blue.6"
+                  className={classes.ctaButton}
+                >
+                  Browse
+                </Button>
+              </Link>
             </Box>
           </Stack>
           {/* </Grid.Col>
