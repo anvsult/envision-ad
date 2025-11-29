@@ -17,7 +17,7 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <>
-      < NavBar />
+      <NavBar />
 
       {/* Hero Section */}
       <Box className={classes.hero}>
@@ -36,8 +36,8 @@ export default function HomePage() {
         {/* TODO Make these margin & padding values responsive instead of hard-coded */}
         <Container
           size="xl"
-          ml={160}
-          py={80}
+          ml={{ base: 20, sm: 40, md: 80, lg: 160 }}
+          py={{ base: 40, sm: 60, md: 80 }}
           style={{ position: "relative", zIndex: 1 }}
         >
           <Stack gap="xl">
