@@ -40,4 +40,4 @@ export const theme = createTheme({
 });
 
 // Export fonts to use in layout.tsx
-export { josefinSans, lato }
+export { josefinSans, lato };

@@ -6,6 +6,7 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { josefinSans, lato, theme } from "../theme";
+import type { ReactNode } from "react";
 
 // This will be used for SEO (Search Engine Optimization)
 export const metadata = {
@@ -14,7 +15,7 @@ export const metadata = {
     "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your business.",
 };
 
-export default function RootLayout({ children }: { children: any }) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"

@@ -2,10 +2,10 @@
 
 import { Group, Container, Button, Text } from "@mantine/core";
 import Link from "next/link";
-import classes from "./Header.module.css";
-import Image from 'next/image';
+import classes from "./NavBar.module.css";
+import Image from "next/image";
 
-export function Header() {
+export function NavBar() {
   return (
     <header className={classes.header}>
       <Container size="xl" className={classes.inner}>
@@ -13,17 +13,16 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className={classes.logoLink}>
             <Group gap="xs">
-            <div className={classes.logoImageWrapper}>
-              
-              <Image
-                src="/images/visualimpact.png"
-                alt="Visual Impact Logo"
-                width={80}
-                height={80}
-                style={{ objectFit: 'contain' }}
-                priority
+              <div className={classes.logoImageWrapper}>
+                <Image
+                  src="/images/visualimpact.png"
+                  alt="Visual Impact Logo"
+                  width={80}
+                  height={80}
+                  style={{ objectFit: "contain" }}
+                  priority
                 />
-                </div>
+              </div>
               <Text
                 size="lg"
                 fw={700}
@@ -49,12 +48,16 @@ export function Header() {
             </Link>
 
             {/* Auth Buttons */}
-            <Button variant="outline" color="blue.6" radius="xl">
-              Register
-            </Button>
-            <Button variant="filled" color="blue.8" radius="xl">
-              Sign In
-            </Button>
+            <Link href="/register" className={classes.navLink}>
+              <Button variant="outline" color="blue.6" radius="xl">
+                Register
+              </Button>
+            </Link>
+            <Link href="/signin" className={classes.navLink}>
+              <Button variant="filled" color="blue.8" radius="xl">
+                Sign In
+              </Button>
+            </Link>
           </Group>
         </Group>
       </Container>

@@ -2,7 +2,6 @@
 
 import {
   Container,
-  Grid,
   Stack,
   Title,
   Text,
@@ -10,7 +9,7 @@ import {
   Box,
 } from "@mantine/core";
 import Link from "next/link";
-import { Header } from "@/components/Header";
+import { NavBar } from "@/components/NavBar";
 import { Partners } from "@/components/Partners";
 import classes from "./page.module.css";
 import Image from "next/image";
@@ -18,7 +17,7 @@ import Image from "next/image";
 export default function HomePage() {
   return (
     <>
-      <Header />
+      < NavBar />
 
       {/* Hero Section */}
       <Box className={classes.hero}>
@@ -34,16 +33,13 @@ export default function HomePage() {
         </Box>
 
         {/* Content on top of background */}
+        {/* TODO Make these margin & padding values responsive instead of hard-coded */}
         <Container
           size="xl"
-          pl={0}
           ml={160}
           py={80}
           style={{ position: "relative", zIndex: 1 }}
         >
-          {/* <Grid gutter="xl" align="center">
-      {/* Left Column - Text Content */}
-          {/* <Grid.Col span={{ base: 12, md: 6 }}> */}
           <Stack gap="xl">
             <Stack gap="md">
               <Title order={1} size="h1" fw={700} className={classes.heroTitle}>
@@ -55,13 +51,9 @@ export default function HomePage() {
             </Stack>
 
             <Text size="lg" c="gray.7" className={classes.heroDescription}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Discover affordable, high-impact advertising opportunities in your city.
+                Connect with local audiences through unique ad spaces and make your brand unforgettable.
+                Our platform makes it easy to browse, book, and manage ad placements that fit your budget and goals.
             </Text>
 
             <Box className={classes.ctaSection}>
@@ -80,8 +72,6 @@ export default function HomePage() {
               </Link>
             </Box>
           </Stack>
-          {/* </Grid.Col>
-    </Grid> */}
         </Container>
       </Box>
 
