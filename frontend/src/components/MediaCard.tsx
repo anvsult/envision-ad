@@ -1,52 +1,51 @@
-import { Paper, Text, Image, Title } from "@mantine/core";
+import { Paper, Text, Image, Title, Space } from "@mantine/core";
+import React from "react";
+import styles from "./MediaCard.module.css";
+import { Media } from "@/app/models/media";
 
-interface MediaCardProps {
-    image: string;
-    title: string;
-    mediaOwner: string,
-    address: string,
-    ratio: string,
-    size: string,
-    type: string,
-    price: string,
-    passerbys: string
-}
 
-function MediaCard({image, title, mediaOwner, address, ratio, size, type, price, passerbys}: MediaCardProps) {
+
+function MediaCard({image, title, mediaOwner, address, ratio, width, height, type, price, passerbys}: Media) {
     return (
         <Paper 
             shadow="sm"
-            p="xl"
             radius="md"
             >
-                <div>
-        <Image src={image} alt="Media"/>
-        <Title order={3} >
-          {title}
-        </Title>
-        <Text  size="xs">
-          {mediaOwner}
-        </Text>
-        <Text  size="xs">
-          {address}
-        </Text>
-        <Text  size="xs">
-          {ratio}
-        </Text>
-        <Text  size="xs">
-          {size}
-        </Text>
-        <Text  size="xs">
-          {type}
-        </Text>
-        <Text  size="xs">
-          {price}
-        </Text>
-        <Text  size="xs">
-          {passerbys}
-        </Text>
-        
-      </div>
+                <Image src={image} alt="Media" radius="md" />
+                <div className={styles.details}>
+                    
+                    <Title order={5} >
+                        {title}
+                    </Title>
+                    <Text size="md" >
+                        {mediaOwner}
+                    </Text>
+                    <Text size="xs">
+                        {address}
+                    </Text>
+
+                    <div className={styles.info}>    
+                        <Text size="xs" span>
+                            {ratio}
+                        </Text>
+                        <Space w="lg" />
+                        <Text size="xs" span>
+                            {width}x{height} 
+                        </Text>
+                        <Space w="lg" />
+                        <Text size="xs" span>
+                            {type}
+                        </Text>
+                        <Text size="xs" span>
+                            ${price} per week
+                        </Text>
+                        <Space w="lg" />
+                        <Text size="xs" span>
+                            ~{passerbys} daily passerbys
+                        </Text>
+                    </div>
+            
+        </div>
         </Paper>
     )
 }

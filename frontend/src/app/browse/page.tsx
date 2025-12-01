@@ -1,17 +1,20 @@
 'use client';
 
-import { Container, Title, Text, Stack} from '@mantine/core';
-import { Carousel, CarouselSlide } from '@mantine/carousel';
+import { Container, Title, Stack} from '@mantine/core';
+import { CarouselSlide } from '@mantine/carousel';
 import { NavBar } from '@/components/NavBar';
 import '@mantine/carousel/styles.css';
 import MediaCard from '@/components/MediaCard';
 import { Media } from '../models/media';
+import CardCarousel, { MediaCardCarousel } from '@/components/CardCarousel';
 
 const medias: Media[] = [
-  {mediaId: '1', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'title', mediaOwner: 'hi', address: 'hi', ratio: 'hi', size: 'hi', type: 'hi', price: 'hi', passerbys: 'hi'},
-  {mediaId: '2', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'title', mediaOwner: 'hi', address: 'hi', ratio: 'hi', size: 'hi', type: 'hi', price: 'hi', passerbys: 'hi'},
-  {mediaId: '3', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'title', mediaOwner: 'hi', address: 'hi', ratio: 'hi', size: 'hi', type: 'hi', price: 'hi', passerbys: 'hi'},
-  {mediaId: '4', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'title', mediaOwner: 'hi', address: 'hi', ratio: 'hi', size: 'hi', type: 'hi', price: 'hi', passerbys: 'hi'},
+  {mediaId: '1', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #1', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 50, passerbys: 300},
+  {mediaId: '2', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #2', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 50, passerbys: 300},
+  {mediaId: '3', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #3', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 50, passerbys: 300},
+  {mediaId: '4', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #4', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 50, passerbys: 300},
+  {mediaId: '5', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #5', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 50, passerbys: 300},
+
 ]
 
  function BrowsePage() {
@@ -19,33 +22,11 @@ const medias: Media[] = [
     <>
       <NavBar />
       <Container size="xl" py={20} px={10}>
-        <Stack gap="xl">
+        <Stack gap="sm">
           <Title order={1} size="h1" fw={700}>
             Browse Ad Spaces
           </Title>
-          
-            <Carousel withIndicators
-                      height={600}
-                      slideSize={{ base: '100%', sm: '50%', md: '33.333333%' }}
-                      slideGap={{ base: 0, sm: 'md' }}
-                      emblaOptions={{ loop: true, align: 'start' }}
-                      py={10}
-                      px={10}>
-              {medias.map((media) => (
-                <CarouselSlide key={media.mediaId} >
-                  <MediaCard  
-                              image={media.image} 
-                              title={media.title} 
-                              mediaOwner={media.mediaOwner} 
-                              address={media.address} 
-                              ratio={media.ratio} 
-                              size={media.size} 
-                              type={media.type} 
-                              price={media.price} 
-                              passerbys={media.passerbys}/>
-                </CarouselSlide>
-              ))}
-            </Carousel>
+            <MediaCardCarousel title='Closest' medias={medias}/>
         </Stack>
       </Container>
     </>

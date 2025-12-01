@@ -1,11 +1,13 @@
 export interface Media {
+    mediaId: string;
     image: string;
     title: string;
     mediaOwner: string,
     address: string,
     ratio: string,
-    size: string,
+    width: number,
+    height: number,
     type: string,
-    price: string,
-    passerbys: string
+    price: number,
+    passerbys: number
 }
