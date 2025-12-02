@@ -1,0 +1,44 @@
+package com.envisionad.webservice.Media.BusinessLayer;
+
+import com.envisionad.webservice.Media.DataAccessLayer.Media;
+import com.envisionad.webservice.Media.DataAccessLayer.MediaRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class MediaServiceImpl implements MediaService {
+
+    private final MediaRepository mediaRepository;
+
+    public MediaServiceImpl(MediaRepository mediaRepository) {
+        this.mediaRepository = mediaRepository;
+    }
+
+    @Override
+    public List<Media> getAllMedia() {
+        return mediaRepository.findAll();
+    }
+
+    @Override
+    public Media getMediaById(Integer id) {
+        // Updated to use Integer id
+        return mediaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Media addMedia(Media media) {
+        return mediaRepository.save(media);
+    }
+
+    @Override
+    public Media updateMedia(Media media) {
+        return mediaRepository.save(media);
+    }
+
+    @Override
+    public void deleteMedia(Integer id) {
+        // Updated to use Integer id
+        mediaRepository.deleteById(id);
+    }
+}
