@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Container, Title, Text, Stack } from '@mantine/core';
-import { NavBar } from '@/components/NavBar';
+import { Container, Title, Text, Stack } from "@mantine/core";
+import { NavBar } from "@/components/NavBar/NavBar";
 
 export default function BrowsePage() {
   return (

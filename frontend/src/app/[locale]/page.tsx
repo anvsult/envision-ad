@@ -1,20 +1,16 @@
 "use client";
 
-import {
-  Container,
-  Stack,
-  Title,
-  Text,
-  Button,
-  Box,
-} from "@mantine/core";
+import { Container, Stack, Title, Text, Button, Box } from "@mantine/core";
 import Link from "next/link";
-import { NavBar } from "@/components/NavBar";
-import { Partners } from "@/components/Partners";
-import classes from "./page.module.css";
+import { NavBar } from "@/components/NavBar/NavBar";
+import { Partners } from "@/components/Partners/Partners";
+import classes from "../page.module.css";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export default function HomePage() {
+  const t = useTranslations("homepage");
+
   return (
     <>
       <NavBar />
@@ -43,22 +39,20 @@ export default function HomePage() {
           <Stack gap="xl">
             <Stack gap="md">
               <Title order={1} size="h1" fw={700} className={classes.heroTitle}>
-                Affordable ads.
+                {t("heroTitlePart1")}
               </Title>
               <Title order={1} size="h1" fw={700} className={classes.heroTitle}>
-                Unforgettable impact.
+                {t("heroTitlePart2")}
               </Title>
             </Stack>
 
             <Text size="lg" c="gray.7" className={classes.heroDescription}>
-                Discover affordable, high-impact advertising opportunities in your city.
-                Connect with local audiences through unique ad spaces and make your brand unforgettable.
-                Our platform makes it easy to browse, book, and manage ad placements that fit your budget and goals.
+              {t("heroDescription")}
             </Text>
 
             <Box className={classes.ctaSection}>
               <Title order={3} size="h3" fw={700} mb="md">
-                Find Ad Spaces Now
+                {t("ctaTitle")}
               </Title>
               <Link href="/browse">
                 <Button
@@ -67,7 +61,7 @@ export default function HomePage() {
                   color="blue.6"
                   className={classes.ctaButton}
                 >
-                  Browse
+                  {t("ctaBrowse")}
                 </Button>
               </Link>
             </Box>

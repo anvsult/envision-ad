@@ -4,8 +4,10 @@ import { Group, Container, Button, Text } from "@mantine/core";
 import Link from "next/link";
 import classes from "./NavBar.module.css";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 export function NavBar() {
+  const t = useTranslations("nav");
   return (
     <header className={classes.header}>
       <Container size="xl" className={classes.inner}>
@@ -38,24 +40,24 @@ export function NavBar() {
           <Group gap="md">
             <Link href="/" className={classes.navLink}>
               <Button variant="subtle" c="gray.8" className={classes.navButton}>
-                Home
+                {t("home")}
               </Button>
             </Link>
             <Link href="/browse" className={classes.navLink}>
               <Button variant="subtle" c="gray.8" className={classes.navButton}>
-                Browse
+                {t("browse")}
               </Button>
             </Link>
 
             {/* Auth Buttons */}
             <Link href="/register" className={classes.navLink}>
               <Button variant="outline" color="blue.6" radius="xl">
-                Register
+                {t("register")}
               </Button>
             </Link>
             <Link href="/signin" className={classes.navLink}>
               <Button variant="filled" color="blue.8" radius="xl">
-                Sign In
+                {t("signIn")}
               </Button>
             </Link>
           </Group>

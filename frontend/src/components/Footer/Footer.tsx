@@ -1,24 +1,28 @@
+"use client";
+
 import React from "react";
 import styles from "./Footer.module.css";
+import { useTranslations } from "next-intl";
 
 export default function Footer() {
+  const t = useTranslations("footer");
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.grid}>
           {/* Contact Information */}
           <div className={styles.section}>
-            <h3 className={styles.heading}>Contact Us</h3>
+            <h3 className={styles.heading}>{t("contactUs")}</h3>
             <ul className={styles.list}>
-              <li>Email: info@envision-ad.com</li>
-              <li>Phone: +1 (555) 123-4567</li>
-              <li>Address: 123 Main Street, City, State 12345</li>
+              <li>{t("email")}</li>
+              <li>{t("phone")}</li>
+              <li>{t("address")}</li>
             </ul>
           </div>
 
           {/* Social Media */}
           <div className={styles.section}>
-            <h3 className={styles.heading}>Follow Us</h3>
+            <h3 className={styles.heading}>{t("followUs")}</h3>
             <ul className={styles.list}>
               <li>
                 <a
@@ -26,7 +30,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Twitter
+                  {t("twitter")}
                 </a>
               </li>
               <li>
@@ -35,7 +39,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Facebook
+                  {t("facebook")}
                 </a>
               </li>
               <li>
@@ -44,7 +48,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  LinkedIn
+                  {t("linkedin")}
                 </a>
               </li>
               <li>
@@ -53,7 +57,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Instagram
+                  {t("instagram")}
                 </a>
               </li>
             </ul>
@@ -61,13 +65,13 @@ export default function Footer() {
 
           {/* Links */}
           <div className={styles.section}>
-            <h3 className={styles.heading}>Legal</h3>
+            <h3 className={styles.heading}>{t("legal")}</h3>
             <ul className={styles.list}>
               <li>
-                <a href="/terms">Terms of Service</a>
+                <a href="/terms">{t("terms")}</a>
               </li>
               <li>
-                <a href="/privacy">Privacy Policy</a>
+                <a href="/privacy">{t("privacy")}</a>
               </li>
             </ul>
           </div>
@@ -76,7 +80,7 @@ export default function Footer() {
         {/* Copyright */}
         <div className={styles.copyright}>
           <p>
-            &copy; {new Date().getFullYear()} Envision AD. All rights reserved.
+            {t("copyright", { year: new Date().getFullYear() })}
           </p>
         </div>
       </div>
