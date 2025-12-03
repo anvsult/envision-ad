@@ -18,9 +18,9 @@ function CardCarousel({title, children}: CardCarouselProps) {
                 slideSize={{ base: '50%', sm: '33.33333%', md: '20%'}}
                 slideGap={{ base: 'sm', sm: 'md' }}
                 emblaOptions={{ loop: true, align: 'center' }}
+                
             >
                 {children}
-            
             </Carousel>
         </div>
     )
@@ -36,7 +36,7 @@ export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
         <div>
             <CardCarousel title={title}>
                 {medias.map((media) => (
-                <CarouselSlide key={media.mediaId} >
+                <CarouselSlide key={media.mediaId} py="sm">
                   <MediaCard
                     mediaId={media.mediaId}
                     image={media.image} 

@@ -24,6 +24,10 @@ export const theme = createTheme({
       '#eef3ff', '#dee2f2', '#bdc2de', '#98a0ca', '#7a84ba',
       '#6672b0', '#5c68ac', '#4c5897', '#0795ED', '#011f96',
     ],
+    black: [
+      '#000000', '#000000', '#000000', '#000000', '#000000',
+      '#000000', '#000000', '#000000', '#000000', '#000000',
+    ],
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text
   headings: {

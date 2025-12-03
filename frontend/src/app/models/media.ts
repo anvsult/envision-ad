@@ -9,5 +9,6 @@ export interface Media {
     height: number,
     type: string,
     price: number,
-    passerbys: number
+    passerbys: number,
+    dateAdded: Date
 }

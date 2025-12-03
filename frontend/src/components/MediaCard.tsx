@@ -1,12 +1,11 @@
-import { Paper, Text, Image, Title, Space, Anchor } from "@mantine/core";
+import { Paper, Text, Image, Space, Anchor } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { Media } from "@/app/models/media";
 
 
-
 function MediaCard({image, title, mediaOwner, address, ratio, width, height, type, price, passerbys}: Media) {
     return (
-        <Anchor href="/browse" style={{ textDecoration: 'none', color: 'black' }}>
+        <Anchor href="/browse" color="black.1" underline="never">
             <Paper 
                 shadow="sm"
                 radius="md"
@@ -14,10 +13,10 @@ function MediaCard({image, title, mediaOwner, address, ratio, width, height, typ
                 <Image src={image} alt="Media" radius="md" />
                 <div className={styles.details}>
                     
-                    <Title order={5} >
-                        {title}
-                    </Title>
                     <Text size="md" >
+                        {title}
+                    </Text>
+                    <Text size="sm" >
                         {mediaOwner}
                     </Text>
                     <Text size="xs">
