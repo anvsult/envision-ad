@@ -1,5 +1,4 @@
-import { Paper, Text, Image, Title, Space } from "@mantine/core";
-import React from "react";
+import { Paper, Text, Image, Title, Space, Anchor } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { Media } from "@/app/models/media";
 
@@ -7,9 +6,10 @@ import { Media } from "@/app/models/media";
 
 function MediaCard({image, title, mediaOwner, address, ratio, width, height, type, price, passerbys}: Media) {
     return (
-        <Paper 
-            shadow="sm"
-            radius="md"
+        <Anchor href="/browse" style={{ textDecoration: 'none', color: 'black' }}>
+            <Paper 
+                shadow="sm"
+                radius="md"
             >
                 <Image src={image} alt="Media" radius="md" />
                 <div className={styles.details}>
@@ -44,9 +44,9 @@ function MediaCard({image, title, mediaOwner, address, ratio, width, height, typ
                             ~{passerbys} daily passerbys
                         </Text>
                     </div>
-            
-        </div>
-        </Paper>
+                </div>
+            </Paper>
+        </Anchor>
     )
 }
 

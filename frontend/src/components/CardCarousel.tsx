@@ -1,6 +1,6 @@
 import { Carousel, CarouselSlide } from "@mantine/carousel";
 import classes from "./CardCarousel.module.css"
-import { Space, Title } from "@mantine/core";
+import {  Title } from "@mantine/core";
 import { Media } from "@/app/models/media";
 import MediaCard from "./MediaCard";
 
@@ -15,7 +15,7 @@ function CardCarousel({title, children}: CardCarouselProps) {
             {title ? <Title order={2}>{title}</Title>: <></>}
             <Carousel 
                 classNames={classes}
-                slideSize={{ base: '50%', sm: '33.33333%', md: '25%'}}
+                slideSize={{ base: '50%', sm: '33.33333%', md: '20%'}}
                 slideGap={{ base: 'sm', sm: 'md' }}
                 emblaOptions={{ loop: true, align: 'center' }}
             >
