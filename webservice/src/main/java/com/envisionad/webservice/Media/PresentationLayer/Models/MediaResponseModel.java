@@ -5,10 +5,11 @@ import com.envisionad.webservice.Media.DataAccessLayer.TypeOfDisplay;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 public class MediaResponseModel {
-    private Integer id;
+    private String id;
     private String mediaOwnerName;
     private String title;
     private String resolution;

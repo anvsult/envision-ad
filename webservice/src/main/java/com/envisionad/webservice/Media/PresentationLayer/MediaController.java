@@ -11,10 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/media") // Base URL: http://localhost:8080/api/v1/media
-@CrossOrigin(origins = "http://localhost:3000") // Optional: Allows your frontend (React/Angular) to talk to this API
+@RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
 public class MediaController {
 
     private final MediaService mediaService;
@@ -29,16 +29,13 @@ public class MediaController {
         this.responseMapper = responseMapper;
     }
 
-    // 1. GET ALL MEDIA
     @GetMapping
     public List<MediaResponseModel> getAllMedia() {
-        // Get entities from service -> Convert to Response Models -> Return list
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
 
-    // 2. GET ONE BY ID
     @GetMapping("/{id}")
-    public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable Integer id) {
+    public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
         Media media = mediaService.getMediaById(id);
         if (media == null) {
             return ResponseEntity.notFound().build(); // Returns 404 if not found
@@ -46,38 +43,31 @@ public class MediaController {
         return ResponseEntity.ok(responseMapper.entityToResponseModel(media));
     }
 
-    // 3. CREATE NEW MEDIA
+
     @PostMapping
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
-        // Convert Request -> Entity
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
-        // Save via Service
         Media savedEntity = mediaService.addMedia(entity);
 
-        // Convert Entity -> Response (includes the new ID)
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(responseMapper.entityToResponseModel(savedEntity));
     }
 
-    // 4. UPDATE EXISTING MEDIA
     @PutMapping("/{id}")
-    public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable Integer id,
+    public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
                                                           @RequestBody MediaRequestModel requestModel) {
-        // Convert Request -> Entity
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
-        // IMPORTANT: Ensure the ID is set so JPA knows to update, not create
         entity.setId(id);
 
         Media updatedEntity = mediaService.updateMedia(entity);
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updatedEntity));
     }
 
-    // 5. DELETE MEDIA
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMedia(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteMedia(@PathVariable String id) {
         mediaService.deleteMedia(id);
-        return ResponseEntity.noContent().build(); // Returns 204 No Content (standard for delete)
+        return ResponseEntity.noContent().build();
     }
 }

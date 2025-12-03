@@ -68,9 +68,9 @@ tests:
 
 configuration:
   - changed-files:
-      - any-glob-to-any-file: '.env*'
+      - any-glob-to-any-file: '..env*'
       - any-glob-to-any-file: 'webservice/src/main/resources/**'
-      - any-glob-to-any-file: 'frontend/.env*'
+      - any-glob-to-any-file: 'frontend/..env*'
       - any-glob-to-any-file: '**/*.properties'
 
 security:

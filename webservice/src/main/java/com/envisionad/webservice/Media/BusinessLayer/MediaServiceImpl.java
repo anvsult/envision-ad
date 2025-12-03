@@ -21,7 +21,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Media getMediaById(Integer id) {
+    public Media getMediaById(String id) {
         // Updated to use Integer id
         return mediaRepository.findById(id).orElse(null);
     }
@@ -37,8 +37,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void deleteMedia(Integer id) {
-        // Updated to use Integer id
+    public void deleteMedia(String id) {
         mediaRepository.deleteById(id);
     }
 }

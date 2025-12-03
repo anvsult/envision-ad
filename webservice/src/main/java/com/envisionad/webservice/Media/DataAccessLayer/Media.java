@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -11,9 +13,9 @@ import lombok.NoArgsConstructor;
 public class Media {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "media_id")
-    private Integer id; // Switched to Integer as requested
+    private String id;
 
     @Column(name = "media_owner_name")
     private String mediaOwnerName;
@@ -29,7 +31,7 @@ public class Media {
     private TypeOfDisplay typeOfDisplay;
 
     @Column(name = "aspect_ratio")
-    private String aspectRatio; // Must be String to store "16:9"
+    private String aspectRatio;
 
     @Column(name = "address")
     private String address;
