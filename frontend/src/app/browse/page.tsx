@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 
 function BrowsePage() {
-  const maxCarouselSize = 5
+  const maxCarouselSize = 6
   const medias: Media[] = [
     {mediaId: '1', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #1', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 40, passerbys: 300, dateAdded: new Date("2024-12-20 08:00")},
     {mediaId: '2', image: 'https://raw.githubusercontent.com/mantinedev/mantine/master/.demo/images/bg-1.png', title: 'Champlain College Screen #2', mediaOwner: 'Mohamed Lhamidi', address: '900 Rue Riverside, Saint-Lambert, QC J4P 3P2', ratio: '16:9', width: 1920, height: 1080, type: 'Digital', price: 10, passerbys: 100, dateAdded: new Date("2025-12-21 08:00")},
@@ -29,7 +29,8 @@ function BrowsePage() {
   const sortedByPasserbys = [...medias].sort((a, b) => b.passerbys - a.passerbys).slice(0, maxCarouselSize);
   const sortedByDate = [...medias].sort((a, b) => b.dateAdded.valueOf() - a.dateAdded.valueOf()).slice(0, maxCarouselSize);
   const sortedByPrice = [...medias].sort((a, b) => b.price - a.price).slice(0, maxCarouselSize);
-return (
+
+  return (
   <>
     <NavBar />
     <Container size="xl" py={20} px={10}>
