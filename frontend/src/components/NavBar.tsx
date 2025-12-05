@@ -41,6 +41,11 @@ export function NavBar() {
                 Home
               </Button>
             </Link>
+            <Link href="/Dashboard" className={classes.navLink}>
+              <Button variant="subtle" c="gray.8" className={classes.navButton}>
+                Dashboard
+              </Button>
+            </Link>
             <Link href="/browse" className={classes.navLink}>
               <Button variant="subtle" c="gray.8" className={classes.navButton}>
                 Browse

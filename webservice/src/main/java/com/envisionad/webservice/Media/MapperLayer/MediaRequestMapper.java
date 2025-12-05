@@ -14,9 +14,13 @@ public class MediaRequestMapper {
         media.setResolution(requestModel.getResolution());
         media.setTypeOfDisplay(requestModel.getTypeOfDisplay());
         media.setAspectRatio(requestModel.getAspectRatio());
+        media.setLoopDuration(requestModel.getLoopDuration());
         media.setAddress(requestModel.getAddress());
         media.setSchedule(requestModel.getSchedule());
         media.setStatus(requestModel.getStatus());
+        media.setWidth(requestModel.getWidth());
+        media.setHeight(requestModel.getHeight());
+        media.setPrice(requestModel.getPrice());
         return media;
     }
 }

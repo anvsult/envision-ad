@@ -5,17 +5,24 @@ import com.envisionad.webservice.Media.DataAccessLayer.TypeOfDisplay;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 
 @Data
 @NoArgsConstructor
 public class MediaResponseModel {
     private String id;
-    private String mediaOwnerName;
     private String title;
-    private String resolution;
-    private TypeOfDisplay typeOfDisplay;
-    private String aspectRatio;
+    private String mediaOwnerName;
     private String address;
+    private TypeOfDisplay typeOfDisplay;
+    private Integer loopDuration;
+    private String resolution;
+    private String aspectRatio;
+    private Double width;
+    private Double height;
+    private BigDecimal price;
     private String schedule;
     private Status status;
+    private String imageUrl;
 }

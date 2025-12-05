@@ -22,7 +22,6 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public Media getMediaById(String id) {
-        // Updated to use Integer id
         return mediaRepository.findById(id).orElse(null);
     }
 
