@@ -1,0 +1,170 @@
+.pageRoot {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #fff;
+}
+
+.container {
+  display: flex;
+  max-width: 1200px;
+  margin: 24px auto;
+  gap: 24px;
+  width: calc(100% - 48px);
+}
+
+.sidebar {
+  width: 220px;
+  border-right: 1px solid #eee;
+  padding-right: 16px;
+}
+
+.sideList {
+  list-style: none;
+  padding: 12px 0;
+  margin: 0;
+}
+
+.sideItem {
+  padding: 14px 12px;
+  color: #333;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.active {
+  background: #f3f3f3;
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  background: #2f80ed;
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.main {
+  flex: 1;
+  padding-left: 24px;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 12px;
+}
+
+.addButton {
+  background: #2fa1f6;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.tableWrap {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e6e6e6;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-weight: 600;
+  font-size: 13px;
+  color: #666;
+  border-bottom: 1px solid #eee;
+}
+
+.table tbody td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f2f2f2;
+  vertical-align: middle;
+  font-size: 14px;
+  color: #333;
+}
+
+.row:hover {
+  background: #fafafa;
+}
+
+.thumb {
+  width: 80px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+}
+
+.statusActive {
+  background: #e6f9ee;
+  color: #2a8f4a;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.statusInactive {
+  background: #f4f4f4;
+  color: #7a7a7a;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.actions {
+  text-align: right;
+}
+
+.iconBtn {
+  margin-left: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 0 40px;
+}
+
+.pageBtn {
+  border: none;
+  background: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06);
+}
+
+.current {
+  background: #222;
+  color: #fff !important;
+}
+
+.ellipsis {
+  align-self: center;
+  color: #888;
+  padding: 0 8px;
+}
