@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { addMedia } from "../../services/MediaService";
 import { NavBar } from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import styles from "./MediaOwnerPage.module.css";
@@ -13,21 +14,11 @@ import {
 	ScrollArea,
 } from "@mantine/core";
 
-const initialData = Array.from({ length: 6 }).map((_, i) => ({
-	id: i + 1,
-	name: `Media ${i + 1} name`,
-	image: `https://picsum.photos/seed/media${i + 1}/120/80`,
-	adsDisplayed: 5,
-	pending: 3,
-	status: i % 3 === 0 ? "Inactive" : "Active",
-	timeUntil: "5 days",
-	price: "$50 per week",
-}));
 
 export default function MediaOwnerPage() {
 	const [opened, setOpened] = React.useState(false);
 	const [category, setCategory] = React.useState<string | null>(null);
-	const [rows, setRows] = React.useState(initialData);
+	const [rows, setRows] = React.useState<any[]>([]);
 
 	// form state
 	const [mediaName, setMediaName] = React.useState("");
@@ -120,22 +111,11 @@ export default function MediaOwnerPage() {
 		};
 
 		try {
-			const res = await fetch("http://localhost:8080/api/v1/media", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			});
-
-			if (!res.ok) {
-				const text = await res.text();
-				throw new Error(text || "Failed to create media");
-			}
-
-			const created = await res.json();
+			const created = await addMedia(payload);
 			const newRow = {
 				id: created.id,
 				name: mediaName,
-				image: created.imageUrl ?? "/images/visualimpact.png",
+				image: created.imageUrl ?? null,
 				adsDisplayed: 0,
 				pending: 0,
 				status: created.status ?? "Pending Admin Approval",
@@ -162,7 +142,7 @@ export default function MediaOwnerPage() {
 						<li className={`${styles.sideItem} ${styles.active}`}>Media</li>
 						<li className={styles.sideItem}>Displayed ads</li>
 						<li className={styles.sideItem}>
-							Ad requests <span className={styles.badge}>6</span>
+							Ad requests <span className={styles.badge}>{rows.length}</span>
 						</li>
 						<li className={styles.sideItem}>Transactions</li>
 					</ul>
@@ -308,7 +288,11 @@ export default function MediaOwnerPage() {
 								{rows.map((row) => (
 									<tr key={row.id} className={styles.row}>
 										<td>
-											<img src={row.image} alt={row.name} className={styles.thumb} />
+											{row.image ? (
+												<img src={row.image} alt={row.name} className={styles.thumb} />
+											) : (
+												<div className={styles.thumb} />
+											)}
 										</td>
 										<td>{row.name}</td>
 										<td>{`${row.adsDisplayed} ads currently displayed`}</td>
