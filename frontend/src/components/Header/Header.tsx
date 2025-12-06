@@ -87,16 +87,7 @@ export function Header() {
           {/* Auth Buttons */}
           <Group visibleFrom="md">
             <LanguagePicker />
-            <Link href="../auth/login?screen_hint=signup" className={classes.navLink}>
-              <Button variant="outline" color="blue.6" radius="xl">
-                {t("register")}
-              </Button>
-            </Link>
-            <Link href="../auth/login" className={classes.navLink}>
-              <Button variant="filled" color="blue.6" radius="xl">
-                {t("signIn")}
-              </Button>
-            </Link>
+            {authButtons}
           </Group>
 
           <Burger
