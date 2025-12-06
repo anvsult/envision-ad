@@ -24,5 +24,9 @@ export const routing = defineRouting({
       'en': '/about',
       'fr': '/a-propos'
     },
+    '/dashboard': {
+        'en': '/dashboard',
+        'fr': '/tableau-de-bord'
+    }
   }
 });
