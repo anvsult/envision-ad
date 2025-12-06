@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "title": "Envision AD - Affordable Ads, Unforgettable Impact",
+    "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your business."
+  },
+  "nav": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "browse": "Browse",
+    "register": "Register",
+    "signIn": "Sign In",
+    "platformName": "Envision Ad",
+    "images": {
+        "envisionAdLogo": {
+          "alt": "Envision Ad Logo"
+        }
+    }
+  },
+  "homepage": {
+    "heroTitlePart1": "Affordable ads.",
+    "heroTitlePart2": "Unforgettable impact.",
+    "heroDescription": "Discover affordable, high-impact advertising opportunities in your city. Connect with local audiences through unique ad spaces and make your brand unforgettable. Our platform makes it easy to browse, book, and manage ad placements that fit your budget and goals.",
+    "ctaTitle": "Find Ad Spaces Now",
+    "ctaBrowse": "Browse",
+    "images": {
+        "backgroundImage": {
+            "alt": "Eye background image, representing visual impact"
+          }
+      }
+  },
+  "partners": {
+    "title": "Partners",
+    "visualImpact": {
+      "name": "Visual Impact",
+      "alt": "Visual Impact Logo"
+    },
+    "champlainCollege": {
+      "name": "Champlain College Saint-Lambert",
+      "alt": "Champlain College Logo"
+    },
+    "salonLola": {
+      "name": "Salon Lola",
+      "alt": "Salon Lola Logo"
+    },
+    "bazGym": {
+      "name": "Baz Gym",
+      "alt": "Baz Gym Logo"
+    },
+    "entrepotEnFolie": {
+      "name": "Entrepôt En Folie",
+      "alt": "Entrepot en Folie Logo"
+    },
+    "infiniteBarbershop": {
+      "name": "Infinite Barbershop",
+      "alt": "Infinite Barbershop Logo"
+    },
+    "liquidationMarie": {
+      "name": "Liquidation Marie",
+      "alt": "Liquidation Marie Logo"
+    },
+    "pingMo": {
+      "name": "Ping Mo",
+      "alt": "Ping Mo Logo"
+    }
+  },
+  "footer": {
+    "contactUs": "Contact Us",
+    "email": "Email: mlhamidi@visualsimpact.com",
+    "phone": "Phone: +1 (450) 626-0540",
+    "followUs": "Follow Us",
+    "twitter": "Twitter",
+    "facebook": "Facebook",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "copyright": "© {year} Envision AD. All rights reserved."
+  }
+}
