@@ -92,7 +92,7 @@ security:
           - 'webservice/src/main/java/**/configuration/security/**'
 
 feature:
-  - head-branch: ['^feat', '^feature', 'feat/.*']
+  - head-branch: ['^feat', '^feature', '^feat/']
 
 bug:
   - head-branch: ['^bug', '^fix', '^hotfix']
