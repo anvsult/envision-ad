@@ -2,6 +2,7 @@ package com.envisionad.webservice.Media.PresentationLayer.Models;
 
 import com.envisionad.webservice.Media.DataAccessLayer.Status;
 import com.envisionad.webservice.Media.DataAccessLayer.TypeOfDisplay;
+import com.envisionad.webservice.Media.PresentationLayer.Models.ScheduleModel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +23,7 @@ public class MediaResponseModel {
     private Double width;
     private Double height;
     private BigDecimal price;
-    private String schedule;
+    private ScheduleModel schedule;
     private Status status;
     private String imageUrl;
 }

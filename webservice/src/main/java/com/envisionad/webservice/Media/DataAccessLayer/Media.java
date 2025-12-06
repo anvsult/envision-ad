@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
-
 import java.math.BigDecimal;
 import java.sql.Types;
-import java.util.UUID;
 
 @Entity
 @Data

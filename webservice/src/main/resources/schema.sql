@@ -12,7 +12,7 @@ CREATE TABLE media (
         width DOUBLE PRECISION,
         height DOUBLE PRECISION,
         price DECIMAL(10,2),
-        schedule VARCHAR(255),
+        schedule JSONB,
         status VARCHAR(50),
         image_file_name VARCHAR(512),
         image_content_type VARCHAR(100),

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { addMedia } from "../../services/MediaService";
+import { addMedia, getAllMedia } from "../../services/MediaService";
 import { NavBar } from "@/components/NavBar";
 import Footer from "@/components/Footer";
 import styles from "./MediaOwnerPage.module.css";
@@ -19,6 +19,7 @@ export default function MediaOwnerPage() {
 	const [opened, setOpened] = React.useState(false);
 	const [category, setCategory] = React.useState<string | null>(null);
 	const [rows, setRows] = React.useState<any[]>([]);
+	const [loading, setLoading] = React.useState(false);
 
 	// form state
 	const [mediaName, setMediaName] = React.useState("");
@@ -52,6 +53,16 @@ export default function MediaOwnerPage() {
 		Saturday: { start: "00:00", end: "00:00" },
 		Sunday: { start: "00:00", end: "00:00" },
 	}));
+
+	function updateDayTime(day: string, part: "start" | "end", value: string) {
+		setDayTimes((prev) => ({
+			...prev,
+			[day]: {
+				...prev[day],
+				[part]: value,
+			},
+		}));
+	}
 
 	const [selectedMonths, setSelectedMonths] = React.useState<Record<string, boolean>>(() => {
 		const months = [
@@ -91,9 +102,58 @@ export default function MediaOwnerPage() {
 		});
 	}
 
+	// Load all media from the backend when the component mounts
+	React.useEffect(() => {
+		let mounted = true;
+		setLoading(true);
+		getAllMedia()
+			.then((data) => {
+				if (!mounted) return;
+				const mapped = (data || []).map((m) => ({
+					id: m.id,
+					name: m.title,
+					image: m.imageUrl ?? null,
+					adsDisplayed: 0,
+					pending: 0,
+					status: m.status ?? "Pending Admin Approval",
+					timeUntil: "-",
+					price: m.price ? (typeof m.price === "number" ? `$${m.price}` : String(m.price)) : "$0",
+				}));
+				setRows(mapped);
+			})
+			.catch((err) => {
+				console.error("Failed to load media:", err);
+			})
+			.finally(() => {
+				if (mounted) setLoading(false);
+			});
+
+		return () => {
+			mounted = false;
+		};
+	}, []);
+
 	async function handleSave() {
 		// minimal validation
 		if (!mediaName) return alert("Please enter a media name");
+
+		// build schedule object from selected months and per-day times
+		const selectedMonthsArray = Object.keys(selectedMonths).filter((m) => !!selectedMonths[m]);
+		const weekOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+		const weeklySchedule = weekOrder.map((d) => {
+			const isActive = !!selectedDays[d];
+			return {
+				dayOfWeek: d,
+				isActive,
+				startTime: isActive ? (dayTimes[d]?.start ?? null) : null,
+				endTime: isActive ? (dayTimes[d]?.end ?? null) : null,
+			};
+		});
+
+		const scheduleObj = {
+			selectedMonths: selectedMonthsArray,
+			weeklySchedule,
+		};
 
 		const payload = {
 			title: mediaName,
@@ -105,7 +165,7 @@ export default function MediaOwnerPage() {
 			width: widthCm ? Number(widthCm) : null,
 			height: heightCm ? Number(heightCm) : null,
 			price: priceInput ? priceInput : null,
-			schedule: null,
+			schedule: scheduleObj,
 			status: null,
 			typeOfDisplay: displayType,
 		};
@@ -177,19 +237,19 @@ export default function MediaOwnerPage() {
 							<div style={{ height: 12 }} />
 									<Select
 										label="Type of display"
-										data={[{ value: "digital", label: "Digital" }, { value: "poster", label: "Poster" }]}
+										data={[{ value: "DIGITAL", label: "Digital" }, { value: "POSTER", label: "Poster" }]}
 										placeholder="Select type"
 										value={displayType ?? undefined}
 										onChange={(v) => {
-											const val = typeof v === "string" ? v.toLowerCase() : v as string | null;
+											const val = typeof v === "string" ? v : (v as string | null);
 											setDisplayType(val);
 											setCategory(val);
-											if (val === "poster") {
+											if (val === "POSTER") {
 												// clear digital-only fields
 												setResolution("");
 												setAspectRatio("");
 											}
-											if (val === "digital") {
+											if (val === "DIGITAL") {
 												// clear poster-only fields
 												setWidthCm("");
 												setHeightCm("");
@@ -197,10 +257,10 @@ export default function MediaOwnerPage() {
 										}}
 									/>
 							<div style={{ height: 12 }} />
-							{(displayType ?? "")?.toString().toLowerCase() === "digital" && (
+							{displayType?.toLowerCase() ===  "digital" && (
 								<TextInput label="Loop duration (sec)" placeholder="e.g. 30" value={loopDuration} onChange={(e) => setLoopDuration(e.currentTarget.value)} />
 							)}
-							{(displayType ?? "")?.toString().toLowerCase() === "digital" && (
+							{displayType?.toLowerCase() === "digital" && (
 								<>
 									<div style={{ height: 12 }} />
 									<TextInput label="Resolution (px)" placeholder="Ex. 1920x1080" value={resolution} onChange={(e) => setResolution(e.currentTarget.value)} required />
@@ -210,7 +270,7 @@ export default function MediaOwnerPage() {
 								</>
 							)}
 
-							{(displayType ?? "")?.toString().toLowerCase() === "poster" && (
+							{displayType?.toLowerCase() === "poster" && (
 								<>
 									<div style={{ height: 12 }} />
 									<div style={{ display: "flex", gap: 8 }}>
@@ -254,8 +314,20 @@ export default function MediaOwnerPage() {
 													setSelectedDays((prev) => ({ ...prev, [d]: (e.target as HTMLInputElement).checked }))
 												}
 											/>
-											<TextInput placeholder={selectedDays[d] ? "00 : 00" : "Closed"} disabled={!selectedDays[d]} />
-											<TextInput placeholder={selectedDays[d] ? "00 : 00" : "Closed"} disabled={!selectedDays[d]} />
+											<TextInput
+												placeholder={selectedDays[d] ? "00:00" : "Closed"}
+												disabled={!selectedDays[d]}
+												type="time"
+												value={dayTimes[d]?.start ?? ""}
+												onChange={(e) => updateDayTime(d, "start", e.currentTarget.value)}
+											/>
+											<TextInput
+												placeholder={selectedDays[d] ? "00:00" : "Closed"}
+												disabled={!selectedDays[d]}
+												type="time"
+												value={dayTimes[d]?.end ?? ""}
+												onChange={(e) => updateDayTime(d, "end", e.currentTarget.value)}
+											/>
 										</React.Fragment>
 									))}
 								</div>
