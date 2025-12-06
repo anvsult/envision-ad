@@ -1,0 +1,80 @@
+{
+  "metadata": {
+    "title": "Envision AD - Publicités Abordables, Impact Inoubliable",
+    "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre entreprise."
+  },
+  "nav": {
+    "home": "Accueil",
+    "dashboard": "Tableau",
+    "browse": "Parcourir",
+    "register": "S'inscrire",
+    "signIn": "Se connecter",
+    "platformName": "Envision Ad",
+    "images": {
+        "envisionAdLogo": {
+          "alt": "Logo de Envision Ad"
+        }
+    }
+  },
+  "homepage": {
+    "heroTitlePart1": "Des publicités abordables.",
+    "heroTitlePart2": "Un impact inoubliable.",
+    "heroDescription": "Découvrez des opportunités publicitaires abordables et à fort impact dans votre ville. Connectez-vous avec des audiences locales grâce à des espaces publicitaires uniques et rendez votre marque inoubliable. Notre plateforme facilite la navigation, la réservation et la gestion des placements publicitaires qui correspondent à votre budget et vos objectifs.",
+    "ctaTitle": "Trouvez des espaces publicitaires maintenant",
+    "ctaBrowse": "Parcourir",
+    "images": {
+        "backgroundImage": {
+            "alt": "Image d'un oeuil, représentant Impact Visuel"
+          }
+      }
+  },
+  "partners": {
+    "title": "Partenaires",
+    "visualImpact": {
+      "name": "Visual Impact",
+      "alt": "Logo de Visual Impact"
+    },
+    "champlainCollege": {
+      "name": "Collège Champlain Saint-Lambert",
+      "alt": "Logo du Collège Champlain"
+    },
+    "salonLola": {
+      "name": "Salon Lola",
+      "alt": "Logo de Salon Lola"
+    },
+    "bazGym": {
+      "name": "Baz Gym",
+      "alt": "Logo de Baz Gym"
+    },
+    "entrepotEnFolie": {
+      "name": "Entrepôt En Folie",
+      "alt": "Logo d'Entrepôt en Folie"
+    },
+    "infiniteBarbershop": {
+      "name": "Infinite Barbershop",
+      "alt": "Logo d'Infinite Barbershop"
+    },
+    "liquidationMarie": {
+      "name": "Liquidation Marie",
+      "alt": "Logo de Liquidation Marie"
+    },
+    "pingMo": {
+      "name": "Ping Mo",
+      "alt": "Logo de Ping Mo"
+    }
+  },
+  "footer": {
+    "contactUs": "Contactez-nous",
+    "email": "Courriel : mlhamidi@visualsimpact.com",
+    "phone": "Téléphone : +1 (450) 626-0540",
+    "followUs": "Suivez-nous",
+    "twitter": "Twitter",
+    "facebook": "Facebook",
+    "linkedin": "LinkedIn",
+    "instagram": "Instagram",
+    "legal": "Mentions légales",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "copyright": "© {year} Envision AD. Tous droits réservés."
+  }
+}
