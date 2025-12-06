@@ -2,7 +2,7 @@
 
 import { Container, Stack, Title, Text, Button, Box } from "@mantine/core";
 import Link from "next/link";
-import { NavBar } from "@/components/NavBar/NavBar";
+import { Header } from "@/components/NavBar/Header";
 import { Partners } from "@/components/Partners/Partners";
 import classes from "../page.module.css";
 import Image from "next/image";
@@ -13,14 +13,17 @@ export default function HomePage() {
 
   return (
     <>
-      <NavBar />
+      <Header />
 
       {/* Hero Section */}
       <Box className={classes.hero}>
         {/* Background Image */}
-        <Box style={{ position: "absolute", inset: 0, zIndex: 0 }}>
+        <Box
+          style={{ position: "absolute", inset: 0, zIndex: 0 }}
+          visibleFrom="sm"
+        >
           <Image
-            src="/images/homepage-eye-image.png"
+            src="/images/image-homepage-eye.png"
             alt="Eye background image, representing visual impact"
             fill
             style={{ objectFit: "cover" }}
@@ -29,11 +32,12 @@ export default function HomePage() {
         </Box>
 
         {/* Content on top of background */}
-        {/* TODO Make these margin & padding values responsive instead of hard-coded */}
         <Container
-          size="xl"
-          ml={{ base: 20, sm: 40, md: 80, lg: 160 }}
+        // This adjusts the size of the text on the hero page to be responsive
+          size="lg"
+          ml={{ base: 20, sm: 20, md: 60, lg: 80 }}
           py={{ base: 40, sm: 60, md: 80 }}
+          pr={{ base: 30, sm: 700, md: 600}}
           style={{ position: "relative", zIndex: 1 }}
         >
           <Stack gap="xl">
