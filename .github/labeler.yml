@@ -1,31 +1,36 @@
 frontend:
   - changed-files:
-      - any-glob-to-any-file: 'frontend/**'
-      - any-glob-to-any-file: 'frontend/public/**'
+      - any-glob-to-any-file:
+          - 'frontend/**'
+          - 'frontend/public/**'
 
 nextjs:
   - changed-files:
-      - any-glob-to-any-file: 'frontend/next.config.*'
-      - any-glob-to-any-file: 'frontend/src/**'
+      - any-glob-to-any-file:
+          - 'frontend/next.config.*'
+          - 'frontend/src/**'
 
 typescript:
   - changed-files:
-      - any-glob-to-any-file: 'frontend/**/*.ts'
-      - any-glob-to-any-file: 'frontend/**/*.tsx'
-      - any-glob-to-any-file: 'frontend/tsconfig.json'
+      - any-glob-to-any-file:
+          - 'frontend/**/*.ts'
+          - 'frontend/**/*.tsx'
+          - 'frontend/tsconfig.json'
 
 backend:
   - changed-files:
-      - any-glob-to-any-file: 'webservice/**'
-      - any-glob-to-any-file: 'build.gradle'
-      - any-glob-to-any-file: 'gradle/**'
-      - any-glob-to-any-file: 'gradlew'
-      - any-glob-to-any-file: 'gradlew.bat'
+      - any-glob-to-any-file:
+          - 'webservice/**'
+          - 'build.gradle'
+          - 'gradle/**'
+          - 'gradlew'
+          - 'gradlew.bat'
 
 spring:
   - changed-files:
-      - any-glob-to-any-file: 'webservice/src/main/java/**/com/**/webservice/**'
-      - any-glob-to-any-file: 'webservice/src/main/java/**/com/**/envisionad/**'
+      - any-glob-to-any-file:
+          - 'webservice/src/main/java/**/com/**/webservice/**'
+          - 'webservice/src/main/java/**/com/**/envisionad/**'
 
 java:
   - changed-files:
@@ -33,61 +38,70 @@ java:
 
 docs:
   - changed-files:
-      - any-glob-to-any-file: 'docs/**'
-      - any-glob-to-any-file: 'README.md'
-      - any-glob-to-any-file: 'pull_request_template.md'
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - 'README.md'
+          - 'pull_request_template.md'
 
 diagrams:
   - changed-files:
-      - any-glob-to-any-file: '**/*.puml'
-      - any-glob-to-any-file: 'docs/assets/**'
+      - any-glob-to-any-file:
+          - '**/*.puml'
+          - 'docs/assets/**'
 
 ci:
   - changed-files:
-      - any-glob-to-any-file: '.github/workflows/**'
-      - any-glob-to-any-file: '.github/actions/**'
+      - any-glob-to-any-file:
+          - '.github/workflows/**'
+          - '.github/actions/**'
 
 infra:
   - changed-files:
-      - any-glob-to-any-file: '.github/labeler.yml'
-      - any-glob-to-any-file: '.github/*.yml'
-      - any-glob-to-any-file: '.github/*.yaml'
+      - any-glob-to-any-file:
+          - '.github/labeler.yml'
+          - '.github/*.yml'
+          - '.github/*.yaml'
 
 docker:
   - changed-files:
-      - any-glob-to-any-file: 'docker-compose.yml'
-      - any-glob-to-any-file: 'Dockerfile'
-      - any-glob-to-any-file: 'frontend/Dockerfile'
-      - any-glob-to-any-file: 'webservice/Dockerfile'
+      - any-glob-to-any-file:
+          - 'docker-compose.yml'
+          - 'Dockerfile'
+          - 'frontend/Dockerfile'
+          - 'webservice/Dockerfile'
 
 tests:
   - changed-files:
-      - any-glob-to-any-file: 'webservice/src/test/**'
-      - any-glob-to-any-file: 'frontend/**/__tests__/**'
-      - any-glob-to-any-file: '**/*_test.*'
+      - any-glob-to-any-file:
+          - 'webservice/src/test/**'
+          - 'frontend/**/__tests__/**'
+          - '**/*_test.*'
 
 configuration:
   - changed-files:
-      - any-glob-to-any-file: '.env*'
-      - any-glob-to-any-file: 'webservice/src/main/resources/**'
-      - any-glob-to-any-file: 'frontend/.env*'
-      - any-glob-to-any-file: '**/*.properties'
+      - any-glob-to-any-file:
+          - '.env*'
+          - 'webservice/src/main/resources/**'
+          - 'frontend/.env*'
+          - '**/*.properties'
 
 security:
   - changed-files:
-      - any-glob-to-any-file: 'webservice/src/main/java/**/security/**'
-      - any-glob-to-any-file: 'webservice/src/main/java/**/configuration/security/**'
+      - any-glob-to-any-file:
+          - 'webservice/src/main/java/**/security/**'
+          - 'webservice/src/main/java/**/configuration/security/**'
 
 feature:
-  - head-branch: ['^feat', '^feature', '^feat/']
+  - head-branch: ['^feat', '^feature', 'feat/.*']
 
 bug:
   - head-branch: ['^bug', '^fix', '^hotfix']
 
 chore:
   - changed-files:
-      - any-glob-to-any-file: '.idea/**'
-      - any-glob-to-any-file: '**/*.iml'
+      - any-glob-to-any-file:
+          - '.idea/**'
+          - '**/*.iml'
 
 assets:
   - changed-files:
