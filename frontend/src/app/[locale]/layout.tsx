@@ -9,14 +9,21 @@ import { josefinSans, lato, theme } from "../../theme";
 import type { ReactNode } from "react";
 import Footer from "../../components/Footer/Footer";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 
-// This will be used for SEO (Search Engine Optimization)
-export const metadata = {
-  title: "Envision AD - Affordable Ads, Unforgettable Impact",
-  description:
-    "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your business.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function RootLayout({
   children,

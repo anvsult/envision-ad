@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import styles from "./Footer.module.css";
 import { useTranslations } from "next-intl";
@@ -16,7 +14,6 @@ export default function Footer() {
             <ul className={styles.list}>
               <li>{t("email")}</li>
               <li>{t("phone")}</li>
-              <li>{t("address")}</li>
             </ul>
           </div>
 
@@ -26,25 +23,7 @@ export default function Footer() {
             <ul className={styles.list}>
               <li>
                 <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("twitter")}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://facebook.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {t("facebook")}
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/company/visual-impact-lhamidi/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -53,7 +32,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/impactvisuel_/"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -63,8 +42,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Links */}
-          <div className={styles.section}>
+          {/* Potentially to be implemented later */}
+          {/* Legal Links */}
+          {/* <div className={styles.section}>
             <h3 className={styles.heading}>{t("legal")}</h3>
             <ul className={styles.list}>
               <li>
@@ -74,8 +54,8 @@ export default function Footer() {
                 <a href="/privacy">{t("privacy")}</a>
               </li>
             </ul>
-          </div>
-        </div>
+          </div> */}
+        </div> 
 
         {/* Copyright */}
         <div className={styles.copyright}>

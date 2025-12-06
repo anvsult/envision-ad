@@ -2,7 +2,7 @@
 
 import { Container, Stack, Title, Text, Button, Box } from "@mantine/core";
 import Link from "next/link";
-import { Header } from "@/components/NavBar/Header";
+import { Header } from "@/components/Header/Header";
 import { Partners } from "@/components/Partners/Partners";
 import classes from "../page.module.css";
 import Image from "next/image";
@@ -23,8 +23,8 @@ export default function HomePage() {
           visibleFrom="sm"
         >
           <Image
-            src="/images/image-homepage-eye.png"
-            alt="Eye background image, representing visual impact"
+            src="/images/image-homepage-background.png"
+            alt={t("images.backgroundImage.alt")}
             fill
             style={{ objectFit: "cover" }}
             priority
@@ -33,11 +33,11 @@ export default function HomePage() {
 
         {/* Content on top of background */}
         <Container
-        // This adjusts the size of the text on the hero page to be responsive
+          // This adjusts the size of the text on the hero page to be responsive
           size="lg"
           ml={{ base: 20, sm: 20, md: 60, lg: 80 }}
           py={{ base: 40, sm: 60, md: 80 }}
-          pr={{ base: 30, sm: 700, md: 600}}
+          pr={{ base: 30, sm: 700, md: 600 }}
           style={{ position: "relative", zIndex: 1 }}
         >
           <Stack gap="xl">
@@ -74,9 +74,9 @@ export default function HomePage() {
       </Box>
 
       {/* Partners Section */}
-      <Container size="xl" py={40}>
+      <Box py={40}>
         <Partners />
-      </Container>
+      </Box>
     </>
   );
 }
