@@ -1,6 +1,7 @@
+"use client"
+
 import {
   Group,
-  Container,
   Button,
   Text,
   Box,
@@ -9,38 +10,34 @@ import {
   Divider,
   Burger,
 } from "@mantine/core";
-import { useState } from "react";
-import Link from "next/link";
 import classes from "./Header.module.css";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
-
-const links = [
-  { link: "/home", label: "Home" },
-  { link: "/dashboard", label: "Dashboard" },
-  { link: "/browse", label: "Browse" },
-];
+import { LanguagePicker } from "./LanguagePicker";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export function Header() {
   const t = useTranslations("nav");
-  const [active, setActive] = useState(links[0].link);
+  const pathname = usePathname();
+  const links = [
+    { link: "/", label: t("home") },
+    { link: "/dashboard", label: t("dashboard") },
+    { link: "/browse", label: t("browse") },
+  ];
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
   const items = links.map((link) => (
-    <a
+    <Link
       key={link.label}
       href={link.link}
       className={classes.link}
-      data-active={active === link.link || undefined}
-      onClick={(event) => {
-        event.preventDefault();
-        setActive(link.link);
-      }}
+      data-active={pathname === link.link || undefined}
+      onClick={closeDrawer}
     >
       {link.label}
-    </a>
+    </Link>
   ));
 
   const authButtons = (
@@ -68,7 +65,7 @@ export function Header() {
               <div className={classes.logoImageWrapper}>
                 <Image
                   src="/images/logo-envision-ad.png"
-                  alt="Visual Impact Logo"
+                  alt={t("images.envisionAdLogo.alt")}
                   width={50}
                   height={50}
                   style={{ objectFit: "contain" }}
@@ -76,7 +73,7 @@ export function Header() {
                 />
               </div>
               <Text size="lg" fw={700} c="blue.6" className={classes.logoText}>
-                Envision Ad
+                {t("platformName")}
               </Text>
             </Group>
           </Link>
@@ -88,6 +85,7 @@ export function Header() {
 
           {/* Auth Buttons */}
           <Group visibleFrom="md">
+            <LanguagePicker />
             <Link href="/register" className={classes.navLink}>
               <Button variant="outline" color="blue.6" radius="xl">
                 {t("register")}
@@ -124,6 +122,10 @@ export function Header() {
             {items}
             <Divider my="sm" />
           </Box>
+
+          <Group justify="center" pb="md" px="md">
+            <LanguagePicker />
+          </Group>
 
           <Group justify="center" grow pb="xl" px="md">
             {authButtons}
