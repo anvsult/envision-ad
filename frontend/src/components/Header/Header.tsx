@@ -44,13 +44,13 @@ export function Header() {
     <>
       <Link href="../auth/login?screen_hint=signup" className={classes.navLink}>
         <Button variant="outline" color="blue.6" radius="xl">
-          Register
+          {t("register")}
         </Button>
       </Link>
 
       <Link href="../auth/login" className={classes.navLink}>
         <Button variant="filled" color="blue.8" radius="xl">
-          Sign In
+          {t("signIn")}
         </Button>
       </Link>
     </>
