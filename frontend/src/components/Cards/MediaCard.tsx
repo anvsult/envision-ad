@@ -1,11 +1,27 @@
-import { Paper, Text, Image, Space, Anchor, Badge } from "@mantine/core";
+import { Paper, Text, Image, Space, Anchor, AspectRatio } from "@mantine/core";
 import styles from "./MediaCard.module.css";
-import { Media } from "@/app/models/media";
 import { useTranslations } from "next-intl";
 import StatusBadge from "../StatusBadge/StatusBadge";
 import { MediaStatuses } from "@/app/models/mediaStatuses";
 
-function MediaCard({image, title, mediaOwner, address, ratio, width, height, type, price, impressions}: Media) {
+export interface MediaCardProps {
+    id?: string;
+    title: string;
+    mediaOwnerName: string;
+    address: string;
+    resolution: string;
+    aspectRatio: string;
+    loopDuration: number | null;
+    width: number | null;
+    height: number | null;
+    price: number ;
+    typeOfDisplay: string;
+    imageUrl?: string | null;
+    // impressions: number,
+    // dateAdded: Date
+}
+
+function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, width, height, typeOfDisplay, price}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
@@ -15,30 +31,34 @@ function MediaCard({image, title, mediaOwner, address, ratio, width, height, typ
                 radius="md"
                 className={styles.paper}
             >   
-                <Paper className={styles.imagecontainer} radius="md" >
-                    <StatusBadge status={MediaStatuses.DISPLAYING}/>
-                    <Image src={image} alt="Media"  className={styles.image}/>
-                </Paper>
+                <AspectRatio ratio={16/9}>
+                    <Paper className={styles.imagecontainer} radius="md" >
+                        <StatusBadge status={MediaStatuses.DISPLAYING}/>
+                        <AspectRatio ratio={16/9}>
+                            <Image src={imageUrl} alt="Media"  className={styles.image}/>
+                        </AspectRatio>
+                    </Paper>
+                </AspectRatio>
                 <div className={styles.details} >
                     <Text size="md" lineClamp={3}>
                         {title}
                     </Text>
                     <Text size="sm" lineClamp={1}>
-                        {mediaOwner}
+                        {mediaOwnerName}
                     </Text>
                     <Text size="md" lineClamp={1}>
                             {t('perWeek', {price: price})}
                     </Text>
-                    <Text size="xs" lineClamp={1} >
+                    {/* <Text size="xs" lineClamp={1} >
                         {t('dailyImpressions', {impressions: impressions})}
-                    </Text>
+                    </Text> */}
                     <Text size="xs" lineClamp={1}>
                         {address}
                     </Text>
                     
                     <div className={styles.info}>    
                         <Text size="xs" span truncate>
-                            {ratio}
+                            {aspectRatio}
                         </Text>
                         <Space w="lg" />
                         <Text size="xs" span truncate>
@@ -46,7 +66,7 @@ function MediaCard({image, title, mediaOwner, address, ratio, width, height, typ
                         </Text>
                         <Space w="lg" />
                         <Text size="xs" span truncate>
-                            {type}
+                            {typeOfDisplay}
                         </Text>
                         
                         
