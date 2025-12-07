@@ -17,5 +17,4 @@ CREATE TABLE media (
         image_file_name VARCHAR(512),
         image_content_type VARCHAR(100),
         image_data bytea
-
 );
