@@ -1,7 +1,9 @@
-import { Paper, Text, Image, Space, Anchor } from "@mantine/core";
+import { Paper, Text, Image, Space, Anchor, Badge } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { Media } from "@/app/models/media";
 import { useTranslations } from "next-intl";
+import StatusBadge from "../StatusBadge/StatusBadge";
+import { MediaStatuses } from "@/app/models/mediaStatuses";
 
 function MediaCard({image, title, mediaOwner, address, ratio, width, height, type, price, impressions}: Media) {
     const t = useTranslations("mediacard");
@@ -14,6 +16,7 @@ function MediaCard({image, title, mediaOwner, address, ratio, width, height, typ
                 className={styles.paper}
             >   
                 <Paper className={styles.imagecontainer} radius="md" >
+                    <StatusBadge status={MediaStatuses.DISPLAYING}/>
                     <Image src={image} alt="Media"  className={styles.image}/>
                 </Paper>
                 <div className={styles.details} >
