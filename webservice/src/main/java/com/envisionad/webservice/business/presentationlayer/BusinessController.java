@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/businesses")
+@RequestMapping("/api/v1/business")
 public class BusinessController {
 
     private final BusinessService businessService;

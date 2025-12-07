@@ -1,16 +1,16 @@
-INSERT INTO addresses (id, street, city, state, zip_code, country)
+INSERT INTO address (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO addresses (id, street, city, state, zip_code, country)
+INSERT INTO address (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO businesses (id, name, company_size, address_id, date_created)
+INSERT INTO business (id, name, company_size, address_id, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'SMALL', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', NOW())
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO businesses (id, name, company_size, address_id, date_created)
+INSERT INTO business (id, name, company_size, address_id, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', NOW())
     ON CONFLICT (id) DO NOTHING;
 

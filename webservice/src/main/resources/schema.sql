@@ -1,13 +1,13 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS businesses;
+DROP TABLE IF EXISTS business;
 DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS addresses;
+DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS media;
 
 -- 2. Create Address Table (Must be first because Business links to it)
-CREATE TABLE addresses (
+CREATE TABLE address (
        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
        street VARCHAR(255) NOT NULL,
        city VARCHAR(255) NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE addresses (
 );
 
 -- 3. Create Business Table
-CREATE TABLE businesses (
+CREATE TABLE business (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(255) NOT NULL,
         company_size VARCHAR(50) NOT NULL,
