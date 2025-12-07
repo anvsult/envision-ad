@@ -2,7 +2,7 @@ import { Carousel, CarouselSlide } from "@mantine/carousel";
 import classes from "./CardCarousel.module.css"
 import {  Title } from "@mantine/core";
 import { Media } from "@/app/models/media";
-import MediaCard from "./MediaCard";
+import MediaCard from "../Cards/MediaCard";
 
 interface CardCarouselProps {
     title?: string;
@@ -48,7 +48,9 @@ export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
                     height={media.height} 
                     type={media.type} 
                     price={media.price} 
-                    passerbys={media.passerbys}/>
+                    passerbys={media.passerbys}
+                    dateAdded={media.dateAdded}
+                    />
                 </CarouselSlide>
               ))}
             </CardCarousel>
