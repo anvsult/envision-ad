@@ -14,7 +14,9 @@
         "envisionAdLogo": {
           "alt": "Logo de Envision Ad"
         }
-    }
+    },
+    "profile": "Profil",
+    "logout": "Se déconnecter"
   },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",

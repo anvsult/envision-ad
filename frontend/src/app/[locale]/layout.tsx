@@ -10,6 +10,7 @@ import type { ReactNode } from "react";
 import Footer from "../../components/Footer/Footer";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 
 export async function generateMetadata({
   params,

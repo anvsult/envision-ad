@@ -14,7 +14,9 @@
         "envisionAdLogo": {
           "alt": "Envision Ad Logo"
         }
-    }
+    },
+    "profile": "Profile",
+    "logout": "Logout"
   },
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
