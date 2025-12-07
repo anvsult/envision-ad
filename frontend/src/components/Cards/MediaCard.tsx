@@ -1,4 +1,4 @@
-import { Paper, Text, Image, Space, Anchor, AspectRatio } from "@mantine/core";
+import { Paper, Text, Image, Space, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
 import StatusBadge from "../StatusBadge/StatusBadge";
@@ -29,9 +29,10 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resol
             <Paper 
                 shadow="sm"
                 radius="md"
-                mih="280px"
+                mih="310px"
                 className={styles.paper}
             >   
+                
                 <AspectRatio ratio={16/9}>
                     <Paper className={styles.imagecontainer} radius="md" >
                         <StatusBadge status={MediaStatuses.DISPLAYING}/>
@@ -40,39 +41,44 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resol
                         </AspectRatio>
                     </Paper>
                 </AspectRatio>
-                <div className={styles.details} >
-                    <Text size="md" lineClamp={3}>
-                        {title}
-                    </Text>
-                    <Text size="sm" lineClamp={1}>
-                        {mediaOwnerName}
-                    </Text>
-                    <Text size="md" lineClamp={1}>
-                            {t('perWeek', {price: price})}
-                    </Text>
-                    <Text size="xs" lineClamp={1} >
-                        {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
-                    </Text>
-                    <Text size="xs" lineClamp={1}>
-                        {address}
-                    </Text>
-                    
-                    <div className={styles.info}>    
-                        <Text size="xs" span truncate>
-                            {aspectRatio}
+                <Stack gap="5px" p="10px" >
+                    <Stack gap="2px">
+                        <Text size="md" lineClamp={3}>
+                            {title}
                         </Text>
-                        <Space w="lg" />
-                        <Text size="xs" span truncate>
-                            {resolution} 
-                        </Text>
-                        <Space w="lg" />
-                        <Text size="xs" span truncate>
-                            {typeOfDisplay}
+                        <Text size="sm" color="gray" lineClamp={1}>
+                            {mediaOwnerName}
                         </Text>
                         
                         
-                    </div>
-                </div>
+                    </Stack>
+                    <Text size="lg" lineClamp={1}>
+                                {t('perWeek', {price: price})}
+                        </Text>
+                    <Stack gap="3px">
+                        <Text size="xs" lineClamp={1}>
+                            {address}
+                        </Text>
+                        <Text size="xs" lineClamp={1} >
+                            {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
+                        </Text>
+                        <Group gap="auto">
+                            <Text size="xs" truncate>
+                                {aspectRatio}
+                            </Text>
+                            <Space w="lg" />
+                            <Text size="xs" truncate>
+                                {resolution} 
+                            </Text>
+                            <Space w="lg" />
+                            <Text size="xs" truncate>
+                                {typeOfDisplay}
+                            </Text>
+                            
+                            
+                        </Group>
+                    </Stack>
+                </Stack>
             </Paper>
         </Anchor>
     )

@@ -23,11 +23,3 @@
     transition: transform 0.2s ease-in-out
 }
 
-.details {
-    padding: 10px;
-}
-
-.info {
-    display: flex;
-    flex-wrap: wrap;
-}

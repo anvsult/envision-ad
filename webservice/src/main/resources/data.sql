@@ -8,7 +8,7 @@ VALUES
     (
         'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         'Downtown Billboard',
-        'Envision Ads',
+        'Envision Ad',
         '123 Main St, Montreal, QC',
         'DIGITAL',
         30,
@@ -94,4 +94,40 @@ VALUES
         NULL,
         NULL,
         NULL
-    );
+    ),
+    ('8c76db81-2cee-4e42-8cd7-9e70583f6ae9','Downtown LED Tower','Prime Outdoor','500 Yonge St, Toronto, ON','DIGITAL',20,'3840x2160','16:9',25.0,14.0,110.00,220,'{"selectedMonths":["January","February"],"days":{"monday":{"isActive":true,"startTime":"07:00","endTime":"23:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('c7dd74ec-72a8-48fb-9889-a7fd43571e34','Coffee Shop Screen','Local Ads','45 King St W, Kitchener, ON','DIGITAL',15,'1920x1080','16:9',3.0,2.0,14.50,28,'{"selectedMonths":["March"],"days":{"tuesday":{"isActive":true,"startTime":"06:00","endTime":"18:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('09072a43-4600-44e9-b13a-8d545ddc89e9','Parking Garage LED','Auto Media','99 Bay St, Toronto, ON','DIGITAL',25,'1920x1080','16:9',6.0,4.0,22.00,45,'{"selectedMonths":["April"],"days":{"wednesday":{"isActive":true,"startTime":"08:00","endTime":"20:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('c670d8b9-c832-4a76-8b41-65ae06e60635','Library Digital Board','Public Media','120 Main St, Waterloo, ON','DIGITAL',35,'1920x1080','16:9',4.5,2.5,16.00,32,'{"selectedMonths":["May"],"days":{"thursday":{"isActive":true,"startTime":"09:00","endTime":"17:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('4c530ca3-135e-4921-9d29-329d30f94d4e','Gas Station Screen','Fuel Ads','888 Petro Rd, Oshawa, ON','DIGITAL',10,'1080x1920','9:16',1.8,3.0,12.00,20,'{"selectedMonths":["June"],"days":{"friday":{"isActive":true,"startTime":"07:00","endTime":"21:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+
+    ('e72cc1bf-6ec9-476f-a27b-97ff8cd3cbd9','Casino Entrance Wall','Luxury Media','10 Fortune Ave, Niagara Falls, ON','DIGITAL',30,'3840x2160','16:9',20.0,11.0,95.00,170,'{"selectedMonths":["July"],"days":{"saturday":{"isActive":true,"startTime":"12:00","endTime":"23:59"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('76468115-6475-455f-af98-b55a8974775e','Museum Hallway','Culture Ads','55 History Dr, Ottawa, ON','DIGITAL',20,'1920x1080','16:9',5.0,3.2,21.00,48,'{"selectedMonths":["August"],"days":{"sunday":{"isActive":true,"startTime":"10:00","endTime":"18:00"}}}', 'PENDING',NULL,NULL,NULL),
+    ('a2169209-9505-46db-a969-95e2a8b0e167','Community Center Screen','Local Media','9 Unity Rd, Brantford, ON','DIGITAL',18,'1920x1080','16:9',4.0,2.5,17.00,36,'{"selectedMonths":["September"],"days":{"monday":{"isActive":true,"startTime":"09:00","endTime":"19:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('3d63f4fe-ad6f-487f-bfa0-26c2415d6d41','Ice Rink Banner','Winter Ads','1 Hockey Ln, Barrie, ON','POSTER',0,'3000x1000','3:1',26.0,8.0,38.00,90,'{"selectedMonths":["December"],"days":{"friday":{"isActive":true,"startTime":"08:00","endTime":"22:00"}}}', 'INACTIVE',NULL,NULL,NULL),
+    ('8737acaa-4943-409b-8ebc-a2d5085a0320','Retail Window Display','Shop Ads','150 Fashion Rd, Richmond Hill, ON','DIGITAL',12,'1080x1920','9:16',2.3,4.1,14.00,30,'{"selectedMonths":["October"],"days":{"tuesday":{"isActive":true,"startTime":"10:00","endTime":"21:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+
+    ('c7a3ae85-bd73-4720-87bf-a8d12b17985b','Boat Terminal Screen','Harbor Media','77 Dock St, Kingston, ON','DIGITAL',25,'1920x1080','16:9',7.0,4.0,26.00,55,'{"selectedMonths":["April"],"days":{"wednesday":{"isActive":true,"startTime":"08:00","endTime":"20:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('e6260701-1377-40b1-abcb-e0e48a841f66','High School Hallway','Edu Ads','10 School Rd, Pickering, ON','DIGITAL',20,'1920x1080','16:9',4.0,2.8,13.00,40,'{"selectedMonths":["March"],"days":{"thursday":{"isActive":true,"startTime":"08:00","endTime":"15:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('bb6104c2-9be7-4e09-b249-c9e24a8e17eb','Office Tower Lobby','Business Media','500 Finance St, Toronto, ON','DIGITAL',28,'3840x2160','16:9',9.0,5.0,68.00,115,'{"selectedMonths":["November"],"days":{"monday":{"isActive":true,"startTime":"07:00","endTime":"19:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('a8407c14-d8bf-4a71-b485-e95a4009f061','Train Platform Screen','Transit Media','Union Station, Toronto, ON','DIGITAL',15,'1080x1920','9:16',2.5,4.5,24.00,75,'{"selectedMonths":["February"],"days":{"friday":{"isActive":true,"startTime":"05:00","endTime":"23:59"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('0be3aab9-4901-46e7-8bc0-daddda951269','Zoo Entrance Display','Tourism Ads','361 Zoo Park Rd, Toronto, ON','DIGITAL',35,'1920x1080','16:9',6.5,4.0,45.00,140,'{"selectedMonths":["June","July"],"days":{"saturday":{"isActive":true,"startTime":"09:00","endTime":"18:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+
+    ('f2de193e-8802-4cb6-b10b-4d2cc46d8471','Farmers Market Board','Community Ads','22 Fresh St, Guelph, ON','DIGITAL',18,'1920x1080','16:9',4.5,3.0,19.00,60,'{"selectedMonths":["August"],"days":{"sunday":{"isActive":true,"startTime":"08:00","endTime":"14:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('14d44065-636f-4510-93ef-f03685252d52','Nightclub LED Wall','Party Media','999 Neon Ave, Toronto, ON','DIGITAL',10,'3840x2160','16:9',12.0,7.0,85.00,190,'{"selectedMonths":["December"],"days":{"friday":{"isActive":true,"startTime":"20:00","endTime":"03:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('ca9cf111-da3b-4a66-8838-44519864c9b3','Hotel Elevator Screen','Hospitality Ads','88 Stay Blvd, Mississauga, ON','DIGITAL',12,'1080x1920','9:16',1.5,3.0,18.00,50,'{"selectedMonths":["September"],"days":{"monday":{"isActive":true,"startTime":"06:00","endTime":"22:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('442f073c-0858-43fe-9687-fda3e89cec5d','Convention Center Hall','Expo Media','300 Expo Dr, Toronto, ON','DIGITAL',22,'1920x1080','16:9',8.0,5.0,54.00,100,'{"selectedMonths":["May"],"days":{"thursday":{"isActive":true,"startTime":"09:00","endTime":"19:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('a3885bcd-f4ea-46a9-bd6e-ab2832906690','Beach Boardwalk Display','Tourism Media','1 Shoreline Rd, Wasaga Beach, ON','DIGITAL',40,'1920x1080','16:9',10.0,6.0,65.00,180,'{"selectedMonths":["July","August"],"days":{"saturday":{"isActive":true,"startTime":"10:00","endTime":"22:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+
+    ('0e6e753d-5175-4f0f-8bbc-197bb18eb8b3','Street LED Wall','Vision Ads','210 Queen St, Toronto, ON','DIGITAL',30,'1920x1080','16:9',20.0,11.5,55.00,90,'{"selectedMonths":["June"],"days":{"monday":{"isActive":true,"startTime":"08:00","endTime":"22:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('e254d0b4-7282-4ef4-a9e7-da2fd85f231c','Food Court Screen','Indoor Media','88 Mall Dr, Mississauga, ON','DIGITAL',20,'1080x1920','9:16',3.0,5.5,25.50,50,'{"selectedMonths":["July"],"days":{"tuesday":{"isActive":true,"startTime":"10:00","endTime":"20:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('fde4f0f2-45c7-4c78-8a78-1eb82e8e7087','Gym Display','Fit Media','300 Health Blvd, Scarborough, ON','DIGITAL',15,'1920x1080','16:9',6.0,3.5,19.00,40,'{"selectedMonths":["March"],"days":{"wednesday":{"isActive":true,"startTime":"06:00","endTime":"22:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('7de72786-c808-42d9-bc29-ffdf7397dfcc','Cinema Lobby','Movie Ads','77 Cinema Way, Vaughan, ON','DIGITAL',25,'3840x2160','16:9',9.0,5.5,70.00,120,'{"selectedMonths":["August"],"days":{"friday":{"isActive":true,"startTime":"14:00","endTime":"23:59"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('65234ef1-df9d-4f65-a4f4-85ecf730d7b9','Retail Endcap','Store Media','10 Retail Rd, Brampton, ON','DIGITAL',10,'1080x1920','9:16',2.0,4.2,15.00,35,'{"selectedMonths":["May"],"days":{"saturday":{"isActive":true,"startTime":"09:00","endTime":"21:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+
+    ('9dbef6d8-ba35-4ee3-adc2-7ba821ffebf1','University Screen','Campus Ads','200 College St, Guelph, ON','DIGITAL',30,'1920x1080','16:9',7.0,4.0,32.00,75,'{"selectedMonths":["September"],"days":{"monday":{"isActive":true,"startTime":"08:00","endTime":"18:00"}}}', 'PENDING',NULL,NULL,NULL),
+    ('4c383d2e-8393-4f9e-826c-e5e0eb439c01','Hospital Hallway','Care Media','400 Health Ave, London, ON','DIGITAL',20,'1920x1080','16:9',5.0,3.0,28.00,60,'{"selectedMonths":["October"],"days":{"tuesday":{"isActive":true,"startTime":"07:00","endTime":"19:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('d2499f91-35ab-408d-812c-3028e9e1d99d','Convention Banner','Expo Media','600 Event Blvd, Hamilton, ON','POSTER',0,'3000x1000','3:1',25.0,8.0,45.00,100,'{"selectedMonths":["November"],"days":{"thursday":{"isActive":true,"startTime":"09:00","endTime":"17:00"}}}', 'INACTIVE',NULL,NULL,NULL),
+    ('159e1a11-81e9-49b7-a72d-6f5989744dad','Suburban LED','Metro Vision','55 Suburb Rd, Markham, ON','DIGITAL',40,'1920x1080','16:9',18.0,10.0,60.00,95,'{"selectedMonths":["December"],"days":{"sunday":{"isActive":true,"startTime":"10:00","endTime":"18:00"}}}', 'ACTIVE',NULL,NULL,NULL),
+    ('954f2e96-f728-40ea-8763-78a2f79db102','Stadium Ring','Sports Media','1 Arena Way, Toronto, ON','DIGITAL',15,'3840x2160','16:9',30.0,12.0,120.00,250,'{"selectedMonths":["June","July"],"days":{"saturday":{"isActive":true,"startTime":"12:00","endTime":"23:00"}}}', 'ACTIVE',NULL,NULL,NULL)
+;

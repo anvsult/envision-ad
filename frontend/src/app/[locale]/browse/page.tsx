@@ -41,7 +41,7 @@ function BrowsePage() {
       });
   }, []);
 
- const ITEMS_PER_PAGE = 4;
+ const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
