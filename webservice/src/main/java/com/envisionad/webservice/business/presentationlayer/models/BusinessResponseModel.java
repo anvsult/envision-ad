@@ -20,6 +20,7 @@ public class BusinessResponseModel {
     @Data
     @NoArgsConstructor
     public static class AddressResponseModel {
+        private UUID id;
         private String street;
         private String city;
         private String state;
