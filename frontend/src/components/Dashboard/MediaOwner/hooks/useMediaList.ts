@@ -27,21 +27,6 @@ export function useMediaList() {
       });
   }, []);
 
-  const monthsList = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-
   const buildScheduleFromForm = (formState: MediaFormState) => {
     const selectedMonths = Object.keys(formState.activeMonths).filter(
       (m) => !!formState.activeMonths[m]
