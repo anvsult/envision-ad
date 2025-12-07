@@ -130,6 +130,15 @@ export function MediaDetailsForm({
         value={formState.weeklyPrice}
         onChange={(e) => onFieldChange("weeklyPrice", e.currentTarget.value)}
       />
+
+      <div style={{ height: 12 }} />
+      <TextInput
+        label="Daily impressions"
+        placeholder="Daily impressions"
+        type="number"
+        value={formState.dailyImpressions}
+        onChange={(e) => onFieldChange("dailyImpressions", e.currentTarget.value)}
+      />
     </>
   );
 }

@@ -1,7 +1,7 @@
 INSERT INTO media (
     media_id, title, media_owner_name, address,
     type_of_display, loop_duration, resolution, aspect_ratio,
-    width, height, price, schedule, status,
+    width, height, price, daily_impressions, schedule, status,
     image_file_name, image_content_type, image_data
 )
 VALUES
@@ -17,6 +17,7 @@ VALUES
         16.5,
         9.2,
         50.00,
+        30,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
             "days": {
@@ -46,6 +47,7 @@ VALUES
         30.0,
         10.0,
         48.50,
+        20,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
             "days": {
@@ -75,6 +77,7 @@ VALUES
         2.5,
         4.5,
         30.75,
+        25,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
             "days": {

@@ -79,6 +79,6 @@
   },
   "mediacard": {
     "perWeek": "${price} per week",
-    "dailyImpressions": "~{impressions} daily impressions"
+    "dailyImpressions": "~{dailyImpressions} daily impressions"
   }
 }

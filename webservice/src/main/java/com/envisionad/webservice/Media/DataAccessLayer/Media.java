@@ -50,6 +50,9 @@ public class Media {
     @Column(name = "price")
     private BigDecimal price;
 
+    @Column(name = "daily_impressions")
+    private Integer dailyImpressions;
+
     @Column(name = "schedule")
     @JdbcTypeCode(SqlTypes.JSON)
     private String schedule;

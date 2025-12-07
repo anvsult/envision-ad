@@ -47,6 +47,7 @@ export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
                         height={media.height}
                         typeOfDisplay={media.typeOfDisplay}
                         price={media.price} 
+                        dailyImpressions={media.dailyImpressions}
                         resolution={media.resolution} 
                         loopDuration={media.loopDuration}
                     />

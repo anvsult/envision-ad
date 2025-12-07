@@ -9,6 +9,7 @@ export interface MediaRequest {
     width: number;
     height: number;
     price: number;
+    dailyImpressions: number;
     schedule: ScheduleModel | null;
     status: string;
 }
@@ -25,6 +26,7 @@ export interface MediaResponse {
     width: number;
     height: number;
     price: number;
+    dailyImpressions: number;
     schedule: ScheduleModel | null;
     status: string;
     imageUrl: string;

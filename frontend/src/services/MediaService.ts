@@ -11,6 +11,7 @@ export interface MediaDTO {
     width: number | null;
     height: number | null;
     price: number | null;
+    dailyImpressions: number | null;
     schedule: {
         selectedMonths: string[];
         days: {

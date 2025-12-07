@@ -21,6 +21,7 @@ import java.math.BigDecimal;
         private Double width;
         private Double height;
         private BigDecimal price;
+        private Integer dailyImpressions;
         private ScheduleModel schedule;
         private Status status;
     }

@@ -17,11 +17,11 @@ export interface MediaCardProps {
     price: number ;
     typeOfDisplay: string;
     imageUrl?: string | null;
-    // impressions: number,
+    dailyImpressions: number ,
     // dateAdded: Date
 }
 
-function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price}: MediaCardProps) {
+function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
@@ -50,9 +50,9 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resol
                     <Text size="md" lineClamp={1}>
                             {t('perWeek', {price: price})}
                     </Text>
-                    {/* <Text size="xs" lineClamp={1} >
-                        {t('dailyImpressions', {impressions: impressions})}
-                    </Text> */}
+                    <Text size="xs" lineClamp={1} >
+                        {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
+                    </Text>
                     <Text size="xs" lineClamp={1}>
                         {address}
                     </Text>

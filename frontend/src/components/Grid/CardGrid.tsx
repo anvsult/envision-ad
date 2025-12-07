@@ -37,6 +37,7 @@ export function MediaCardGrid({medias}: MediaCardGridProps) {
                             height={media.height}
                             typeOfDisplay={media.typeOfDisplay}
                             price={media.price} 
+                            dailyImpressions={media.dailyImpressions} 
                             resolution={media.resolution} 
                             loopDuration={media.loopDuration}
                             // impressions={media.impressions}

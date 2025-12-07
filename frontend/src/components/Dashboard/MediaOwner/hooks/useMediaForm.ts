@@ -10,6 +10,7 @@ export interface MediaFormState {
   widthCm: string;
   heightCm: string;
   weeklyPrice: string;
+  dailyImpressions: string;
   mediaAddress: string;
   activeDaysOfWeek: Record<string, boolean>;
   dailyOperatingHours: Record<string, { start: string; end: string }>;
@@ -26,6 +27,7 @@ const getInitialFormState = (): MediaFormState => ({
   widthCm: "",
   heightCm: "",
   weeklyPrice: "",
+  dailyImpressions: "",
   mediaAddress: "",
   activeDaysOfWeek: {
     Monday: true,

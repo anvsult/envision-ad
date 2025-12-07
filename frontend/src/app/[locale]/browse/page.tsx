@@ -30,8 +30,9 @@ function BrowsePage() {
           width: m.width ?? 0,
           height: m.height ?? 0,
           price: m.price ?? 0,
+          dailyImpressions: m.dailyImpressions ?? 0,
           typeOfDisplay: m.typeOfDisplay,
-          imageUrl: m.imageUrl ?? null,
+          imageUrl: m.imageUrl,
         }));
         setMedia(mapped);
       })
