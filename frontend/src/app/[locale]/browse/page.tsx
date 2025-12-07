@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Pagination, Stack } from '@mantine/core';
+import { Container, Group, Pagination, Stack } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
@@ -40,7 +40,7 @@ function BrowsePage() {
       });
   }, []);
 
- const ITEMS_PER_PAGE = 20;
+ const ITEMS_PER_PAGE = 4;
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
@@ -61,12 +61,17 @@ function BrowsePage() {
 
           <MediaCardGrid medias={paginatedMedia} />
 
-          <Pagination
-            total={totalPages}
-            value={activePage}
-            onChange={setActivePage}
-            mt="md"
-          />
+          {totalPages > 1 && (
+            <Group justify="center" mt="md">
+              <Pagination
+                total={totalPages}
+                value={activePage}
+                onChange={setActivePage}
+                size="md"
+              />
+            </Group>
+          )}
+          
         </Stack>
       </Container>
     </>

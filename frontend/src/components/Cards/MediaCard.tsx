@@ -21,7 +21,7 @@ export interface MediaCardProps {
     // dateAdded: Date
 }
 
-function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, width, height, typeOfDisplay, price}: MediaCardProps) {
+function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
@@ -29,6 +29,7 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, width
             <Paper 
                 shadow="sm"
                 radius="md"
+                mih="280px"
                 className={styles.paper}
             >   
                 <AspectRatio ratio={16/9}>
@@ -62,7 +63,7 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, width
                         </Text>
                         <Space w="lg" />
                         <Text size="xs" span truncate>
-                            {width}x{height} 
+                            {resolution} 
                         </Text>
                         <Space w="lg" />
                         <Text size="xs" span truncate>
