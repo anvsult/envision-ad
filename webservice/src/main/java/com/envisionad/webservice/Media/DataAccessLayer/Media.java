@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.sql.Types;
 
@@ -50,6 +51,7 @@ public class Media {
     private BigDecimal price;
 
     @Column(name = "schedule")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String schedule;
 
     @Column(name = "status")
