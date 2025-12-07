@@ -37,6 +37,7 @@ public class BusinessResponseMapper {
 
         if (business.getAddress() != null) {
             BusinessResponseModel.AddressResponseModel addressModel = new BusinessResponseModel.AddressResponseModel();
+            addressModel.setId(business.getAddress().getId());
             addressModel.setStreet(business.getAddress().getStreet());
             addressModel.setCity(business.getAddress().getCity());
             addressModel.setState(business.getAddress().getState());
