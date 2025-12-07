@@ -98,6 +98,6 @@ export function useMediaForm() {
     updateField,
     updateDayTime,
     resetForm,
-    setFormState, // allow parent to set the entire form state (used when editing an existing media)
+    setFormState,
   };
 }
