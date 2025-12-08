@@ -288,7 +288,8 @@ export default function MediaPage() {
                 <Text fw={600} size="xl" td="underline">
                   {priceLabel}
                 </Text>
-                <Button radius="xl" fullWidth>
+                {/* TODO: Implement reservation functionality */}
+                <Button radius="xl" fullWidth disabled>
                   {t("reserveButton")}
                 </Button>
                 <Text size="xs" c="dimmed">
