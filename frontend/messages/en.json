@@ -18,7 +18,6 @@
     },
     "profile": "Profile",
     "logout": "Logout"
-    }
   },
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
@@ -175,3 +174,4 @@
       "ENTERPRISE": "Enterprise (500+)"
     }
   }
+}
