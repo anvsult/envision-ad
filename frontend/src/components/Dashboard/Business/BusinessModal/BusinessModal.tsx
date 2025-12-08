@@ -5,7 +5,7 @@ import { Modal, Button, Group, Stack } from "@mantine/core";
 import { useTranslations } from "next-intl";
 import { BusinessDetailsForm } from "./BusinessDetailsForm";
 import { BusinessRequest } from "@/types/BusinessTypes";
-import { createBusiness } from "@/services/BusinessService";
+import { createBusiness, updateBusiness } from "@/services/BusinessService";
 
 interface BusinessModalProps {
     opened: boolean;
@@ -17,6 +17,7 @@ interface BusinessModalProps {
         value: BusinessRequest[K]
     ) => void;
     resetForm: () => void;
+    editingId?: string | null;
 }
 
 export function BusinessModal({
@@ -26,6 +27,7 @@ export function BusinessModal({
     formState,
     onFieldChange,
     resetForm,
+    editingId,
 }: BusinessModalProps) {
     const t = useTranslations("business.form");
     const [saving, setSaving] = useState(false);
@@ -33,20 +35,29 @@ export function BusinessModal({
     const handleSave = async () => {
         setSaving(true);
         try {
-            await createBusiness(formState);
+            if (editingId) {
+                await updateBusiness(editingId, formState);
+            } else {
+                await createBusiness(formState);
+            }
             onSuccess();
             onClose();
             resetForm();
         } catch (error) {
-            console.error("Failed to create business", error);
-            alert("Failed to create business");
+            console.error("Failed to save business", error);
+            alert("Failed to save business");
         } finally {
             setSaving(false);
         }
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title={t("title")} size="lg">
+        <Modal 
+            opened={opened} 
+            onClose={onClose} 
+            title={editingId ? "Edit Business" : t("title")} 
+            size="lg"
+        >
             <Stack gap="md">
                 <BusinessDetailsForm formState={formState} onFieldChange={onFieldChange} />
 
@@ -55,7 +66,7 @@ export function BusinessModal({
                         {t("cancel")}
                     </Button>
                     <Button onClick={handleSave} loading={saving}>
-                        {t("submit")}
+                        {editingId ? "Update" : t("submit")}
                     </Button>
                 </Group>
             </Stack>

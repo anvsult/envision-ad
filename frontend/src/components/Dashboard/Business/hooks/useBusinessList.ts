@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { BusinessResponse } from "@/types/BusinessTypes";
-import { getAllBusinesses } from "@/services/BusinessService";
+import { BusinessResponse, BusinessRequest } from "@/types/BusinessTypes";
+import { getAllBusinesses, getBusinessById, updateBusiness, deleteBusiness } from "@/services/BusinessService";
 
 export function useBusinessList() {
     const [businesses, setBusinesses] = useState<BusinessResponse[]>([]);
@@ -20,9 +20,31 @@ export function useBusinessList() {
         }
     }, []);
 
+    const fetchBusinessById = useCallback(async (id: string | number) => {
+        return await getBusinessById(id);
+    }, []);
+
+    const editBusiness = useCallback(async (id: string | number, data: BusinessRequest) => {
+        await updateBusiness(id, data);
+        await fetchBusinesses();
+    }, [fetchBusinesses]);
+
+    const deleteBusinessById = useCallback(async (id: string | number) => {
+        await deleteBusiness(id);
+        await fetchBusinesses();
+    }, [fetchBusinesses]);
+
     useEffect(() => {
         fetchBusinesses();
     }, [fetchBusinesses]);
 
-    return { businesses, loading, error, refreshBusinesses: fetchBusinesses };
+    return { 
+        businesses, 
+        loading, 
+        error, 
+        refreshBusinesses: fetchBusinesses,
+        fetchBusinessById,
+        editBusiness,
+        deleteBusinessById
+    };
 }
