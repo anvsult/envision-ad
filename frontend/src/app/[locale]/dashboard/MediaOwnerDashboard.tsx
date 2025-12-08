@@ -25,7 +25,7 @@ import {
   IconFileDescription,
   IconCurrencyDollar,
 } from "@tabler/icons-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/lib/i18n/navigation";
 
 const ITEMS_PER_PAGE = 20;
 

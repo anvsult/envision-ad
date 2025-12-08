@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { Group, UnstyledButton, Text } from "@mantine/core";
 import classes from "./LanguagePicker.module.css";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter, usePathname } from "@/lib/i18n/navigation";
 import { useLocale } from "next-intl";
 import Image from "next/image";
 

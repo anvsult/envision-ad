@@ -15,7 +15,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/lib/i18n/navigation";
 
 // When in dashboard on small screen, the burger menu shows dashboard menus instead of header menus
 interface HeaderProps {
@@ -43,7 +43,7 @@ export function Header({
   const items = links.map((link) => (
     <Link
       key={link.label}
-      href={link.link}
+      href={link.link as any}
       className={classes.link}
       data-active={pathname === link.link || undefined}
       onClick={closeDrawer}
@@ -54,13 +54,14 @@ export function Header({
 
   const authButtons = (
     <>
-      <Link href="/register" className={classes.navLink}>
-        <Button variant="outline" color="blue.6" radius="xl" fullWidth>
+      <Link href="../auth/login?screen_hint=signup" className={classes.navLink}>
+        <Button variant="outline" color="blue.6" radius="xl">
           {t("register")}
         </Button>
       </Link>
-      <Link href="/signin" className={classes.navLink}>
-        <Button variant="filled" color="blue.6" radius="xl" fullWidth>
+
+      <Link href="../auth/login" className={classes.navLink}>
+        <Button variant="filled" color="blue.8" radius="xl">
           {t("signIn")}
         </Button>
       </Link>
@@ -98,16 +99,7 @@ export function Header({
           {/* Auth Buttons */}
           <Group visibleFrom="md">
             <LanguagePicker />
-            <Link href="/register" className={classes.navLink}>
-              <Button variant="outline" color="blue.6" radius="xl">
-                {t("register")}
-              </Button>
-            </Link>
-            <Link href="/signin" className={classes.navLink}>
-              <Button variant="filled" color="blue.6" radius="xl">
-                {t("signIn")}
-              </Button>
-            </Link>
+            {authButtons}
           </Group>
 
           {/* Burger menu - shows sidebar toggle in dashboard mode, otherwise shows navigation drawer */}
