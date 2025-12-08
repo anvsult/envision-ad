@@ -18,11 +18,11 @@ export interface MediaCardProps {
     // TODO: Add `dateAdded: Date` property if/when date tracking is required.
 }
 
-function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
+function MediaCard({id, imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
-        <Anchor href="/browse" color="black" underline="never">
+        <Anchor href={"/medias/" + id} color="black" underline="never">
             <Paper 
                 shadow="sm"
                 radius="md"
