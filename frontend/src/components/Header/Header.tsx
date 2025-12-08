@@ -18,16 +18,29 @@ import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
 import { Link, usePathname } from "@/lib/i18n/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { IconChevronDown } from '@tabler/icons-react';
 
-export function Header() {
+// When in dashboard on small screen, the burger menu shows dashboard menus instead of header menus
+interface HeaderProps {
+  dashboardMode?: boolean;
+  sidebarOpened?: boolean;
+  onToggleSidebar?: () => void;
+}
+
+export function Header({
+  dashboardMode = false,
+  sidebarOpened = false,
+  onToggleSidebar,
+}: HeaderProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const { user, isLoading } = useUser();
-  const links = [
-    { link: "/", label: t("home") },
-    { link: "/dashboard", label: t("dashboard") },
-    { link: "/browse", label: t("browse") },
-  ];
+  const links: Array<{ link: "/" | "/dashboard" | "/browse"; label: string }> =
+    [
+      { link: "/", label: t("home") },
+      { link: "/dashboard", label: t("dashboard") },
+      { link: "/browse", label: t("browse") },
+    ];
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
@@ -62,7 +75,7 @@ export function Header() {
   const userMenu = user && (
     <Menu shadow="md" width={200} withinPortal={false}>
       <Menu.Target>
-        <Button variant="outline" radius="xl" rightSection={<span>▼</span>}>
+        <Button variant="outline" radius="xl" rightSection={<IconChevronDown size={16} />}>
           {user.nickname || user.name || "User"}
         </Button>
       </Menu.Target>
@@ -116,40 +129,45 @@ export function Header() {
             {user ? userMenu : authButtons}
           </Group>
 
+          {/* Burger menu - shows sidebar toggle in dashboard mode, otherwise shows navigation drawer */}
           <Burger
-            opened={drawerOpened}
-            onClick={toggleDrawer}
-            hiddenFrom="md"
+            opened={dashboardMode ? sidebarOpened : drawerOpened}
+            onClick={dashboardMode ? onToggleSidebar : toggleDrawer}
+            hiddenFrom={dashboardMode ? "md" : "md"}
+            aria-label={dashboardMode ? "Toggle sidebar" : "Toggle navigation"}
           />
         </Group>
       </header>
 
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        size="100%"
-        padding="md"
-        title="Navigation"
-        hiddenFrom="md"
-        zIndex={1000000}
-      >
-        <ScrollArea h="calc(100vh - 80px)" mx="-md">
-          <Divider my="sm" />
-
-          <Box hiddenFrom="sm">
-            {items}
+      {/* Only show navigation drawer when NOT in dashboard mode */}
+      {!dashboardMode && (
+        <Drawer
+          opened={drawerOpened}
+          onClose={closeDrawer}
+          size="100%"
+          padding="md"
+          title="Navigation"
+          hiddenFrom="md"
+          zIndex={1000000}
+        >
+          <ScrollArea h="calc(100vh - 80px)" mx="-md">
             <Divider my="sm" />
-          </Box>
 
-          <Group justify="center" pb="md" px="md">
-            <LanguagePicker />
-          </Group>
+              <Box hiddenFrom="sm">
+                  {items}
+                  <Divider my="sm" />
+              </Box>
 
-          <Group justify="center" grow pb="xl" px="md">
-            {user ? userMenu : authButtons}
-          </Group>
-        </ScrollArea>
-      </Drawer>
+              <Group justify="center" pb="md" px="md">
+                  <LanguagePicker />
+              </Group>
+
+              <Group justify="center" grow pb="xl" px="md">
+                  {user ? userMenu : authButtons}
+              </Group>
+            </ScrollArea>
+          </Drawer>
+      )}
     </Box>
   );
 }

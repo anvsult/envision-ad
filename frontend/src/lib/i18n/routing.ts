@@ -20,5 +20,25 @@ export const routing = defineRouting({
       'en': '/about',
       'fr': '/a-propos'
     },
+    '/dashboard': {
+        'en': '/dashboard',
+        'fr': '/tableau-de-bord'
+    },
+    '/dashboard/overview': {
+        'en': '/dashboard/overview',
+        'fr': '/tableau-de-bord/apercu'
+    },
+    '/dashboard/displayed-ads': {
+        'en': '/dashboard/displayed-ads',
+        'fr': '/tableau-de-bord/annonces-affichees'
+    },
+    '/dashboard/ad-requests': {
+        'en': '/dashboard/ad-requests',
+        'fr': '/tableau-de-bord/demandes-annonces'
+    },
+    '/dashboard/transactions': {
+        'en': '/dashboard/transactions',
+        'fr': '/tableau-de-bord/transactions'
+    }
   }
 });

@@ -78,5 +78,9 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "copyright": "© {year} Envision AD. All rights reserved."
+  },
+  "mediacard": {
+    "perWeek": "${price} per week",
+    "dailyImpressions": "~{dailyImpressions} daily impressions"
   }
 }

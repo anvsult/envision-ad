@@ -17,13 +17,13 @@ const lato = Lato({
 export const theme = createTheme({
   colors: {
     deepBlue: [
-      '#eef3ff', '#dce4f5', '#b9c7e2', '#94a8d0', '#748dc1',
-      '#5f7cb8', '#5474b4', '#44639f', '#39588f', '#2d4b81',
+      '#e8f4ff', '#d3e5f8', '#a7caf0', '#78ade8', '#5294e0',
+      '#3982db', '#2878d9', '#1a64c2', '#0f59b0', '#004c9e',
     ],
     blue: [
-      '#eef3ff', '#dee2f2', '#bdc2de', '#98a0ca', '#7a84ba',
-      '#6672b0', '#0795ED', '#4c5897', '#424e88', '#011f96',
-    ],
+      '#e7f5ff', '#d0ebff', '#a5d8ff', '#74c0fc', '#4dabf7',
+      '#339af0', '#0795ED', '#1c7ed6', '#1971c2', '#1864ab',
+    ]
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text
   headings: {

@@ -5,7 +5,7 @@
   },
   "nav": {
     "home": "Accueil",
-    "dashboard": "Tableau",
+    "dashboard": "Tableau de bord",
     "browse": "Parcourir",
     "register": "S'inscrire",
     "signIn": "Se connecter",
@@ -78,5 +78,9 @@
     "terms": "Conditions d'utilisation",
     "privacy": "Politique de confidentialité",
     "copyright": "© {year} Envision AD. Tous droits réservés."
+  },
+  "mediacard": {
+    "perWeek": "${price} par semaine",
+    "dailyImpressions": "~{dailyImpressions} impressions par jour"
   }
 }

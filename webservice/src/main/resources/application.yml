@@ -14,4 +14,8 @@ spring:
       hibernate:
         format_sql: false
     show-sql: false
-
+  sql:
+    init:
+      platform: psql
+      mode: always
+      schema-locations: classpath:schema.sql

@@ -32,7 +32,7 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     /* Run tests in headless mode */
-    headless: false,
+    headless: true,
 
   },
 

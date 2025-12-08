@@ -21,7 +21,7 @@
     "@mantine/modals": "^8.3.9",
     "@mantine/notifications": "^8.3.9",
     "@mantine/nprogress": "^8.3.9",
-    "@swc/helpers": "^0.5.17",
+    "@tabler/icons-react": "^3.35.0",
     "dayjs": "^1.11.19",
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
