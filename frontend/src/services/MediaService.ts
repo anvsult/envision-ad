@@ -41,6 +41,13 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
     return response.json();
 }
 
+function escapeLike(input: string): string {
+  return input
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_");
+}
+
 export async function getAllFilteredActiveMedia(
     title?: string | null,
     minPrice?: number | null,
@@ -49,8 +56,9 @@ export async function getAllFilteredActiveMedia(
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
-    if (title) {
-        params.append("title", title);
+    if (title && title.trim() !== "") {
+        const escaped = escapeLike(title);
+        params.append("title", escaped);
     }
 
     if (minPrice) {
