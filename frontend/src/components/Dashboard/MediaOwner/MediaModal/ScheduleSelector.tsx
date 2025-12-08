@@ -113,24 +113,8 @@ function Row({
   );
 
   const handleTimeChange = (type: "start" | "end", value: string) => {
-    // allow typing over logic
+    // Clean input and apply auto-colon heuristic for time entry (e.g., "12" -> "12:").
     let cleaned = value.replace(/[^0-9:]/g, "");
-
-    // Auto-colon: if we have 2 digits and no colon, append one.
-    // We only do this if the value length is increasing (user is typing), not deleting.
-    // However, we don't track prev value here easily.
-    // Simple heuristic: if len is 2 and it matches 2 digits, append ':'.
-    // Logic: if cleaned is "12", make it "12:".
-    // But if user deletes "12:" -> "12", we don't want to re-add it.
-    // We can infer deletion if we look at specific event, but here we just have value.
-    // A trick: only add colon if the last char typed was a digit and we reached len 2.
-    // But we don't know last char typed.
-    // Let's rely on string state. If length is exactly 2 and valid hours, append colon.
-    // User can backspace colon to get length 2.
-    // If we force it, user cannot backspace colon.
-    // Standard solution: check if inputType was 'deleteContentBackward' or similar if we had event.
-    // We only have 'value'.
-    // Let's implement strict clamping first.
 
     // Clamping logic
     const colonCount = (cleaned.match(/:/g) || []).length;
