@@ -1,6 +1,6 @@
 import { BusinessRequest, BusinessResponse } from "../types/BusinessTypes";
 
-const API_BASE_URL = "http://localhost:8080/api/v1/business";
+const API_BASE_URL = "http://localhost:8080/api/v1/businesses";
 
 export const getAllBusinesses = async (): Promise<BusinessResponse[]> => {
     const res = await fetch(API_BASE_URL, {

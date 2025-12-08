@@ -20,7 +20,7 @@ import {
     IconCurrencyDollar,
     IconBuildingStore
 } from "@tabler/icons-react";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/lib/i18n/navigation";
 import { BusinessDashboard } from "./BusinessDashboard";
 
 export function BusinessPageWrapper() {

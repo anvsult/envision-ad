@@ -1,7 +1,7 @@
-package com.envisionad.webservice.business.BusinessLogicLayer;
+package com.envisionad.webservice.business.businessLogicLayer;
 
-import com.envisionad.webservice.business.DataAccessLayer.Business;
-import com.envisionad.webservice.business.DataAccessLayer.BusinessRepository;
+import com.envisionad.webservice.business.dataAccessLayer.Business;
+import com.envisionad.webservice.business.dataAccessLayer.BusinessRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

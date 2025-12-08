@@ -1,4 +1,4 @@
-package com.envisionad.webservice.business.DataAccessLayer;
+package com.envisionad.webservice.business.dataAccessLayer;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

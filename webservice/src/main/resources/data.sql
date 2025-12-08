@@ -10,11 +10,11 @@ INSERT INTO addresses (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO addresses (id, street, city, state, zip_code, country)
+INSERT INTO address (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO addresses (id, street, city, state, zip_code, country)
+INSERT INTO address (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', '88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 

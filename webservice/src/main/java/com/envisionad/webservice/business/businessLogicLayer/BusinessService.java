@@ -1,6 +1,6 @@
-package com.envisionad.webservice.business.BusinessLogicLayer;
+package com.envisionad.webservice.business.businessLogicLayer;
 
-import com.envisionad.webservice.business.DataAccessLayer.Business;
+import com.envisionad.webservice.business.dataAccessLayer.Business;
 
 import java.util.List;
 import java.util.UUID;

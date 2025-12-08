@@ -1,12 +1,10 @@
-package com.envisionad.webservice.business.mappinglayer;
+package com.envisionad.webservice.business.mappingLayer;
 
-import com.envisionad.webservice.business.dataaccesslayer.Address;
-import com.envisionad.webservice.business.dataaccesslayer.Business;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.dataAccessLayer.Address;
+import com.envisionad.webservice.business.dataAccessLayer.Business;
+import com.envisionad.webservice.business.presentationLayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationLayer.models.BusinessResponseModel;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 @Component
 public class BusinessResponseMapper {
