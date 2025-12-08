@@ -34,4 +34,26 @@ public class BusinessServiceImpl implements BusinessService {
         return businessRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
     }
+
+    @Override
+    public Business updateBusinessById(UUID id, Business business) {
+
+        Business existingBusiness = businessRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
+        // Update fields of existingBusiness as needed
+        existingBusiness.setName(business.getName());
+        existingBusiness.setAddress(business.getAddress());
+        existingBusiness.setCompanySize(business.getCompanySize());
+
+
+        return businessRepository.save(existingBusiness);
+    }
+
+    @Override
+    public Business deleteBusinessById(UUID id) {
+        Business existingBusiness = businessRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
+        businessRepository.delete(existingBusiness);
+        return existingBusiness;
+    }
 }

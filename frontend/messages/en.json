@@ -145,7 +145,18 @@
       "name": "Name",
       "companySize": "Size",
       "address": "Address",
-      "dateCreated": "Date Created"
+      "dateCreated": "Date Created",
+      "actions": "Actions"
+    },
+    "errors": {
+      "loadFailed": "Failed to load business for editing",
+      "deleteFailed": "Failed to delete business"
+    },
+    "deleteConfirm": {
+      "title": "Delete Business",
+      "message": "Are you sure you want to delete this business? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
     },
     "form": {
       "title": "Business Details",
@@ -172,6 +183,25 @@
       "MEDIUM": "Medium (51-150)",
       "LARGE": "Large (151-500)",
       "ENTERPRISE": "Enterprise (500+)"
+    }
+  },
+  "media": {
+    "sidebar": {
+      "overview": "Overview",
+      "media": "Media",
+      "displayedAds": "Displayed ads",
+      "adRequests": "Ad requests",
+      "transactions": "Transactions"
+    },
+    "errors": {
+      "loadFailed": "Failed to load media for editing",
+      "deleteFailed": "Failed to delete media"
+    },
+    "deleteConfirm": {
+      "title": "Delete Media",
+      "message": "Are you sure you want to delete this media? This action cannot be undone.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
     }
   }
 }

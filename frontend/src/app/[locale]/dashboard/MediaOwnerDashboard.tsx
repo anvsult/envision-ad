@@ -6,6 +6,7 @@ import { MediaModal } from "@/components/Dashboard/MediaOwner/MediaModal/MediaMo
 import { MediaTable } from "@/components/Dashboard/MediaOwner/MediaTable/MediaTable";
 import { useMediaList } from "@/components/Dashboard/MediaOwner/hooks/useMediaList";
 import { useMediaForm } from "@/components/Dashboard/MediaOwner/hooks/useMediaForm";
+import { useTranslations } from "next-intl";
 import {
   Button,
   Badge,
@@ -18,6 +19,7 @@ import {
   Box,
 } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
 import {
   IconLayoutDashboard,
   IconDeviceTv,
@@ -30,14 +32,17 @@ import { Link, usePathname } from "@/lib/i18n/navigation";
 const ITEMS_PER_PAGE = 20;
 
 export default function MediaOwnerPage() {
-  const { media, addNewMedia, editMedia, deleteMediaById, fetchMediaById } = useMediaList();
-  const { formState, updateField, updateDayTime, resetForm, setFormState } = useMediaForm();
+  const { media, addNewMedia, editMedia, deleteMediaById, fetchMediaById } =
+    useMediaList();
+  const { formState, updateField, updateDayTime, resetForm, setFormState } =
+    useMediaForm();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
   const [opened, { toggle, close }] = useDisclosure(false);
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const t = useTranslations("media");
 
   const handleSave = async () => {
     try {
@@ -59,13 +64,25 @@ export default function MediaOwnerPage() {
     try {
       const backend = await fetchMediaById(id);
       // Map backend DTO to MediaFormState shape
-      const schedule = backend.schedule || { selectedMonths: [], weeklySchedule: [] };
-
-      const activeDaysOfWeek: Record<string, boolean> = {
-        Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false
+      const schedule = backend.schedule || {
+        selectedMonths: [],
+        weeklySchedule: [],
       };
 
-      const dailyOperatingHours: Record<string, { start: string; end: string }> = {
+      const activeDaysOfWeek: Record<string, boolean> = {
+        Monday: false,
+        Tuesday: false,
+        Wednesday: false,
+        Thursday: false,
+        Friday: false,
+        Saturday: false,
+        Sunday: false,
+      };
+
+      const dailyOperatingHours: Record<
+        string,
+        { start: string; end: string }
+      > = {
         Monday: { start: "00:00", end: "00:00" },
         Tuesday: { start: "00:00", end: "00:00" },
         Wednesday: { start: "00:00", end: "00:00" },
@@ -78,12 +95,13 @@ export default function MediaOwnerPage() {
       if (schedule.weeklySchedule) {
         schedule.weeklySchedule.forEach((entry: any) => {
           // entry.dayOfWeek is likely "monday". We need "Monday"
-          const dayKey = entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
+          const dayKey =
+            entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
           if (activeDaysOfWeek.hasOwnProperty(dayKey)) {
             activeDaysOfWeek[dayKey] = entry.isActive;
             dailyOperatingHours[dayKey] = {
               start: entry.startTime ?? "00:00",
-              end: entry.endTime ?? "00:00"
+              end: entry.endTime ?? "00:00",
             };
           }
         });
@@ -105,7 +123,9 @@ export default function MediaOwnerPage() {
       ];
 
       const activeMonths: Record<string, boolean> = {};
-      months.forEach((m) => (activeMonths[m] = (schedule.selectedMonths || []).includes(m)));
+      months.forEach(
+        (m) => (activeMonths[m] = (schedule.selectedMonths || []).includes(m))
+      );
 
       // populate the form
       setFormState({
@@ -113,12 +133,16 @@ export default function MediaOwnerPage() {
         mediaOwnerName: backend.mediaOwnerName ?? "",
         resolution: backend.resolution ?? "",
         displayType: backend.typeOfDisplay ?? null,
-        loopDuration: backend.loopDuration != null ? String(backend.loopDuration) : "",
+        loopDuration:
+          backend.loopDuration != null ? String(backend.loopDuration) : "",
         aspectRatio: backend.aspectRatio ?? "",
         widthCm: backend.width != null ? String(backend.width) : "",
         heightCm: backend.height != null ? String(backend.height) : "",
         weeklyPrice: backend.price != null ? String(backend.price) : "",
-        dailyImpressions: backend.dailyImpressions != null ? String(backend.dailyImpressions) : "",
+        dailyImpressions:
+          backend.dailyImpressions != null
+            ? String(backend.dailyImpressions)
+            : "",
         mediaAddress: backend.address ?? "",
         activeDaysOfWeek,
         dailyOperatingHours,
@@ -129,19 +153,29 @@ export default function MediaOwnerPage() {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Failed to fetch media for edit:", err);
-      alert("Failed to load media for editing");
+      alert(t("errors.loadFailed"));
     }
   };
 
-  const handleDelete = async (id: string | number) => {
-    const confirmed = confirm("Are you sure you want to delete this media?");
-    if (!confirmed) return;
-    try {
-      await deleteMediaById(id);
-    } catch (err) {
-      console.error("Failed to delete media:", err);
-      alert("Failed to delete media");
-    }
+  const handleDelete = (id: string | number) => {
+    modals.openConfirmModal({
+      title: t("deleteConfirm.title"),
+      centered: true,
+      children: t("deleteConfirm.message"),
+      labels: {
+        confirm: t("deleteConfirm.confirm"),
+        cancel: t("deleteConfirm.cancel"),
+      },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await deleteMediaById(id);
+        } catch (err) {
+          console.error("Failed to delete media:", err);
+          alert(t("errors.deleteFailed"));
+        }
+      },
+    });
   };
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
@@ -156,7 +190,7 @@ export default function MediaOwnerPage() {
       <NavLink
         component={Link}
         href="/dashboard/overview"
-        label="Overview"
+        label={t("sidebar.overview")}
         leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
         active={pathname?.includes("/overview")}
         onClick={isMobile ? close : undefined}
@@ -164,7 +198,7 @@ export default function MediaOwnerPage() {
       <NavLink
         component={Link}
         href="/dashboard"
-        label="Media"
+        label={t("sidebar.media")}
         leftSection={<IconDeviceTv size={20} stroke={1.5} />}
         active={pathname === "/dashboard" || pathname?.endsWith("/dashboard")}
         onClick={isMobile ? close : undefined}
@@ -172,7 +206,7 @@ export default function MediaOwnerPage() {
       <NavLink
         component={Link}
         href="/dashboard/displayed-ads"
-        label="Displayed ads"
+        label={t("sidebar.displayedAds")}
         leftSection={<IconAd size={20} stroke={1.5} />}
         active={pathname?.includes("/displayed-ads")}
         onClick={isMobile ? close : undefined}
@@ -180,7 +214,7 @@ export default function MediaOwnerPage() {
       <NavLink
         component={Link}
         href="/dashboard/ad-requests"
-        label="Ad requests"
+        label={t("sidebar.adRequests")}
         leftSection={<IconFileDescription size={20} stroke={1.5} />}
         active={pathname?.includes("/ad-requests")}
         onClick={isMobile ? close : undefined}
@@ -193,7 +227,7 @@ export default function MediaOwnerPage() {
       <NavLink
         component={Link}
         href="/dashboard/transactions"
-        label="Transactions"
+        label={t("sidebar.transactions")}
         leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}
         active={pathname?.includes("/transactions")}
         onClick={isMobile ? close : undefined}
@@ -234,20 +268,34 @@ export default function MediaOwnerPage() {
 
           <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
             <Group justify="flex-start">
-              <Button onClick={() => { setEditingId(null); resetForm(); setIsModalOpen(true); }}>
+              <Button
+                onClick={() => {
+                  setEditingId(null);
+                  resetForm();
+                  setIsModalOpen(true);
+                }}
+              >
                 Add new media
               </Button>
             </Group>
             <MediaModal
               opened={isModalOpen}
-              onClose={() => { setIsModalOpen(false); setEditingId(null); resetForm(); }}
+              onClose={() => {
+                setIsModalOpen(false);
+                setEditingId(null);
+                resetForm();
+              }}
               onSave={handleSave}
               formState={formState}
               onFieldChange={updateField}
               onDayTimeChange={updateDayTime}
             />
 
-            <MediaTable rows={paginatedMedia} onEdit={handleEdit} onDelete={handleDelete} />
+            <MediaTable
+              rows={paginatedMedia}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
             {totalPages > 1 && (
               <Group justify="center" mt="md">
                 <Pagination
