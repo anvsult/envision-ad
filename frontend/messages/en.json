@@ -17,7 +17,6 @@
     },
     "profile": "Profile",
     "logout": "Logout"
-    }
   },
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
@@ -138,16 +137,21 @@
     "perWeek": "${price} per week",
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
-  "browseactions":{
-    "filter": "Filter:",
-    
-    "sort": "Sort by:"
-
-  },
-  "filterprice":{
-    "price": "Price",
-    "from": "From",
-    "to": "To",
-    "showresults": "Show results"
+  "browse": {
+    "browseactions":{
+      "filter": "Filter:",
+      "sort": "Sort by:"
+    },
+    "filters":{
+      "price": "Price ($)",
+      "impressions": "Minimum Impressions",
+      "from": "From",
+      "to": "To",
+      "showresults": "Show results"
+    },
+    "nomedia":{
+      "notfound": "No media found",
+      "changefilters": "Please change your filters"
+    }
   }
 }

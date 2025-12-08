@@ -45,10 +45,16 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
 }
 
 export async function getAllFilteredActiveMedia(
+    title?: string | null,
     minPrice?: number | null,
-    maxPrice?: number | null
+    maxPrice?: number | null,
+    minDailyImpressions?: number | null,
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
+
+    if (title && title !== undefined ) {
+        params.append("title", title);
+    }
 
     if (minPrice && minPrice !== undefined ) {
         params.append("minPrice", minPrice.toString());
@@ -56,6 +62,10 @@ export async function getAllFilteredActiveMedia(
 
     if (maxPrice && maxPrice !== undefined ) {
         params.append("maxPrice", maxPrice.toString());
+    }
+
+    if (minDailyImpressions && minDailyImpressions !== undefined ) {
+        params.append("minDailyImpressions", minDailyImpressions.toString());
     }
 
     const url = `${API_BASE_URL}/media/active?${params.toString()}`;

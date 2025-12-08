@@ -26,14 +26,27 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public List<Media> getAllFilteredActiveMedia(
+            String title,
             BigDecimal minPrice,
-            BigDecimal maxPrice) {
+            BigDecimal maxPrice,
+            Integer minDailyImpressions
+            ) {
 
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
+
+        if (title != null) {
+            spec = spec.and(MediaSpecifications.titleContains(title));
+        }
 
         if (minPrice != null || maxPrice != null) {
             spec = spec.and(MediaSpecifications.priceBetween(minPrice, maxPrice));
         }
+
+        if (minDailyImpressions != null) {
+            spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
+        }
+
+
         return mediaRepository.findAll(spec);
     }
 

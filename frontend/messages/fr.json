@@ -17,7 +17,6 @@
     },
     "profile": "Profil",
     "logout": "Se déconnecter"
-    }
   },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
@@ -138,5 +137,17 @@
   "mediacard": {
     "perWeek": "${price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
+  },
+  "browse": {
+    "browseactions":{
+      "filter": "Filter:",
+      "sort": "Sort by:"
+    },
+    "filterprice":{
+      "price": "Price",
+      "from": "From",
+      "to": "To",
+      "showresults": "Show results"
+    }
   }
 }

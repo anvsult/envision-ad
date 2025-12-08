@@ -7,7 +7,16 @@ public class MediaSpecifications {
 
     public static Specification<Media> hasStatus(Status status) {
         return (root, query, cb) ->
-                status == null ? null : cb.equal(root.get("status"), status);
+            status == null ? null : cb.equal(root.get("status"), status);
+    }
+
+    public static Specification<Media> titleContains(String title) {
+        return (root, query, cb) -> {
+            if (title == null || title.isBlank()) {
+                return null;
+            }
+            return cb.like(cb.lower(root.get("title")), "%" + title.toLowerCase() + "%");
+        };
     }
 
     public static Specification<Media> priceBetween(BigDecimal minPrice, BigDecimal maxPrice) {
@@ -26,5 +35,10 @@ public class MediaSpecifications {
 
             return cb.lessThanOrEqualTo(root.get("price"), maxPrice);
         };
+    }
+
+    public static Specification<Media> dailyImpressionsGreaterThan(Integer minDailyImpressions) {
+        return (root, query, cb) ->
+            minDailyImpressions == null ? null : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
     }
 }

@@ -40,11 +40,13 @@ public class MediaController {
 
     @GetMapping("/active")
     public List<MediaResponseModel> getAllFilteredActiveMedia(
+            @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Integer minDailyImpressions
     ) {
         return responseMapper.entityListToResponseModelList(
-            mediaService.getAllFilteredActiveMedia(minPrice, maxPrice)
+            mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions)
         );
     }
 
