@@ -27,7 +27,7 @@ export function FilterNumberInput({value, setValue, label, placeholder, prefix, 
                     min={0}
                     w={w}
                     value={value ?? undefined}
-                    onChange={(v) => setValue(Number(v))}
+                    onChange={(v) => setValue(v === "" || v === null || v === undefined ? null : Number(v))}
                 />
             </Group>
         </Stack>
@@ -103,7 +103,7 @@ export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice
     };
 
     return(
-        <FilterPopover buttonName={t('price')}applyActions={handleApply}>
+        <FilterPopover buttonName={t('price')} applyActions={handleApply}>
             <Group gap='lg'>
                 <FilterNumberInput
                     label={t('from')}
@@ -135,7 +135,7 @@ export function FilterValuePopover({value, setValue, label, placeholder, prefix}
     };
 
     return(
-        <FilterPopover buttonName={label}applyActions={handleApply}>
+        <FilterPopover buttonName={label} applyActions={handleApply}>
             <Group gap='lg'>
                 <FilterNumberInput
                     label={label}

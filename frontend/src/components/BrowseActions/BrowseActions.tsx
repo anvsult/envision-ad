@@ -1,6 +1,5 @@
 import { Group, Select, Text } from "@mantine/core";
 import { useTranslations } from "next-intl";
-import { FilterPricePopover, FilterPricePopoverProps } from "./Filters/FilterPopover";
 
 interface BrowseActionsProps{
     filters?: React.ReactNode;

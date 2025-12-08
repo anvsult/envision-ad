@@ -38,15 +38,29 @@ public class MediaController {
     }
 
     @GetMapping("/active")
-    public List<MediaResponseModel> getAllFilteredActiveMedia(
+    public ResponseEntity<?> getAllFilteredActiveMedia(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions
     ) {
-        return responseMapper.entityListToResponseModelList(
+        // Input validation
+        if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.badRequest().body("minPrice must be non-negative.");
+        }
+        if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.badRequest().body("maxPrice must be non-negative.");
+        }
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            return ResponseEntity.badRequest().body("minPrice must not be greater than maxPrice.");
+        }
+        if (minDailyImpressions != null && minDailyImpressions < 0) {
+            return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
+        }
+        List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
             mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions)
         );
+        return ResponseEntity.ok(result);
     }
 
 

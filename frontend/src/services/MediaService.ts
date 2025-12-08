@@ -49,19 +49,19 @@ export async function getAllFilteredActiveMedia(
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
-    if (title && title !== undefined ) {
+    if (title) {
         params.append("title", title);
     }
 
-    if (minPrice && minPrice !== undefined ) {
+    if (minPrice) {
         params.append("minPrice", minPrice.toString());
     }
 
-    if (maxPrice && maxPrice !== undefined ) {
+    if (maxPrice) {
         params.append("maxPrice", maxPrice.toString());
     }
 
-    if (minDailyImpressions && minDailyImpressions !== undefined ) {
+    if (minDailyImpressions) {
         params.append("minDailyImpressions", minDailyImpressions.toString());
     }
 
