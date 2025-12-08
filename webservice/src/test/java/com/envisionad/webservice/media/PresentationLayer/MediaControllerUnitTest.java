@@ -99,15 +99,15 @@ class MediaControllerUnitTest {
         List<Media> mediaList = Arrays.asList(media);
         List<MediaResponseModel> responseList = Arrays.asList(responseModel);
 
-        when(mediaService.getAllFilteredActiveMedia()).thenReturn(mediaList);
+        when(mediaService.getAllFilteredActiveMedia(null, null, null, null)).thenReturn(mediaList);
         when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-        List<MediaResponseModel> response = mediaController.getAllFilteredActiveMedia();
+        List<MediaResponseModel> response = mediaController.getAllFilteredActiveMedia(null, null, null, null);
 
         assertNotNull(response);
         assertEquals(1, response.size());
         assertEquals(mediaId, response.get(0).getId());
-        verify(mediaService, times(1)).getAllFilteredActiveMedia();
+        verify(mediaService, times(1)).getAllFilteredActiveMedia(null, null, null, null);
         verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
     }
 
