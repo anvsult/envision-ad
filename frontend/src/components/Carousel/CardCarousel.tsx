@@ -43,13 +43,10 @@ export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
                         mediaOwnerName={media.mediaOwnerName}
                         address={media.address}
                         aspectRatio={media.aspectRatio}
-                        width={media.width}
-                        height={media.height}
                         typeOfDisplay={media.typeOfDisplay}
                         price={media.price} 
                         dailyImpressions={media.dailyImpressions}
                         resolution={media.resolution} 
-                        loopDuration={media.loopDuration}
                     />
                 </CarouselSlide>
               ))}

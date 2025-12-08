@@ -58,12 +58,13 @@ export function Header({
 
   const authButtons = (
     <>
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a href="/auth/login?screen_hint=signup" className={classes.navLink}>
         <Button variant="outline" color="blue.6" radius="xl">
           {t("register")}
         </Button>
       </a>
-
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}  
       <a href="/auth/login" className={classes.navLink}>
         <Button variant="filled" color="blue.8" radius="xl">
           {t("signIn")}
