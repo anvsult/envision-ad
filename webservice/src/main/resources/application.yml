@@ -8,9 +8,9 @@ spring:
     hikari:
       maximum-pool-size: 10
   jpa:
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
     hibernate:
-      ddl-auto: validate        # use `update` only for dev; prefer migrations
+      ddl-auto: none        # Don't let Hibernate manage schema, use schema.sql instead
     properties:
       hibernate:
         format_sql: false
