@@ -1,21 +1,20 @@
-import { MediaStatuses } from "@/app/models/mediaStatuses";
-import { MediaStatusMap } from "@/app/models/mediaStatusMap";
+import { MediaAdStatuses,MediaAdStatusMap } from "@/types/MediaAdStatus";
 import { Badge } from "@mantine/core";
 
 interface MediaStatusProps {
-    status: MediaStatuses;
+    status: MediaAdStatuses;
 }
 
 export default function StatusBadge({status}: MediaStatusProps){
 
     return(
-        <Badge color={MediaStatusMap[status].color} 
+        <Badge color={MediaAdStatusMap[status].color} 
             pos="absolute" 
             top={10}
             left={10}
             style={{ zIndex: 1 }}
         >
-            {MediaStatusMap[status].text}
+            {MediaAdStatusMap[status].text}
         </Badge>
     )
 }

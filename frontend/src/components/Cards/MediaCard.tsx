@@ -1,8 +1,8 @@
 import { Paper, Text, Image, Space, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
-import StatusBadge from "../StatusBadge/StatusBadge";
-import { MediaStatuses } from "@/app/models/mediaStatuses";
+// import StatusBadge from "../StatusBadge/StatusBadge";
+// import { MediaAdStatuses } from "@/types/MediaAdStatus";
 
 export interface MediaCardProps {
     id?: string;
@@ -34,8 +34,8 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resol
             >   
                 
                 <AspectRatio ratio={16/9}>
-                    <Paper className={styles.imagecontainer} radius="md" >
-                        <StatusBadge status={MediaStatuses.DISPLAYING}/>
+                    <Paper className={styles.imagecontainer} radius="md" shadow="xs">
+                        {/* <StatusBadge status={MediaAdStatuses.DISPLAYING}/> */}
                         <AspectRatio ratio={16/9}>
                             <Image src={imageUrl} alt="Media"  className={styles.image}/>
                         </AspectRatio>
