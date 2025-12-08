@@ -74,7 +74,7 @@ function BrowsePage() {
   return(
     <>
       <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-      <FilterValuePopover value={minPrice} setValue={setMinImpressions} label={t('filters.impressions')}/>
+      <FilterValuePopover value={minPrice} setValue={setMinImpressions} label={t('filters.impressions')} placeholder={t('filters.impressions')}/>
     </>
   )
 }

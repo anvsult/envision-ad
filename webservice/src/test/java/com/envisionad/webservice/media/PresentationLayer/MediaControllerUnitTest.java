@@ -95,19 +95,19 @@ class MediaControllerUnitTest {
     }
 
     @Test
-    void getAllActiveMedia_ShouldReturnListOfActiveMedia() {
+    void getAllFilteredActiveMedia_WithNoFilters_ShouldReturnListOfActiveMedia() {
         List<Media> mediaList = Arrays.asList(media);
         List<MediaResponseModel> responseList = Arrays.asList(responseModel);
 
-        when(mediaService.getAllActiveMedia()).thenReturn(mediaList);
+        when(mediaService.getAllFilteredActiveMedia()).thenReturn(mediaList);
         when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-        List<MediaResponseModel> response = mediaController.getAllActiveMedia();
+        List<MediaResponseModel> response = mediaController.getAllFilteredActiveMedia();
 
         assertNotNull(response);
         assertEquals(1, response.size());
         assertEquals(mediaId, response.get(0).getId());
-        verify(mediaService, times(1)).getAllActiveMedia();
+        verify(mediaService, times(1)).getAllFilteredActiveMedia();
         verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
     }
 

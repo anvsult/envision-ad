@@ -14,7 +14,6 @@ import {
 } from "@tabler/icons-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
 import { BusinessDashboard } from "./BusinessDashboard";
-import { Box, Drawer, Group, NavLink, Paper, Stack } from "@mantine/core";
 
 export function BusinessPageWrapper() {
   const [opened, { toggle, close }] = useDisclosure(false);
