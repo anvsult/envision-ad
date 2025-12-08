@@ -26,7 +26,7 @@ CREATE TABLE business (
 
         CONSTRAINT fk_address
             FOREIGN KEY (address_id)
-                REFERENCES addresses (id)
+                REFERENCES address (id)
                 ON DELETE CASCADE
 );
 
