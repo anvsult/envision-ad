@@ -57,7 +57,7 @@ export async function getActiveMedia(): Promise<MediaDTO[]> {
 }
 
 export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
-    const response = await fetch(`${API_BASE_URL}/medias`, {
+    const response = await fetch(`${API_BASE_URL}/media`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
