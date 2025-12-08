@@ -44,12 +44,24 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
     return response.json();
 }
 
-export async function getActiveMedia(): Promise<MediaDTO[]> {
-    const response = await fetch(`${API_BASE_URL}/media/active`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+export async function getAllFilteredActiveMedia(
+    minPrice?: number | null,
+    maxPrice?: number | null
+    ): Promise<MediaDTO[]> {
+    const params = new URLSearchParams();
+
+    if (minPrice && minPrice !== undefined ) {
+        params.append("minPrice", minPrice.toString());
+    }
+
+    if (maxPrice && maxPrice !== undefined ) {
+        params.append("maxPrice", maxPrice.toString());
+    }
+
+    const url = `${API_BASE_URL}/media/active?${params.toString()}`;
+
+    const response = await fetch(url, {
+    method: "GET",
     });
 
     if (!response.ok) {

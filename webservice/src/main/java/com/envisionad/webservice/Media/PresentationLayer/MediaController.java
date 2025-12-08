@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 
 import java.util.List;
 import java.util.UUID;
@@ -38,9 +39,15 @@ public class MediaController {
     }
 
     @GetMapping("/active")
-    public List<MediaResponseModel> getAllActiveMedia() {
-        return responseMapper.entityListToResponseModelList(mediaService.getAllActiveMedia());
+    public List<MediaResponseModel> getAllFilteredActiveMedia(
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice
+    ) {
+        return responseMapper.entityListToResponseModelList(
+            mediaService.getAllFilteredActiveMedia(minPrice, maxPrice)
+        );
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {

@@ -3,7 +3,10 @@ package com.envisionad.webservice.Media.BusinessLayer;
 import com.envisionad.webservice.Media.DataAccessLayer.Media;
 import com.envisionad.webservice.Media.DataAccessLayer.Status;
 import com.envisionad.webservice.Media.DataAccessLayer.MediaRepository;
+import com.envisionad.webservice.Media.DataAccessLayer.MediaSpecifications;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
 
 import java.util.List;
 
@@ -22,8 +25,16 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<Media> getAllActiveMedia() {
-        return mediaRepository.findAllByStatus(Status.ACTIVE);
+    public List<Media> getAllFilteredActiveMedia(
+            BigDecimal minPrice,
+            BigDecimal maxPrice) {
+
+        Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
+
+        if (minPrice != null || maxPrice != null) {
+            spec = spec.and(MediaSpecifications.priceBetween(minPrice, maxPrice));
+        }
+        return mediaRepository.findAll(spec);
     }
 
     @Override

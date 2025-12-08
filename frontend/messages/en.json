@@ -80,5 +80,17 @@
   "mediacard": {
     "perWeek": "${price} per week",
     "dailyImpressions": "~{dailyImpressions} daily impressions"
+  },
+  "browseactions":{
+    "filter": "Filter:",
+    
+    "sort": "Sort by:"
+
+  },
+  "filterprice":{
+    "price": "Price",
+    "from": "From",
+    "to": "To",
+    "apply": "Apply"
   }
 }

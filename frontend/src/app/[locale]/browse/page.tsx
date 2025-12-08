@@ -6,48 +6,62 @@ import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
 import BrowseActions from '@/components/BrowseActions/BrowseActions';
 import { useEffect, useMemo, useState } from 'react';
-import {  getActiveMedia } from "@/services/MediaService";
+import {  getAllFilteredActiveMedia } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
 
 function BrowsePage() {
+  // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
-  useEffect(() => {
-    getActiveMedia()
-      .then((data) => {
-        const items = (data || []).filter((m) => m.id != null);
-        const mapped = items.map((m) => ({
-          id: String(m.id),
-          title: m.title,
-          mediaOwnerName: m.mediaOwnerName,
-          address: m.address,
-          resolution: m.resolution,
-          aspectRatio: m.aspectRatio,
-          loopDuration: m.loopDuration,
-          width: m.width ?? 0,
-          height: m.height ?? 0,
-          price: m.price ?? 0,
-          dailyImpressions: m.dailyImpressions ?? 0,
-          typeOfDisplay: m.typeOfDisplay,
-          imageUrl: m.imageUrl,
-        }));
-        setMedia(mapped);
-      })
-      .catch((err) => {
-        console.error("Failed to load media:", err);
-      });
-  }, []);
 
-const ITEMS_PER_PAGE = 16;
+  const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
 
+  // Filters
+  const [minPrice, setMinPrice] = useState<number|null>(null);
+  const [maxPrice, setMaxPrice] = useState<number|null>(null);
+
+
+
+  useEffect(() => {
+  getAllFilteredActiveMedia(minPrice, maxPrice)
+    .then((data) => {
+      const items = (data || []).filter((m) => m.id != null);
+
+      const mapped = items.map((m) => ({
+        id: String(m.id),
+        title: m.title,
+        mediaOwnerName: m.mediaOwnerName,
+        address: m.address,
+        resolution: m.resolution,
+        aspectRatio: m.aspectRatio,
+        loopDuration: m.loopDuration,
+        width: m.width ?? 0,
+        height: m.height ?? 0,
+        price: m.price ?? 0,
+        dailyImpressions: m.dailyImpressions ?? 0,
+        typeOfDisplay: m.typeOfDisplay,
+        imageUrl: m.imageUrl,
+      }));
+
+      setMedia(mapped);
+      setActivePage(1);
+    })
+    .catch((err) => {
+      console.error("Failed to load media:", err);
+    });
+}, [minPrice, maxPrice]);
+
+
   const paginatedMedia = useMemo(() => {
-      const start = (activePage - 1) * ITEMS_PER_PAGE;
-      const end = start + ITEMS_PER_PAGE;
-      return media.slice(start, end);
-    }, [media, activePage]);
+    const start = (activePage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return media.slice(start, end);
+  }, [media, activePage]);
+
+
 
   return (
     <>
@@ -55,7 +69,7 @@ const ITEMS_PER_PAGE = 16;
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
-          <BrowseActions />
+          <BrowseActions minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
 
           <MediaCardGrid medias={paginatedMedia} />
 
