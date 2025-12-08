@@ -4,6 +4,14 @@ import React from "react";
 import { Header } from "@/components/Header/Header";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import {
+    Stack,
+    NavLink,
+    Paper,
+    Drawer,
+    Box,
+    Group,
+} from "@mantine/core";
+import {
     IconLayoutDashboard,
     IconDeviceTv,
     IconAd,

@@ -145,7 +145,8 @@
       "name": "Name",
       "companySize": "Size",
       "address": "Address",
-      "dateCreated": "Date Created"
+      "dateCreated": "Date Created",
+      "actions": "Actions"
     },
     "errors": {
       "loadFailed": "Failed to load business for editing",

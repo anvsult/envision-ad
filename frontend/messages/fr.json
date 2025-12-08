@@ -146,7 +146,8 @@
       "name": "Nom",
       "companySize": "Taille",
       "address": "Adresse",
-      "dateCreated": "Date de création"
+      "dateCreated": "Date de création",
+      "actions": "Actions"
     },
     "errors": {
       "loadFailed": "Échec du chargement de l'entreprise pour modification",
