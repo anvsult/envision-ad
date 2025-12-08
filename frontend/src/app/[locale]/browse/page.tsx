@@ -9,9 +9,6 @@ import { useEffect, useMemo, useState } from 'react';
 import {  getActiveMedia } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
 
-
-
-
 function BrowsePage() {
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
@@ -41,7 +38,7 @@ function BrowsePage() {
       });
   }, []);
 
- const ITEMS_PER_PAGE = 16;
+const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);

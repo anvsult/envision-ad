@@ -17,7 +17,7 @@ export default function BrowseActions(){
                 <Select
                     placeholder="Nearest"
                     data={['Nearest', 'Price: Low to high', 'Price: High to low', 'Recently added']}
-                    defaultValue="React"
+                    defaultValue="Nearest"
                     allowDeselect={false}
                 />
             </Group>

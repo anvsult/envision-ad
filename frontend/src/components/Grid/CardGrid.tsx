@@ -1,5 +1,4 @@
-
-import {  Grid, GridCol } from "@mantine/core";
+import { Grid, GridCol } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
 
 interface CardGridProps {
@@ -25,7 +24,7 @@ export function MediaCardGrid({medias}: MediaCardGridProps) {
         <div>
             <CardGrid>
                 {medias.map((media) => (
-                    <GridCol key={media.id} span={{base: 12, xs: 5, sm: 4, md: 3, lg: 3, }}>
+                    <GridCol key={media.id} span={{base: 12, xs: 5, sm: 4, md: 3, lg: 3 }}>
                         <MediaCard 
                             id={media.id}
                             imageUrl={media.imageUrl}
@@ -40,8 +39,7 @@ export function MediaCardGrid({medias}: MediaCardGridProps) {
                             dailyImpressions={media.dailyImpressions} 
                             resolution={media.resolution} 
                             loopDuration={media.loopDuration}
-                            // impressions={media.impressions}
-                            // dateAdded={media.dateAdded}
+                            {/* TODO: Add impressions and dateAdded props when supported by MediaCard */}
                         />
                     </GridCol>
               ))}

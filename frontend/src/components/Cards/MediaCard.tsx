@@ -14,8 +14,8 @@ export interface MediaCardProps {
     price: number ;
     typeOfDisplay: string;
     imageUrl?: string | null;
-    dailyImpressions: number ,
-    // dateAdded: Date
+    dailyImpressions: number
+    // TODO: Add `dateAdded: Date` property if/when date tracking is required.
 }
 
 function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
