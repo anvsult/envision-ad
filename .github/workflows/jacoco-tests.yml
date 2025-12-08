@@ -16,6 +16,6 @@ jobs:
           ./gradlew clean build --no-daemon
       - name: Upload JaCoCo HTML report
         uses: actions/upload-artifact@v4
-        with:
+          path: webservice/build/reports/jacoco/test/html
           name: jacoco-html
           path: webservice/build/reports/jacoco/html

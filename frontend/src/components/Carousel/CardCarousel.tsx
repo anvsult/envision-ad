@@ -1,6 +1,6 @@
 import { Carousel, CarouselSlide } from "@mantine/carousel";
-import classes from "./CardCarousel.module.css"
-import {  Title } from "@mantine/core";
+import classes from "./CardCarousel.module.css";
+import { Title } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
 
 interface CardCarouselProps {

@@ -44,7 +44,7 @@ public class BusinessServiceImpl implements BusinessService {
         existingBusiness.setName(business.getName());
         existingBusiness.setAddress(business.getAddress());
         existingBusiness.setCompanySize(business.getCompanySize());
-        existingBusiness.setDateCreated(business.getDateCreated());
+
 
         return businessRepository.save(existingBusiness);
     }

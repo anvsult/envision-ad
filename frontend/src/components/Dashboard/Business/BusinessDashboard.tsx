@@ -10,7 +10,7 @@ import { useBusinessForm } from "@/components/Dashboard/Business/hooks/useBusine
 
 export function BusinessDashboard() {
   const t = useTranslations("business");
-  const {
+    const { businesses, refreshBusinesses, fetchBusinessById, deleteBusinessById } = useBusinessList();
     businesses,
     refreshBusinesses,
     fetchBusinessById,

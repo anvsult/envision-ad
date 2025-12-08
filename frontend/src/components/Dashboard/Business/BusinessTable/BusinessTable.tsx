@@ -22,7 +22,7 @@ export function BusinessTable({ rows, onEdit, onDelete }: BusinessTableProps) {
             <Table.Th>{t("table.companySize")}</Table.Th>
             <Table.Th>{t("table.address")}</Table.Th>
             <Table.Th>{t("table.dateCreated")}</Table.Th>
-            <Table.Th>Actions</Table.Th>
+            <Table.Th>{t("table.actions")}</Table.Th>
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>

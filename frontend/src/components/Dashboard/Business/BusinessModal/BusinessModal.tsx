@@ -45,7 +45,7 @@ export function BusinessModal({
       resetForm();
     } catch (error) {
       console.error("Failed to save business", error);
-      alert("Failed to save business");
+            alert(t("saveError"));
     } finally {
       setSaving(false);
     }
