@@ -11,9 +11,12 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-      "envisionAdLogo": {
-        "alt": "Envision Ad Logo"
-      }
+        "envisionAdLogo": {
+          "alt": "Envision Ad Logo"
+        }
+    },
+    "profile": "Profile",
+    "logout": "Logout"
     }
   },
   "homepage": {

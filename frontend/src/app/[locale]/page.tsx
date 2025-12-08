@@ -1,5 +1,3 @@
-"use client";
-
 import { Container, Stack, Title, Text, Button, Box } from "@mantine/core";
 import Link from "next/link";
 import { Header } from "@/components/Header/Header";

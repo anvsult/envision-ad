@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Modal, Button, ScrollArea } from "@mantine/core";
 import { MediaDetailsForm } from "./MediaDetailsForm";
 import { ScheduleSelector } from "./ScheduleSelector";
