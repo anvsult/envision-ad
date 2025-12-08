@@ -11,9 +11,6 @@ export interface MediaCardProps {
     address: string;
     resolution: string;
     aspectRatio: string;
-    loopDuration: number | null;
-    width: number | null;
-    height: number | null;
     price: number ;
     typeOfDisplay: string;
     imageUrl?: string | null;
