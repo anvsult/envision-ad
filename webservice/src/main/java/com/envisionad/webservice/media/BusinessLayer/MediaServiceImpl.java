@@ -1,9 +1,9 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
-import com.envisionad.webservice.Media.DataAccessLayer.Media;
-import com.envisionad.webservice.Media.DataAccessLayer.Status;
-import com.envisionad.webservice.Media.DataAccessLayer.MediaRepository;
-import com.envisionad.webservice.Media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
+import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
+import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;

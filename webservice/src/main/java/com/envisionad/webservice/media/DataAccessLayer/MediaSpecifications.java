@@ -1,5 +1,7 @@
-package com.envisionad.webservice.Media.DataAccessLayer;
+package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
 import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
 
