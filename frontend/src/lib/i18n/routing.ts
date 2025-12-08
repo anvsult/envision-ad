@@ -8,13 +8,9 @@ export const routing = defineRouting({
     '/': '/',
 
     // If locales use different paths
-    '/register': {
-        'en': '/register',
-        'fr': '/inscription'
-    },
-    '/signin': {
-        'en': '/signin',
-        'fr': '/connexion'
+    '/profile': {
+      'en': '/profile',
+      'fr': '/profil'
     },
     '/browse': {
       'en': '/browse',

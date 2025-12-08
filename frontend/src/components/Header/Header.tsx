@@ -9,13 +9,16 @@ import {
   ScrollArea,
   Divider,
   Burger,
+  Menu
 } from "@mantine/core";
 import classes from "./Header.module.css";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname } from "@/lib/i18n/navigation";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { IconChevronDown } from '@tabler/icons-react';
 
 // When in dashboard on small screen, the burger menu shows dashboard menus instead of header menus
 interface HeaderProps {
@@ -31,6 +34,7 @@ export function Header({
 }: HeaderProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
+  const { user, isLoading } = useUser();
   const links: Array<{ link: "/" | "/dashboard" | "/browse"; label: string }> =
     [
       { link: "/", label: t("home") },
@@ -43,7 +47,7 @@ export function Header({
   const items = links.map((link) => (
     <Link
       key={link.label}
-      href={link.link}
+      href={link.link as any}
       className={classes.link}
       data-active={pathname === link.link || undefined}
       onClick={closeDrawer}
@@ -54,18 +58,43 @@ export function Header({
 
   const authButtons = (
     <>
-      <Link href="/register" className={classes.navLink}>
-        <Button variant="outline" color="blue.6" radius="xl" fullWidth>
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+      <a href="/auth/login?screen_hint=signup" className={classes.navLink}>
+        <Button variant="outline" color="blue.6" radius="xl">
           {t("register")}
         </Button>
-      </Link>
-      <Link href="/signin" className={classes.navLink}>
-        <Button variant="filled" color="blue.6" radius="xl" fullWidth>
+      </a>
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}  
+      <a href="/auth/login" className={classes.navLink}>
+        <Button variant="filled" color="blue.8" radius="xl">
           {t("signIn")}
         </Button>
-      </Link>
+      </a>
     </>
   );
+
+  const userMenu = user && (
+    <Menu shadow="md" width={200} withinPortal={false}>
+      <Menu.Target>
+        <Button variant="outline" radius="xl" rightSection={<IconChevronDown size={16} />}>
+          {user.nickname || user.name || "User"}
+        </Button>
+      </Menu.Target>
+
+      <Menu.Dropdown>
+        <Menu.Item component="a" href="/profile">
+          {t("profile")}
+        </Menu.Item>
+        <Menu.Item component="a" href="/auth/logout" color="red">
+          {t("logout")}
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <Box>
@@ -96,18 +125,9 @@ export function Header({
           </Group>
 
           {/* Auth Buttons */}
-          <Group visibleFrom="md">
+          <Group visibleFrom="md" gap="sm">
             <LanguagePicker />
-            <Link href="/register" className={classes.navLink}>
-              <Button variant="outline" color="blue.6" radius="xl">
-                {t("register")}
-              </Button>
-            </Link>
-            <Link href="/signin" className={classes.navLink}>
-              <Button variant="filled" color="blue.6" radius="xl">
-                {t("signIn")}
-              </Button>
-            </Link>
+            {user ? userMenu : authButtons}
           </Group>
 
           {/* Burger menu - shows sidebar toggle in dashboard mode, otherwise shows navigation drawer */}
@@ -134,20 +154,20 @@ export function Header({
           <ScrollArea h="calc(100vh - 80px)" mx="-md">
             <Divider my="sm" />
 
-            <Box hiddenFrom="sm">
-              {items}
-              <Divider my="sm" />
-            </Box>
+              <Box hiddenFrom="sm">
+                  {items}
+                  <Divider my="sm" />
+              </Box>
 
-            <Group justify="center" pb="md" px="md">
-              <LanguagePicker />
-            </Group>
+              <Group justify="center" pb="md" px="md">
+                  <LanguagePicker />
+              </Group>
 
-            <Group justify="center" grow pb="xl" px="md">
-              {authButtons}
-            </Group>
-          </ScrollArea>
-        </Drawer>
+              <Group justify="center" grow pb="xl" px="md">
+                  {user ? userMenu : authButtons}
+              </Group>
+            </ScrollArea>
+          </Drawer>
       )}
     </Box>
   );

@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.13.2",
     "@mantine/carousel": "^8.3.9",
     "@mantine/charts": "^8.3.9",
     "@mantine/code-highlight": "^8.3.9",
@@ -26,15 +27,17 @@
     "embla-carousel-react": "^8.6.0",
     "next": "^16.0.7",
     "next-intl": "^4.5.7",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
     "recharts": "^3.5.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "baseline-browser-mapping": "^2.9.3",
     "eslint": "^9",
     "eslint-config-next": "16.0.3",
     "postcss": "^8.5.6",

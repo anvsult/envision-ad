@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { MediaRow, MediaRowData } from "./MediaRow";
 import { Table, Paper, Text, ScrollArea } from "@mantine/core";
 
