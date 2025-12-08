@@ -16,6 +16,15 @@ export function MediaDetailsForm({
   formState,
   onFieldChange,
 }: MediaDetailsFormProps) {
+  const handleRestrictedChange = (
+    field: keyof MediaFormState,
+    value: string,
+    pattern: RegExp
+  ) => {
+    const cleaned = value.replace(pattern, "");
+    onFieldChange(field, cleaned);
+  };
+
   return (
     <>
       <h3>Details</h3>
@@ -72,7 +81,9 @@ export function MediaDetailsForm({
           label="Loop duration (sec)"
           placeholder="e.g. 30"
           value={formState.loopDuration}
-          onChange={(e) => onFieldChange("loopDuration", e.currentTarget.value)}
+          onChange={(e) =>
+            handleRestrictedChange("loopDuration", e.currentTarget.value, /[^0-9]/g)
+          }
         />
       )}
       {formState.displayType?.toLowerCase() === "digital" && (
@@ -82,7 +93,9 @@ export function MediaDetailsForm({
             label="Resolution (px)"
             placeholder="Ex. 1920x1080"
             value={formState.resolution}
-            onChange={(e) => onFieldChange("resolution", e.currentTarget.value)}
+            onChange={(e) =>
+              handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
+            }
             required
           />
 
@@ -92,7 +105,7 @@ export function MediaDetailsForm({
             placeholder="e.g. 16:9"
             value={formState.aspectRatio}
             onChange={(e) =>
-              onFieldChange("aspectRatio", e.currentTarget.value)
+              handleRestrictedChange("aspectRatio", e.currentTarget.value, /[^0-9:]/g)
             }
           />
         </>
@@ -105,18 +118,22 @@ export function MediaDetailsForm({
             <TextInput
               label="Width (cm)"
               placeholder="Ex. 80"
-              type="number"
+              type="text"
               style={{ flex: 1 }}
               value={formState.widthCm}
-              onChange={(e) => onFieldChange("widthCm", e.currentTarget.value)}
+              onChange={(e) =>
+                handleRestrictedChange("widthCm", e.currentTarget.value, /[^0-9]/g)
+              }
             />
             <TextInput
               label="Height (cm)"
               placeholder="Ex. 200"
-              type="number"
+              type="text"
               style={{ flex: 1 }}
               value={formState.heightCm}
-              onChange={(e) => onFieldChange("heightCm", e.currentTarget.value)}
+              onChange={(e) =>
+                handleRestrictedChange("heightCm", e.currentTarget.value, /[^0-9]/g)
+              }
             />
           </div>
         </>
@@ -128,7 +145,9 @@ export function MediaDetailsForm({
         placeholder="$50"
         type="text"
         value={formState.weeklyPrice}
-        onChange={(e) => onFieldChange("weeklyPrice", e.currentTarget.value)}
+        onChange={(e) =>
+          handleRestrictedChange("weeklyPrice", e.currentTarget.value, /[^0-9]/g)
+        }
       />
 
       <div style={{ height: 12 }} />

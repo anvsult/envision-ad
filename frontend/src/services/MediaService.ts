@@ -14,15 +14,12 @@ export interface MediaDTO {
     dailyImpressions: number | null;
     schedule: {
         selectedMonths: string[];
-        days: {
-            monday:    { isActive: boolean; startTime: string | null; endTime: string | null };
-            tuesday:   { isActive: boolean; startTime: string | null; endTime: string | null };
-            wednesday: { isActive: boolean; startTime: string | null; endTime: string | null };
-            thursday:  { isActive: boolean; startTime: string | null; endTime: string | null };
-            friday:    { isActive: boolean; startTime: string | null; endTime: string | null };
-            saturday:  { isActive: boolean; startTime: string | null; endTime: string | null };
-            sunday:    { isActive: boolean; startTime: string | null; endTime: string | null };
-        };
+        weeklySchedule: {
+            dayOfWeek: string;
+            isActive: boolean;
+            startTime: string | null;
+            endTime: string | null;
+        }[];
     };
     status: string | null;
     typeOfDisplay: string;
@@ -82,7 +79,7 @@ export async function getAllFilteredActiveMedia(
 }
 
 export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
-    const response = await fetch(`${API_BASE_URL}/medias`, {
+    const response = await fetch(`${API_BASE_URL}/media`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

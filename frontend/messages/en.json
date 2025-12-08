@@ -6,6 +6,7 @@
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
+    "business": "Business",
     "browse": "Browse",
     "register": "Register",
     "signIn": "Sign In",
@@ -144,14 +145,50 @@
     },
     "filters":{
       "price": "Price ($)",
-      "impressions": "Minimum Impressions",
+      "impressions": "Minimum impressions",
       "from": "From",
       "to": "To",
-      "showresults": "Show results"
+      "showresults": "Add filter"
     },
     "nomedia":{
       "notfound": "No media found",
       "changefilters": "Please change your filters"
+    }
+  },
+  "business": {
+    "title": "Business",
+    "createButton": "Create Business",
+    "table": {
+      "name": "Name",
+      "companySize": "Size",
+      "address": "Address",
+      "dateCreated": "Date Created"
+    },
+    "form": {
+      "title": "Business Details",
+      "nameLabel": "Business Name",
+      "namePlaceholder": "Ex. Tech Corp",
+      "sizeLabel": "Company Size",
+      "sizePlaceholder": "Select size",
+      "addressLabel": "Address Details",
+      "streetLabel": "Street",
+      "streetPlaceholder": "123 Main St",
+      "cityLabel": "City",
+      "cityPlaceholder": "New York",
+      "stateLabel": "State/Province",
+      "statePlaceholder": "NY",
+      "zipLabel": "Zip/Postal Code",
+      "zipPlaceholder": "10001",
+      "countryLabel": "Country",
+      "countryPlaceholder": "USA",
+      "submit": "Create Business",
+      "cancel": "Cancel"
+    },
+    "sizes": {
+      "SMALL": "Small (1-50)",
+      "MEDIUM": "Medium (51-150)",
+      "LARGE": "Large (151-500)",
+      "ENTERPRISE": "Enterprise (500+)"
     }
   }
 }
