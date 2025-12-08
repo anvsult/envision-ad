@@ -11,9 +11,9 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Envision Ad Logo"
-        }
+      "envisionAdLogo": {
+        "alt": "Envision Ad Logo"
+      }
     }
   },
   "homepage": {
@@ -23,10 +23,10 @@
     "ctaTitle": "Find Ad Spaces Now",
     "ctaBrowse": "Browse",
     "images": {
-        "backgroundImage": {
-            "alt": "Eye background image, representing visual impact"
-          }
+      "backgroundImage": {
+        "alt": "Eye background image, representing visual impact"
       }
+    }
   },
   "partners": {
     "title": "Partners",
@@ -76,6 +76,61 @@
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "copyright": "© {year} Envision AD. All rights reserved."
+  },
+  "mediaPage": {
+    "mediaTypes": {
+      "POSTER": "Poster",
+      "DIGITAL": "Digital"
+    },
+    "errorTitle": "Could not load this media.",
+    "errorNotFound": "Media not found.",
+    "currentlyDisplaying": "Currently displaying {count} other ads!",
+    "detailsTitle": "Details",
+    "details": {
+      "type": "Type",
+      "aspectRatio": "Aspect ratio",
+      "resolution": "Resolution",
+      "width": "Width",
+      "height": "Height",
+      "loopDuration": "Loop duration",
+      "dailyImpressions": "Daily Impressions"
+    },
+    "scheduleTitle": "Schedule",
+    "monthsTitle": "Months",
+    "hoursTitle": "Hours",
+    "reserveButton": "Reserve",
+    "reserveNote": "You won’t be charged yet.",
+    "pricePerWeek": "${price} per week",
+    "priceUnavailable": "Price not available",
+    "loopDurationSeconds": "{seconds} seconds",
+    "estimatedViewsValue": "300 per day",
+    "dailyImpressionPerDay": "~{count} daily impressions",
+
+    "months": {
+      "january": "January",
+      "february": "February",
+      "march": "March",
+      "april": "April",
+      "may": "May",
+      "june": "June",
+      "july": "July",
+      "august": "August",
+      "september": "September",
+      "october": "October",
+      "november": "November",
+      "december": "December"
+    },
+    "days": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "closed": "Closed"
+    },
+    "hoursPattern": "7:30 - 18:30"
   },
   "mediacard": {
     "perWeek": "${price} per week",
