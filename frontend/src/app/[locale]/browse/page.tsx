@@ -6,7 +6,7 @@ import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
 import BrowseActions from '@/components/BrowseActions/BrowseActions';
 import { useEffect, useMemo, useState } from 'react';
-import {  getAllMedia} from "@/services/MediaService";
+import {  getActiveMedia } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
 
 
@@ -16,7 +16,7 @@ function BrowsePage() {
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
   useEffect(() => {
-    getAllMedia()
+    getActiveMedia()
       .then((data) => {
         const items = (data || []).filter((m) => m.id != null);
         const mapped = items.map((m) => ({

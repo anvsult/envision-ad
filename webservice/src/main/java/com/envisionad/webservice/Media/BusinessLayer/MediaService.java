@@ -7,6 +7,8 @@ public interface MediaService {
 
     List<Media> getAllMedia();
 
+    List<Media> getAllActiveMedia();
+
     Media getMediaById(String id);
 
     Media addMedia(Media media);

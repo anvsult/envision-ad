@@ -1,6 +1,7 @@
 package com.envisionad.webservice.Media.BusinessLayer;
 
 import com.envisionad.webservice.Media.DataAccessLayer.Media;
+import com.envisionad.webservice.Media.DataAccessLayer.Status;
 import com.envisionad.webservice.Media.DataAccessLayer.MediaRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,11 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public List<Media> getAllMedia() {
         return mediaRepository.findAll();
+    }
+
+    @Override
+    public List<Media> getAllActiveMedia() {
+        return mediaRepository.findAllByStatus(Status.ACTIVE);
     }
 
     @Override
