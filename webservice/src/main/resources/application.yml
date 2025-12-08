@@ -10,7 +10,7 @@ spring:
   jpa:
     defer-datasource-initialization: true
     hibernate:
-      ddl-auto: update        # use `update` only for dev; prefer migrations
+      ddl-auto: validate        # use `update` only for dev; prefer migrations
     properties:
       hibernate:
         format_sql: false
