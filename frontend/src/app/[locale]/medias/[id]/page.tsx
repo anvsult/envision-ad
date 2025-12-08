@@ -170,7 +170,7 @@ export default function MediaPage() {
 
             <Divider my="md" />
 
-            <Stack gap="bg">
+            <Stack gap="md">
               <Text fw={600}>{t("detailsTitle")}</Text>
 
               {(() => {
