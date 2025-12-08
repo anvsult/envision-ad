@@ -95,21 +95,148 @@ class MediaControllerUnitTest {
     }
 
     @Test
-    void getAllActiveMedia_ShouldReturnListOfActiveMedia() {
-        List<Media> mediaList = Arrays.asList(media);
-        List<MediaResponseModel> responseList = Arrays.asList(responseModel);
+    void getAllFilteredActiveMedia_NoFilters_ShouldReturnList() {
+        List<Media> mediaList = List.of(media);
+        List<MediaResponseModel> responseList = List.of(responseModel);
 
-        when(mediaService.getAllActiveMedia()).thenReturn(mediaList);
-        when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
+        when(mediaService.getAllFilteredActiveMedia(null, null, null, null))
+                .thenReturn(mediaList);
+        when(responseMapper.entityListToResponseModelList(mediaList))
+                .thenReturn(responseList);
 
-        List<MediaResponseModel> response = mediaController.getAllActiveMedia();
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(null, null, null, null);
 
-        assertNotNull(response);
-        assertEquals(1, response.size());
-        assertEquals(mediaId, response.get(0).getId());
-        verify(mediaService, times(1)).getAllActiveMedia();
-        verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseList, response.getBody());
+
+        verify(mediaService).getAllFilteredActiveMedia(null, null, null, null);
     }
+
+
+    @Test
+    void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
+        List<Media> mediaList = List.of(media);
+        List<MediaResponseModel> responseList = List.of(responseModel);
+
+        when(mediaService.getAllFilteredActiveMedia("Test", null, null, null))
+                .thenReturn(mediaList);
+        when(responseMapper.entityListToResponseModelList(mediaList))
+                .thenReturn(responseList);
+
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia("Test", null, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseList, response.getBody());
+
+        verify(mediaService).getAllFilteredActiveMedia("Test", null, null, null);
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_MultipleFilters_ShouldReturnFiltered() {
+        List<Media> mediaList = List.of(media);
+        List<MediaResponseModel> responseList = List.of(responseModel);
+
+        when(mediaService.getAllFilteredActiveMedia(
+                "Billboard",
+                BigDecimal.valueOf(50),
+                BigDecimal.valueOf(200),
+                1000))
+                .thenReturn(mediaList);
+
+        when(responseMapper.entityListToResponseModelList(mediaList))
+                .thenReturn(responseList);
+
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(
+                        "Billboard",
+                        BigDecimal.valueOf(50),
+                        BigDecimal.valueOf(200),
+                        1000
+                );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(responseList, response.getBody());
+
+        verify(mediaService).getAllFilteredActiveMedia(
+                "Billboard",
+                BigDecimal.valueOf(50),
+                BigDecimal.valueOf(200),
+                1000
+        );
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyList() {
+        when(mediaService.getAllFilteredActiveMedia("NoMatch", null, null, null))
+                .thenReturn(List.of());
+
+        when(responseMapper.entityListToResponseModelList(List.of()))
+                .thenReturn(List.of());
+
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia("NoMatch", null, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        List<?> body = (List<?>) response.getBody();
+        assertTrue(body.isEmpty());
+
+        verify(mediaService).getAllFilteredActiveMedia("NoMatch", null, null, null);
+    }
+
+
+    @Test
+    void getAllFilteredActiveMedia_MinPriceNegative_ShouldReturnBadRequest() {
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(null, BigDecimal.valueOf(-1), null, null);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("minPrice must be non-negative.", response.getBody());
+
+        verifyNoInteractions(mediaService);
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_MaxPriceNegative_ShouldReturnBadRequest() {
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(null, null, BigDecimal.valueOf(-5), null);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("maxPrice must be non-negative.", response.getBody());
+
+        verifyNoInteractions(mediaService);
+    }
+
+
+    @Test
+    void getAllFilteredActiveMedia_MinGreaterThanMax_ShouldReturnBadRequest() {
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(
+                        null,
+                        BigDecimal.valueOf(50),
+                        BigDecimal.valueOf(10),
+                        null
+                );
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("minPrice must not be greater than maxPrice.", response.getBody());
+
+        verifyNoInteractions(mediaService);
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldReturnBadRequest() {
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(null, null, null, -10);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("minDailyImpressions must be non-negative.", response.getBody());
+
+        verifyNoInteractions(mediaService);
+    }
+
+
 
     @Test
     void getMediaById_WhenFound_ShouldReturnMedia() {

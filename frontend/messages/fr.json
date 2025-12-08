@@ -139,6 +139,23 @@
     "perWeek": "${price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
+  "browse": {
+    "browseactions":{
+      "filter": "Filtres:",
+      "sort": "Trier:"
+    },
+    "filters":{
+      "price": "Prix ($)",
+      "impressions": "Impressions minimum",
+      "from": "Minimum",
+      "to": "Maximum",
+      "showresults": "Ajouter le filtre"
+    },
+    "nomedia":{
+      "notfound": "Aucun média trouvé",
+      "changefilters": "Veuillez changer vos filtres"
+    }
+  },
   "business": {
     "title": "Entreprise",
     "createButton": "Créer une entreprise",

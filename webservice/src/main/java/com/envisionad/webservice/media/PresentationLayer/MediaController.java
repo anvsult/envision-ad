@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 
 import java.util.List;
 
@@ -37,9 +38,31 @@ public class MediaController {
     }
 
     @GetMapping("/active")
-    public List<MediaResponseModel> getAllActiveMedia() {
-        return responseMapper.entityListToResponseModelList(mediaService.getAllActiveMedia());
+    public ResponseEntity<?> getAllFilteredActiveMedia(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) BigDecimal minPrice,
+            @RequestParam(required = false) BigDecimal maxPrice,
+            @RequestParam(required = false) Integer minDailyImpressions
+    ) {
+        // Input validation
+        if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.badRequest().body("minPrice must be non-negative.");
+        }
+        if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
+            return ResponseEntity.badRequest().body("maxPrice must be non-negative.");
+        }
+        if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
+            return ResponseEntity.badRequest().body("minPrice must not be greater than maxPrice.");
+        }
+        if (minDailyImpressions != null && minDailyImpressions < 0) {
+            return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
+        }
+        List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
+            mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions)
+        );
+        return ResponseEntity.ok(result);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {

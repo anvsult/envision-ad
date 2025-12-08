@@ -1,19 +1,22 @@
 import { Group, Select, Text } from "@mantine/core";
+import { useTranslations } from "next-intl";
 
-export default function BrowseActions(){
+interface BrowseActionsProps{
+    filters?: React.ReactNode;
+    sort?: React.ReactNode;
+}
+
+export default function BrowseActions({filters, sort}: BrowseActionsProps){
+    const t = useTranslations('browse.browseactions');
     return(
         <Group justify="space-between">
             <Group>
-                <Text>Filter:</Text>
-                <Select
-                    placeholder="Sort option"
-                    data={['Coming Soon', 'soon', 'soon 2', 'soon 3']}
-                    defaultValue="React"
-                    allowDeselect={true}
-                />
+                <Text>{t('filter')}</Text>
+                {filters}
             </Group>
             <Group>
-                <Text>Sort:</Text>
+                <Text>{t('sort')}</Text>
+                {sort}
                 <Select
                     placeholder="Nearest"
                     data={['Nearest', 'Price: Low to high', 'Price: High to low', 'Recently added']}

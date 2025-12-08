@@ -41,12 +41,42 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
     return response.json();
 }
 
-export async function getActiveMedia(): Promise<MediaDTO[]> {
-    const response = await fetch(`${API_BASE_URL}/media/active`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+function escapeLike(input: string): string {
+  return input
+    .replace(/\\/g, "\\\\")
+    .replace(/%/g, "\\%")
+    .replace(/_/g, "\\_");
+}
+
+export async function getAllFilteredActiveMedia(
+    title?: string | null,
+    minPrice?: number | null,
+    maxPrice?: number | null,
+    minDailyImpressions?: number | null,
+    ): Promise<MediaDTO[]> {
+    const params = new URLSearchParams();
+
+    if (title && title.trim() !== "") {
+        const escaped = escapeLike(title);
+        params.append("title", escaped);
+    }
+
+    if (minPrice) {
+        params.append("minPrice", minPrice.toString());
+    }
+
+    if (maxPrice) {
+        params.append("maxPrice", maxPrice.toString());
+    }
+
+    if (minDailyImpressions) {
+        params.append("minDailyImpressions", minDailyImpressions.toString());
+    }
+
+    const url = `${API_BASE_URL}/media/active?${params.toString()}`;
+
+    const response = await fetch(url, {
+    method: "GET",
     });
 
     if (!response.ok) {

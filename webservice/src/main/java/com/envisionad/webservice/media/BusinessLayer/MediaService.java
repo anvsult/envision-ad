@@ -2,12 +2,13 @@ package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import java.util.List;
+import java.math.BigDecimal;
 
 public interface MediaService {
 
     List<Media> getAllMedia();
 
-    List<Media> getAllActiveMedia();
+    List<Media> getAllFilteredActiveMedia(String title, BigDecimal minPrice, BigDecimal maxPrice, Integer minDailyImpressions);
 
     Media getMediaById(String id);
 
