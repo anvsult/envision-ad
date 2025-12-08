@@ -1,7 +1,7 @@
-import { Button, Group, NumberInput, Popover, PopoverDropdown, PopoverTarget, Text } from "@mantine/core";
+import { Button, Group, NumberInput, Popover, PopoverDropdown, PopoverTarget, Stack, Text } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export interface FilterPricePopoverProps{
     minPrice?: number|null;
@@ -13,24 +13,28 @@ export interface FilterPricePopoverProps{
 interface FilterNumberInputProps{
     value?: number|null;
     setValue: React.Dispatch<React.SetStateAction<number | null>>;
+    label?: string;
     placeholder?: string;
     prefix?: string;
 }
 
-export function FilterNumberInput({value, setValue, placeholder, prefix}: FilterNumberInputProps){
+export function FilterNumberInput({value, setValue, label, placeholder, prefix}: FilterNumberInputProps){
     return(
-        <Group gap='xs'>
-            {prefix && <Text>{prefix}</Text>}
-            <NumberInput
-                placeholder={placeholder}
-                decimalScale={2}
-                hideControls 
-                min={0}
-                w={125}
-                value={value ?? undefined}
-                onChange={(v) => setValue(Number(v))}
-            />
-        </Group>
+        <Stack gap="xs">
+            <Text size="sm">{label}</Text>
+            <Group gap='xs'>
+                {prefix && <Text>{prefix}</Text>}
+                <NumberInput
+                    placeholder={placeholder}
+                    decimalScale={2}
+                    hideControls 
+                    min={0}
+                    w={125}
+                    value={value ?? undefined}
+                    onChange={(v) => setValue(Number(v))}
+                />
+            </Group>
+        </Stack>
     )
 }
 
@@ -38,29 +42,34 @@ export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice
     const t = useTranslations('filterprice');
     const [draftMin, setDraftMin] = useState<number | null>(minPrice ?? null);
     const [draftMax, setDraftMax] = useState<number | null>(maxPrice ?? null);
-    // const [opened, setOpened] = useState(false);
+    const [opened, setOpened] = useState(false);
 
+    function toggleOpen() {
+        setOpened(!opened)
+    }
 
     const handleApply = () => {
         setMinPrice(draftMin);
         setMaxPrice(draftMax);
-        // setOpened(false);
+        setOpened(false);
     };
 
     return(
-        <Popover trapFocus position="bottom" withArrow shadow="md" keepMounted>
+        <Popover opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted>
             <PopoverTarget>
-                <Button variant="transparent" rightSection={<IconChevronDown/>}>{t('price')}</Button>
+                <Button onClick={toggleOpen} variant="transparent" rightSection={<IconChevronDown/>}>{t('price')}</Button>
             </PopoverTarget>
             <PopoverDropdown>
                 <Group gap='lg'>
                     <FilterNumberInput
+                        label={t('from')}
                         prefix="$"
                         placeholder={t('from')}
                         value={draftMin}
                         setValue={setDraftMin}
                     />
                     <FilterNumberInput
+                        label={t('to')}
                         prefix="$"
                         placeholder={t('to')}
                         value={draftMax}
@@ -69,7 +78,7 @@ export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice
                 </Group>
                 <Group justify="flex-end" mt="md">
                     <Button size="xs" onClick={handleApply}>
-                        {t("apply")}
+                        {t("showresults")}
                     </Button>
                 </Group>
             </PopoverDropdown>

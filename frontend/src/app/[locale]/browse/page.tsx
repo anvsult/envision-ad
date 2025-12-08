@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Group, Pagination, Stack } from '@mantine/core';
+import { Container, Group, Pagination, Stack, Text } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
@@ -61,8 +61,6 @@ function BrowsePage() {
     return media.slice(start, end);
   }, [media, activePage]);
 
-
-
   return (
     <>
       <Header />
@@ -70,8 +68,15 @@ function BrowsePage() {
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
           <BrowseActions minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+          {paginatedMedia.length > 0 ? (<MediaCardGrid medias={paginatedMedia} />):
+            ( 
+              <Stack h='20em' justify='center' align='center'>
+                <Text size='32px' >No media found</Text>
+                <Text>Please change your filters</Text>
+              </Stack>
+            )
 
-          <MediaCardGrid medias={paginatedMedia} />
+          }
 
           {totalPages > 1 && (
             <Group justify="center" mt="md">
