@@ -103,7 +103,6 @@
     "pricePerWeek": "${price} per week",
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
-    "estimatedViewsValue": "300 per day",
     "dailyImpressionPerDay": "~{count} daily impressions",
 
     "months": {
