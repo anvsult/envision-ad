@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -106,7 +107,7 @@ class BusinessServiceImplTest {
     @Test
     void getAllBusinesses_WhenNoBusinesses_ShouldReturnEmptyList() {
         // Given
-        when(businessRepository.findAll()).thenReturn(Arrays.asList());
+        when(businessRepository.findAll()).thenReturn(Collections.emptyList());
 
         // When
         List<Business> result = businessService.getAllBusinesses();
