@@ -6,16 +6,25 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 
 
-export function BackButton() {
-  const router = useRouter();
+type BackButtonProps = {
+  returnPath?: string;
+};
 
+export function BackButton({ returnPath }: BackButtonProps) {
+  const router = useRouter();
 
   return (
     <ActionIcon
       variant="subtle"
       radius="xl"
       size="lg"
-      onClick={() => router.push("/browse")}
+      onClick={() => {
+        if (returnPath) {
+          router.push(returnPath);
+        } else {
+          router.back();
+        }
+      }}
       aria-label="Go back to browse"
     >
       <IconArrowLeft size={20} />
