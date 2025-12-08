@@ -16,6 +16,7 @@ export function BackButton() {
       radius="xl"
       size="lg"
       onClick={() => router.push("/browse")}
+      aria-label="Go back to browse"
     >
       <IconArrowLeft size={20} />
     </ActionIcon>
