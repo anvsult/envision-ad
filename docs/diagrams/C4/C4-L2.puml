@@ -24,13 +24,10 @@ AddElementTag("framework-react", $shape=RoundedBoxShape(), $bgColor="#61DBFB", $
 AddElementTag("webApp", $bgColor="#e34f26", $fontColor="white", $legendText="Web Application")
 
 LAYOUT_TOP_DOWN()
-'LAYOUT_WITH_LEGEND()
-SHOW_PERSON_OUTLINE()
-'HIDE_STEREOTYPE()
-
 
 title Container Diagram for Envision Ad System
 
+Person(visitor, "Visitor", "Goes on the envision Ad platform without having an account.")
 Person(mediaOwner, "Medias Owner", "Owns advertising spaces such as TV screens, posters, digital displays.")
 Person(advertiser, "Advertiser", "Local business or marketing agency who browses available medias and posts advertisements with content and duration.")
 Person(admin, "System Administrator", "Platform administrator who manages users, moderates content, and monitors system analytics.")
@@ -55,9 +52,15 @@ System_Boundary(c1, "Envision Ad System"){
     Rel(react_spa, envision_ad, "Makes API calls to", "JSON/REST/HTTPS")
     Rel_L(envision_ad, envision_ad_db, "Reads from and writes to", "JDCB/SQL/TCP", $tags="blue-line")
 
+    Rel(visitor, web_app, "Visits Envision Ad using", "HTTPS")
     Rel(mediaOwner, web_app, "Visits Envision Ad using", "HTTPS")
     Rel(advertiser, web_app, "Visits Envision Ad using", "HTTPS")
     Rel(admin, web_app, "Visits Envision Ad using", "HTTPS")
+
+    Rel(mediaOwner, react_spa, "Lists media, uploads photos, views ad requests, confirms/rejects placements", "HTTPS")
+    Rel(advertiser, react_spa, "Browses media, posts advertisements, uploads PNG content, sets display duration", "HTTPS")
+    Rel(admin, react_spa, "Manages users, moderates content, views analytics, generates reports", "HTTPS")
+    Rel(visitor, react_spa, "Browses media, registers, logins", "HTTPS")
 
     Rel(envision_ad, email, "Makes API calls to", "JSON/REST/HTTPS")
     Rel(envision_ad, cloud, "Makes API calls to", "JSON/REST/HTTPS")

@@ -38,8 +38,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(MediaService, "Media Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(MediaRepo, "Media Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    MediaController -[dashed,#LimeGreen]-> MediaService  : **Uses**
-                    MediaService -[dashed,#LimeGreen]-> MediaRepo  : **Uses**
+                    MediaController -[#LimeGreen]-> MediaService  : **Uses**
+                    MediaService -[#LimeGreen]-> MediaRepo  : **Uses**
                 }
 
                 package "Advertising" {
@@ -47,8 +47,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(advertisingService, "Advertising Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(advertisingRepo, "Advertising Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    advertisingController -[dashed,#LimeGreen]-> advertisingService  : **Uses**
-                    advertisingService -[dashed,#LimeGreen]-> advertisingRepo  : **Uses**
+                    advertisingController -[#LimeGreen]-> advertisingService  : **Uses**
+                    advertisingService -[#LimeGreen]-> advertisingRepo  : **Uses**
                 }
 
                 package "Transaction" {
@@ -56,8 +56,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(transactionService, "Transaction Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(transactionRepo, "Transaction Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    transactionController -[dashed,#LimeGreen]-> transactionService  : **Uses**
-                    transactionService -[dashed,#LimeGreen]-> transactionRepo  : **Uses**
+                    transactionController -[#LimeGreen]-> transactionService  : **Uses**
+                    transactionService -[#LimeGreen]-> transactionRepo  : **Uses**
                 }
 
                 package "Moderation"{
@@ -65,8 +65,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(moderationService, "Moderation Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(moderationRepo, "Moderation Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    moderationController -[dashed,#LimeGreen]-> moderationService  : **Uses**
-                    moderationService -[dashed,#LimeGreen]-> moderationRepo  : **Uses**
+                    moderationController -[#LimeGreen]-> moderationService  : **Uses**
+                    moderationService -[#LimeGreen]-> moderationRepo  : **Uses**
                 }
 
                 package "Analytics"{
@@ -74,8 +74,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(reportService, "Report Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(reportRepo, "Report Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    reportController -[dashed,#LimeGreen]-> reportService  : **Uses**
-                    reportService -[dashed,#LimeGreen]-> reportRepo  : **Uses**
+                    reportController -[#LimeGreen]-> reportService  : **Uses**
+                    reportService -[#LimeGreen]-> reportRepo  : **Uses**
                 }
 
                 package "Customers"{
@@ -83,8 +83,8 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(customerService, "Customer Service", "Component: Spring Boot Service", "Provides the functionalities to get, update, create and delete.", $sprite="java", $tags="java")
                     Container(customerRepo, "Customer Repository", "Component: JPA Repository", "Makes requests to the database to fetch or update data.", $sprite="java", $tags="java")
 
-                    customerController -[dashed,#LimeGreen]-> customerService  : **Uses**
-                    customerService -[dashed,#LimeGreen]-> customerRepo  : **Uses**
+                    customerController -[#LimeGreen]-> customerService  : **Uses**
+                    customerService -[#LimeGreen]-> customerRepo  : **Uses**
                 }
 
                 package "Email"{
@@ -107,42 +107,42 @@ Container_Ext(twilio, "Twilio", "SMS Service", "Reminding Media Owners to provid
                     Container(fileService,"File Service", "Component: Spring Boot Service", "Handles files for the users.", $sprite="java", $tags="java")
                 }
 
-                moderationService -[dashed]-> mailerService  : **Sends Email using**
-                reportService -[dashed]-> mailerService  : **Sends Email using**
+                moderationService --> mailerService  : **Sends Email using**
+                reportService --> mailerService  : **Sends Email using**
 
-                fileService -[dashed]-> cloud  : **Send Email Using**\n[SMTP/TCP/IP]
-                smsService -[dashed]-> twilio  : **Send Email Using**\n[SMTP/TCP/IP]
-                mailerService -[dashed]-> email  : **Send Email Using**\n[SMTP/TCP/IP]
-                paymentService -[dashed]-> stripe  : **Send Email Using**\n[SMTP/TCP/IP]
+                fileService --> cloud  : **Send Email Using**\n[SMTP/TCP/IP]
+                smsService --> twilio  : **Send Email Using**\n[SMTP/TCP/IP]
+                mailerService --> email  : **Send Email Using**\n[SMTP/TCP/IP]
+                paymentService --> stripe  : **Send Email Using**\n[SMTP/TCP/IP]
 
-                advertisingService -[dashed]-> fileService  : **Get Files using**
-                MediaService -[dashed]-> fileService  : **Send Files using**
-                MediaService -[dashed]-> smsService  : **Send SMS using**
-                customerService -[dashed]-> authService  : **Uses**
+                advertisingService --> fileService  : **Get Files using**
+                MediaService --> fileService  : **Send Files using**
+                MediaService --> smsService  : **Send SMS using**
+                customerService --> authService  : **Uses**
 
-                transactionService  -[dashed]-> paymentService  : **Send Payment using**
+                transactionService  --> paymentService  : **Send Payment using**
 
-                securityFilter -[dashed,#RoyalBlue]-> advertisingController  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> moderationController  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> reportController  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> MediaController  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> transactionController  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> "authService"  : **Direct Request**
-                securityFilter -[dashed,#RoyalBlue]-> customerController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> advertisingController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> moderationController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> reportController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> MediaController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> transactionController  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> "authService"  : **Direct Request**
+                securityFilter -[#RoyalBlue]-> customerController  : **Direct Request**
 
-                "authService" -[dashed,#Crimson]-> "auth"  : **Uses**\n[OAuth2/OpenID]
+                "authService" -[#Crimson]-> "auth"  : **Uses**\n[OAuth2/OpenID]
             SHOW_LEGEND()
         }
 
         ContainerDb(db, "Database", "Database: MySQL", "Stores all the data for the system.", $sprite="mysql", $tags="database")
 
-        moderationRepo -[dashed,#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
+        moderationRepo -[#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
 
-        advertisingRepo -[dashed,#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
+        advertisingRepo -[#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
 
-        reportRepo -[dashed,#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
+        reportRepo -[#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
 
-        MediaRepo -[dashed,#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
+        MediaRepo -[#LimeGreen]-> db  : **SQL/TCP**\n[JBDC]
 
 AddElementTag("webSite", $shape=RoundedBoxShape(), $bgColor="DodgerBlue", $fontColor="white", $legendText="Single-Page Application")
 AddElementTag("webApp", $shape=RoundedBoxShape(), $bgColor="OrangeRed", $fontColor="white", $legendText="Web Application")
