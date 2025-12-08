@@ -23,10 +23,6 @@ export const theme = createTheme({
     blue: [
       '#e7f5ff', '#d0ebff', '#a5d8ff', '#74c0fc', '#4dabf7',
       '#339af0', '#0795ED', '#1c7ed6', '#1971c2', '#1864ab',
-    ],
-    black: [
-      '#f8f9fa', '#f1f3f5', '#e9ecef', '#dee2e6', '#ced4da',
-      '#adb5bd', '#868e96', '#495057', '#343a40', '#000000',
     ]
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text

@@ -32,14 +32,11 @@ export function MediaCardGrid({medias}: MediaCardGridProps) {
                             mediaOwnerName={media.mediaOwnerName}
                             address={media.address}
                             aspectRatio={media.aspectRatio}
-                            width={media.width}
-                            height={media.height}
                             typeOfDisplay={media.typeOfDisplay}
                             price={media.price} 
                             dailyImpressions={media.dailyImpressions} 
                             resolution={media.resolution} 
-                            loopDuration={media.loopDuration}
-                            {/* TODO: Add impressions and dateAdded props when supported by MediaCard */}
+                            /* TODO: Add impressions and dateAdded props when supported by MediaCard */
                         />
                     </GridCol>
               ))}

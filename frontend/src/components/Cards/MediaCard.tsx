@@ -22,7 +22,7 @@ function MediaCard({imageUrl, title, mediaOwnerName, address, aspectRatio, resol
     const t = useTranslations("mediacard");
     
     return (
-        <Anchor href="/browse" color="black.1" underline="never">
+        <Anchor href="/browse" color="black" underline="never">
             <Paper 
                 shadow="sm"
                 radius="md"
