@@ -36,15 +36,15 @@ VALUES
         30,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "days": {
-                "monday":    {"isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                "tuesday":   {"isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                "wednesday": {"isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                "thursday":  {"isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                "friday":    {"isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                "saturday":  {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "sunday":    {"isActive": false, "startTime": "09:00", "endTime": "17:00"}
-            }
+            "weeklySchedule": [
+                {"dayOfWeek": "monday",    "isActive": true, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "tuesday",   "isActive": true, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "wednesday", "isActive": true, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "thursday",  "isActive": true, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "friday",    "isActive": true, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "saturday",  "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "sunday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"}
+            ]
         }'::jsonb,
         'ACTIVE',
         NULL, NULL, NULL
@@ -64,15 +64,15 @@ VALUES
         20,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "days": {
-                "monday":    {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "tuesday":   {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "wednesday": {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "thursday":  {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "friday":    {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "saturday":  {"isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                "sunday":    {"isActive": true, "startTime": "00:00", "endTime": "00:00"}
-            }
+            "weeklySchedule": [
+                {"dayOfWeek": "monday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "tuesday",   "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "wednesday", "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "thursday",  "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "friday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "saturday",  "isActive": true, "startTime": "00:00", "endTime": "00:00"},
+                {"dayOfWeek": "sunday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"}
+            ]
         }'::jsonb,
         'INACTIVE',
         NULL, NULL, NULL
@@ -92,20 +92,20 @@ VALUES
         25,
         '{
             "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "days": {
-                "monday":    {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "tuesday":   {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "wednesday": {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "thursday":  {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "friday":    {"isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                "saturday":  {"isActive": true, "startTime": "10:00", "endTime": "22:00"},
-                "sunday":    {"isActive": true, "startTime": "10:00", "endTime": "18:00"}
-            }
+            "weeklySchedule": [
+                {"dayOfWeek": "monday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "tuesday",   "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "wednesday", "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "thursday",  "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "friday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"},
+                {"dayOfWeek": "saturday",  "isActive": true, "startTime": "10:00", "endTime": "22:00"},
+                {"dayOfWeek": "sunday",    "isActive": true, "startTime": "10:00", "endTime": "18:00"}
+            ]
         }'::jsonb,
         'PENDING',
         NULL, NULL, NULL
     )
-    ON CONFLICT (media_id) DO NOTHING;
+    ON CONFLICT (media_id) DO UPDATE SET schedule = EXCLUDED.schedule;
         NULL,
         NULL,
         NULL

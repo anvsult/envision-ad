@@ -14,11 +14,9 @@ import java.util.stream.Collectors;
 @Component
 public class MediaResponseMapper {
 
-    private final ObjectMapper objectMapper;
     private static final Logger log = LoggerFactory.getLogger(MediaResponseMapper.class);
 
-    public MediaResponseMapper(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public MediaResponseMapper() {
     }
 
     public MediaResponseModel entityToResponseModel(Media media) {
@@ -31,19 +29,7 @@ public class MediaResponseMapper {
         responseModel.setTypeOfDisplay(media.getTypeOfDisplay());
         responseModel.setAspectRatio(media.getAspectRatio());
         responseModel.setAddress(media.getAddress());
-        // parse schedule JSON string from entity into ScheduleModel
-        String scheduleJson = media.getSchedule();
-        if (scheduleJson != null) {
-            try {
-                ScheduleModel schedule = objectMapper.readValue(scheduleJson, ScheduleModel.class);
-                responseModel.setSchedule(schedule);
-            } catch (Exception e) {
-                log.error("Failed to parse schedule JSON for media id={}", media.getId(), e);
-                responseModel.setSchedule(null);
-            }
-        } else {
-            responseModel.setSchedule(null);
-        }
+        responseModel.setSchedule(media.getSchedule());
 
         responseModel.setStatus(media.getStatus());
         responseModel.setWidth(media.getWidth());

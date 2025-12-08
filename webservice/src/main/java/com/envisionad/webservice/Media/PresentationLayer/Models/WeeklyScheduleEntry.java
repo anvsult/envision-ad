@@ -7,7 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WeeklyScheduleEntry {
     private String dayOfWeek;
-    private boolean isActive;
+    @com.fasterxml.jackson.annotation.JsonProperty("isActive")
+    private boolean active;
     private String startTime;
     private String endTime;
 }

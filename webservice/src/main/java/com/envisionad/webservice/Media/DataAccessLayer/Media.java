@@ -55,7 +55,7 @@ public class Media {
 
     @Column(name = "schedule")
     @JdbcTypeCode(SqlTypes.JSON)
-    private String schedule;
+    private com.envisionad.webservice.Media.PresentationLayer.Models.ScheduleModel schedule;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

@@ -32,19 +32,18 @@ export function useMediaList() {
       (m) => !!formState.activeMonths[m]
     );
 
-    const daysObj: Record<string, { isActive: boolean; startTime: string | null; endTime: string | null }> = {
-      monday:    { isActive: !!formState.activeDaysOfWeek["Monday"],    startTime: formState.dailyOperatingHours["Monday"]?.start ?? null,    endTime: formState.dailyOperatingHours["Monday"]?.end ?? null },
-      tuesday:   { isActive: !!formState.activeDaysOfWeek["Tuesday"],   startTime: formState.dailyOperatingHours["Tuesday"]?.start ?? null,   endTime: formState.dailyOperatingHours["Tuesday"]?.end ?? null },
-      wednesday: { isActive: !!formState.activeDaysOfWeek["Wednesday"], startTime: formState.dailyOperatingHours["Wednesday"]?.start ?? null, endTime: formState.dailyOperatingHours["Wednesday"]?.end ?? null },
-      thursday:  { isActive: !!formState.activeDaysOfWeek["Thursday"],  startTime: formState.dailyOperatingHours["Thursday"]?.start ?? null,  endTime: formState.dailyOperatingHours["Thursday"]?.end ?? null },
-      friday:    { isActive: !!formState.activeDaysOfWeek["Friday"],    startTime: formState.dailyOperatingHours["Friday"]?.start ?? null,    endTime: formState.dailyOperatingHours["Friday"]?.end ?? null },
-      saturday:  { isActive: !!formState.activeDaysOfWeek["Saturday"],  startTime: formState.dailyOperatingHours["Saturday"]?.start ?? null,  endTime: formState.dailyOperatingHours["Saturday"]?.end ?? null },
-      sunday:    { isActive: !!formState.activeDaysOfWeek["Sunday"],    startTime: formState.dailyOperatingHours["Sunday"]?.start ?? null,    endTime: formState.dailyOperatingHours["Sunday"]?.end ?? null },
-    };
+    const weeklySchedule = [
+      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+    ].map(day => ({
+      dayOfWeek: day.toLowerCase(),
+      isActive: !!formState.activeDaysOfWeek[day],
+      startTime: formState.dailyOperatingHours[day]?.start ?? null,
+      endTime: formState.dailyOperatingHours[day]?.end ?? null
+    }));
 
     return {
       selectedMonths,
-      days: daysObj,
+      weeklySchedule,
     };
   };
 
