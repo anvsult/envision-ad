@@ -2,15 +2,6 @@
 
 import React from "react";
 import { Header } from "@/components/Header/Header";
-import {
-    Button,
-    Group,
-    Stack,
-    NavLink,
-    Paper,
-    Drawer,
-    Box,
-} from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import {
     IconLayoutDashboard,
