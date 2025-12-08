@@ -23,6 +23,7 @@ public class MediaResponseModel {
     private Double width;
     private Double height;
     private BigDecimal price;
+    private Integer dailyImpressions;
     private ScheduleModel schedule;
     private Status status;
     private String imageUrl;

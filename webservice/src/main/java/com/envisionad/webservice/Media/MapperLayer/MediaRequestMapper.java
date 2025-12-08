@@ -43,6 +43,7 @@ public class MediaRequestMapper {
         media.setWidth(requestModel.getWidth());
         media.setHeight(requestModel.getHeight());
         media.setPrice(requestModel.getPrice());
+        media.setDailyImpressions(requestModel.getDailyImpressions());
         return media;
     }
 }

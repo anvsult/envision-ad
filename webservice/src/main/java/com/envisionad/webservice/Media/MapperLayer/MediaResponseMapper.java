@@ -49,8 +49,9 @@ public class MediaResponseMapper {
         responseModel.setWidth(media.getWidth());
         responseModel.setHeight(media.getHeight());
         responseModel.setPrice(media.getPrice());
+        responseModel.setDailyImpressions(media.getDailyImpressions());
         if (media.getImageData() != null && media.getId() != null) {
-            responseModel.setImageUrl("/api/v1/media/" + media.getId() + "/image");
+            responseModel.setImageUrl("/api/v1/medias/" + media.getId() + "/image");
         }
         return responseModel;
     }

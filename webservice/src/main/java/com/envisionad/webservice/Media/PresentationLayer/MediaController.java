@@ -37,6 +37,11 @@ public class MediaController {
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
 
+    @GetMapping("/active")
+    public List<MediaResponseModel> getAllActiveMedia() {
+        return responseMapper.entityListToResponseModelList(mediaService.getAllActiveMedia());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
         Media media = mediaService.getMediaById(id);

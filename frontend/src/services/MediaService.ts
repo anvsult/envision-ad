@@ -11,6 +11,7 @@ export interface MediaDTO {
     width: number | null;
     height: number | null;
     price: number | null;
+    dailyImpressions: number | null;
     schedule: {
         selectedMonths: string[];
         days: {
@@ -43,8 +44,23 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
     return response.json();
 }
 
+export async function getActiveMedia(): Promise<MediaDTO[]> {
+    const response = await fetch(`${API_BASE_URL}/media/active`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch media: ${response.statusText}`);
+    }
+
+    return response.json();
+}
+
 export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
-    const response = await fetch(`${API_BASE_URL}/media`, {
+    const response = await fetch(`${API_BASE_URL}/medias`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

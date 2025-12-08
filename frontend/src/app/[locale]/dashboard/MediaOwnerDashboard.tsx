@@ -110,6 +110,7 @@ export default function MediaOwnerPage() {
         widthCm: backend.width != null ? String(backend.width) : "",
         heightCm: backend.height != null ? String(backend.height) : "",
         weeklyPrice: backend.price != null ? String(backend.price) : "",
+        dailyImpressions: backend.dailyImpressions != null ? String(backend.dailyImpressions) : "",
         mediaAddress: backend.address ?? "",
         activeDaysOfWeek,
         dailyOperatingHours,
