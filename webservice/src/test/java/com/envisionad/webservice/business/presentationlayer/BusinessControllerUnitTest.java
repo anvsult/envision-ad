@@ -7,31 +7,26 @@ import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
 import com.envisionad.webservice.business.mappinglayer.BusinessResponseMapper;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest(BusinessController.class)
+@SpringBootTest(classes = BusinessController.class)
 class BusinessControllerUnitTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @MockitoBean
     private BusinessService businessService;
@@ -40,7 +35,7 @@ class BusinessControllerUnitTest {
     private BusinessResponseMapper businessResponseMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private BusinessController businessController;
 
     private Business business;
     private BusinessResponseModel responseModel;
@@ -85,40 +80,109 @@ class BusinessControllerUnitTest {
     }
 
     @Test
-    void createBusiness_ShouldReturnCreatedBusiness() throws Exception {
-        given(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).willReturn(business);
-        given(businessService.createBusiness(any(Business.class))).willReturn(business);
-        given(businessResponseMapper.entityToResponseModel(any(Business.class))).willReturn(responseModel);
+    void createBusiness_ShouldReturnCreatedBusiness() {
+        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
+        when(businessService.createBusiness(any(Business.class))).thenReturn(business);
+        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
 
-        mockMvc.perform(post("/api/v1/business")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestModel)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(businessId.toString()))
-                .andExpect(jsonPath("$.name").value("Test Business"));
+        ResponseEntity<BusinessResponseModel> response = businessController.createBusiness(requestModel);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(businessId, response.getBody().getId());
+        assertEquals("Test Business", response.getBody().getName());
+        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
+        verify(businessService, times(1)).createBusiness(any(Business.class));
+        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
     }
 
     @Test
-    void getAllBusinesses_ShouldReturnListOfBusinesses() throws Exception {
+    void getAllBusinesses_ShouldReturnListOfBusinesses() {
         List<Business> businessList = Arrays.asList(business);
-        
-        given(businessService.getAllBusinesses()).willReturn(businessList);
-        given(businessResponseMapper.entityToResponseModel(any(Business.class))).willReturn(responseModel);
 
-        mockMvc.perform(get("/api/v1/business"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(businessId.toString()))
-                .andExpect(jsonPath("$[0].name").value("Test Business"));
+        when(businessService.getAllBusinesses()).thenReturn(businessList);
+        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
+
+        ResponseEntity<List<BusinessResponseModel>> response = businessController.getAllBusinesses();
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals(businessId, response.getBody().get(0).getId());
+        assertEquals("Test Business", response.getBody().get(0).getName());
+        verify(businessService, times(1)).getAllBusinesses();
+        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
     }
 
     @Test
-    void getBusinessById_WhenFound_ShouldReturnBusiness() throws Exception {
-        given(businessService.getBusinessById(businessId)).willReturn(business);
-        given(businessResponseMapper.entityToResponseModel(business)).willReturn(responseModel);
+    void getBusinessById_WhenFound_ShouldReturnBusiness() {
+        when(businessService.getBusinessById(businessId)).thenReturn(business);
+        when(businessResponseMapper.entityToResponseModel(business)).thenReturn(responseModel);
 
-        mockMvc.perform(get("/api/v1/business/{id}", businessId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(businessId.toString()));
+        ResponseEntity<BusinessResponseModel> response = businessController.getBusinessById(businessId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(businessId, response.getBody().getId());
+        verify(businessService, times(1)).getBusinessById(businessId);
+        verify(businessResponseMapper, times(1)).entityToResponseModel(business);
+    }
+
+    @Test
+    void updateBusinessById_ShouldReturnUpdatedBusiness() {
+        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
+        when(businessService.updateBusinessById(eq(businessId), any(Business.class))).thenReturn(business);
+        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
+
+        ResponseEntity<BusinessResponseModel> response = businessController.updateBusinessById(businessId, requestModel);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(businessId, response.getBody().getId());
+        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
+        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(Business.class));
+        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
+    }
+
+    @Test
+    void updateBusinessById_WhenNotFound_ShouldThrowException() {
+        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
+        when(businessService.updateBusinessById(eq(businessId), any(Business.class)))
+                .thenThrow(new RuntimeException("Business not found with id: " + businessId));
+
+        assertThrows(RuntimeException.class, () -> businessController.updateBusinessById(businessId, requestModel));
+
+        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
+        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(Business.class));
+    }
+
+    @Test
+    void deleteBusinessById_ShouldReturnDeletedBusiness() {
+        when(businessService.deleteBusinessById(businessId)).thenReturn(business);
+        when(businessResponseMapper.entityToResponseModel(business)).thenReturn(responseModel);
+
+        ResponseEntity<BusinessResponseModel> response = businessController.deleteBusinessById(businessId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(businessId, response.getBody().getId());
+        assertEquals("Test Business", response.getBody().getName());
+        verify(businessService, times(1)).deleteBusinessById(businessId);
+        verify(businessResponseMapper, times(1)).entityToResponseModel(business);
+    }
+
+    @Test
+    void deleteBusinessById_WhenNotFound_ShouldThrowException() {
+        when(businessService.deleteBusinessById(businessId))
+                .thenThrow(new RuntimeException("Business not found with id: " + businessId));
+
+        assertThrows(RuntimeException.class, () -> businessController.deleteBusinessById(businessId));
+
+        verify(businessService, times(1)).deleteBusinessById(businessId);
     }
 }

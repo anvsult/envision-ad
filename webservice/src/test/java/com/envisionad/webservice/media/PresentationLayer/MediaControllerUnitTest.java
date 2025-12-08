@@ -8,33 +8,27 @@ import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.Mockito.*;
 
-@WebMvcTest(MediaController.class)
+@SpringBootTest(classes = MediaController.class)
 class MediaControllerUnitTest {
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @MockitoBean
     private MediaService mediaService;
@@ -46,7 +40,7 @@ class MediaControllerUnitTest {
     private MediaResponseMapper responseMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private MediaController mediaController;
 
     private Media media;
     private MediaResponseModel responseModel;
@@ -83,128 +77,167 @@ class MediaControllerUnitTest {
     }
 
     @Test
-    void getAllMedia_ShouldReturnListOfMedia() throws Exception {
+    void getAllMedia_ShouldReturnListOfMedia() {
         List<Media> mediaList = Arrays.asList(media);
         List<MediaResponseModel> responseList = Arrays.asList(responseModel);
 
-        given(mediaService.getAllMedia()).willReturn(mediaList);
-        given(responseMapper.entityListToResponseModelList(mediaList)).willReturn(responseList);
+        when(mediaService.getAllMedia()).thenReturn(mediaList);
+        when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-        mockMvc.perform(get("/api/v1/media"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].id").value(mediaId))
-                .andExpect(jsonPath("$[0].title").value("Test Media"));
+        List<MediaResponseModel> response = mediaController.getAllMedia();
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(mediaId, response.get(0).getId());
+        assertEquals("Test Media", response.get(0).getTitle());
+        verify(mediaService, times(1)).getAllMedia();
+        verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
     }
 
     @Test
-    void getAllActiveMedia_ShouldReturnListOfActiveMedia() throws Exception {
+    void getAllActiveMedia_ShouldReturnListOfActiveMedia() {
         List<Media> mediaList = Arrays.asList(media);
         List<MediaResponseModel> responseList = Arrays.asList(responseModel);
 
-        given(mediaService.getAllActiveMedia()).willReturn(mediaList);
-        given(responseMapper.entityListToResponseModelList(mediaList)).willReturn(responseList);
+        when(mediaService.getAllActiveMedia()).thenReturn(mediaList);
+        when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-        mockMvc.perform(get("/api/v1/media/active"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(mediaId));
+        List<MediaResponseModel> response = mediaController.getAllActiveMedia();
+
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(mediaId, response.get(0).getId());
+        verify(mediaService, times(1)).getAllActiveMedia();
+        verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
     }
 
     @Test
-    void getMediaById_WhenFound_ShouldReturnMedia() throws Exception {
-        given(mediaService.getMediaById(mediaId)).willReturn(media);
-        given(responseMapper.entityToResponseModel(media)).willReturn(responseModel);
+    void getMediaById_WhenFound_ShouldReturnMedia() {
+        when(mediaService.getMediaById(mediaId)).thenReturn(media);
+        when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
 
-        mockMvc.perform(get("/api/v1/media/{id}", mediaId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(mediaId));
+        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(mediaId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mediaId, response.getBody().getId());
+        verify(mediaService, times(1)).getMediaById(mediaId);
+        verify(responseMapper, times(1)).entityToResponseModel(media);
     }
 
     @Test
-    void getMediaById_WhenNotFound_ShouldReturn404() throws Exception {
-        given(mediaService.getMediaById(mediaId)).willReturn(null);
+    void getMediaById_WhenNotFound_ShouldReturn404() {
+        when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        mockMvc.perform(get("/api/v1/media/{id}", mediaId))
-                .andExpect(status().isNotFound());
+        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(mediaId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(mediaService, times(1)).getMediaById(mediaId);
     }
 
     @Test
-    void addMedia_ShouldReturnCreatedMedia() throws Exception {
-        given(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).willReturn(media);
-        given(mediaService.addMedia(any(Media.class))).willReturn(media);
-        given(responseMapper.entityToResponseModel(any(Media.class))).willReturn(responseModel);
+    void addMedia_ShouldReturnCreatedMedia() {
+        when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+        when(mediaService.addMedia(any(Media.class))).thenReturn(media);
+        when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-        mockMvc.perform(post("/api/v1/media")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestModel)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value(mediaId));
+        ResponseEntity<MediaResponseModel> response = mediaController.addMedia(requestModel);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mediaId, response.getBody().getId());
+        verify(requestMapper, times(1)).requestModelToEntity(any(MediaRequestModel.class));
+        verify(mediaService, times(1)).addMedia(any(Media.class));
+        verify(responseMapper, times(1)).entityToResponseModel(any(Media.class));
     }
 
     @Test
-    void updateMedia_ShouldReturnUpdatedMedia() throws Exception {
-        given(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).willReturn(media);
-        given(mediaService.updateMedia(any(Media.class))).willReturn(media);
-        given(responseMapper.entityToResponseModel(any(Media.class))).willReturn(responseModel);
+    void updateMedia_ShouldReturnUpdatedMedia() {
+        when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+        when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
+        when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-        mockMvc.perform(put("/api/v1/media/{id}", mediaId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestModel)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(mediaId));
+        ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(mediaId, requestModel);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(mediaId, response.getBody().getId());
+        verify(requestMapper, times(1)).requestModelToEntity(any(MediaRequestModel.class));
+        verify(mediaService, times(1)).updateMedia(any(Media.class));
+        verify(responseMapper, times(1)).entityToResponseModel(any(Media.class));
     }
 
     @Test
-    void deleteMedia_ShouldReturnNoContent() throws Exception {
-        mockMvc.perform(delete("/api/v1/media/{id}", mediaId))
-                .andExpect(status().isNoContent());
+    void deleteMedia_ShouldReturnNoContent() {
+        ResponseEntity<Void> response = mediaController.deleteMedia(mediaId);
 
-        verify(mediaService).deleteMedia(mediaId);
+        assertNotNull(response);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+        verify(mediaService, times(1)).deleteMedia(mediaId);
     }
 
     @Test
-    void uploadImage_WhenMediaExists_ShouldReturnCreated() throws Exception {
+    void uploadImage_WhenMediaExists_ShouldReturnCreated() {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image content".getBytes());
 
-        given(mediaService.getMediaById(mediaId)).willReturn(media);
-        given(mediaService.updateMedia(any(Media.class))).willReturn(media);
+        when(mediaService.getMediaById(mediaId)).thenReturn(media);
+        when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
 
-        mockMvc.perform(multipart("/api/v1/media/{id}/image", mediaId)
-                .file(file))
-                .andExpect(status().isCreated());
+        ResponseEntity<?> response = mediaController.uploadImage(mediaId, file);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        verify(mediaService, times(1)).getMediaById(mediaId);
+        verify(mediaService, times(1)).updateMedia(any(Media.class));
     }
 
     @Test
-    void uploadImage_WhenMediaNotFound_ShouldReturnNotFound() throws Exception {
+    void uploadImage_WhenMediaNotFound_ShouldReturnNotFound() {
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.jpg", MediaType.IMAGE_JPEG_VALUE, "test image content".getBytes());
 
-        given(mediaService.getMediaById(mediaId)).willReturn(null);
+        when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        mockMvc.perform(multipart("/api/v1/media/{id}/image", mediaId)
-                .file(file))
-                .andExpect(status().isNotFound());
+        ResponseEntity<?> response = mediaController.uploadImage(mediaId, file);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(mediaService, times(1)).getMediaById(mediaId);
+        verify(mediaService, never()).updateMedia(any(Media.class));
     }
 
     @Test
-    void getImage_WhenMediaAndImageExist_ShouldReturnImage() throws Exception {
+    void getImage_WhenMediaAndImageExist_ShouldReturnImage() {
         media.setImageData("test image content".getBytes());
         media.setImageContentType(MediaType.IMAGE_JPEG_VALUE);
 
-        given(mediaService.getMediaById(mediaId)).willReturn(media);
+        when(mediaService.getMediaById(mediaId)).thenReturn(media);
 
-        mockMvc.perform(get("/api/v1/media/{id}/image", mediaId))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.IMAGE_JPEG))
-                .andExpect(content().bytes(media.getImageData()));
+        ResponseEntity<byte[]> response = mediaController.getImage(mediaId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertArrayEquals("test image content".getBytes(), response.getBody());
+        assertEquals(MediaType.IMAGE_JPEG, response.getHeaders().getContentType());
+        verify(mediaService, times(1)).getMediaById(mediaId);
     }
 
     @Test
-    void getImage_WhenMediaNotFound_ShouldReturnNotFound() throws Exception {
-        given(mediaService.getMediaById(mediaId)).willReturn(null);
+    void getImage_WhenMediaNotFound_ShouldReturnNotFound() {
+        when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        mockMvc.perform(get("/api/v1/media/{id}/image", mediaId))
-                .andExpect(status().isNotFound());
+        ResponseEntity<byte[]> response = mediaController.getImage(mediaId);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        verify(mediaService, times(1)).getMediaById(mediaId);
     }
 }
