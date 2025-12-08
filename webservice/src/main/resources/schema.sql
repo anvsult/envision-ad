@@ -1,7 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS business;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS media;
