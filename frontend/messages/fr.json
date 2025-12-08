@@ -163,7 +163,18 @@
       "name": "Nom",
       "companySize": "Taille",
       "address": "Adresse",
-      "dateCreated": "Date de création"
+      "dateCreated": "Date de création",
+      "actions": "Actions"
+    },
+    "errors": {
+      "loadFailed": "Échec du chargement de l'entreprise pour modification",
+      "deleteFailed": "Échec de la suppression de l'entreprise"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer l'entreprise",
+      "message": "Êtes-vous sûr de vouloir supprimer cette entreprise? Cette action ne peut pas être annulée.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
     },
     "form": {
       "title": "Détails de l'entreprise",
@@ -190,6 +201,25 @@
       "MEDIUM": "Moyenne (51-150)",
       "LARGE": "Grande (151-500)",
       "ENTERPRISE": "Entreprise (500+)"
+    }
+  },
+  "media": {
+    "sidebar": {
+      "overview": "Aperçu",
+      "media": "Médias",
+      "displayedAds": "Annonces affichées",
+      "adRequests": "Demandes d'annonces",
+      "transactions": "Transactions"
+    },
+    "errors": {
+      "loadFailed": "Échec du chargement du média pour modification",
+      "deleteFailed": "Échec de la suppression du média"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer le média",
+      "message": "Êtes-vous sûr de vouloir supprimer ce média? Cette action ne peut pas être annulée.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
     }
   }
 }

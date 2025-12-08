@@ -12,4 +12,8 @@ public interface BusinessService {
     List<Business> getAllBusinesses();
 
     Business getBusinessById(UUID id);
+
+    Business updateBusinessById(UUID id, Business business);
+
+    Business deleteBusinessById(UUID id);
 }
