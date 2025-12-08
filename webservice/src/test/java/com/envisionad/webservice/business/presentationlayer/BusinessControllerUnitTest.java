@@ -1,12 +1,12 @@
-package com.envisionad.webservice.business.presentationLayer;
+package com.envisionad.webservice.business.presentationlayer;
 
-import com.envisionad.webservice.business.businessLogicLayer.BusinessService;
-import com.envisionad.webservice.business.dataAccessLayer.Address;
-import com.envisionad.webservice.business.dataAccessLayer.Business;
-import com.envisionad.webservice.business.dataAccessLayer.CompanySize;
-import com.envisionad.webservice.business.mappingLayer.BusinessResponseMapper;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.dataaccesslayer.Address;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
+import com.envisionad.webservice.business.mappinglayer.BusinessResponseMapper;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,9 +90,9 @@ class BusinessControllerUnitTest {
         given(businessService.createBusiness(any(Business.class))).willReturn(business);
         given(businessResponseMapper.entityToResponseModel(any(Business.class))).willReturn(responseModel);
 
-        mockMvc.perform(post("/api/v1/businesses")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestModel)))
+        mockMvc.perform(post("/api/v1/business")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestModel)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value(businessId.toString()))
                 .andExpect(jsonPath("$.name").value("Test Business"));
@@ -101,11 +101,11 @@ class BusinessControllerUnitTest {
     @Test
     void getAllBusinesses_ShouldReturnListOfBusinesses() throws Exception {
         List<Business> businessList = Arrays.asList(business);
-
+        
         given(businessService.getAllBusinesses()).willReturn(businessList);
         given(businessResponseMapper.entityToResponseModel(any(Business.class))).willReturn(responseModel);
 
-        mockMvc.perform(get("/api/v1/businesses"))
+        mockMvc.perform(get("/api/v1/business"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(businessId.toString()))
@@ -117,7 +117,7 @@ class BusinessControllerUnitTest {
         given(businessService.getBusinessById(businessId)).willReturn(business);
         given(businessResponseMapper.entityToResponseModel(business)).willReturn(responseModel);
 
-        mockMvc.perform(get("/api/v1/businesses/{id}", businessId))
+        mockMvc.perform(get("/api/v1/business/{id}", businessId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(businessId.toString()));
     }

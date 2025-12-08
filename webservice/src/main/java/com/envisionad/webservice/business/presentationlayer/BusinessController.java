@@ -1,10 +1,10 @@
-package com.envisionad.webservice.business.presentationLayer;
+package com.envisionad.webservice.business.presentationlayer;
 
-import com.envisionad.webservice.business.businessLogicLayer.BusinessService;
-import com.envisionad.webservice.business.dataAccessLayer.Business;
-import com.envisionad.webservice.business.mappingLayer.BusinessResponseMapper;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.mappinglayer.BusinessResponseMapper;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

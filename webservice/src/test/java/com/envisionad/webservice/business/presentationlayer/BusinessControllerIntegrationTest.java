@@ -1,10 +1,10 @@
-package com.envisionad.webservice.business.presentationLayer;
+package com.envisionad.webservice.business.presentationlayer;
 
-import com.envisionad.webservice.business.dataAccessLayer.Address;
-import com.envisionad.webservice.business.dataAccessLayer.Business;
-import com.envisionad.webservice.business.dataAccessLayer.BusinessRepository;
-import com.envisionad.webservice.business.dataAccessLayer.CompanySize;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.dataaccesslayer.Address;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,9 +53,9 @@ class BusinessControllerIntegrationTest {
         requestModel.setZipCode("00000");
         requestModel.setCountry("Country");
 
-        mockMvc.perform(post("/api/v1/businesses")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestModel)))
+        mockMvc.perform(post("/api/v1/business")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestModel)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("Integration Business")))
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -69,7 +69,7 @@ class BusinessControllerIntegrationTest {
         createAndSaveBusiness("Business 1");
         createAndSaveBusiness("Business 2");
 
-        mockMvc.perform(get("/api/v1/businesses"))
+        mockMvc.perform(get("/api/v1/business"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
@@ -78,7 +78,7 @@ class BusinessControllerIntegrationTest {
     void getBusinessById_ShouldReturnOneBusiness() throws Exception {
         Business savedBusiness = createAndSaveBusiness("Target Business");
 
-        mockMvc.perform(get("/api/v1/businesses/{id}", savedBusiness.getId()))
+        mockMvc.perform(get("/api/v1/business/{id}", savedBusiness.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(savedBusiness.getId().toString())))
                 .andExpect(jsonPath("$.name", is("Target Business")));

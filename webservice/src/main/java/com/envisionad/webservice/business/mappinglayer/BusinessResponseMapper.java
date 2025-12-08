@@ -1,9 +1,9 @@
-package com.envisionad.webservice.business.mappingLayer;
+package com.envisionad.webservice.business.mappinglayer;
 
-import com.envisionad.webservice.business.dataAccessLayer.Address;
-import com.envisionad.webservice.business.dataAccessLayer.Business;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationLayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.dataaccesslayer.Address;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.stereotype.Component;
 
 @Component

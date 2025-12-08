@@ -1,6 +1,6 @@
-package com.envisionad.webservice.business.presentationLayer.models;
+package com.envisionad.webservice.business.presentationlayer.models;
 
-import com.envisionad.webservice.business.dataAccessLayer.CompanySize;
+import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

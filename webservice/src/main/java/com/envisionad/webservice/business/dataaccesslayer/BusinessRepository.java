@@ -1,4 +1,4 @@
-package com.envisionad.webservice.business.dataAccessLayer;
+package com.envisionad.webservice.business.dataaccesslayer;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
