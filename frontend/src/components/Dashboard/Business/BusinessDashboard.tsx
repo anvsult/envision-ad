@@ -7,6 +7,7 @@ import { BusinessTable } from "@/components/Dashboard/Business/BusinessTable/Bus
 import { BusinessModal } from "@/components/Dashboard/Business/BusinessModal/BusinessModal";
 import { useBusinessList } from "@/components/Dashboard/Business/hooks/useBusinessList";
 import { useBusinessForm } from "@/components/Dashboard/Business/hooks/useBusinessForm";
+import { CompanySize } from "@/types/BusinessTypes";
 
 export function BusinessDashboard() {
   const t = useTranslations("business");
@@ -28,7 +29,10 @@ export function BusinessDashboard() {
       // Map BusinessResponse to BusinessRequest format
       setFormState({
         name: business.name ?? "",
-        companySize: business.companySize,
+        companySize:
+          (typeof business.companySize === "string"
+            ? CompanySize[business.companySize as keyof typeof CompanySize]
+            : business.companySize) ?? CompanySize.SMALL,
         street: business.address?.street ?? "",
         city: business.address?.city ?? "",
         state: business.address?.state ?? "",
