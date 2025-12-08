@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { Stack, Button, Group, Title } from "@mantine/core";
+import { modals } from "@mantine/modals";
 import { useTranslations } from "next-intl";
 import { BusinessTable } from "@/components/Dashboard/Business/BusinessTable/BusinessTable";
 import { BusinessModal } from "@/components/Dashboard/Business/BusinessModal/BusinessModal";
@@ -40,19 +41,29 @@ export function BusinessDashboard() {
       setIsModalOpen(true);
     } catch (err) {
       console.error("Failed to fetch business for edit:", err);
-      alert("Failed to load business for editing");
+      alert(t("errors.loadFailed"));
     }
   };
 
-  const handleDelete = async (id: string | number) => {
-    const confirmed = confirm("Are you sure you want to delete this business?");
-    if (!confirmed) return;
-    try {
-      await deleteBusinessById(id);
-    } catch (err) {
-      console.error("Failed to delete business:", err);
-      alert("Failed to delete business");
-    }
+  const handleDelete = (id: string | number) => {
+    modals.openConfirmModal({
+      title: t("deleteConfirm.title"),
+      centered: true,
+      children: t("deleteConfirm.message"),
+      labels: {
+        confirm: t("deleteConfirm.confirm"),
+        cancel: t("deleteConfirm.cancel"),
+      },
+      confirmProps: { color: "red" },
+      onConfirm: async () => {
+        try {
+          await deleteBusinessById(id);
+        } catch (err) {
+          console.error("Failed to delete business:", err);
+          alert(t("errors.deleteFailed"));
+        }
+      },
+    });
   };
 
   const handleCloseModal = () => {
