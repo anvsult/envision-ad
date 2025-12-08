@@ -112,3 +112,4 @@ export async function deleteMedia(id: string): Promise<void> {
         throw new Error(`Failed to delete media: ${response.statusText}`);
     }
 }
+

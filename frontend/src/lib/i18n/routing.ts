@@ -8,8 +8,10 @@ export const routing = defineRouting({
     '/': '/',
 
     // If locales use different paths
-    '../auth/login': '../auth/login',
-    '../auth/login?screen_hint=signup': '../auth/login?screen_hint=signup',
+    '/profile': {
+      'en': '/profile',
+      'fr': '/profil'
+    },
     '/browse': {
       'en': '/browse',
       'fr': '/parcourir'
