@@ -96,6 +96,7 @@ function Row({
         ref.current.showPicker();
       } catch (error) {
         // Fallback/ignore if browser doesn't support
+        console.warn('Time picker not supported:', error);
       }
     }
   };
