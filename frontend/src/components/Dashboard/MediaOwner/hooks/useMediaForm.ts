@@ -39,13 +39,13 @@ const getInitialFormState = (): MediaFormState => ({
     Sunday: false,
   },
   dailyOperatingHours: {
-    Monday: { start: "00:00", end: "00:00" },
-    Tuesday: { start: "00:00", end: "00:00" },
-    Wednesday: { start: "00:00", end: "00:00" },
-    Thursday: { start: "00:00", end: "00:00" },
-    Friday: { start: "00:00", end: "00:00" },
-    Saturday: { start: "00:00", end: "00:00" },
-    Sunday: { start: "00:00", end: "00:00" },
+    Monday: { start: "", end: "" },
+    Tuesday: { start: "", end: "" },
+    Wednesday: { start: "", end: "" },
+    Thursday: { start: "", end: "" },
+    Friday: { start: "", end: "" },
+    Saturday: { start: "", end: "" },
+    Sunday: { start: "", end: "" },
   },
   activeMonths: (() => {
     const months = [

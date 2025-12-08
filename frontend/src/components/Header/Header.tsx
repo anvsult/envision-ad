@@ -35,10 +35,11 @@ export function Header({
   const t = useTranslations("nav");
   const pathname = usePathname();
   const { user, isLoading } = useUser();
-  const links: Array<{ link: "/" | "/dashboard" | "/browse"; label: string }> =
+  const links: Array<{ link: "/" | "/dashboard" | "/business" | "/browse"; label: string }> =
     [
       { link: "/", label: t("home") },
       { link: "/dashboard", label: t("dashboard") },
+      { link: "/business", label: t("business") },
       { link: "/browse", label: t("browse") },
     ];
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =

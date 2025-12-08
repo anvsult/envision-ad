@@ -59,27 +59,35 @@ export default function MediaOwnerPage() {
     try {
       const backend = await fetchMediaById(id);
       // Map backend DTO to MediaFormState shape
-      const schedule = backend.schedule || { selectedMonths: [], days: {} };
+      const schedule = backend.schedule || { selectedMonths: [], weeklySchedule: [] };
 
       const activeDaysOfWeek: Record<string, boolean> = {
-        Monday: !!(schedule.days?.monday?.isActive),
-        Tuesday: !!(schedule.days?.tuesday?.isActive),
-        Wednesday: !!(schedule.days?.wednesday?.isActive),
-        Thursday: !!(schedule.days?.thursday?.isActive),
-        Friday: !!(schedule.days?.friday?.isActive),
-        Saturday: !!(schedule.days?.saturday?.isActive),
-        Sunday: !!(schedule.days?.sunday?.isActive),
+        Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false
       };
 
       const dailyOperatingHours: Record<string, { start: string; end: string }> = {
-        Monday: { start: schedule.days?.monday?.startTime ?? "00:00", end: schedule.days?.monday?.endTime ?? "00:00" },
-        Tuesday: { start: schedule.days?.tuesday?.startTime ?? "00:00", end: schedule.days?.tuesday?.endTime ?? "00:00" },
-        Wednesday: { start: schedule.days?.wednesday?.startTime ?? "00:00", end: schedule.days?.wednesday?.endTime ?? "00:00" },
-        Thursday: { start: schedule.days?.thursday?.startTime ?? "00:00", end: schedule.days?.thursday?.endTime ?? "00:00" },
-        Friday: { start: schedule.days?.friday?.startTime ?? "00:00", end: schedule.days?.friday?.endTime ?? "00:00" },
-        Saturday: { start: schedule.days?.saturday?.startTime ?? "00:00", end: schedule.days?.saturday?.endTime ?? "00:00" },
-        Sunday: { start: schedule.days?.sunday?.startTime ?? "00:00", end: schedule.days?.sunday?.endTime ?? "00:00" },
+        Monday: { start: "00:00", end: "00:00" },
+        Tuesday: { start: "00:00", end: "00:00" },
+        Wednesday: { start: "00:00", end: "00:00" },
+        Thursday: { start: "00:00", end: "00:00" },
+        Friday: { start: "00:00", end: "00:00" },
+        Saturday: { start: "00:00", end: "00:00" },
+        Sunday: { start: "00:00", end: "00:00" },
       };
+
+      if (schedule.weeklySchedule) {
+        schedule.weeklySchedule.forEach((entry: any) => {
+          // entry.dayOfWeek is likely "monday". We need "Monday"
+          const dayKey = entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
+          if (activeDaysOfWeek.hasOwnProperty(dayKey)) {
+            activeDaysOfWeek[dayKey] = entry.isActive;
+            dailyOperatingHours[dayKey] = {
+              start: entry.startTime ?? "00:00",
+              end: entry.endTime ?? "00:00"
+            };
+          }
+        });
+      }
 
       const months = [
         "January",

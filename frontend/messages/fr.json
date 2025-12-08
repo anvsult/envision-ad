@@ -6,6 +6,7 @@
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
+    "business": "Entreprise",
     "browse": "Parcourir",
     "register": "S'inscrire",
     "signIn": "Se connecter",
@@ -17,7 +18,6 @@
     },
     "profile": "Profil",
     "logout": "Se déconnecter"
-    }
   },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
@@ -138,5 +138,41 @@
   "mediacard": {
     "perWeek": "${price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
+  },
+  "business": {
+    "title": "Entreprise",
+    "createButton": "Créer une entreprise",
+    "table": {
+      "name": "Nom",
+      "companySize": "Taille",
+      "address": "Adresse",
+      "dateCreated": "Date de création"
+    },
+    "form": {
+      "title": "Détails de l'entreprise",
+      "nameLabel": "Nom de l'entreprise",
+      "namePlaceholder": "Ex. Tech Corp",
+      "sizeLabel": "Taille de l'entreprise",
+      "sizePlaceholder": "Sélectionner la taille",
+      "addressLabel": "Détails de l'adresse",
+      "streetLabel": "Rue",
+      "streetPlaceholder": "123 Rue Principale",
+      "cityLabel": "Ville",
+      "cityPlaceholder": "Paris",
+      "stateLabel": "État/Province",
+      "statePlaceholder": "QC",
+      "zipLabel": "Code Postal",
+      "zipPlaceholder": "H1A 1A1",
+      "countryLabel": "Pays",
+      "countryPlaceholder": "Canada",
+      "submit": "Créer l'entreprise",
+      "cancel": "Annuler"
+    },
+    "sizes": {
+      "SMALL": "Petite (1-50)",
+      "MEDIUM": "Moyenne (51-150)",
+      "LARGE": "Grande (151-500)",
+      "ENTERPRISE": "Entreprise (500+)"
+    }
   }
 }
