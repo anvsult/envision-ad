@@ -27,7 +27,11 @@ jobs:
           PGADMIN_PASSWORD: ${{ secrets.PGADMIN_PASSWORD }}
 
       - name: Wait for backend to be ready
-        run: npx wait-on http://localhost:8080
+        run: |
+          docker logs -f webservice &
+          LOGS_PID=$!
+          npx wait-on http://localhost:8080
+          kill $LOGS_PID || true
 
       - name: Wait for frontend to be ready
         run: npx wait-on http://localhost:3000
