@@ -32,42 +32,47 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     /* Run tests in headless mode */
-    headless: true,
+    //needs to be true for CI environments, can be set to true or false for local dev but should not be modified in PRs
+    headless: process.env.CI ? true : false,
 
   },
 
   /* Configure projects for major browsers */
+  // Feel free to uncomment any of the browsers you want to test against during development but do not push changes with them uncommented to avoid slowing down the CI
   projects: [
+    //desktop viewports
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
 
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
+
+    //mobile viewports
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'mobile-webkit',
+      use: { ...devices['iPhone 12'] },
     },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
-
-    /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',
     //   use: { ...devices['Pixel 5'] },
     // },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
 
-    /* Test against branded browsers. */
-    {
-      name: 'Microsoft Edge',
-      use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    },
+    //branded browsers
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+
     // {
     //   name: 'Google Chrome',
     //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },

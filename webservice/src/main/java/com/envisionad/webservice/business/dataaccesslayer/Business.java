@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -14,7 +16,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Business {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -33,4 +34,12 @@ public class Business {
     @CreationTimestamp
     @Column(nullable = false, updatable = false) // updatable=false ensures it never changes after creation
     private LocalDateTime dateCreated;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "business_employees",
+            joinColumns = @JoinColumn(name = "business_id")
+    )
+    @Column(name = "employeeId")
+    private Set<String> employeeIds = new HashSet<>(); //not sure if I really want to use set
 }

@@ -16,4 +16,8 @@ public interface BusinessService {
     Business updateBusinessById(UUID id, Business business);
 
     Business deleteBusinessById(UUID id);
+
+    Business addBusinessEmployeeById(UUID businessId, String EmployeeId);
+
+    Business removeBusinessEmployeeById(UUID id, String EmployeeId);
 }

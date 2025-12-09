@@ -22,12 +22,30 @@ CREATE TABLE business (
         company_size VARCHAR(50) NOT NULL,
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         address_id UUID,
+        owner VARCHAR(36),
 
         CONSTRAINT fk_address
             FOREIGN KEY (address_id)
                 REFERENCES address (id)
                 ON DELETE CASCADE
 );
+
+CREATE TABLE business_employees (
+    business_id UUID NOT NULL,
+    employeeId VARCHAR(36),
+
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE;
+    PRIMARY KEY (business_id, employeeId)
+)
+
+-- need to confirm if this is the best approach
+CREATE TABLE business_roles (
+    business_id UUID NOT NULL,
+    role business_role NOT NULL,
+
+    CONSTRAINT fk_business_roles FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
+    PRIMARY KEY (business_id, role)
+)
 
 -- 4. Create Media Table (Your new table)
 CREATE TABLE media (

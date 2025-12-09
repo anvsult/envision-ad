@@ -7,7 +7,7 @@ import com.envisionad.webservice.business.presentationlayer.models.BusinessRespo
 import org.springframework.stereotype.Component;
 
 @Component
-public class BusinessResponseMapper {
+public class BusinessMapper {
 
     public Business requestModelToEntity(BusinessRequestModel requestModel) {
         Address address = new Address(
