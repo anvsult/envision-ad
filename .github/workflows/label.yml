@@ -5,11 +5,12 @@
 # file with configuration.  For more information, see:
 # https://github.com/actions/labeler
 
-name: Labeler
-on: [pull_request_target]
+name: "Pull Request Labeler"
+on:
+- pull_request_target
 
 jobs:
-  label:
+  labeler:
 
     runs-on: ubuntu-latest
     permissions:
@@ -17,5 +18,5 @@ jobs:
       pull-requests: write
 
     steps:
-    - uses: actions/labeler@v4
+    - uses: actions/labeler@v6
       # No 'with:' block needed unless you have other parameters to set
