@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: envision_ad_postgres
     restart: unless-stopped
-    env_file: .env
+#    env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -39,10 +39,10 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: "production"
+      NODE_ENV: "development"
       NEXT_TELEMETRY_DISABLED: "1"
-    env_file:
-      - ./frontend/.env
+#    env_file:
+#      - ./frontend/.env
     depends_on:
       - webservice
     restart: unless-stopped
@@ -56,7 +56,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_PROFILES_ACTIVE: "prod"
+      SPRING_PROFILES_ACTIVE: "dev"
       # Spring datasource
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
