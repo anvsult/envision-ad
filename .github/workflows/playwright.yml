@@ -28,7 +28,7 @@ jobs:
 
       - name: Wait for backend to be ready
         run: |
-          docker logs -f webservice &
+          docker logs -f envision-ad-webservice-1 &
           LOGS_PID=$!
           npx wait-on http://localhost:8080
           kill $LOGS_PID || true
