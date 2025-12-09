@@ -3,7 +3,7 @@ services:
     image: postgres:15
     container_name: envision_ad_postgres
     restart: unless-stopped
-#    env_file: .env
+    env_file: .env
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -41,8 +41,8 @@ services:
     environment:
       NODE_ENV: "development"
       NEXT_TELEMETRY_DISABLED: "1"
-#    env_file:
-#      - ./frontend/.env
+    env_file:
+      - ./frontend/.env
     depends_on:
       - webservice
     restart: unless-stopped

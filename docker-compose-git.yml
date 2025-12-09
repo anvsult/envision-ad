@@ -6,7 +6,7 @@ services:
     networks:
       - appnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -h postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
