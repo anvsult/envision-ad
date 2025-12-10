@@ -23,7 +23,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
       # Spring datasource
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://host.docker.internal:5432/${POSTGRES_DB}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
       SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
     restart: unless-stopped
