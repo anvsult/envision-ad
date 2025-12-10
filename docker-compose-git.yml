@@ -1,36 +1,4 @@
 services:
-  postgres:
-    image: postgres:15
-    container_name: envision_ad_postgres
-    restart: unless-stopped
-    networks:
-      - appnet
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: envision_ad_pgadmin
-    restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-    networks:
-      - appnet
-
   frontend:
     build:
       context: ./frontend
@@ -55,7 +23,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
       # Spring datasource
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://host.docker.internal:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
       SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
     depends_on:
