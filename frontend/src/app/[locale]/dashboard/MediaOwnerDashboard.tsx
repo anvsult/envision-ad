@@ -40,11 +40,53 @@ export default function MediaOwnerPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
   const [opened, { toggle, close }] = useDisclosure(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const t = useTranslations("media");
 
+  const validateForm = (form: typeof formState) => {
+    if (!form.mediaTitle.trim()) return t("errors.titleRequired");
+    if (!form.mediaOwnerName.trim()) return t("errors.ownerRequired");
+    if (!form.mediaAddress.trim()) return t("errors.addressRequired");
+    if (!form.weeklyPrice.trim()) return t("errors.priceRequired");
+    if (!form.dailyImpressions.trim()) return t("errors.impressionsRequired");
+    if (!form.displayType) return t("errors.displayTypeRequired");
+
+    if (form.displayType === "DIGITAL") {
+      if (!form.loopDuration.trim()) return t("errors.loopDurationRequired");
+      if (!form.resolution.trim()) return t("errors.resolutionRequired");
+    } else if (form.displayType === "POSTER") {
+      if (!form.widthCm.trim()) return t("errors.widthRequired");
+      if (!form.heightCm.trim()) return t("errors.heightRequired");
+    }
+
+    // Schedule validation
+    const hasActiveDay = Object.values(form.activeDaysOfWeek).some((isActive) => isActive);
+    if (!hasActiveDay) return t("errors.atLeastOneDayRequired");
+
+    const hasActiveMonth = Object.values(form.activeMonths).some((isActive) => isActive);
+    if (!hasActiveMonth) return t("errors.atLeastOneMonthRequired");
+
+    for (const [day, isActive] of Object.entries(form.activeDaysOfWeek)) {
+      if (isActive) {
+        const { start, end } = form.dailyOperatingHours[day];
+        if (!start || !end) return t("errors.timeRequiredForDay", { day });
+        if (start >= end) return t("errors.invalidTimeRangeForDay", { day });
+      }
+    }
+
+    return null;
+  };
+
   const handleSave = async () => {
+    setValidationError(null);
+    const error = validateForm(formState);
+    if (error) {
+      setValidationError(error);
+      return;
+    }
+
     try {
       if (editingId) {
         await editMedia(editingId, formState);
@@ -56,7 +98,7 @@ export default function MediaOwnerPage() {
       setEditingId(null);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      alert(message);
+      setValidationError(message);
     }
   };
 
@@ -272,6 +314,7 @@ export default function MediaOwnerPage() {
                 onClick={() => {
                   setEditingId(null);
                   resetForm();
+                  setValidationError(null);
                   setIsModalOpen(true);
                 }}
               >
@@ -284,11 +327,13 @@ export default function MediaOwnerPage() {
                 setIsModalOpen(false);
                 setEditingId(null);
                 resetForm();
+                setValidationError(null);
               }}
               onSave={handleSave}
               formState={formState}
               onFieldChange={updateField}
               onDayTimeChange={updateDayTime}
+              error={validationError}
             />
 
             <MediaTable

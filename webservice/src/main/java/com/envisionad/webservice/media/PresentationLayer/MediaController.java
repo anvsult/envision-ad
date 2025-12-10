@@ -6,6 +6,7 @@ import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.media.util.MediaRequestValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,13 +24,16 @@ public class MediaController {
     private final MediaService mediaService;
     private final MediaRequestMapper requestMapper;
     private final MediaResponseMapper responseMapper;
+    private final MediaRequestValidator validator;
 
     public MediaController(MediaService mediaService,
-                           MediaRequestMapper requestMapper,
-                           MediaResponseMapper responseMapper) {
+            MediaRequestMapper requestMapper,
+            MediaResponseMapper responseMapper,
+            MediaRequestValidator validator) {
         this.mediaService = mediaService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.validator = validator;
     }
 
     @GetMapping
@@ -42,8 +46,7 @@ public class MediaController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Integer minDailyImpressions
-    ) {
+            @RequestParam(required = false) Integer minDailyImpressions) {
         // Input validation
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             return ResponseEntity.badRequest().body("minPrice must be non-negative.");
@@ -58,11 +61,9 @@ public class MediaController {
             return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
         }
         List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
-            mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions)
-        );
+                mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions));
         return ResponseEntity.ok(result);
     }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
@@ -72,7 +73,6 @@ public class MediaController {
         }
         return ResponseEntity.ok(responseMapper.entityToResponseModel(media));
     }
-
 
     @PostMapping
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
@@ -86,7 +86,19 @@ public class MediaController {
 
     @PutMapping("/{id}")
     public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
-                                                          @RequestBody MediaRequestModel requestModel) {
+            @RequestBody MediaRequestModel requestModel) {
+        try {
+            validator.validate(requestModel);
+        } catch (IllegalArgumentException e) {
+            // For simplicity, we can return a Bad Request response directly here if we
+            // catch it,
+            // or we rely on a Global Exception Handler.
+            // Since we can't easily change the return type to ResponseEntity<?>,
+            // we might need to wrap this in a way that allows error messages or throw a
+            // ResponseStatusException.
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
         entity.setId(id);
@@ -103,7 +115,7 @@ public class MediaController {
 
     @PostMapping("/{id}/image")
     public ResponseEntity<?> uploadImage(@PathVariable String id,
-                                         @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") MultipartFile file) {
         Media media = mediaService.getMediaById(id);
         if (media == null) {
             return ResponseEntity.notFound().build();
@@ -130,7 +142,8 @@ public class MediaController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        String contentType = media.getImageContentType() != null ? media.getImageContentType() : "application/octet-stream";
+        String contentType = media.getImageContentType() != null ? media.getImageContentType()
+                : "application/octet-stream";
         headers.setContentType(MediaType.parseMediaType(contentType));
         if (media.getImageFileName() != null) {
             headers.setContentDispositionFormData("inline", media.getImageFileName());

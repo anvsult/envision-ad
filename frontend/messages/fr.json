@@ -12,9 +12,9 @@
     "signIn": "Se connecter",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Logo de Envision Ad"
-        }
+      "envisionAdLogo": {
+        "alt": "Logo de Envision Ad"
+      }
     },
     "profile": "Profil",
     "logout": "Se déconnecter"
@@ -108,7 +108,6 @@
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
     "dailyImpressionPerDay": "~{count} impressions par jour",
-
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -140,18 +139,18 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filtres:",
       "sort": "Trier:"
     },
-    "filters":{
+    "filters": {
       "price": "Prix ($)",
       "impressions": "Impressions minimum",
       "from": "Minimum",
       "to": "Maximum",
       "showresults": "Ajouter le filtre"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "Aucun média trouvé",
       "changefilters": "Veuillez changer vos filtres"
     }
@@ -213,7 +212,21 @@
     },
     "errors": {
       "loadFailed": "Échec du chargement du média pour modification",
-      "deleteFailed": "Échec de la suppression du média"
+      "deleteFailed": "Échec de la suppression du média",
+      "titleRequired": "Le nom du média est requis",
+      "ownerRequired": "Le propriétaire du média est requis",
+      "addressRequired": "L'adresse du média est requise",
+      "priceRequired": "Le prix est requis",
+      "impressionsRequired": "Les impressions quotidiennes sont requises",
+      "displayTypeRequired": "Le type d'affichage est requis",
+      "loopDurationRequired": "La durée de la boucle est requise pour les affichages numériques",
+      "resolutionRequired": "La résolution est requise pour les affichages numériques",
+      "widthRequired": "La largeur est requise pour les affiches",
+      "heightRequired": "La hauteur est requise pour les affiches",
+      "atLeastOneDayRequired": "Au moins un jour doit être sélectionné dans l'horaire",
+      "timeRequiredForDay": "Les heures de début et de fin sont requises pour {day}",
+      "invalidTimeRangeForDay": "L'heure de début doit être avant l'heure de fin pour {day}",
+      "atLeastOneMonthRequired": "Au moins un mois doit être sélectionné"
     },
     "deleteConfirm": {
       "title": "Supprimer le média",
