@@ -2,6 +2,7 @@ package com.envisionad.webservice.business.mappinglayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.stereotype.Component;
@@ -11,11 +12,11 @@ public class BusinessMapper {
 
     public Business requestModelToEntity(BusinessRequestModel requestModel) {
         Address address = new Address(
-                requestModel.getStreet(),
-                requestModel.getCity(),
-                requestModel.getState(),
-                requestModel.getZipCode(),
-                requestModel.getCountry()
+                requestModel.getAddress().getStreet(),
+                requestModel.getAddress().getCity(),
+                requestModel.getAddress().getState(),
+                requestModel.getAddress().getZipCode(),
+                requestModel.getAddress().getCountry()
         );
 
         Business business = new Business();
@@ -32,10 +33,10 @@ public class BusinessMapper {
         response.setName(business.getName());
         response.setCompanySize(business.getCompanySize());
         response.setDateCreated(business.getDateCreated());
+        response.setEmployees(business.getEmployeeIds());
 
         if (business.getAddress() != null) {
-            BusinessResponseModel.AddressResponseModel addressModel = new BusinessResponseModel.AddressResponseModel();
-            addressModel.setId(business.getAddress().getId());
+            AddressResponseModel addressModel = new AddressResponseModel();
             addressModel.setStreet(business.getAddress().getStreet());
             addressModel.setCity(business.getAddress().getCity());
             addressModel.setState(business.getAddress().getState());

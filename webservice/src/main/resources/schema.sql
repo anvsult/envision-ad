@@ -34,10 +34,10 @@ CREATE TABLE business (
 
 CREATE TABLE business_employees (
     business_id UUID NOT NULL,
-    employeeId VARCHAR(36),
+    employee_id VARCHAR(36),
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
-    PRIMARY KEY (business_id, employeeId)
+    PRIMARY KEY (business_id, employee_id)
 );
 
 -- need to confirm if this is the best approach

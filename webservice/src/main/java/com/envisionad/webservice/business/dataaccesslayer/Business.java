@@ -40,6 +40,6 @@ public class Business {
             name = "business_employees",
             joinColumns = @JoinColumn(name = "business_id")
     )
-    @Column(name = "employeeId")
-    private Set<String> employeeIds = new HashSet<>(); //not sure if I really want to use set
+    @Column(name = "employee_Id")
+    private Set<String> employeeIds = new HashSet<>();
 }

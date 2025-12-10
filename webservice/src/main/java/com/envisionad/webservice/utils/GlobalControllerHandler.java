@@ -1,6 +1,8 @@
 package com.envisionad.webservice.utils;
 
+import com.envisionad.webservice.utils.exceptions.BusinessEmployeeNotFoundException;
 import com.envisionad.webservice.utils.exceptions.BusinessNotFoundException;
+import com.envisionad.webservice.utils.exceptions.DuplicateBusinessEmployeeException;
 import com.envisionad.webservice.utils.exceptions.DuplicateBusinessNameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,9 +20,21 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(BusinessEmployeeNotFoundException.class)
+    public HttpErrorInfo handleBusinessEmployeeNotFoundException(BusinessEmployeeNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(DuplicateBusinessNameException.class)
-    public HttpErrorInfo handleIllegalArgumentException(DuplicateBusinessNameException ex) {
+    public HttpErrorInfo handleDuplicateBusinessNameException(DuplicateBusinessNameException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(DuplicateBusinessEmployeeException.class)
+    public HttpErrorInfo handleDuplicateBusinessEmployeeException(DuplicateBusinessEmployeeException ex) {
         return createHttpErrorInfo(BAD_REQUEST, ex);
     }
 

@@ -7,12 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class BusinessRequestModel {
-
     private String name;
     private CompanySize companySize;
-    private String street;
-    private String city;
-    private String state;
-    private String zipCode;
-    private String country;
+    private AddressRequestModel address;
 }

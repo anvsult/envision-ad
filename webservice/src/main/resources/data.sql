@@ -1,41 +1,19 @@
 INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', '88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
+VALUES
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', '88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'SMALL', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'LARGE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', 'MEDIUM', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', NOW())
+VALUES
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'SMALL', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'LARGE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', 'MEDIUM', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', NOW())
     ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO media (

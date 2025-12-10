@@ -2,6 +2,9 @@ package com.envisionad.webservice.business.businesslogiclayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.utils.exceptions.BusinessEmployeeNotFoundException;
+import com.envisionad.webservice.utils.exceptions.BusinessNotFoundException;
+import com.envisionad.webservice.utils.exceptions.DuplicateBusinessEmployeeException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,13 +35,13 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public Business getBusinessById(UUID id) {
         return businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id)); //TODO use custom error
+                .orElseThrow(() -> new BusinessNotFoundException(id));
     }
 
     @Override
     public Business updateBusinessById(UUID id, Business business) {
         Business existingBusiness = businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id)); //TODO use custom error
+                .orElseThrow(() -> new BusinessNotFoundException(id));
         existingBusiness.setName(business.getName());
         existingBusiness.setAddress(business.getAddress());
         existingBusiness.setCompanySize(business.getCompanySize());
@@ -49,7 +52,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public Business deleteBusinessById(UUID id) {
         Business existingBusiness = businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id)); //TODO use custom error
+                .orElseThrow(() -> new BusinessNotFoundException(id));
         businessRepository.delete(existingBusiness);
         return existingBusiness;
     }
@@ -57,8 +60,11 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public Business addBusinessEmployeeById(UUID businessId, String EmployeeId){
         Business existingBusiness = businessRepository.findById(businessId)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + businessId));
-        //TODO ADD THE EMPLOYEE HERE
+                .orElseThrow(() -> new BusinessNotFoundException(businessId));
+        if (existingBusiness.getEmployeeIds().contains(EmployeeId))
+            throw new DuplicateBusinessEmployeeException("Employee with id " + EmployeeId + " already exists");
+
+        existingBusiness.getEmployeeIds().add(EmployeeId); //throw custom error if user is already in business
         return businessRepository.save(existingBusiness);
     }
 
@@ -66,7 +72,9 @@ public class BusinessServiceImpl implements BusinessService {
     public Business removeBusinessEmployeeById(UUID businessId, String EmployeeId){
         Business existingBusiness = businessRepository.findById(businessId)
                 .orElseThrow(() -> new RuntimeException("Business not found with id: " + businessId));
-        //TODO REMOVE THE EMPLOYEE HERE
+        if (!existingBusiness.getEmployeeIds().contains(EmployeeId))
+            throw new BusinessEmployeeNotFoundException("Employee with id " + EmployeeId + " not found");
+        existingBusiness.getEmployeeIds().remove(EmployeeId); //throw custom error if user is not in business
         return businessRepository.save(existingBusiness);
     }
 }

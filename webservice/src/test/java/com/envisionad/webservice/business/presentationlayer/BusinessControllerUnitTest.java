@@ -5,6 +5,7 @@ import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
 import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
+import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,8 +55,7 @@ class BusinessControllerUnitTest {
         business.setAddress(address);
         business.setDateCreated(LocalDateTime.now());
 
-        BusinessResponseModel.AddressResponseModel addressResponse = new BusinessResponseModel.AddressResponseModel();
-        addressResponse.setId(address.getId());
+        AddressResponseModel addressResponse = new AddressResponseModel();
         addressResponse.setStreet(address.getStreet());
         addressResponse.setCity(address.getCity());
         addressResponse.setState(address.getState());
@@ -72,11 +72,12 @@ class BusinessControllerUnitTest {
         requestModel = new BusinessRequestModel();
         requestModel.setName("Test Business");
         requestModel.setCompanySize(CompanySize.SMALL);
-        requestModel.setStreet("123 Street");
-        requestModel.setCity("City");
-        requestModel.setState("State");
-        requestModel.setZipCode("12345");
-        requestModel.setCountry("Country");
+
+        requestModel.getAddress().setStreet("123 Street");
+        requestModel.getAddress().setCity("City");
+        requestModel.getAddress().setState("State");
+        requestModel.getAddress().setZipCode("12345");
+        requestModel.getAddress().setCountry("Country");
     }
 
     @Test
