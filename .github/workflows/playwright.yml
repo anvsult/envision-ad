@@ -20,15 +20,12 @@ jobs:
       - name: Start docker-compose stack
         run: docker compose -f docker-compose-git.yml up -d --build
 
-      - name: Wait for backend to be ready
+      - name: Wait for frontend to be ready
         run: |
           docker logs -f envision-ad-webservice-1 &
           LOGS_PID=$!
-          npx wait-on http://localhost:8080
+          npx wait-on http://localhost:3000
           kill $LOGS_PID || true
-
-      - name: Wait for frontend to be ready
-        run: npx wait-on http://localhost:3000
 
       - uses: actions/setup-node@v5
         with:
