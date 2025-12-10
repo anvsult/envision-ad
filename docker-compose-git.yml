@@ -1,4 +1,22 @@
 services:
+  postgres:
+    image: postgres:15
+    container_name: envision_ad_postgres
+    restart: unless-stopped
+    networks:
+      - appnet
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: pwd
+      POSTGRES_DB: test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   frontend:
     build:
       context: ./frontend
@@ -23,9 +41,12 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "dev"
       # Spring datasource
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
-      SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
-      SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/test"
+      SPRING_DATASOURCE_USERNAME: "test"
+      SPRING_DATASOURCE_PASSWORD: "pwd"
+    depends_on:
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - appnet

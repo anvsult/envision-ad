@@ -11,21 +11,6 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U $$POSTGRES_USER"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - uses: actions/checkout@v5
 
@@ -34,10 +19,6 @@ jobs:
 
       - name: Start docker-compose stack
         run: docker compose -f docker-compose-git.yml up -d --build
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
 
       - name: Wait for backend to be ready
         run: |
