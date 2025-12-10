@@ -12,9 +12,9 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Envision Ad Logo"
-        }
+      "envisionAdLogo": {
+        "alt": "Envision Ad Logo"
+      }
     },
     "profile": "Profile",
     "logout": "Logout"
@@ -121,7 +121,6 @@
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "dailyImpressionPerDay": "~{count} daily impressions",
-
     "months": {
       "january": "January",
       "february": "February",
@@ -153,18 +152,18 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filter:",
       "sort": "Sort by:"
     },
-    "filters":{
+    "filters": {
       "price": "Price ($)",
       "impressions": "Minimum impressions",
       "from": "From",
       "to": "To",
       "showresults": "Add filter"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "No media found",
       "changefilters": "Please change your filters"
     }
@@ -235,7 +234,21 @@
   "media": {
     "errors": {
       "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media"
+      "deleteFailed": "Failed to delete media",
+      "titleRequired": "Media Name is required",
+      "ownerRequired": "Media Owner is required",
+      "addressRequired": "Media Address is required",
+      "priceRequired": "Price is required",
+      "impressionsRequired": "Daily Impressions are required",
+      "displayTypeRequired": "Type of display is required",
+      "loopDurationRequired": "Loop duration is required for Digital displays",
+      "resolutionRequired": "Resolution is required for Digital displays",
+      "widthRequired": "Width is required for Poster displays",
+      "heightRequired": "Height is required for Poster displays",
+      "atLeastOneDayRequired": "At least one day must be selected in the schedule",
+      "timeRequiredForDay": "Start and End times are required for {day}",
+      "invalidTimeRangeForDay": "Start time must be before End time for {day}",
+      "atLeastOneMonthRequired": "At least one month must be selected"
     },
     "deleteConfirm": {
       "title": "Delete Media",
