@@ -28,6 +28,9 @@ jobs:
       - name: Start docker-compose stack
         run: docker compose -f docker-compose-git.yml up -d --build
 
+      - name: Debug Postgres environment
+        run: docker exec envision_ad_postgres env
+
       - name: Wait for backend to be ready
         run: |
           docker logs -f envision-ad-webservice-1 &
