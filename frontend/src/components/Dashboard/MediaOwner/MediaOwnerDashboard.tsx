@@ -28,6 +28,7 @@ import {
   IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
+import SideBar from "@/components/SideBar/SideBar";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -185,56 +186,6 @@ export default function MediaOwnerPage() {
     return media.slice(start, end);
   }, [media, activePage]);
 
-  const sidebarContent = (
-    <Stack gap="xs">
-      <NavLink
-        component={Link}
-        href="/dashboard/overview"
-        label={t("sidebar.overview")}
-        leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
-        active={pathname?.includes("/overview")}
-        onClick={isMobile ? close : undefined}
-      />
-      <NavLink
-        component={Link}
-        href="/dashboard"
-        label={t("sidebar.media")}
-        leftSection={<IconDeviceTv size={20} stroke={1.5} />}
-        active={pathname === "/dashboard" || pathname?.endsWith("/dashboard")}
-        onClick={isMobile ? close : undefined}
-      />
-      <NavLink
-        component={Link}
-        href="/dashboard/displayed-ads"
-        label={t("sidebar.displayedAds")}
-        leftSection={<IconAd size={20} stroke={1.5} />}
-        active={pathname?.includes("/displayed-ads")}
-        onClick={isMobile ? close : undefined}
-      />
-      <NavLink
-        component={Link}
-        href="/dashboard/ad-requests"
-        label={t("sidebar.adRequests")}
-        leftSection={<IconFileDescription size={20} stroke={1.5} />}
-        active={pathname?.includes("/ad-requests")}
-        onClick={isMobile ? close : undefined}
-        rightSection={
-          <Badge size="sm" color="blue" variant="filled">
-            {media.length}
-          </Badge>
-        }
-      />
-      <NavLink
-        component={Link}
-        href="/dashboard/transactions"
-        label={t("sidebar.transactions")}
-        leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}
-        active={pathname?.includes("/transactions")}
-        onClick={isMobile ? close : undefined}
-      />
-    </Stack>
-  );
-
   return (
     <>
       <Header
@@ -251,7 +202,7 @@ export default function MediaOwnerPage() {
           hiddenFrom="md"
           zIndex={1000}
         >
-          {sidebarContent}
+          <SideBar></SideBar>
         </Drawer>
 
         <Group align="flex-start" gap={0} wrap="nowrap">
@@ -262,7 +213,7 @@ export default function MediaOwnerPage() {
               style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
               withBorder
             >
-              {sidebarContent}
+              <SideBar></SideBar>
             </Paper>
           )}
 

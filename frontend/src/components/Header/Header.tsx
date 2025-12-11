@@ -35,27 +35,42 @@ export function Header({
   const t = useTranslations("nav");
   const pathname = usePathname();
   const { user, isLoading } = useUser();
-  const links: Array<{ link: "/" | "/dashboard" | "/business" | "/browse"; label: string }> =
-    [
-      { link: "/", label: t("home") },
-      { link: "/dashboard", label: t("dashboard") },
-      { link: "/business", label: t("business") },
-      { link: "/browse", label: t("browse") },
-    ];
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
-  const items = links.map((link) => (
-    <Link
-      key={link.label}
-      href={link.link as any}
-      className={classes.link}
-      data-active={pathname === link.link || undefined}
-      onClick={closeDrawer}
-    >
-      {link.label}
-    </Link>
-  ));
+  const items = (
+      <>
+        <Link
+            key={t("home")}
+            href={"/"}
+            className={classes.link}
+            data-active={pathname === "/" || undefined}
+            onClick={closeDrawer}
+        >
+          {t("home")}
+        </Link>
+        { user &&
+            <Link
+                key={t("dashboard")}
+                href={"/dashboard"}
+                className={classes.link}
+                data-active={pathname.includes("/dashboard") || undefined}
+                onClick={closeDrawer}
+            >
+              {t("dashboard")}
+            </Link>
+        }
+        <Link
+            key={t("browse")}
+            href={"/browse"}
+            className={classes.link}
+            data-active={pathname === "/browse" || undefined}
+            onClick={closeDrawer}
+        >
+          {t("browse")}
+        </Link>
+      </>
+  )
 
   const authButtons = (
     <>
@@ -156,7 +171,7 @@ export function Header({
             <Divider my="sm" />
 
               <Box hiddenFrom="sm">
-                  {items}
+                {items}
                   <Divider my="sm" />
               </Box>
 

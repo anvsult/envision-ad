@@ -36,7 +36,7 @@ export const createBusiness = async (
     return res.json();
 };
 
-export const getBusinessById = async (id: string | number): Promise<BusinessResponse> => {
+export const getBusinessById = async (id: string): Promise<BusinessResponse> => {
     const res = await fetch(`${API_BASE_URL}/${id}`, {
         method: "GET",
         headers: {
@@ -53,9 +53,10 @@ export const getBusinessById = async (id: string | number): Promise<BusinessResp
 };
 
 export const updateBusiness = async (
-    id: string | number,
+    id: string,
     data: BusinessRequest
 ): Promise<BusinessResponse> => {
+    console.log(data);
     const res = await fetch(`${API_BASE_URL}/${id}`, {
         method: "PUT",
         headers: {
@@ -71,7 +72,7 @@ export const updateBusiness = async (
     return res.json();
 };
 
-export const deleteBusiness = async (id: string | number): Promise<void> => {
+export const deleteBusiness = async (id: string): Promise<void> => {
     const res = await fetch(`${API_BASE_URL}/${id}`, {
         method: "DELETE",
         headers: {
@@ -83,3 +84,43 @@ export const deleteBusiness = async (id: string | number): Promise<void> => {
         throw new Error(`Failed to delete business: ${res.statusText}`);
     }
 };
+
+export const getEmployeeBusiness = async (id: string): Promise<BusinessResponse> => {
+    const res = await fetch(`${API_BASE_URL}/employee/${id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        cache: "no-store",
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to get business: ${res.statusText}`);
+    }
+
+    return res.json();
+}
+
+export const removeEmployeeFromBusiness = async (businessId : string, employeeId : string) : Promise<void> => {
+    const res = await fetch(`${API_BASE_URL}/${businessId}/employees/${employeeId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+}
+
+export const inviteEmployeeToBusiness = async (id : string, email : string) : Promise<void> => {
+    const res = await fetch(`${API_BASE_URL}/${id}/invite?email=${encodeURIComponent(email)}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to invite to business: ${res.statusText}`);
+    }
+
+    return res.json();
+}

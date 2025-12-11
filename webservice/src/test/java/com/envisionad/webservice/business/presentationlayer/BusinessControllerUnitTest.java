@@ -3,8 +3,11 @@ package com.envisionad.webservice.business.presentationlayer;
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
-import com.envisionad.webservice.business.mappinglayer.BusinessResponseMapper;
+import com.envisionad.webservice.business.mappinglayer.BusinessModelMapper;
+import com.envisionad.webservice.business.presentationlayer.models.AddressRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +36,7 @@ class BusinessControllerUnitTest {
     private BusinessService businessService;
 
     @MockitoBean
-    private BusinessResponseMapper businessResponseMapper;
+    private BusinessModelMapper businessModelMapper;
 
     @Autowired
     private BusinessController businessController;
@@ -41,22 +44,20 @@ class BusinessControllerUnitTest {
     private Business business;
     private BusinessResponseModel responseModel;
     private BusinessRequestModel requestModel;
-    private final UUID businessId = UUID.randomUUID();
+    private final String businessId = UUID.randomUUID().toString();
 
     @BeforeEach
     void setUp() {
         Address address = new Address("123 Street", "City", "State", "12345", "Country");
-        address.setId(UUID.randomUUID());
 
         business = new Business();
-        business.setId(businessId);
+        business.setBusinessId(new BusinessIdentifier(businessId));
         business.setName("Test Business");
         business.setCompanySize(CompanySize.SMALL);
         business.setAddress(address);
         business.setDateCreated(LocalDateTime.now());
 
-        BusinessResponseModel.AddressResponseModel addressResponse = new BusinessResponseModel.AddressResponseModel();
-        addressResponse.setId(address.getId());
+        AddressResponseModel addressResponse = new AddressResponseModel();
         addressResponse.setStreet(address.getStreet());
         addressResponse.setCity(address.getCity());
         addressResponse.setState(address.getState());
@@ -64,46 +65,44 @@ class BusinessControllerUnitTest {
         addressResponse.setCountry(address.getCountry());
 
         responseModel = new BusinessResponseModel();
-        responseModel.setId(businessId);
+        responseModel.setBusinessId(businessId);
         responseModel.setName("Test Business");
         responseModel.setCompanySize(CompanySize.SMALL);
         responseModel.setAddress(addressResponse);
         responseModel.setDateCreated(business.getDateCreated());
 
+        AddressRequestModel  addressRequest = new AddressRequestModel();
+        addressRequest.setStreet("123 Street");
+        addressRequest.setCity("City");
+        addressRequest.setState("State");
+        addressRequest.setZipCode("12345");
+        addressRequest.setCountry("Country");
+
         requestModel = new BusinessRequestModel();
         requestModel.setName("Test Business");
         requestModel.setCompanySize(CompanySize.SMALL);
-        requestModel.setStreet("123 Street");
-        requestModel.setCity("City");
-        requestModel.setState("State");
-        requestModel.setZipCode("12345");
-        requestModel.setCountry("Country");
+        requestModel.setAddress(addressRequest);
     }
 
     @Test
     void createBusiness_ShouldReturnCreatedBusiness() {
-        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
-        when(businessService.createBusiness(any(Business.class))).thenReturn(business);
-        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
+        when(businessService.createBusiness(any(BusinessRequestModel.class))).thenReturn(responseModel);
 
         ResponseEntity<BusinessResponseModel> response = businessController.createBusiness(requestModel);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(businessId, response.getBody().getId());
+        assertEquals(businessId, response.getBody().getBusinessId());
         assertEquals("Test Business", response.getBody().getName());
-        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
-        verify(businessService, times(1)).createBusiness(any(Business.class));
-        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
+        verify(businessService, times(1)).createBusiness(any(BusinessRequestModel.class));
     }
 
     @Test
     void getAllBusinesses_ShouldReturnListOfBusinesses() {
-        List<Business> businessList = Arrays.asList(business);
+        List<BusinessResponseModel> businessList = Collections.singletonList(responseModel);
 
         when(businessService.getAllBusinesses()).thenReturn(businessList);
-        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
 
         ResponseEntity<List<BusinessResponseModel>> response = businessController.getAllBusinesses();
 
@@ -111,70 +110,59 @@ class BusinessControllerUnitTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(1, response.getBody().size());
-        assertEquals(businessId, response.getBody().get(0).getId());
-        assertEquals("Test Business", response.getBody().get(0).getName());
+        assertEquals(businessId, response.getBody().getFirst().getBusinessId());
+        assertEquals("Test Business", response.getBody().getFirst().getName());
         verify(businessService, times(1)).getAllBusinesses();
-        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
     }
 
     @Test
     void getBusinessById_WhenFound_ShouldReturnBusiness() {
-        when(businessService.getBusinessById(businessId)).thenReturn(business);
-        when(businessResponseMapper.entityToResponseModel(business)).thenReturn(responseModel);
+        when(businessService.getBusinessById(businessId)).thenReturn(responseModel);
 
         ResponseEntity<BusinessResponseModel> response = businessController.getBusinessById(businessId);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(businessId, response.getBody().getId());
+        assertEquals(businessId, response.getBody().getBusinessId());
         verify(businessService, times(1)).getBusinessById(businessId);
-        verify(businessResponseMapper, times(1)).entityToResponseModel(business);
     }
 
     @Test
     void updateBusinessById_ShouldReturnUpdatedBusiness() {
-        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
-        when(businessService.updateBusinessById(eq(businessId), any(Business.class))).thenReturn(business);
-        when(businessResponseMapper.entityToResponseModel(any(Business.class))).thenReturn(responseModel);
+        when(businessService.updateBusinessById(eq(businessId), any(BusinessRequestModel.class))).thenReturn(responseModel);
 
         ResponseEntity<BusinessResponseModel> response = businessController.updateBusinessById(businessId, requestModel);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(businessId, response.getBody().getId());
-        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
-        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(Business.class));
-        verify(businessResponseMapper, times(1)).entityToResponseModel(any(Business.class));
+        assertEquals(businessId, response.getBody().getBusinessId());
+        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(BusinessRequestModel.class));
     }
 
     @Test
     void updateBusinessById_WhenNotFound_ShouldThrowException() {
-        when(businessResponseMapper.requestModelToEntity(any(BusinessRequestModel.class))).thenReturn(business);
-        when(businessService.updateBusinessById(eq(businessId), any(Business.class)))
+        when(businessService.updateBusinessById(eq(businessId), any(BusinessRequestModel.class)))
                 .thenThrow(new RuntimeException("Business not found with id: " + businessId));
 
         assertThrows(RuntimeException.class, () -> businessController.updateBusinessById(businessId, requestModel));
 
-        verify(businessResponseMapper, times(1)).requestModelToEntity(any(BusinessRequestModel.class));
-        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(Business.class));
+        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(BusinessRequestModel.class));
     }
 
     @Test
     void deleteBusinessById_ShouldReturnDeletedBusiness() {
-        when(businessService.deleteBusinessById(businessId)).thenReturn(business);
-        when(businessResponseMapper.entityToResponseModel(business)).thenReturn(responseModel);
+        when(businessService.deleteBusinessById(businessId)).thenReturn(responseModel);
 
         ResponseEntity<BusinessResponseModel> response = businessController.deleteBusinessById(businessId);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals(businessId, response.getBody().getId());
+        assertEquals(businessId, response.getBody().getBusinessId());
         assertEquals("Test Business", response.getBody().getName());
         verify(businessService, times(1)).deleteBusinessById(businessId);
-        verify(businessResponseMapper, times(1)).entityToResponseModel(business);
     }
 
     @Test

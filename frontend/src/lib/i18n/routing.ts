@@ -24,25 +24,43 @@ export const routing = defineRouting({
       'en': '/dashboard',
       'fr': '/tableau-de-bord'
     },
-    '/dashboard/overview': {
-      'en': '/dashboard/overview',
-      'fr': '/tableau-de-bord/apercu'
+
+    //dashboards
+
+    //media Owner dashboard
+    '/dashboard/media-owner/overview': {
+      'en': '/dashboard/media-owner/overview',
+      'fr': '/tableau-de-bord/media-owner/apercu'
     },
-    '/dashboard/displayed-ads': {
-      'en': '/dashboard/displayed-ads',
-      'fr': '/tableau-de-bord/annonces-affichees'
+    '/dashboard/media-owner/media': {
+      'en': '/dashboard/media-owner/media',
+      'fr': '/tableau-de-bord/media-owner/media'
     },
-    '/dashboard/ad-requests': {
-      'en': '/dashboard/ad-requests',
-      'fr': '/tableau-de-bord/demandes-annonces'
+    '/dashboard/media-owner/displayed-ads': {
+      'en': '/dashboard/media-owner/displayed-ads',
+      'fr': '/tableau-de-bord/media-owner/annonces-affichees'
     },
-    '/dashboard/transactions': {
-      'en': '/dashboard/transactions',
-      'fr': '/tableau-de-bord/transactions'
+    '/dashboard/media-owner/ad-requests': {
+      'en': '/dashboard/media-owner/ad-requests',
+      'fr': '/tableau-de-bord/media-owner/demandes-annonces'
     },
-    '/business': {
-      'en': '/business',
-      'fr': '/entreprise'
+    '/dashboard/media-owner/transactions': {
+      'en': '/dashboard/media-owner/transactions',
+      'fr': '/tableau-de-bord/media-owner/transactions'
+    },
+
+    //advertiser dashboard
+
+    //admin dashboard
+
+    //business dashboard
+    '/dashboard/business/overview': {
+      'en': '/dashboard/business/overview',
+      'fr': '/tableau-de-bord/entreprise/apercu'
+    },
+    '/dashboard/business/employees': {
+      'en': '/dashboard/business/employees',
+      'fr': '/tableau-de-bord/entreprise/employes'
     }
   }
 });

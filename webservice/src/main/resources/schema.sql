@@ -1,13 +1,15 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
+DROP TABLE IF EXISTS business_employees CASCADE;
+DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
 DROP TABLE IF EXISTS media;
 
 -- 2. Create Address Table (Must be first because Business links to it)
 CREATE TABLE address (
-       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+       id SERIAL PRIMARY KEY,
        street VARCHAR(255) NOT NULL,
        city VARCHAR(255) NOT NULL,
        state VARCHAR(255) NOT NULL,
@@ -17,16 +19,28 @@ CREATE TABLE address (
 
 -- 3. Create Business Table
 CREATE TABLE business (
-        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        id SERIAL PRIMARY KEY,
+        business_id varchar(36) UNIQUE NOT NULL,
         name VARCHAR(255) NOT NULL,
         company_size VARCHAR(50) NOT NULL,
         date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        address_id UUID,
+        address_id SERIAL,
+        owner_id VARCHAR(36),
+        media_owner BOOLEAN,
+        advertiser BOOLEAN,
 
         CONSTRAINT fk_address
             FOREIGN KEY (address_id)
                 REFERENCES address (id)
                 ON DELETE CASCADE
+);
+
+CREATE TABLE business_employees (
+    business_id SERIAL NOT NULL,
+    employee_id VARCHAR(36) UNIQUE NOT NULL,
+
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
+    PRIMARY KEY (business_id, employee_id)
 );
 
 -- 4. Create Media Table (Your new table)

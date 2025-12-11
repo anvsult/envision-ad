@@ -17,7 +17,7 @@ interface BusinessModalProps {
     value: BusinessRequest[K]
   ) => void;
   resetForm: () => void;
-  editingId?: string | null;
+  editingId: string;
 }
 
 export function BusinessModal({
@@ -35,6 +35,7 @@ export function BusinessModal({
   const handleSave = async () => {
     setSaving(true);
     try {
+      console.log(formState);
       if (editingId) {
         await updateBusiness(editingId, formState);
       } else {

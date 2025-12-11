@@ -1,59 +1,88 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.exceptions.BusinessEmployeeNotFoundException;
+import com.envisionad.webservice.business.exceptions.DuplicateBusinessEmployeeException;
+import com.envisionad.webservice.business.exceptions.DuplicateBusinessNameException;
+import com.envisionad.webservice.business.mappinglayer.BusinessModelMapper;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class BusinessServiceImpl implements BusinessService {
 
     private final BusinessRepository businessRepository;
 
-    public BusinessServiceImpl(BusinessRepository businessRepository) {
+    private final BusinessModelMapper businessModelMapper;
+
+    public BusinessServiceImpl(BusinessRepository businessRepository, BusinessModelMapper businessModelMapper) {
         this.businessRepository = businessRepository;
+        this.businessModelMapper = businessModelMapper;
     }
 
     @Override
-    public Business createBusiness(Business business) {
+    public BusinessResponseModel createBusiness(BusinessRequestModel business) {
         if (businessRepository.existsByName(business.getName())) {
-            throw new RuntimeException("Business with name " + business.getName() + " already exists");
+            throw new DuplicateBusinessNameException(business.getName());
         }
-        return businessRepository.save(business);
+        return businessModelMapper.entityToResponseModel(businessRepository.save(businessModelMapper.requestModelToEntity(business)));
     }
 
     @Override
-    public List<Business> getAllBusinesses() {
-        return businessRepository.findAll();
+    public List<BusinessResponseModel> getAllBusinesses() {
+        return businessRepository.findAll().stream().map(businessModelMapper::entityToResponseModel).collect(Collectors.toList());
     }
 
     @Override
-    public Business getBusinessById(UUID id) {
-        return businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
+    public BusinessResponseModel getBusinessById(String id) {
+        return businessModelMapper.entityToResponseModel(businessRepository.findByBusinessId_BusinessId(id)); //new BusinessNotFoundException(id));
     }
 
     @Override
-    public Business updateBusinessById(UUID id, Business business) {
+    public BusinessResponseModel updateBusinessById(String id, BusinessRequestModel business) {
+        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(id);
+        Business newBusiness = businessModelMapper.requestModelToEntity(business);
+        existingBusiness.setName(newBusiness.getName());
+        existingBusiness.setAddress(newBusiness.getAddress());
+        existingBusiness.setCompanySize(newBusiness.getCompanySize());
+        existingBusiness.setRoles(newBusiness.getRoles());
 
-        Business existingBusiness = businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
-        // Update fields of existingBusiness as needed
-        existingBusiness.setName(business.getName());
-        existingBusiness.setAddress(business.getAddress());
-        existingBusiness.setCompanySize(business.getCompanySize());
-
-
-        return businessRepository.save(existingBusiness);
+        return businessModelMapper.entityToResponseModel(businessRepository.save(existingBusiness));
     }
 
     @Override
-    public Business deleteBusinessById(UUID id) {
-        Business existingBusiness = businessRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Business not found with id: " + id));
+    public BusinessResponseModel deleteBusinessById(String id) {
+        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(id);
         businessRepository.delete(existingBusiness);
-        return existingBusiness;
+        return businessModelMapper.entityToResponseModel(existingBusiness);
+    }
+
+    @Override
+    public BusinessResponseModel addBusinessEmployeeById(String businessId, String EmployeeId){
+        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);//.orElseThrow(() -> new BusinessNotFoundException(businessId));
+        if (existingBusiness.getEmployeeIds().contains(EmployeeId))
+            throw new DuplicateBusinessEmployeeException(businessId, EmployeeId);
+        existingBusiness.getEmployeeIds().add(EmployeeId);
+        return businessModelMapper.entityToResponseModel(businessRepository.save(existingBusiness));
+    }
+
+    @Override
+    public BusinessResponseModel removeBusinessEmployeeById(String businessId, String EmployeeId){
+        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);//.orElseThrow(() -> new BusinessNotFoundException(businessId));
+        if (!existingBusiness.getEmployeeIds().contains(EmployeeId))
+            throw new BusinessEmployeeNotFoundException(businessId, EmployeeId);
+        existingBusiness.getEmployeeIds().remove(EmployeeId);
+        return businessModelMapper.entityToResponseModel(businessRepository.save(existingBusiness));
+    }
+
+    @Override
+    public BusinessResponseModel getBusinessByEmployeeId(String employeeId) { //TODO handle error here and everywhere else
+        return businessModelMapper.entityToResponseModel(businessRepository.findByEmployeeIdsContains(employeeId));
     }
 }

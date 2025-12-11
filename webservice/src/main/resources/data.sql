@@ -1,42 +1,26 @@
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO address (street, city, state, zip_code, country)
+VALUES
+    ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
+    ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
+    ('789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
+    ('404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
+    ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
+VALUES
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true, true, NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false,NOW()),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,NOW())
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', '88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'SMALL', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'LARGE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', 'ENTERPRISE', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', NOW())
-    ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO business (id, name, company_size, address_id, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', 'MEDIUM', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a55', NOW())
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO business_employees (business_id, employee_id)
+VALUES
+    (1, 'auth0|6934e8515479d2b6d3cf7575'),
+    (1, 'auth0|693746439e8a7ab9e8b910b2')
+ON CONFLICT (business_id, employee_id) DO NOTHING;
 
 INSERT INTO media (
     media_id, title, media_owner_name, address,
@@ -164,4 +148,4 @@ VALUES
     ('d2499f91-35ab-408d-812c-3028e9e1d99d','Convention Banner','Expo Media','600 Event Blvd, Hamilton, ON','POSTER',0,'3000x1000','3:1',25.0,8.0,45.00,100,'{"selectedMonths": ["November"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "17:00", "dayOfWeek": "thursday"}]}', 'INACTIVE',NULL,NULL,NULL),
     ('159e1a11-81e9-49b7-a72d-6f5989744dad','Suburban LED','Metro Vision','55 Suburb Rd, Markham, ON','DIGITAL',40,'1920x1080','16:9',18.0,10.0,60.00,95,'{"selectedMonths": ["December"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "18:00", "dayOfWeek": "sunday"}]}', 'ACTIVE',NULL,NULL,NULL),
     ('954f2e96-f728-40ea-8763-78a2f79db102','Stadium Ring','Sports Media','1 Arena Way, Toronto, ON','DIGITAL',15,'3840x2160','16:9',30.0,12.0,120.00,250,'{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:00", "dayOfWeek": "saturday"}]}', 'ACTIVE',NULL,NULL,NULL)
-    ON CONFLICT (media_id) DO UPDATE SET schedule = EXCLUDED.schedule;
+ON CONFLICT (media_id) DO UPDATE SET schedule = EXCLUDED.schedule;
