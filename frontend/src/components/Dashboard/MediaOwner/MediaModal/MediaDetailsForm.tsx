@@ -34,16 +34,8 @@ export function MediaDetailsForm({
         value={formState.mediaTitle}
         onChange={(e) => onFieldChange("mediaTitle", e.currentTarget.value)}
         required
+        maxLength={52}
       />
-      <div style={{ height: 12 }} />
-      <TextInput
-        label="Media Owner"
-        placeholder="Owner name"
-        value={formState.mediaOwnerName}
-        onChange={(e) => onFieldChange("mediaOwnerName", e.currentTarget.value)}
-      />
-      <div style={{ height: 12 }} />
-
       <div style={{ height: 12 }} />
       <TextInput
         label="Address"
@@ -84,6 +76,7 @@ export function MediaDetailsForm({
           onChange={(e) =>
             handleRestrictedChange("loopDuration", e.currentTarget.value, /[^0-9]/g)
           }
+          maxLength={12}
         />
       )}
       {formState.displayType?.toLowerCase() === "digital" && (
@@ -97,6 +90,7 @@ export function MediaDetailsForm({
               handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
             }
             required
+            maxLength={12}
           />
 
           <div style={{ height: 12 }} />
@@ -124,6 +118,7 @@ export function MediaDetailsForm({
               onChange={(e) =>
                 handleRestrictedChange("widthCm", e.currentTarget.value, /[^0-9]/g)
               }
+              maxLength={12}
             />
             <TextInput
               label="Height (cm)"
@@ -134,6 +129,7 @@ export function MediaDetailsForm({
               onChange={(e) =>
                 handleRestrictedChange("heightCm", e.currentTarget.value, /[^0-9]/g)
               }
+              maxLength={12}
             />
           </div>
         </>
@@ -148,6 +144,7 @@ export function MediaDetailsForm({
         onChange={(e) =>
           handleRestrictedChange("weeklyPrice", e.currentTarget.value, /[^0-9]/g)
         }
+        maxLength={12}
       />
 
       <div style={{ height: 12 }} />
@@ -157,6 +154,7 @@ export function MediaDetailsForm({
         type="number"
         value={formState.dailyImpressions}
         onChange={(e) => onFieldChange("dailyImpressions", e.currentTarget.value)}
+        maxLength={12}
       />
     </>
   );

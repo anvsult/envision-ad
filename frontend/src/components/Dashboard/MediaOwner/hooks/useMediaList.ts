@@ -56,7 +56,7 @@ export function useMediaList() {
 
     const payload = {
       title: formState.mediaTitle,
-      mediaOwnerName: formState.mediaOwnerName,
+      mediaOwnerName: "Pending Owner",
       address: formState.mediaAddress,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
@@ -83,7 +83,7 @@ export function useMediaList() {
         pending: 0,
         status: created.status ?? "Pending Admin Approval",
         timeUntil: "-",
-        price: formState.weeklyPrice || "$0",
+        price: formState.weeklyPrice ? `$${formState.weeklyPrice}` : "$0",
       };
       setMedia((prev) => [newRow, ...prev]);
       return created;
@@ -98,7 +98,7 @@ export function useMediaList() {
 
     const payload = {
       title: formState.mediaTitle,
-      mediaOwnerName: formState.mediaOwnerName,
+      mediaOwnerName: "Pending Owner",
       address: formState.mediaAddress,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
@@ -115,7 +115,7 @@ export function useMediaList() {
     try {
       const updated = await updateMedia(String(id), payload as any);
       setMedia((prev) =>
-        prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${updated.price}` : r.price } : r))
+        prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? String(updated.price) : r.price } : r))
       );
       return updated;
     } catch (err: unknown) {

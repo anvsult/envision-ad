@@ -232,6 +232,12 @@
       "message": "Are you sure you want to delete this media? This action cannot be undone.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Success",
+        "message": "Media created successfully"
+      }
     }
   }
 }

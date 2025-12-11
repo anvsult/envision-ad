@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { Header } from "@/components/Header/Header";
 import { MediaModal } from "@/components/Dashboard/MediaOwner/MediaModal/MediaModal";
 import { MediaTable } from "@/components/Dashboard/MediaOwner/MediaTable/MediaTable";
@@ -20,6 +20,7 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
+import { notifications } from "@mantine/notifications";
 import {
   IconLayoutDashboard,
   IconDeviceTv,
@@ -44,10 +45,20 @@ export default function MediaOwnerPage() {
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const t = useTranslations("media");
+  const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const validateForm = (form: typeof formState) => {
     if (!form.mediaTitle.trim()) return t("errors.titleRequired");
-    if (!form.mediaOwnerName.trim()) return t("errors.ownerRequired");
+    if (!form.mediaTitle.trim()) return t("errors.titleRequired");
+    if (!form.mediaAddress.trim()) return t("errors.addressRequired");
     if (!form.mediaAddress.trim()) return t("errors.addressRequired");
     if (!form.weeklyPrice.trim()) return t("errors.priceRequired");
     if (!form.dailyImpressions.trim()) return t("errors.impressionsRequired");
@@ -84,6 +95,14 @@ export default function MediaOwnerPage() {
     const error = validateForm(formState);
     if (error) {
       setValidationError(error);
+
+      if (errorTimeoutRef.current) {
+        clearTimeout(errorTimeoutRef.current);
+      }
+      errorTimeoutRef.current = setTimeout(() => {
+        setValidationError(null);
+      }, 3000);
+
       return;
     }
 
@@ -96,6 +115,11 @@ export default function MediaOwnerPage() {
       setIsModalOpen(false);
       resetForm();
       setEditingId(null);
+      notifications.show({
+        title: t("notifications.createSuccess.title"),
+        message: t("notifications.createSuccess.message"),
+        color: "green",
+      });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
       setValidationError(message);
@@ -172,7 +196,6 @@ export default function MediaOwnerPage() {
       // populate the form
       setFormState({
         mediaTitle: backend.title ?? "",
-        mediaOwnerName: backend.mediaOwnerName ?? "",
         resolution: backend.resolution ?? "",
         displayType: backend.typeOfDisplay ?? null,
         loopDuration:
