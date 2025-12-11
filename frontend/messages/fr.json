@@ -256,6 +256,12 @@
       "message": "Êtes-vous sûr de vouloir supprimer ce média? Cette action ne peut pas être annulée.",
       "confirm": "Supprimer",
       "cancel": "Annuler"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Succès",
+        "message": "Média créé avec succès"
+      }
     }
   }
 }

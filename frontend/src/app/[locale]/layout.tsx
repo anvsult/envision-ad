@@ -1,11 +1,14 @@
 import "@mantine/core/styles.css";
+import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 
 import {
   ColorSchemeScript,
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
 import { josefinSans, lato, theme } from "../../theme";
 import type { ReactNode } from "react";
 import Footer from "../../components/Footer/Footer";
@@ -52,6 +55,7 @@ export default async function RootLayout({
         </head>
         <body>
           <MantineProvider theme={theme}>
+            <Notifications />
             {children}
             <Footer />
           </MantineProvider>
