@@ -2,6 +2,7 @@ import { useState } from "react";
 
 export interface MediaFormState {
   mediaTitle: string;
+  mediaOwnerName: string;
   resolution: string;
   displayType: string | null;
   loopDuration: string;
@@ -18,6 +19,7 @@ export interface MediaFormState {
 
 const getInitialFormState = (): MediaFormState => ({
   mediaTitle: "",
+  mediaOwnerName: "",
   resolution: "",
   displayType: null,
   loopDuration: "",

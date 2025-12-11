@@ -21,6 +21,7 @@ import {
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
   IconLayoutDashboard,
   IconDeviceTv,
@@ -40,11 +41,12 @@ export default function MediaOwnerPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [activePage, setActivePage] = useState(1);
+  const { user } = useUser();
   const [opened, { toggle, close }] = useDisclosure(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const pathname = usePathname();
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const t = useTranslations("media");
+  const t = useTranslations("mediaModal");
   const errorTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -107,10 +109,16 @@ export default function MediaOwnerPage() {
     }
 
     try {
+      const payload = { ...formState };
+      // Default to current user name if empty (creation), otherwise keep existing (edit)
+      if (!payload.mediaOwnerName && user?.name) {
+        payload.mediaOwnerName = user.name;
+      }
+
       if (editingId) {
-        await editMedia(editingId, formState);
+        await editMedia(editingId, payload);
       } else {
-        await addNewMedia(formState);
+        await addNewMedia(payload);
       }
       setIsModalOpen(false);
       resetForm();
@@ -196,6 +204,7 @@ export default function MediaOwnerPage() {
       // populate the form
       setFormState({
         mediaTitle: backend.title ?? "",
+        mediaOwnerName: backend.mediaOwnerName ?? "",
         resolution: backend.resolution ?? "",
         displayType: backend.typeOfDisplay ?? null,
         loopDuration:
@@ -338,6 +347,10 @@ export default function MediaOwnerPage() {
                   setEditingId(null);
                   resetForm();
                   setValidationError(null);
+                  // Pre-populate owner name for new media
+                  if (user?.name) {
+                    setFormState((prev) => ({ ...prev, mediaOwnerName: user.name ?? "" }));
+                  }
                   setIsModalOpen(true);
                 }}
               >
@@ -375,8 +388,8 @@ export default function MediaOwnerPage() {
               </Group>
             )}
           </Stack>
-        </Group>
-      </Box>
+        </Group >
+      </Box >
     </>
   );
 }

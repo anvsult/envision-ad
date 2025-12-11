@@ -2,6 +2,7 @@
 
 import React from "react";
 import { TextInput, Select } from "@mantine/core";
+import { useTranslations } from "next-intl";
 import type { MediaFormState } from "../hooks/useMediaForm";
 
 interface MediaDetailsFormProps {
@@ -16,6 +17,8 @@ export function MediaDetailsForm({
   formState,
   onFieldChange,
 }: MediaDetailsFormProps) {
+  const t = useTranslations("mediaModal");
+  const tPage = useTranslations("mediaPage");
   const handleRestrictedChange = (
     field: keyof MediaFormState,
     value: string,
@@ -27,10 +30,10 @@ export function MediaDetailsForm({
 
   return (
     <>
-      <h3>Details</h3>
+      <h3>{tPage("detailsTitle")}</h3>
       <TextInput
-        label="Media Name"
-        placeholder="Media name"
+        label={t("form.nameLabel")}
+        placeholder={t("form.namePlaceholder")}
         value={formState.mediaTitle}
         onChange={(e) => onFieldChange("mediaTitle", e.currentTarget.value)}
         required
@@ -38,8 +41,15 @@ export function MediaDetailsForm({
       />
       <div style={{ height: 12 }} />
       <TextInput
-        label="Address"
-        placeholder="Placeholder text"
+        label={t("ownerLabel")}
+        placeholder={t("form.ownerPlaceholder")}
+        value={formState.mediaOwnerName}
+        disabled
+      />
+      <div style={{ height: 12 }} />
+      <TextInput
+        label={t("form.addressLabel")}
+        placeholder={t("form.addressPlaceholder")}
         value={formState.mediaAddress}
         onChange={(e) => onFieldChange("mediaAddress", e.currentTarget.value)}
         required
@@ -47,12 +57,12 @@ export function MediaDetailsForm({
 
       <div style={{ height: 12 }} />
       <Select
-        label="Type of display"
+        label={tPage("details.type")}
         data={[
-          { value: "DIGITAL", label: "Digital" },
-          { value: "POSTER", label: "Poster" },
+          { value: "DIGITAL", label: tPage("mediaTypes.DIGITAL") },
+          { value: "POSTER", label: tPage("mediaTypes.POSTER") },
         ]}
-        placeholder="Select type"
+        placeholder={t("form.typePlaceholder")}
         value={formState.displayType ?? undefined}
         onChange={(v) => {
           const val = typeof v === "string" ? v : (v as string | null);
@@ -70,8 +80,8 @@ export function MediaDetailsForm({
       <div style={{ height: 12 }} />
       {formState.displayType?.toLowerCase() === "digital" && (
         <TextInput
-          label="Loop duration (sec)"
-          placeholder="e.g. 30"
+          label={t("form.loopDurationLabel")}
+          placeholder={t("form.loopDurationPlaceholder")}
           value={formState.loopDuration}
           onChange={(e) =>
             handleRestrictedChange("loopDuration", e.currentTarget.value, /[^0-9]/g)
@@ -83,8 +93,8 @@ export function MediaDetailsForm({
         <>
           <div style={{ height: 12 }} />
           <TextInput
-            label="Resolution (px)"
-            placeholder="Ex. 1920x1080"
+            label={t("form.resolutionLabel")}
+            placeholder={t("form.resolutionPlaceholder")}
             value={formState.resolution}
             onChange={(e) =>
               handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
@@ -95,8 +105,8 @@ export function MediaDetailsForm({
 
           <div style={{ height: 12 }} />
           <TextInput
-            label="Aspect ratio"
-            placeholder="e.g. 16:9"
+            label={tPage("details.aspectRatio")}
+            placeholder={t("form.aspectRatioPlaceholder")}
             value={formState.aspectRatio}
             onChange={(e) =>
               handleRestrictedChange("aspectRatio", e.currentTarget.value, /[^0-9:]/g)
@@ -110,8 +120,8 @@ export function MediaDetailsForm({
           <div style={{ height: 12 }} />
           <div style={{ display: "flex", gap: 8 }}>
             <TextInput
-              label="Width (cm)"
-              placeholder="Ex. 80"
+              label={t("form.widthLabel")}
+              placeholder={t("form.widthPlaceholder")}
               type="text"
               style={{ flex: 1 }}
               value={formState.widthCm}
@@ -121,8 +131,8 @@ export function MediaDetailsForm({
               maxLength={12}
             />
             <TextInput
-              label="Height (cm)"
-              placeholder="Ex. 200"
+              label={t("form.heightLabel")}
+              placeholder={t("form.heightPlaceholder")}
               type="text"
               style={{ flex: 1 }}
               value={formState.heightCm}
@@ -137,8 +147,8 @@ export function MediaDetailsForm({
 
       <div style={{ height: 12 }} />
       <TextInput
-        label="Price (per week)"
-        placeholder="$50"
+        label={t("form.priceLabel")}
+        placeholder={t("form.pricePlaceholder")}
         type="text"
         value={formState.weeklyPrice}
         onChange={(e) =>
@@ -149,8 +159,8 @@ export function MediaDetailsForm({
 
       <div style={{ height: 12 }} />
       <TextInput
-        label="Daily impressions"
-        placeholder="Daily impressions"
+        label={t("form.impressionsLabel")}
+        placeholder={t("form.impressionsPlaceholder")}
         type="number"
         value={formState.dailyImpressions}
         onChange={(e) => onFieldChange("dailyImpressions", e.currentTarget.value)}

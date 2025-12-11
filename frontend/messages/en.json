@@ -201,7 +201,32 @@
       "ENTERPRISE": "Enterprise (500+)"
     }
   },
-  "media": {
+  "mediaModal": {
+    "ownerLabel": "Media Owner",
+    "form": {
+      "nameLabel": "Media Name",
+      "namePlaceholder": "Media name",
+      "ownerPlaceholder": "Media owner",
+      "addressLabel": "Address",
+      "addressPlaceholder": "Ex. 123 Main St",
+      "typePlaceholder": "Select type",
+      "loopDurationLabel": "Loop duration (sec)",
+      "loopDurationPlaceholder": "e.g. 30",
+      "resolutionLabel": "Resolution (px)",
+      "resolutionPlaceholder": "Ex. 1920x1080",
+      "aspectRatioPlaceholder": "e.g. 16:9",
+      "widthLabel": "Width (cm)",
+      "widthPlaceholder": "Ex. 80",
+      "heightLabel": "Height (cm)",
+      "heightPlaceholder": "Ex. 200",
+      "priceLabel": "Price (per week)",
+      "pricePlaceholder": "$50",
+      "impressionsLabel": "Daily impressions",
+      "impressionsPlaceholder": "Daily impressions",
+      "daysTimesTitle": "Days & Times",
+      "startTimeLabel": "Start",
+      "endTimeLabel": "End"
+    },
     "sidebar": {
       "overview": "Overview",
       "media": "Media",
@@ -237,6 +262,10 @@
       "createSuccess": {
         "title": "Success",
         "message": "Media created successfully"
+      },
+      "updateSuccess": {
+        "title": "Success",
+        "message": "Media has been successfully updated"
       }
     }
   }

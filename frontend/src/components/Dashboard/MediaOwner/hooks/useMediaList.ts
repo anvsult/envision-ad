@@ -56,7 +56,7 @@ export function useMediaList() {
 
     const payload = {
       title: formState.mediaTitle,
-      mediaOwnerName: "Pending Owner",
+      mediaOwnerName: formState.mediaOwnerName || "Pending Owner",
       address: formState.mediaAddress,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
@@ -98,7 +98,7 @@ export function useMediaList() {
 
     const payload = {
       title: formState.mediaTitle,
-      mediaOwnerName: "Pending Owner",
+      mediaOwnerName: formState.mediaOwnerName || "Pending Owner",
       address: formState.mediaAddress,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,

@@ -14,20 +14,26 @@ interface ScheduleSelectorProps {
   onDayTimeChange: (day: string, part: "start" | "end", value: string) => void;
 }
 
+import { useTranslations } from "next-intl";
+// ... imports
+
 export function ScheduleSelector({
   formState,
   onFieldChange,
   onDayTimeChange,
 }: ScheduleSelectorProps) {
+  const tPage = useTranslations("mediaPage");
+  const tForm = useTranslations("mediaModal.form");
+
   return (
     <>
       <div style={{ height: 18 }} />
-      <h3>Months</h3>
+      <h3>{tPage("monthsTitle")}</h3>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {Object.keys(formState.activeMonths).map((m) => (
           <Checkbox
             key={m}
-            label={m}
+            label={tPage(`months.${m.toLowerCase()}` as any)}
             checked={!!formState.activeMonths[m]}
             onChange={(e) =>
               onFieldChange("activeMonths", {
@@ -40,7 +46,7 @@ export function ScheduleSelector({
       </div>
 
       <div style={{ height: 18 }} />
-      <h3>Days & Times</h3>
+      <h3>{tForm("daysTimesTitle")}</h3>
       <div
         style={{
           display: "grid",
@@ -50,8 +56,8 @@ export function ScheduleSelector({
         }}
       >
         <div />
-        <strong>Start</strong>
-        <strong>End</strong>
+        <strong>{tForm("startTimeLabel")}</strong>
+        <strong>{tForm("endTimeLabel")}</strong>
         {[
           "Monday",
           "Tuesday",
@@ -64,9 +70,11 @@ export function ScheduleSelector({
           <Row
             key={d}
             weekDay={d}
+            weekDayLabel={tPage(`days.${d.toLowerCase()}` as any)}
             formState={formState}
             onFieldChange={onFieldChange}
             onDayTimeChange={onDayTimeChange}
+            closedLabel={tPage("days.closed")}
           />
         ))}
       </div>
@@ -76,14 +84,18 @@ export function ScheduleSelector({
 
 function Row({
   weekDay,
+  weekDayLabel,
   formState,
   onFieldChange,
   onDayTimeChange,
+  closedLabel,
 }: {
   weekDay: string;
+  weekDayLabel: string;
   formState: MediaFormState;
   onFieldChange: any;
   onDayTimeChange: any;
+  closedLabel: string;
 }) {
   const startRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLInputElement>(null);
@@ -164,7 +176,7 @@ function Row({
   return (
     <React.Fragment>
       <Checkbox
-        label={weekDay}
+        label={weekDayLabel}
         checked={isActive}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           onFieldChange("activeDaysOfWeek", {
@@ -177,7 +189,7 @@ function Row({
       {/* Start Time */}
       <div style={{ position: "relative" }}>
         <TextInput
-          placeholder={isActive ? "00:00" : "Closed"}
+          placeholder={isActive ? "00:00" : closedLabel}
           disabled={!isActive}
           value={formState.dailyOperatingHours[weekDay]?.start ?? ""}
           onChange={(e) => handleTimeChange("start", e.currentTarget.value)}
@@ -196,7 +208,7 @@ function Row({
       {/* End Time */}
       <div style={{ position: "relative" }}>
         <TextInput
-          placeholder={isActive ? "00:00" : "Closed"}
+          placeholder={isActive ? "00:00" : closedLabel}
           disabled={!isActive}
           value={formState.dailyOperatingHours[weekDay]?.end ?? ""}
           onChange={(e) => handleTimeChange("end", e.currentTarget.value)}

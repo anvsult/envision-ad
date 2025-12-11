@@ -202,7 +202,36 @@
       "ENTERPRISE": "Entreprise (500+)"
     }
   },
-  "media": {
+  "mediaModal": {
+    "ownerLabel": "Propriétaire du média",
+    "form": {
+      "nameLabel": "Nom du média",
+      "namePlaceholder": "Nom du média",
+      "ownerPlaceholder": "Propriétaire du média",
+      "addressLabel": "Adresse",
+      "addressPlaceholder": "Ex. 123 Rue Principale",
+      "typeLabel": "Type d'affichage",
+      "typePlaceholder": "Sélectionner le type",
+      "digitalLabel": "Numérique",
+      "posterLabel": "Affiche",
+      "loopDurationLabel": "Durée de la boucle (sec)",
+      "loopDurationPlaceholder": "ex. 30",
+      "resolutionLabel": "Résolution (px)",
+      "resolutionPlaceholder": "Ex. 1920x1080",
+      "aspectRatioLabel": "Format",
+      "aspectRatioPlaceholder": "ex. 16:9",
+      "widthLabel": "Largeur (cm)",
+      "widthPlaceholder": "Ex. 80",
+      "heightLabel": "Hauteur (cm)",
+      "heightPlaceholder": "Ex. 200",
+      "priceLabel": "Prix (par semaine)",
+      "pricePlaceholder": "50 $",
+      "impressionsLabel": "Impressions quotidiennes",
+      "impressionsPlaceholder": "Impressions quotidiennes",
+      "daysTimesTitle": "Jours & Heures",
+      "startTimeLabel": "Début",
+      "endTimeLabel": "Fin"
+    },
     "sidebar": {
       "overview": "Aperçu",
       "media": "Médias",
@@ -238,6 +267,10 @@
       "createSuccess": {
         "title": "Succès",
         "message": "Média créé avec succès"
+      },
+      "updateSuccess": {
+        "title": "Succès",
+        "message": "Média mis à jour avec succès"
       }
     }
   }
