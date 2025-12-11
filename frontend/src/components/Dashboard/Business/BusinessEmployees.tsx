@@ -139,7 +139,7 @@ export function BusinessEmployees() {
 
                             <ConfirmRemoveEmployeeModal
                                 opened={confirmOpen}
-                                employeeName={employeeToRemove || ""}
+                                employeeName={employees.find((e) => e.user_id === employeeToRemove)?.name || ""}
                                 onCancel={() => setConfirmOpen(false)}
                                 onConfirm={confirmRemove}
                             />
