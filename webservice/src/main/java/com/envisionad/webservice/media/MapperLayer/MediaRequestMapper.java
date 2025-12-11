@@ -1,34 +1,43 @@
 package com.envisionad.webservice.media.MapperLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MediaRequestMapper {
 
-    private static final Logger log = LoggerFactory.getLogger(MediaRequestMapper.class);
+    private final MediaLocationRepository mediaLocationRepo;
 
-    public MediaRequestMapper() {
+    public MediaRequestMapper(MediaLocationRepository mediaLocationRepo) {
+        this.mediaLocationRepo = mediaLocationRepo;
     }
 
-    public Media requestModelToEntity(MediaRequestModel requestModel) {
+    public Media requestModelToEntity(MediaRequestModel request) {
+
         Media media = new Media();
-        media.setMediaOwnerName(requestModel.getMediaOwnerName());
-        media.setTitle(requestModel.getTitle());
-        media.setResolution(requestModel.getResolution());
-        media.setTypeOfDisplay(requestModel.getTypeOfDisplay());
-        media.setAspectRatio(requestModel.getAspectRatio());
-        media.setLoopDuration(requestModel.getLoopDuration());
-        media.setAddress(requestModel.getAddress());
-        media.setSchedule(requestModel.getSchedule());
-        media.setStatus(requestModel.getStatus());
-        media.setWidth(requestModel.getWidth());
-        media.setHeight(requestModel.getHeight());
-        media.setPrice(requestModel.getPrice());
-        media.setDailyImpressions(requestModel.getDailyImpressions());
+
+        media.setMediaOwnerName(request.getMediaOwnerName());
+        media.setTitle(request.getTitle());
+        media.setResolution(request.getResolution());
+        media.setTypeOfDisplay(request.getTypeOfDisplay());
+        media.setAspectRatio(request.getAspectRatio());
+        media.setLoopDuration(request.getLoopDuration());
+        media.setSchedule(request.getSchedule());
+        media.setStatus(request.getStatus());
+        media.setWidth(request.getWidth());
+        media.setHeight(request.getHeight());
+        media.setPrice(request.getPrice());
+        media.setDailyImpressions(request.getDailyImpressions());
+
+        if (request.getMediaLocationId() != null) {
+            media.setMediaLocation(
+                    mediaLocationRepo.findById(request.getMediaLocationId())
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId"))
+            );
+        }
+
         return media;
     }
 }

@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,16 +19,17 @@ public class Media {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "media_id")
-    private String id;
+    private UUID id;
+
+    @ManyToOne
+    @JoinColumn(name = "media_location_id", nullable = true)
+    private MediaLocation mediaLocation;
 
     @Column(name = "title")
     private String title;
 
     @Column(name = "media_owner_name")
     private String mediaOwnerName;
-
-    @Column(name = "address")
-    private String address;
 
     @Column(name = "type_of_display")
     @Enumerated(EnumType.STRING)
@@ -55,7 +58,7 @@ public class Media {
 
     @Column(name = "schedule")
     @JdbcTypeCode(SqlTypes.JSON)
-    private com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel schedule;
+    private ScheduleModel schedule;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

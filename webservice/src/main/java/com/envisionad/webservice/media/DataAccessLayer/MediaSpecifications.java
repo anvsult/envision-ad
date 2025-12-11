@@ -43,4 +43,6 @@ public class MediaSpecifications {
         return (root, query, cb) ->
             minDailyImpressions == null ? null : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
     }
+
+
 }

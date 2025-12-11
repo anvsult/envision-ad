@@ -11,6 +11,9 @@ import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
+import { getAddressLocation, getUserGeoLocation} from '@/components/Location';
+import L from 'leaflet';
+
 
 
 function BrowsePage() {
@@ -30,8 +33,8 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
-
-
+  const [userLocation, setUserLocation] = useState<L.LatLng>(new L.LatLng(0,0));
+  const [userLocationError, setUserLocationError] = useState<string>('');
 
   useEffect(() => {
     getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions)
@@ -53,9 +56,14 @@ function BrowsePage() {
           typeOfDisplay: m.typeOfDisplay,
           imageUrl: m.imageUrl,
         }));
-
+        
         setMedia(mapped);
         setActivePage(1);
+        
+        getUserGeoLocation(setUserLocation, setUserLocationError);
+        getAddressLocation(mapped[0].address);
+        getAddressLocation(mapped[1].address);
+        
       })
       .catch((err) => {
         console.error("Failed to load media:", err);
@@ -85,6 +93,11 @@ function BrowsePage() {
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
+          {userLocationError ? (<Text>{userLocationError}</Text>): 
+          (<>
+          <Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text>
+          </>)}
+          
           <TextInput
             placeholder="Search title"
             value={draftTitleFilter}
