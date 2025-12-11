@@ -392,8 +392,8 @@ export default function MediaOwnerPage() {
               </Group>
             )}
           </Stack>
-        </Group >
-      </Box >
+        </Group>
+      </Box>
     </>
   );
 }
