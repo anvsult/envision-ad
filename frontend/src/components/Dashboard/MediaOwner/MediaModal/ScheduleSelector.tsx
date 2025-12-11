@@ -102,28 +102,6 @@ function Row({
 
   const isActive = !!formState.activeDaysOfWeek[weekDay];
 
-  const handlePickerClick = (ref: React.RefObject<HTMLInputElement | null>) => {
-    if (ref.current) {
-      try {
-        ref.current.showPicker();
-      } catch (error) {
-        // Fallback/ignore if browser doesn't support
-        console.warn('Time picker not supported:', error);
-      }
-    }
-  };
-
-  const pickerControl = (ref: React.RefObject<HTMLInputElement | null>) => (
-    <ActionIcon
-      variant="subtle"
-      color="gray"
-      onClick={() => handlePickerClick(ref)}
-      disabled={!isActive}
-    >
-      <IconClock size={16} stroke={1.5} />
-    </ActionIcon>
-  );
-
   const handleTimeChange = (type: "start" | "end", value: string) => {
     // Clean input and apply auto-colon heuristic for time entry (e.g., "12" -> "12:").
     let cleaned = value.replace(/[^0-9:]/g, "");
@@ -193,15 +171,6 @@ function Row({
           disabled={!isActive}
           value={formState.dailyOperatingHours[weekDay]?.start ?? ""}
           onChange={(e) => handleTimeChange("start", e.currentTarget.value)}
-          rightSection={pickerControl(startRef)}
-        />
-        <input
-          type="time"
-          ref={startRef}
-          style={{ position: "absolute", top: 0, left: 0, width: 0, height: 0, padding: 0, border: 0, opacity: 0 }}
-          tabIndex={-1}
-          value={formState.dailyOperatingHours[weekDay]?.start ?? ""}
-          onChange={(e) => onDayTimeChange(weekDay, "start", e.target.value)}
         />
       </div>
 
@@ -212,15 +181,6 @@ function Row({
           disabled={!isActive}
           value={formState.dailyOperatingHours[weekDay]?.end ?? ""}
           onChange={(e) => handleTimeChange("end", e.currentTarget.value)}
-          rightSection={pickerControl(endRef)}
-        />
-        <input
-          type="time"
-          ref={endRef}
-          style={{ position: "absolute", top: 0, left: 0, width: 0, height: 0, padding: 0, border: 0, opacity: 0 }}
-          tabIndex={-1}
-          value={formState.dailyOperatingHours[weekDay]?.end ?? ""}
-          onChange={(e) => onDayTimeChange(weekDay, "end", e.target.value)}
         />
       </div>
     </React.Fragment>

@@ -58,6 +58,7 @@ export function MediaDetailsForm({
       <div style={{ height: 12 }} />
       <Select
         label={tPage("details.type")}
+        allowDeselect={false}
         data={[
           { value: "DIGITAL", label: tPage("mediaTypes.DIGITAL") },
           { value: "POSTER", label: tPage("mediaTypes.POSTER") },
