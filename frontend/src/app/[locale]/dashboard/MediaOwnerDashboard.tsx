@@ -59,8 +59,6 @@ export default function MediaOwnerPage() {
 
   const validateForm = (form: typeof formState) => {
     if (!form.mediaTitle.trim()) return t("errors.titleRequired");
-    if (!form.mediaTitle.trim()) return t("errors.titleRequired");
-    if (!form.mediaAddress.trim()) return t("errors.addressRequired");
     if (!form.mediaAddress.trim()) return t("errors.addressRequired");
     if (!form.weeklyPrice.trim()) return t("errors.priceRequired");
     if (!form.dailyImpressions.trim()) return t("errors.impressionsRequired");
@@ -392,8 +390,8 @@ export default function MediaOwnerPage() {
               </Group>
             )}
           </Stack>
-        </Group >
-      </Box >
+        </Group>
+      </Box>
     </>
   );
 }

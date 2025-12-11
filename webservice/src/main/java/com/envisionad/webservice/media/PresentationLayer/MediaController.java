@@ -90,12 +90,7 @@ public class MediaController {
         try {
             validator.validate(requestModel);
         } catch (IllegalArgumentException e) {
-            // For simplicity, we can return a Bad Request response directly here if we
-            // catch it,
-            // or we rely on a Global Exception Handler.
-            // Since we can't easily change the return type to ResponseEntity<?>,
-            // we might need to wrap this in a way that allows error messages or throw a
-            // ResponseStatusException.
+            // Return Bad Request if validation fails
             throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
 
