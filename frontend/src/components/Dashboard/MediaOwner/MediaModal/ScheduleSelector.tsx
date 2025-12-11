@@ -97,8 +97,6 @@ function Row({
   onDayTimeChange: any;
   closedLabel: string;
 }) {
-  const startRef = useRef<HTMLInputElement>(null);
-  const endRef = useRef<HTMLInputElement>(null);
 
   const isActive = !!formState.activeDaysOfWeek[weekDay];
 
