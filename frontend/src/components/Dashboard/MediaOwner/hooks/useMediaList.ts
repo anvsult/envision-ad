@@ -108,14 +108,14 @@ export function useMediaList() {
       price: formState.weeklyPrice ? Number(formState.weeklyPrice) : null,
       dailyImpressions: formState.dailyImpressions ? Number(formState.dailyImpressions) : null,
       schedule: schedule,
-      status: null,
+      status: "PENDING",
       typeOfDisplay: formState.displayType,
     };
 
     try {
       const updated = await updateMedia(String(id), payload as any);
       setMedia((prev) =>
-        prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? String(updated.price) : r.price } : r))
+        prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${updated.price}` : r.price } : r))
       );
       return updated;
     } catch (err: unknown) {

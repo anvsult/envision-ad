@@ -124,8 +124,12 @@ export default function MediaOwnerPage() {
       resetForm();
       setEditingId(null);
       notifications.show({
-        title: t("notifications.createSuccess.title"),
-        message: t("notifications.createSuccess.message"),
+        title: editingId
+          ? t("notifications.updateSuccess.title")
+          : t("notifications.createSuccess.title"),
+        message: editingId
+          ? t("notifications.updateSuccess.message")
+          : t("notifications.createSuccess.message"),
         color: "green",
       });
     } catch (err: unknown) {
