@@ -41,7 +41,7 @@ export function Header({
     }> = [
         { link: "/", label: t("home") },
         { link: "/dashboard", label: t("dashboard") },
-        { link: "/business", label: t("businesses") },
+        { link: "/business", label: t("business") },
         { link: "/browse", label: t("browse") },
     ];
 

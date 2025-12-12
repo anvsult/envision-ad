@@ -3,7 +3,7 @@
 import React from "react";
 import { TextInput, Select } from "@mantine/core";
 import { useTranslations } from "next-intl";
-import { BusinessRequest, CompanySize } from "@/entities/businesses/model";
+import { BusinessRequest, CompanySize } from "@/entities/businesses";
 
 interface BusinessDetailsFormProps {
   formState: BusinessRequest;

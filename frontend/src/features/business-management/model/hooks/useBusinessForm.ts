@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BusinessRequest, CompanySize } from "@/entities/businesses/model";
+import { BusinessRequest, CompanySize } from "@/entities/businesses";
 
 export function useBusinessForm() {
     const initialState: BusinessRequest = {

@@ -18,7 +18,7 @@ import Image from "next/image";
 import { BackButton } from "@/shared/ui";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getMediaById, MediaDTO } from "@/entities/media/api";
+import { getMediaById, MediaDTO } from "@/entities/media";
 import { useTranslations } from "next-intl";
 
 const monthDefs = [

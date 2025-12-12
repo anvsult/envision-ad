@@ -12,7 +12,7 @@ import {
 import { CompanySize } from "@/entities/businesses/model";
 
 export function BusinessDashboard() {
-  const t = useTranslations("businesses");
+  const t = useTranslations("business");
   const {
     businesses,
     refreshBusinesses,

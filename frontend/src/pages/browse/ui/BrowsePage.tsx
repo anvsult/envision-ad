@@ -19,7 +19,7 @@ import {
 import type { MediaCardProps } from "@/shared/ui";
 import "@mantine/carousel/styles.css";
 import { useEffect, useMemo, useState } from "react";
-import { getAllFilteredActiveMedia } from "@/entities/media/api";
+import { getAllFilteredActiveMedia } from "@/entities/media";
 import { useTranslations } from "next-intl";
 import { IconSearch } from "@tabler/icons-react";
 

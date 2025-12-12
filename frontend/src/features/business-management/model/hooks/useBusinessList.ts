@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import { BusinessResponse, BusinessRequest } from "@/entities/businesses/model";
-import { getAllBusinesses, getBusinessById, updateBusiness, deleteBusiness } from "@/entities/businesses/api";
+import { BusinessResponse, BusinessRequest } from "@/entities/businesses";
+import { getAllBusinesses, getBusinessById, updateBusiness, deleteBusiness } from "@/entities/businesses";
 
 export function useBusinessList() {
     const [businesses, setBusinesses] = useState<BusinessResponse[]>([]);

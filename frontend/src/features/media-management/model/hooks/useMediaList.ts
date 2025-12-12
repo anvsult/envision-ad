@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/entities/media/api";
+import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/entities/media";
 import type { MediaRowData } from "@/widgets/media-dashboard/MediaTable/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 

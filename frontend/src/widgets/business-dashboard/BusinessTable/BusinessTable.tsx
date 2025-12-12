@@ -11,7 +11,7 @@ interface BusinessTableProps {
 }
 
 export function BusinessTable({ rows, onEdit, onDelete }: BusinessTableProps) {
-  const t = useTranslations("businesses");
+  const t = useTranslations("business");
 
   return (
     <ScrollArea>

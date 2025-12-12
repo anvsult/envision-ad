@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Modal, Button, Group, Stack } from "@mantine/core";
 import { useTranslations } from "next-intl";
 import { BusinessDetailsForm } from "./BusinessDetailsForm";
-import { BusinessRequest } from "@/entities/businesses/model";
-import { createBusiness, updateBusiness } from "@/entities/businesses/api";
+import { BusinessRequest } from "@/entities/businesses";
+import { createBusiness, updateBusiness } from "@/entities/businesses";
 
 interface BusinessModalProps {
   opened: boolean;
