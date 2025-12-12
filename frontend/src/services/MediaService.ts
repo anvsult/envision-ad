@@ -1,4 +1,5 @@
-import { MediaDTO, MediaLocationDTO } from "@/types/MediaTypes";
+import { MediaDTO } from "@/types/MediaTypes";
+import { LatLngLiteral } from "leaflet";
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
@@ -32,7 +33,7 @@ export async function getAllFilteredActiveMedia(
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
     sortBy?: string | null,
-    userLatLng?: L.LatLng | null,
+    userLatLng?: LatLngLiteral | null,
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
@@ -131,19 +132,3 @@ export async function deleteMedia(id: string): Promise<void> {
         throw new Error(`Failed to delete media: ${response.statusText}`);
     }
 }
-
-// export async function getAllMediaLocations(): Promise<MediaLocationDTO[]> {
-
-//     const response = await fetch(`${API_BASE_URL}/medialocations`, {
-//         method: 'GET',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//     });
-
-//     if (!response.ok) {
-//         throw new Error(`Failed to fetch media locations: ${response.statusText}`);
-//     }
-
-//     return response.json();
-// }

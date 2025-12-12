@@ -187,7 +187,7 @@ VALUES (
             {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
         ]
     }'::jsonb,
-    'PENDING', 'unionstation.jpg', 'image/jpeg', NULL
+    'ACTIVE', 'unionstation.jpg', 'image/jpeg', NULL
 ),
 (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
@@ -282,7 +282,7 @@ VALUES (
             {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
         ]
     }'::jsonb,
-    'PENDING', 'parliament.jpg', 'image/jpeg', NULL
+    'ACTIVE', 'parliament.jpg', 'image/jpeg', NULL
 ),
 (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
@@ -358,7 +358,7 @@ VALUES (
             {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
         ]
     }'::jsonb,
-    'PENDING', 'eaton_wall_south.jpg', 'image/jpeg', NULL
+    'ACTIVE', 'eaton_wall_south.jpg', 'image/jpeg', NULL
 ),
 (
     'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
@@ -434,7 +434,7 @@ VALUES (
             {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
         ]
     }'::jsonb,
-    'PENDING', 'ice_plaza.jpg', 'image/jpeg', NULL
+    'ACTIVE', 'ice_plaza.jpg', 'image/jpeg', NULL
 ),
 
 (
@@ -473,5 +473,5 @@ VALUES (
             {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
         ]
     }'::jsonb,
-    'PENDING', 'halifax_market.jpg', 'image/jpeg', NULL
+    'ACTIVE', 'halifax_market.jpg', 'image/jpeg', NULL
 );

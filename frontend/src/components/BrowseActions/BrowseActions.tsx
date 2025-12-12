@@ -22,7 +22,7 @@ export default function BrowseActions({filters, sort, setSortBy}: BrowseActionsP
                     placeholder="Nearest"
                     data={
                         [
-                            { value: "nearest", label: "Nearest" },
+                            { value: "nearest", label: t('nearest') },
                             
                         ]
                     }

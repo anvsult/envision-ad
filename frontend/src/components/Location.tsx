@@ -1,6 +1,33 @@
 
 import { getJoinedAddress, MediaLocationDTO } from '@/types/MediaTypes';
-import { LatLng } from 'leaflet'; 
+import { LatLngLiteral } from 'leaflet'; 
+
+interface LatLngSession {
+  lat: number;
+  lng: number;
+  expiryTime: number;
+}
+
+
+// Stores the user location in the session storage for a set amount of time. 
+// After that time is up, it will check the user's location again.
+// That way you don't need to check the user's exact position every time you open the website.
+const userLocationKey = "userLocation";
+
+// TODO: Maybe check if the user is using a mobile device to set the expiry time to a shorter amount, since a mobile user might be moving more.
+const expiryMinutes = 60;
+
+function storeLatLngSession(latlng: LatLngLiteral) {
+    const now = new Date();
+    const expiryTime: number = now.getTime() + expiryMinutes * 60 * 1000; 
+    
+    const item: LatLngSession = {
+        lat: latlng.lat,
+        lng: latlng.lng,
+        expiryTime: expiryTime,
+    };
+    sessionStorage.setItem(userLocationKey, JSON.stringify(item));
+}
 
 export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
   
@@ -10,37 +37,48 @@ export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
   )}`;
 
   const response = await fetch(url, {
-    headers: {
-      "User-Agent": "your-app-name"
-    }
   });
 
   const data = await response.json();
 
-  const latlng = await new LatLng(data.latitude, data.longitude);
-  console.log(latlng);
+  const latlng: LatLngLiteral = {lat: data.latitude, lng: data.longitude};
   return latlng;
   
 }
 
-
+// Get the user's latitude and longitude
 export function GetUserGeoLocation(
-  setUserLocation: React.Dispatch<React.SetStateAction<LatLng | null>>,
+  setUserLocation: React.Dispatch<React.SetStateAction<LatLngLiteral | null>>,
   setError: React.Dispatch<React.SetStateAction<string>>
 ) {
-    setUserLocation(null);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const newMapCoords:LatLng = new LatLng(position.coords.latitude, position.coords.longitude);
-          setUserLocation(newMapCoords);
-        },
-        () => {
-          setError('nomedia.noUserLocation');
-        },
-      );
-    } else {
-      setError('nomedia.noSupport');
-    }
+
+  setUserLocation(null);
+  const storedLocation = sessionStorage.getItem("userLocation");
+  if (storedLocation) {
+      const location: LatLngSession = JSON.parse(storedLocation);
+      
+      if (new Date().getTime() > location.expiryTime){
+        sessionStorage.removeItem(userLocationKey);
+      } else {
+        const sessionLatLng: LatLngLiteral = {lat: location.lat, lng: location.lng};
+        setUserLocation(sessionLatLng);
+        return
+      }
+  } 
+
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const newMapCoords:LatLngLiteral = {lat: position.coords.latitude, lng: position.coords.longitude};
+        setUserLocation(newMapCoords);
+        storeLatLngSession(newMapCoords);
+      },
+      () => {
+        setError('nomedia.noUserLocation');
+      },
+    );
+  } else {
+    setError('nomedia.noSupport');
+  }
 }
 

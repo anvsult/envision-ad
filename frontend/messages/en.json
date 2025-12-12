@@ -141,7 +141,8 @@
   "browse": {
     "browseactions":{
       "filter": "Filter:",
-      "sort": "Sort by:"
+      "sort": "Sort by:",
+      "nearest": "Nearest"
     },
     "filters":{
       "price": "Price ($)",
@@ -151,7 +152,6 @@
       "showresults": "Add filter"
     },
     "nomedia":{
-      "loading": "Loading...",
       "notfound": "No media found",
       "changefilters": "Please change your filters",
       "failedToLoad": "Failed to load media: ",

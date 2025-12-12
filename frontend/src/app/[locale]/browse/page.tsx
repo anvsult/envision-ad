@@ -12,9 +12,7 @@ import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActio
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
 import { GetUserGeoLocation} from '@/components/Location';
-import { LatLng } from 'leaflet';
-
-
+import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {
   const t = useTranslations('browse');
@@ -25,22 +23,19 @@ function BrowsePage() {
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
-
+  
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
   const [titleFilter, setTitleFilter] = useState("");
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
-  const [userLocation, setUserLocation] = useState<LatLng | null>(null);
-  const [message, setMessage] = useState<string>('nomedia.loading');
+  const [userLocation, setUserLocation] = useState<LatLngLiteral | null>(null);
+  const [message, setMessage] = useState<string>();
   const [loading, setLoading] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string>("nearest");
 
-
-  useEffect(() => {
-    GetUserGeoLocation(setUserLocation, setMessage);
-  }, [])
+  useEffect(() => GetUserGeoLocation(setUserLocation, setMessage), []);
 
   useEffect(() => {
     if (sortBy == "nearest" && !userLocation){
