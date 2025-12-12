@@ -42,7 +42,7 @@ public class MediaResponseMapper {
 
     private static MediaResponseModel.MediaLocationResponseModel getMediaLocationResponseModel(Media media) {
         MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
-        mediaLocationResponseModel.setId(String.valueOf(media.getMediaLocation().getId()));
+        mediaLocationResponseModel.setId(media.getMediaLocation().getId());
         mediaLocationResponseModel.setName(media.getMediaLocation().getName());
         mediaLocationResponseModel.setDescription(media.getMediaLocation().getDescription());
         mediaLocationResponseModel.setCountry(media.getMediaLocation().getCountry());

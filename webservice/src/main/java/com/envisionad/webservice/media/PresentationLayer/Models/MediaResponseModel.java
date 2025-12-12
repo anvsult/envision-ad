@@ -31,7 +31,7 @@ public class MediaResponseModel {
     @Data
     @NoArgsConstructor
     public static class MediaLocationResponseModel {
-        private String id;
+        private UUID id;
         private String name;
         private String description;
         private String country;

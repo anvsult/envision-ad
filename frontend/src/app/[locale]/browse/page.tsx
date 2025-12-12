@@ -11,7 +11,7 @@ import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-import { getAddressLocation, getUserGeoLocation} from '@/components/Location';
+import { getUserGeoLocation} from '@/components/Location';
 import L from 'leaflet';
 
 
@@ -20,7 +20,6 @@ function BrowsePage() {
   const t = useTranslations('browse');
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
-
 
   const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
@@ -35,9 +34,17 @@ function BrowsePage() {
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [userLocation, setUserLocation] = useState<L.LatLng | null>(null);
   const [userLocationError, setUserLocationError] = useState<string>('');
+  const [sortBy, setSortBy] = useState<string>("nearest");
 
   useEffect(() => {
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, "nearest", userLocation)
+    getUserGeoLocation(setUserLocation, setUserLocationError);
+  }, [])
+
+  useEffect(() => {
+    if (sortBy == "nearest" && !userLocation){
+      return
+    } 
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation)
       .then((data) => {
         const items = (data || []).filter((m) => m.id != null);
 
@@ -60,15 +67,13 @@ function BrowsePage() {
         setMedia(mapped);
         setActivePage(1);
         
-        getUserGeoLocation(setUserLocation, setUserLocationError);
-        getAddressLocation(mapped[0].mediaLocation);
-        getAddressLocation(mapped[1].mediaLocation);
+        
         
       })
       .catch((err) => {
         console.error("Failed to load media:", err);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy]);
 
 
   const paginatedMedia = useMemo(() => {
@@ -95,7 +100,7 @@ function BrowsePage() {
         <Stack gap="sm">
           {userLocationError ? (<Text>{userLocationError}</Text>): 
           (<>
-          {userLocation && (<><Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text></>)}
+          {userLocation ?  (<><Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text></>) : (<Text>Getting location...</Text>)}
           </>)}
           
           <TextInput
@@ -115,7 +120,8 @@ function BrowsePage() {
           />
 
 
-          <BrowseActions filters={filters()}/>
+          <BrowseActions filters={filters()} setSortBy={setSortBy}/>
+
           {paginatedMedia.length > 0 ? (<MediaCardGrid medias={paginatedMedia} />):
             ( 
               <Stack h='20em' justify='center' align='center'>

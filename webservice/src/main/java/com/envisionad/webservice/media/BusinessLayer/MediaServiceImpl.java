@@ -67,8 +67,6 @@ public class MediaServiceImpl implements MediaService {
             return filtered;
         }
 
-        // Otherwise sort with comparator
-        filtered.sort(buildComparator(sortBy));
         return filtered;
     }
 
@@ -93,20 +91,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
 
-    // Sorting Comparators
-    private Comparator<Media> buildComparator(String sortBy) {
-        if (sortBy == null) return (a, b) -> 0;
 
-        return switch (sortBy) {
-            case "price_asc" -> Comparator.comparing(Media::getPrice);
-            case "price_desc" -> Comparator.comparing(Media::getPrice).reversed();
-            case "title_asc" -> Comparator.comparing(Media::getTitle);
-            case "title_desc" -> Comparator.comparing(Media::getTitle).reversed();
-            case "impressions_asc" -> Comparator.comparing(Media::getDailyImpressions);
-            case "impressions_desc" -> Comparator.comparing(Media::getDailyImpressions).reversed();
-            default -> (a, b) -> 0;
-        };
-    }
 
 
     // Calculating distance using the Haversine Formula

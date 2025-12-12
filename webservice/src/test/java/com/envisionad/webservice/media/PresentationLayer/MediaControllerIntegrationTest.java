@@ -47,7 +47,6 @@ class MediaControllerIntegrationTest {
         MediaRequestModel requestModel = new MediaRequestModel();
         requestModel.setTitle("Integration Test Media");
         requestModel.setMediaOwnerName("Integration Owner");
-        requestModel.setAddress("456 Integration Blvd");
         requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         requestModel.setPrice(new BigDecimal("200.00"));
         requestModel.setStatus(Status.ACTIVE);

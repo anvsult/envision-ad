@@ -4,9 +4,10 @@ import { useTranslations } from "next-intl";
 interface BrowseActionsProps{
     filters?: React.ReactNode;
     sort?: React.ReactNode;
+    setSortBy: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function BrowseActions({filters, sort}: BrowseActionsProps){
+export default function BrowseActions({filters, sort, setSortBy}: BrowseActionsProps){
     const t = useTranslations('browse.browseactions');
     return(
         <Group justify="space-between">
@@ -19,9 +20,15 @@ export default function BrowseActions({filters, sort}: BrowseActionsProps){
                 {sort}
                 <Select
                     placeholder="Nearest"
-                    data={['Nearest', 'Price: Low to high', 'Price: High to low', 'Recently added']}
-                    defaultValue="Nearest"
+                    data={
+                        [
+                            { value: "nearest", label: "Nearest" },
+                            
+                        ]
+                    }
+                    defaultValue="nearest"
                     allowDeselect={false}
+                    onOptionSubmit={setSortBy}
                 />
             </Group>
         </Group>
