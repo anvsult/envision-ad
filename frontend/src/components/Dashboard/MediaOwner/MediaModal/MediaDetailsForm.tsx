@@ -44,14 +44,15 @@ export function MediaDetailsForm({
       />
       <div style={{ height: 12 }} />
 
-      <div style={{ height: 12 }} />
+      {/* TODO: UPDATE TO ADD MEDIA LOCATION */}
+      {/* <div style={{ height: 12 }} />
       <TextInput
         label="Address"
         placeholder="Placeholder text"
         value={formState.mediaAddress}
         onChange={(e) => onFieldChange("mediaAddress", e.currentTarget.value)}
         required
-      />
+      /> */}
 
       <div style={{ height: 12 }} />
       <Select
@@ -61,9 +62,9 @@ export function MediaDetailsForm({
           { value: "POSTER", label: "Poster" },
         ]}
         placeholder="Select type"
-        value={formState.displayType ?? undefined}
+        value={formState.displayType }
         onChange={(v) => {
-          const val = typeof v === "string" ? v : (v as string | null);
+          const val = typeof v === "string" ? v : (v as unknown as string);
           onFieldChange("displayType", val);
           if (val === "POSTER") {
             onFieldChange("resolution", "");

@@ -4,14 +4,14 @@ export interface MediaFormState {
   mediaTitle: string;
   mediaOwnerName: string;
   resolution: string;
-  displayType: string | null;
+  displayType: string;
   loopDuration: string;
   aspectRatio: string;
   widthCm: string;
   heightCm: string;
   weeklyPrice: string;
   dailyImpressions: string;
-  mediaAddress: string;
+  mediaLocationId: string | null;
   activeDaysOfWeek: Record<string, boolean>;
   dailyOperatingHours: Record<string, { start: string; end: string }>;
   activeMonths: Record<string, boolean>;
@@ -21,14 +21,14 @@ const getInitialFormState = (): MediaFormState => ({
   mediaTitle: "",
   mediaOwnerName: "",
   resolution: "",
-  displayType: null,
+  displayType: "DIGITAL",
   loopDuration: "",
   aspectRatio: "",
   widthCm: "",
   heightCm: "",
   weeklyPrice: "",
   dailyImpressions: "",
-  mediaAddress: "",
+  mediaLocationId: "",
   activeDaysOfWeek: {
     Monday: true,
     Tuesday: true,

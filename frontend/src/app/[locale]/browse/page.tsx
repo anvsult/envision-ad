@@ -33,11 +33,11 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
-  const [userLocation, setUserLocation] = useState<L.LatLng>(new L.LatLng(0,0));
+  const [userLocation, setUserLocation] = useState<L.LatLng | null>(null);
   const [userLocationError, setUserLocationError] = useState<string>('');
 
   useEffect(() => {
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions)
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, "nearest", userLocation)
       .then((data) => {
         const items = (data || []).filter((m) => m.id != null);
 
@@ -45,7 +45,7 @@ function BrowsePage() {
           id: String(m.id),
           title: m.title,
           mediaOwnerName: m.mediaOwnerName,
-          address: m.address,
+          mediaLocation: m.mediaLocation,
           resolution: m.resolution,
           aspectRatio: m.aspectRatio,
           loopDuration: m.loopDuration,
@@ -61,14 +61,14 @@ function BrowsePage() {
         setActivePage(1);
         
         getUserGeoLocation(setUserLocation, setUserLocationError);
-        getAddressLocation(mapped[0].address);
-        getAddressLocation(mapped[1].address);
+        getAddressLocation(mapped[0].mediaLocation);
+        getAddressLocation(mapped[1].mediaLocation);
         
       })
       .catch((err) => {
         console.error("Failed to load media:", err);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation]);
 
 
   const paginatedMedia = useMemo(() => {
@@ -95,7 +95,7 @@ function BrowsePage() {
         <Stack gap="sm">
           {userLocationError ? (<Text>{userLocationError}</Text>): 
           (<>
-          <Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text>
+          {userLocation && (<><Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text></>)}
           </>)}
           
           <TextInput

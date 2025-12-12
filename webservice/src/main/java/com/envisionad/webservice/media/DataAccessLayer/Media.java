@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -18,20 +19,20 @@ public class Media {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "media_id")
+    @Column(name = "media_id", nullable = false)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "media_location_id", nullable = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "media_location_id", nullable = false)
     private MediaLocation mediaLocation;
 
-    @Column(name = "title")
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "media_owner_name")
+    @Column(name = "media_owner_name", nullable = false)
     private String mediaOwnerName;
 
-    @Column(name = "type_of_display")
+    @Column(name = "type_of_display", nullable = false)
     @Enumerated(EnumType.STRING)
     private TypeOfDisplay typeOfDisplay;
 
@@ -60,7 +61,7 @@ public class Media {
     @JdbcTypeCode(SqlTypes.JSON)
     private ScheduleModel schedule;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 

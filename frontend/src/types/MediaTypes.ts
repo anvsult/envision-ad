@@ -1,7 +1,50 @@
+export interface MediaDTO {
+    id?: string;
+    title: string;
+    mediaOwnerName: string;
+    mediaLocation: MediaLocationDTO;
+    resolution: string;
+    aspectRatio: string;
+    loopDuration: number | null;
+    width: number | null;
+    height: number | null;
+    price: number | null;
+    dailyImpressions: number | null;
+    schedule: {
+        selectedMonths: string[];
+        weeklySchedule: {
+            dayOfWeek: string;
+            isActive: boolean;
+            startTime: string | null;
+            endTime: string | null;
+        }[];
+    };
+    status: string | null;
+    typeOfDisplay: string;
+    imageUrl?: string | null;
+}
+
+export interface MediaLocationDTO {
+    id: string | null;
+    name: string;
+    description: string;
+    country: string;
+    province: string;
+    street: string;
+    city: string;
+    postalCode: string;
+    latitude: number | null;
+    longitude: number | null;
+}
+
+export function getJoinedAddress(items: string[]){
+    return items.join(", ");
+}
+
 export interface MediaRequest {
     title: string;
     mediaOwnerName: string;
-    address: string;
+    mediaLocation: MediaLocationModel | null;
     typeOfDisplay: string; 
     loopDuration: number;
     resolution: string;
@@ -18,7 +61,7 @@ export interface MediaResponse {
     id: string;
     title: string;
     mediaOwnerName: string;
-    address: string;
+    mediaLocation: MediaLocationModel | null;
     typeOfDisplay: string;
     loopDuration: number;
     resolution: string;
@@ -30,6 +73,18 @@ export interface MediaResponse {
     schedule: ScheduleModel | null;
     status: string;
     imageUrl: string;
+}
+
+export interface MediaLocationModel {
+    name: string;
+    description: string;
+    country: string;
+    province: string;
+    city: string;
+    street: string;
+    postalCode: string;
+    latitude: number;
+    longitude: number;
 }
 
 export interface WeeklyScheduleEntry {

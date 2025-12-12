@@ -18,11 +18,8 @@ public class MediaLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "media_location_id")
+    @Column(name = "media_location_id", nullable = false)
     private UUID id;
-
-    @OneToMany(mappedBy = "mediaLocation", cascade = CascadeType.ALL)
-    private List<Media> mediaList = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;

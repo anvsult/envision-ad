@@ -33,8 +33,8 @@ public class MediaRequestMapper {
 
         if (request.getMediaLocationId() != null) {
             media.setMediaLocation(
-                    mediaLocationRepo.findById(request.getMediaLocationId())
-                            .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId"))
+                mediaLocationRepo.findById(request.getMediaLocationId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId"))
             );
         }
 

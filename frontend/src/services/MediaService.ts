@@ -1,30 +1,8 @@
+import { MediaDTO, MediaLocationDTO } from "@/types/MediaTypes";
+
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
-export interface MediaDTO {
-    id?: string;
-    title: string;
-    mediaOwnerName: string;
-    address: string;
-    resolution: string;
-    aspectRatio: string;
-    loopDuration: number | null;
-    width: number | null;
-    height: number | null;
-    price: number | null;
-    dailyImpressions: number | null;
-    schedule: {
-        selectedMonths: string[];
-        weeklySchedule: {
-            dayOfWeek: string;
-            isActive: boolean;
-            startTime: string | null;
-            endTime: string | null;
-        }[];
-    };
-    status: string | null;
-    typeOfDisplay: string;
-    imageUrl?: string | null;
-}
+
 
 export async function getAllMedia(): Promise<MediaDTO[]> {
     const response = await fetch(`${API_BASE_URL}/media`, {
@@ -53,6 +31,8 @@ export async function getAllFilteredActiveMedia(
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
+    sortBy?: string | null,
+    userLatLng?: L.LatLng | null,
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
@@ -71,6 +51,15 @@ export async function getAllFilteredActiveMedia(
 
     if (minDailyImpressions) {
         params.append("minDailyImpressions", minDailyImpressions.toString());
+    }
+
+    if (sortBy) {
+        params.append("sortBy", sortBy.toString());
+    }
+
+    if (userLatLng) {
+        params.append("userLat", userLatLng.lat.toString());
+        params.append("userLng", userLatLng.lng.toString());
     }
 
     const url = `${API_BASE_URL}/media/active?${params.toString()}`;
@@ -143,3 +132,18 @@ export async function deleteMedia(id: string): Promise<void> {
     }
 }
 
+// export async function getAllMediaLocations(): Promise<MediaLocationDTO[]> {
+
+//     const response = await fetch(`${API_BASE_URL}/medialocations`, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//     });
+
+//     if (!response.ok) {
+//         throw new Error(`Failed to fetch media locations: ${response.statusText}`);
+//     }
+
+//     return response.json();
+// }

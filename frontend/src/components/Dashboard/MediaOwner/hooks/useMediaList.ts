@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/services/MediaService";
 import type { MediaRowData } from "../MediaTable/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
+import { MediaDTO } from "@/types/MediaTypes";
 
 export function useMediaList() {
   const [media, setMedia] = useState<MediaRowData[]>([]);
+  
 
   useEffect(() => {
     getAllMedia()
@@ -54,10 +56,21 @@ export function useMediaList() {
 
     const schedule = buildScheduleFromForm(formState);
 
-    const payload = {
+    const payload: MediaDTO = {
       title: formState.mediaTitle,
       mediaOwnerName: formState.mediaOwnerName,
-      address: formState.mediaAddress,
+      mediaLocation:{
+        id: null,
+        name: "",
+        description: "",
+        country: "",
+        province: "",
+        street: "",
+        city: "",
+        postalCode: "",
+        latitude: null,
+        longitude: null
+      },
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
       loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,
@@ -68,6 +81,7 @@ export function useMediaList() {
       schedule: schedule,
       status: null,
       typeOfDisplay: formState.displayType,
+      
     };
 
     try {
@@ -99,7 +113,6 @@ export function useMediaList() {
     const payload = {
       title: formState.mediaTitle,
       mediaOwnerName: formState.mediaOwnerName,
-      address: formState.mediaAddress,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
       loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,

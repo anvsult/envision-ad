@@ -1,9 +1,11 @@
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
+DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS media_location;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS media;
+
 
 -- 2. Create Address Table (Must be first because Business links to it)
 CREATE TABLE address (
@@ -12,9 +14,7 @@ CREATE TABLE address (
     city VARCHAR(255) NOT NULL,
     state VARCHAR(255) NOT NULL,
     zip_code VARCHAR(255) NOT NULL,
-    country VARCHAR(255) NOT NULL,
-    latitude DOUBLE NOT NULL,
-    longitude DOUBLE NOT NULL,
+    country VARCHAR(255) NOT NULL
 );
 
 -- 3. Create Business Table
@@ -48,10 +48,12 @@ CREATE TABLE media_location (
 -- 4. Create Media Table
 CREATE TABLE media (
     media_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    media_location_id UUID REFERENCES media_location(media_location_id),
-    title VARCHAR(255),
-    media_owner_name VARCHAR(255),
-    type_of_display VARCHAR(50),
+    media_location_id UUID NOT NULL
+        REFERENCES media_location(media_location_id)
+        ON DELETE RESTRICT,
+    title VARCHAR(255) NOT NULL,
+    media_owner_name VARCHAR(255) NOT NULL,
+    type_of_display VARCHAR(50) NOT NULL,
     loop_duration INTEGER,
     resolution VARCHAR(50),
     aspect_ratio VARCHAR(20),
@@ -60,7 +62,7 @@ CREATE TABLE media (
     price DECIMAL(10, 2),
     daily_impressions INTEGER,
     schedule JSONB,
-    status VARCHAR(50),
+    status VARCHAR(50) NOT NULL,
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
     image_data BYTEA

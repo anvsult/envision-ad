@@ -143,7 +143,7 @@ export default function MediaOwnerPage() {
           backend.dailyImpressions != null
             ? String(backend.dailyImpressions)
             : "",
-        mediaAddress: backend.address ?? "",
+        mediaLocationId: backend.mediaLocation.id ?? null,
         activeDaysOfWeek,
         dailyOperatingHours,
         activeMonths,
