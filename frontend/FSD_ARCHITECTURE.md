@@ -1,185 +1,136 @@
 # FSD Architecture - EnVision Ad Frontend
 
-This project follows the Feature-Sliced Design (FSD) methodology, adapted for Next.js App Router with internationalization support.
+The project follows Feature-Sliced Design (FSD) with Next.js App Router and next-intl for i18n.
 
 ## Project Structure
 
 ```
 frontend/
-├── app/                              # Next.js App Router (root level)
+├── app/                              # Next.js App Router (routes only)
 │   ├── [locale]/                     # Internationalized routes
 │   │   ├── layout.tsx                # Root layout with providers
-│   │   ├── page.tsx                  # Home page (re-exports from src/pages)
+│   │   ├── page.tsx                  # Home route (re-exports from src/pages)
 │   │   ├── browse/                   # Browse route
-│   │   ├── business/                 # Business management route
+│   │   ├── business/                 # Business route
 │   │   ├── dashboard/                # Dashboard route
 │   │   └── medias/[id]/              # Media detail route
 │   └── ...
-├── pages/                            # Empty (prevents Next.js confusion)
+├── pages/                            # Documentation only (avoid legacy pages router)
 │   └── README.md
-├── middleware.ts                     # Next.js middleware (re-exports from src/shared/api)
+├── public/                           # Static assets (images)
+├── proxy.ts                          # Local dev proxy setup
+├── Dockerfile                        # Container setup
+├── eslint.config.mjs                 # Eslint config (includes FSD rules)
+├── tsconfig.json                     # TS config with path aliases
+├── next.config.ts                    # Next.js config
 └── src/                              # FSD layers
     ├── app/                          # App-wide setup
-    │   └── providers/                # Global providers (Mantine, etc.)
-    ├── pages/                        # Page components
+    │   └── providers/                # Global providers (Mantine, theme, i18n, auth)
+    ├── pages/                        # Page components (used by App Router)
     │   ├── home/
     │   ├── browse/
     │   ├── dashboard/
     │   ├── business/
     │   └── media-detail/
-    ├── widgets/                      # Complex composite UI blocks
+    ├── widgets/                      # Composite UI blocks
     │   ├── business-dashboard/
     │   └── media-dashboard/
-    ├── features/                     # User interactions/features
+    ├── features/                     # User interactions
     │   ├── business-management/
-    │   │   ├── ui/                   # Modal, forms
-    │   │   └── model/                # Hooks, business logic
     │   └── media-management/
-    │       ├── ui/                   # Modal, forms, schedule selector
-    │       └── model/                # Hooks, business logic
-    ├── entities/                     # Business entities
-    │   ├── business/
-    │   │   ├── api/                  # API calls (BusinessService)
-    │   │   ├── model/                # Types (BusinessTypes)
-    │   │   └── ui/                   # Entity-specific UI (if needed)
-    │   └── media/
-    │       ├── api/                  # API calls (MediaService)
-    │       ├── model/                # Types (MediaTypes, MediaAdStatus)
-    │       └── ui/                   # Entity-specific UI (if needed)
+    ├── entities/                     # Domain entities
+    │   ├── businesses/               # Business domain (API, model, UI)
+    │   └── media/                    # Media domain (API, model, UI)
     └── shared/                       # Reusable infrastructure
-        ├── ui/                       # UI kit (Header, Footer, Cards, etc.)
+        ├── ui/                       # UI kit (Header, Footer, Cards, Grid, etc.)
+        │   ├── Header/
+        │   ├── BrowseActions/
+        │   ├── Cards/
+        │   ├── Carousel/
+        │   ├── Footer/
+        │   ├── Grid/
+        │   ├── Partners/
+        │   └── StatusBadge/
         ├── config/                   # Theme, constants
-        ├── api/                      # Proxy, HTTP client
-        ├── i18n/                     # Internationalization
-        └── auth0/                    # Authentication
-
+        ├── api/                      # HTTP client
+        ├── i18n/                     # Internationalization helpers (navigation, routing)
+        └── auth0/                    # Auth configuration
 ```
 
 ## Layer Responsibilities
 
-### App Layer (`src/app/`)
+- app (`src/app/`): global setup and providers only.
+- pages (`src/pages/`): page composition using widgets, features, entities, shared; exported for App Router.
+- widgets (`src/widgets/`): composite UI combining features/entities; reusable and self-contained.
+- features (`src/features/`): user interactions, forms, modals, hooks.
+- entities (`src/entities/`): domain logic, types, and API (businesses, media).
+- shared (`src/shared/`): business-agnostic UI and infra (Header, language picker, navigation).
 
-Contains application-wide initialization logic:
+## Next.js App Router
 
-- **providers**: Global providers (Mantine, theme, etc.)
-- Should NOT contain business logic or UI components
+App routes live under `app/[locale]/...` and re-export page components from `src/pages/`.
 
-### Pages Layer (`src/pages/`)
-
-Compositional layer for entire pages:
-
-- Assembles widgets and features into complete pages
-- Handles page-level logic and data fetching
-- Each page folder contains:
-  - `ui/`: Page component(s)
-  - `index.ts`: Exports for Next.js App Router ()
-
-### Widgets Layer (`src/widgets/`)
-
-Complex composite UI blocks that combine multiple features:
-
-- **business-dashboard**: Business management dashboard with table and actions
-- **media-dashboard**: Media owner dashboard with navigation and media table
-- Can use features, entities, and shared layers
-- Should be relatively self-contained and reusable
-
-### Features Layer (`src/features/`)
-
-User-facing functionality and interactions:
-
-- **business-management**: Business CRUD operations, forms, modals
-  - `ui/`: BusinessModal, BusinessDetailsForm
-  - `model/`: useBusinessForm, useBusinessList hooks
-- **media-management**: Media CRUD operations, forms, modals
-  - `ui/`: MediaModal, MediaDetailsForm, ScheduleSelector
-  - `model/`: useMediaForm, useMediaList hooks
-- Each feature is isolated and can be developed/tested independently
-
-### Entities Layer (`src/entities/`)
-
-Business domain entities with their data and operations:
-
-- **business**:
-  - `api/`: getAllBusinesses, createBusiness, updateBusiness, etc.
-  - `model/`: BusinessTypes, CompanySize enum
-  - `ui/`: Entity-specific UI components (if needed)
-- **media**:
-  - `api/`: getAllMedia, getMediaById, updateMedia, etc.
-  - `model/`: MediaTypes, MediaAdStatus enum
-  - `ui/`: Entity-specific UI components (if needed)
-- Represents core business concepts
-- Can only depend on shared layer
-
-### Shared Layer (`src/shared/`)
-
-Reusable infrastructure not tied to business logic:
-
-- **ui/**: Reusable components (Header, Footer, Cards, Carousel, Grid, etc.)
-- **config/**: Theme, constants, configuration
-- **api/**: HTTP client, proxy middleware
-- **i18n/**: Internationalization routing and navigation
-- **auth0/**: Authentication configuration
-- Cannot depend on any other FSD layers
-
-## Next.js App Router Integration
-
-The Next.js `app/` folder (at project root) serves as a routing layer that re-exports page components from `src/pages/`:
+Example:
 
 ```tsx
 // app/[locale]/browse/page.tsx
 export { BrowsePage as default } from "@/pages/browse";
 ```
 
-This approach:
+This keeps routing thin and FSD layers clean inside `src/`.
 
-- Keeps FSD structure clean in `src/`
-- Allows Next.js routing to work as expected
-- Maintains separation between routing and business logic
+## Import Rules (FSD)
 
-## Import Rules
+Allowed dependencies (bottom → top):
+- app → pages, widgets, features, entities, shared
+- pages → widgets, features, entities, shared
+- widgets → features, entities, shared
+- features → entities, shared
+- entities → shared
+- shared → none
 
-### Allowed Dependencies (bottom to top):
+Avoid cross-layer imports that break hierarchy or create cycles.
 
-- **app** → pages, widgets, features, entities, shared
-- **pages** → widgets, features, entities, shared
-- **widgets** → features, entities, shared
-- **features** → entities, shared
-- **entities** → shared
-- **shared** → nothing (no FSD dependencies)
-
-### Path Aliases
+## Path Aliases (tsconfig.json)
 
 ```json
 {
-  "@/*": ["./src/*"],
-  "@/app/*": ["./src/app/*"],
-  "@/pages/*": ["./src/pages/*"],
-  "@/widgets/*": ["./src/widgets/*"],
-  "@/features/*": ["./src/features/*"],
-  "@/entities/*": ["./src/entities/*"],
-  "@/shared/*": ["./src/shared/*"]
+  "paths": {
+    "@/*": ["./src/*"],
+    "@/app/*": ["./src/app/*"],
+    "@/pages/*": ["./src/pages/*"],
+    "@/widgets/*": ["./src/widgets/*"],
+    "@/features/*": ["./src/features/*"],
+    "@/entities/*": ["./src/entities/*"],
+    "@/shared/*": ["./src/shared/*"]
+  }
 }
 ```
 
 ## Best Practices
 
-1. **Colocation**: Keep related files together (UI, hooks, types)
-2. **Public API**: Use `index.ts` to expose only what's needed
-3. **No Circular Dependencies**: Respect the layer hierarchy
-4. **Feature Independence**: Features should not depend on each other
-5. **Entity Purity**: Entities contain only domain logic, no UI
-6. **Shared Reusability**: Shared components should be business-agnostic
+- Colocate UI, hooks, and types within each slice.
+- Expose public APIs via `index.ts` in each slice.
+- Avoid circular dependencies and cross-layer leaks.
+- Keep features independent and focused on interactions.
+- Maintain entity purity (domain logic only; optional entity-specific UI).
+- Ensure shared UI is business-agnostic and reusable.
 
-## Migration Notes
+## FSD Lint & Slice Health
 
-- Old `src/components/` → split into `src/widgets/`, `src/features/ui/`, and `src/shared/ui/`
-- Old `src/services/` → `src/entities/*/api/`
-- Old `src/types/` → `src/entities/*/model/`
-- Old `src/lib/` → `src/shared/i18n/` and `src/shared/auth0/`
-- Old `src/app/[locale]/` → pages moved to `src/pages/`, routes to root `app/[locale]/`
+The steiger FSD plugin may report warnings like insignificant slices:
+- If a slice has only one reference, consider merging it into the consumer feature.
+- If a slice has zero references, remove it or wire it into the app.
+- You can suppress specific slices via the plugin config if intentionally isolated.
+
+## Notes
+
+- `src/shared/ui/Header/Header.tsx` implements the top navigation, language picker, and Auth0 user menu; consumed by layouts/pages.
+- `src/entities/businesses` and `src/entities/media` contain typed APIs and models (`BusinessService`, `MediaService`, `BusinessTypes`, `MediaTypes`, `MediaAdStatus`).
+- `src/shared/i18n` provides `Link` and `usePathname` helpers used across UI.
 
 ## References
 
-- [Feature-Sliced Design Documentation](https://feature-sliced.design/)
-- [FSD with Next.js Guide](https://feature-sliced.design/docs/guides/tech/with-nextjs)
-- [Next.js App Router](https://nextjs.org/docs/app)
+- Feature-Sliced Design: https://feature-sliced.design/
+- FSD with Next.js Guide: https://feature-sliced.design/docs/guides/tech/with-nextjs
+- Next.js App Router: https://nextjs.org/docs/app
