@@ -31,22 +31,22 @@ services:
     networks:
       - appnet
 
-#  frontend:
-#    build:
-#      context: ./frontend
-#      dockerfile: Dockerfile
-#    ports:
-#      - "3000:3000"
-#    environment:
-#      NODE_ENV: "production"
-#      NEXT_TELEMETRY_DISABLED: "1"
-#    env_file:
-#      - ./frontend/.env
-#    depends_on:
-#      - webservice
-#    restart: unless-stopped
-#    networks:
-#      - appnet
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: "production"
+      NEXT_TELEMETRY_DISABLED: "1"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - webservice
+    restart: unless-stopped
+    networks:
+      - appnet
 
   webservice:
     build:

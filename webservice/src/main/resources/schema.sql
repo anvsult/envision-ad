@@ -27,7 +27,7 @@ CREATE TABLE business
     name         VARCHAR(255)       NOT NULL,
     company_size VARCHAR(50)        NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    address_id   SERIAL,
+    address_id   INTEGER,
     owner_id     VARCHAR(36),
     media_owner  BOOLEAN,
     advertiser   BOOLEAN,
@@ -40,7 +40,7 @@ CREATE TABLE business
 
 CREATE TABLE business_employees
 (
-    business_id SERIAL             NOT NULL,
+    business_id INTEGER            NOT NULL,
     employee_id VARCHAR(36) UNIQUE NOT NULL,
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
@@ -66,5 +66,5 @@ CREATE TABLE media
     status             VARCHAR(50),
     image_file_name    VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data         byte
+    image_data         bytea
 );

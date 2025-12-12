@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useState} from "react";
-import {Modal, Button, Group, Stack, TextInput} from "@mantine/core";
+import {Button, Group, Modal, Stack, TextInput} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {inviteEmployeeToBusiness} from "@/services/BusinessService";
 

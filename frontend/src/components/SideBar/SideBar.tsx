@@ -1,15 +1,13 @@
-import {Badge, NavLink, Stack, Accordion} from "@mantine/core";
+import {NavLink, Stack, Accordion} from "@mantine/core";
 import {Link, usePathname} from "@/lib/i18n/navigation";
 import {
     IconAd,
-    IconCurrencyDollar,
     IconDeviceTv,
     IconFileDescription,
     IconLayoutDashboard,
     IconUsers
 } from "@tabler/icons-react";
 import React from "react";
-import {useMediaQuery} from "@mantine/hooks";
 import {useTranslations} from "next-intl";
 
 export default function SideBar() {

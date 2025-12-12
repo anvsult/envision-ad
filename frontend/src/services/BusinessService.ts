@@ -100,13 +100,17 @@ export const getEmployeeBusiness = async (id: string): Promise<BusinessResponse>
 
 export const removeEmployeeFromBusiness = async (businessId : string, employeeId : string) : Promise<void> => {
     const token = await getAccessToken();
-    await fetch(`${API_BASE_URL}/${businessId}/employees/${employeeId}`, {
+    const res = await fetch(`${API_BASE_URL}/${businessId}/employees/${employeeId}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
             Authorization : `Bearer ${token}`
         },
     });
+
+    if (!res.ok) {
+        throw new Error(`Failed to remove employee from business: ${res.statusText}`);
+    }
 }
 
 export const inviteEmployeeToBusiness = async (id : string, email : string) : Promise<void> => {

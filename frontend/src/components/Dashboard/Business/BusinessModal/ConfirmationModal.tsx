@@ -1,6 +1,6 @@
 "use client";
 
-import {Modal, Button, Group, Text} from "@mantine/core";
+import {Button, Group, Modal, Text} from "@mantine/core";
 
 interface ConfirmRemoveEmployeeModalProps {
     opened: boolean;
