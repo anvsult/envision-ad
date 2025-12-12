@@ -108,6 +108,10 @@ export const removeEmployeeFromBusiness = async (businessId : string, employeeId
             "Content-Type": "application/json",
         },
     });
+
+    if (!res.ok) {
+        throw new Error(`Failed to remove employee from business: ${res.statusText}`);
+    }
 }
 
 export const inviteEmployeeToBusiness = async (id : string, email : string) : Promise<void> => {

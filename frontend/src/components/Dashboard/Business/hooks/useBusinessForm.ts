@@ -1,10 +1,5 @@
-import { useState } from "react";
-import { BusinessRequest, CompanySize } from "@/types/BusinessTypes";
-
-type BusinessField =
-    | keyof BusinessRequest
-    | `address.${keyof BusinessRequest["address"]}`
-    | `roles.${keyof BusinessRequest["roles"]}`;
+import {useState} from "react";
+import {BusinessRequest, CompanySize} from "@/types/BusinessTypes";
 
 export function useBusinessForm() {
     const initialState: BusinessRequest = {
@@ -43,5 +38,5 @@ export function useBusinessForm() {
         setFormState(initialState);
     };
 
-    return { formState, updateField, resetForm, setFormState };
+    return {formState, updateField, resetForm, setFormState};
 }

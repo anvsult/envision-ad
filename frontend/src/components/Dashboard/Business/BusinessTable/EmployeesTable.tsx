@@ -1,7 +1,8 @@
 import React from "react";
-import {Table, ScrollArea, ActionIcon, Group, Tooltip, Accordion} from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import {Accordion, ActionIcon, Group, ScrollArea, Table, Tooltip} from "@mantine/core";
+import {IconTrash} from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
+import type {UserType} from "@/types/UserType";
 
 interface EmployeeTableProps {
     employees: UserType[];
@@ -10,7 +11,7 @@ interface EmployeeTableProps {
     ownerId: string;
 }
 
-export function EmployeeTable({ employees, onDelete, currentUserId, ownerId }: EmployeeTableProps) {
+export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: EmployeeTableProps) {
     const t = useTranslations("business.employees");
 
     return (
@@ -25,7 +26,7 @@ export function EmployeeTable({ employees, onDelete, currentUserId, ownerId }: E
                                 <Table.Tr>
                                     <Table.Th>{t("name")}</Table.Th>
                                     <Table.Th>{t("email")}</Table.Th>
-                                    <Table.Th style={{ textAlign: "right" }}>{t("actions")}</Table.Th>
+                                    <Table.Th style={{textAlign: "right"}}>{t("actions")}</Table.Th>
                                 </Table.Tr>
                             </Table.Thead>
 
@@ -36,7 +37,7 @@ export function EmployeeTable({ employees, onDelete, currentUserId, ownerId }: E
                                         <Table.Td>{emp.email}</Table.Td>
                                         <Table.Td>
                                             <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                                { currentUserId !== emp.user_id && ownerId === currentUserId &&
+                                                {currentUserId !== emp.user_id && ownerId === currentUserId &&
                                                     <Tooltip label="Delete employee">
                                                         <ActionIcon
                                                             variant="light"
@@ -44,7 +45,7 @@ export function EmployeeTable({ employees, onDelete, currentUserId, ownerId }: E
                                                             size="md"
                                                             onClick={() => onDelete?.(emp.user_id)}
                                                         >
-                                                            <IconTrash size={16} />
+                                                            <IconTrash size={16}/>
                                                         </ActionIcon>
                                                     </Tooltip>
                                                 }
@@ -55,7 +56,7 @@ export function EmployeeTable({ employees, onDelete, currentUserId, ownerId }: E
 
                                 {employees.length === 0 && (
                                     <Table.Tr>
-                                        <Table.Td colSpan={3} style={{ textAlign: "center" }}>
+                                        <Table.Td colSpan={3} style={{textAlign: "center"}}>
                                             No employees found
                                         </Table.Td>
                                     </Table.Tr>

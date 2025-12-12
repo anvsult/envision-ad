@@ -10,10 +10,7 @@ import java.util.Set;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
 public class Business {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +37,7 @@ public class Business {
             name = "business_employees",
             joinColumns = @JoinColumn(name = "business_id")
     )
-    @Column(name = "employee_Id")
+    @Column(name = "employee_id")
     private Set<String> employeeIds = new HashSet<>();
 
     @CreationTimestamp

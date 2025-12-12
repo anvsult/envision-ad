@@ -1,6 +1,5 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
-import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessEmployeeNotFoundException;
@@ -64,7 +63,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public BusinessResponseModel addBusinessEmployeeById(String businessId, String EmployeeId){
+    public BusinessResponseModel addBusinessEmployeeById(String businessId, String EmployeeId) {
         Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);//.orElseThrow(() -> new BusinessNotFoundException(businessId));
         if (existingBusiness.getEmployeeIds().contains(EmployeeId))
             throw new DuplicateBusinessEmployeeException(businessId, EmployeeId);
@@ -73,7 +72,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public BusinessResponseModel removeBusinessEmployeeById(String businessId, String EmployeeId){
+    public BusinessResponseModel removeBusinessEmployeeById(String businessId, String EmployeeId) {
         Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);//.orElseThrow(() -> new BusinessNotFoundException(businessId));
         if (!existingBusiness.getEmployeeIds().contains(EmployeeId))
             throw new BusinessEmployeeNotFoundException(businessId, EmployeeId);

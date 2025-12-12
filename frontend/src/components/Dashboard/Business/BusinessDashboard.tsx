@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from "react";
 import {Header} from "@/components/Header/Header";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {Stack, Paper, Drawer, Box, Group, Title} from "@mantine/core";
+import {Box, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
 import {BusinessDetail} from "@/components/Dashboard/Business/BusinessTable/BusinessTable";
 import {BusinessModal} from "@/components/Dashboard/Business/BusinessModal/BusinessModal";
 import {useTranslations} from "next-intl";
@@ -20,7 +20,7 @@ export function BusinessDashboard() {
     const {formState, updateField, resetForm, setFormState} = useBusinessForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [business, setBusiness] = useState<BusinessResponse | null>(null);
-    const { user, isLoading } = useUser();
+    const {user} = useUser();
 
     const loadBusiness = async () => {
         const business = await getEmployeeBusiness(user!.sub);
@@ -124,7 +124,7 @@ export function BusinessDashboard() {
                                         formState={formState}
                                         onFieldChange={updateField}
                                         resetForm={resetForm}
-                                        editingId={business?.businessId ?? null}
+                                        editingId={business.businessId}
                                     />
                                 </>
                             )}
