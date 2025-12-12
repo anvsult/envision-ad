@@ -7,7 +7,7 @@ import com.envisionad.webservice.business.presentationlayer.models.RoleRequestMo
 
 public class Validator {
     public static void validateBusiness(BusinessRequestModel requestModel) {
-        if (validateRoles(requestModel) || validateName(requestModel) || validateCompanySize(requestModel) || validateAddress(requestModel))
+        if (requestModel == null || !validateRoles(requestModel) || !validateName(requestModel) || !validateCompanySize(requestModel) || !validateAddress(requestModel))
             throw new InvalidBusinessException();
     }
 
