@@ -5,7 +5,7 @@ export interface MediaFormState {
   mediaOwnerName: string;
   mediaLocationId: string;
   resolution: string;
-  displayType: string;
+  displayType: string | null;
   loopDuration: string;
   aspectRatio: string;
   widthCm: string;

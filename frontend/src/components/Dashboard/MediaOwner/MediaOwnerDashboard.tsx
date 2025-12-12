@@ -12,6 +12,7 @@ import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {modals} from "@mantine/modals";
 import {usePathname} from "@/lib/i18n/navigation";
 import SideBar from "@/components/SideBar/SideBar";
+import { WeeklyScheduleEntry } from "@/types/MediaTypes";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -77,7 +78,7 @@ export default function MediaOwnerPage() {
             };
 
             if (schedule.weeklySchedule) {
-                schedule.weeklySchedule.forEach((entry: any) => {
+                schedule.weeklySchedule.forEach((entry: WeeklyScheduleEntry) => {
                     // entry.dayOfWeek is likely "monday". We need "Monday"
                     const dayKey =
                         entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
@@ -115,6 +116,7 @@ export default function MediaOwnerPage() {
             setFormState({
                 mediaTitle: backend.title ?? "",
                 mediaOwnerName: backend.mediaOwnerName ?? "",
+                mediaLocationId: backend.mediaLocation.id ?? "",
                 resolution: backend.resolution ?? "",
                 displayType: backend.typeOfDisplay ?? null,
                 loopDuration:
@@ -127,7 +129,6 @@ export default function MediaOwnerPage() {
                     backend.dailyImpressions != null
                         ? String(backend.dailyImpressions)
                         : "",
-                mediaAddress: backend.address ?? "",
                 activeDaysOfWeek,
                 dailyOperatingHours,
                 activeMonths,

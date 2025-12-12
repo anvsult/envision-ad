@@ -45,7 +45,7 @@ export interface MediaRequest {
     title: string;
     mediaOwnerName: string;
     mediaLocationId: string | null;
-    typeOfDisplay: string; 
+    typeOfDisplay: string | null; 
     loopDuration: number;
     resolution: string;
     aspectRatio: string;
