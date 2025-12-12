@@ -1,8 +1,6 @@
 package com.envisionad.webservice.business.presentationlayer;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
-import com.envisionad.webservice.business.dataaccesslayer.Business;
-import com.envisionad.webservice.business.mappinglayer.BusinessResponseMapper;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.http.HttpStatus;
@@ -10,65 +8,55 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/businesses")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class BusinessController {
 
     private final BusinessService businessService;
-    private final BusinessResponseMapper businessResponseMapper;
 
-    public BusinessController(BusinessService businessService, BusinessResponseMapper businessResponseMapper) {
+    public BusinessController(BusinessService businessService) {
         this.businessService = businessService;
-        this.businessResponseMapper = businessResponseMapper;
     }
 
     @PostMapping
     public ResponseEntity<BusinessResponseModel> createBusiness(@RequestBody BusinessRequestModel requestModel) {
-        Business businessEntity = businessResponseMapper.requestModelToEntity(requestModel);
-
-        Business savedBusiness = businessService.createBusiness(businessEntity);
-
-        BusinessResponseModel responseModel = businessResponseMapper.entityToResponseModel(savedBusiness);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseModel);
+        return ResponseEntity.status(HttpStatus.CREATED).body(businessService.createBusiness(requestModel));
     }
 
     @GetMapping
     public ResponseEntity<List<BusinessResponseModel>> getAllBusinesses() {
-        List<BusinessResponseModel> responseModels = businessService.getAllBusinesses().stream()
-                .map(businessResponseMapper::entityToResponseModel)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(responseModels);
+        return ResponseEntity.ok(businessService.getAllBusinesses());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BusinessResponseModel> getBusinessById(@PathVariable UUID id) {
-        Business business = businessService.getBusinessById(id);
-        BusinessResponseModel responseModel = businessResponseMapper.entityToResponseModel(business);
-
-        return ResponseEntity.ok(responseModel);
+    @GetMapping("/{businessId}")
+    public ResponseEntity<BusinessResponseModel> getBusinessById(@PathVariable String businessId) {
+        return ResponseEntity.ok(businessService.getBusinessById(businessId));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<BusinessResponseModel> updateBusinessById(
-            @PathVariable UUID id,
-            @RequestBody BusinessRequestModel requestModel) {
-        Business businessEntity = businessResponseMapper.requestModelToEntity(requestModel);
-        Business updatedBusiness = businessService.updateBusinessById(id, businessEntity);
-        BusinessResponseModel responseModel = businessResponseMapper.entityToResponseModel(updatedBusiness);
-
-        return ResponseEntity.ok(responseModel);
+    @PutMapping("/{businessId}")
+    public ResponseEntity<BusinessResponseModel> updateBusinessById(@PathVariable String businessId, @RequestBody BusinessRequestModel requestModel) {
+        return ResponseEntity.ok(businessService.updateBusinessById(businessId, requestModel));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<BusinessResponseModel> deleteBusinessById(@PathVariable UUID id) {
-        Business deletedBusiness = businessService.deleteBusinessById(id);
-        BusinessResponseModel responseModel = businessResponseMapper.entityToResponseModel(deletedBusiness);
+    @DeleteMapping("/{businessId}")
+    public ResponseEntity<BusinessResponseModel> deleteBusinessById(@PathVariable String businessId) {
+        return ResponseEntity.ok(businessService.deleteBusinessById(businessId));
+    }
 
-        return ResponseEntity.ok(responseModel);
+    @PutMapping("/{businessId}/employees/{employeeId}")
+    public ResponseEntity<BusinessResponseModel> addEmployeeToBusiness(@PathVariable String businessId, @PathVariable String employeeId) {
+        return ResponseEntity.ok(businessService.addBusinessEmployeeById(businessId, employeeId));
+    }
+
+    @DeleteMapping("/{businessId}/employees/{employeeId}")
+    public ResponseEntity<BusinessResponseModel> removeEmployeeToBusiness(@PathVariable String businessId, @PathVariable String employeeId) {
+        return ResponseEntity.ok(businessService.removeBusinessEmployeeById(businessId, employeeId));
+    }
+
+    @GetMapping("/employee/{employeeId}")
+    public ResponseEntity<BusinessResponseModel> getBusinessByEmployeeId(@PathVariable String employeeId) {
+        return ResponseEntity.ok(businessService.getBusinessByEmployeeId(employeeId));
     }
 }

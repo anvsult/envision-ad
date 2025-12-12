@@ -1,9 +1,7 @@
 package com.envisionad.webservice.business.presentationlayer;
 
-import com.envisionad.webservice.business.dataaccesslayer.Address;
-import com.envisionad.webservice.business.dataaccesslayer.Business;
-import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
-import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
+import com.envisionad.webservice.business.dataaccesslayer.*;
+import com.envisionad.webservice.business.presentationlayer.models.AddressRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,12 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.UUID;
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,11 +44,13 @@ class BusinessControllerIntegrationTest {
         BusinessRequestModel requestModel = new BusinessRequestModel();
         requestModel.setName("Integration Business");
         requestModel.setCompanySize(CompanySize.MEDIUM);
-        requestModel.setStreet("Integration St");
-        requestModel.setCity("Integration City");
-        requestModel.setState("State");
-        requestModel.setZipCode("00000");
-        requestModel.setCountry("Country");
+        AddressRequestModel addressRequestModel = new AddressRequestModel();
+        addressRequestModel.setStreet("Integration St");
+        addressRequestModel.setCity("Integration City");
+        addressRequestModel.setState("State");
+        addressRequestModel.setZipCode("00000");
+        addressRequestModel.setCountry("Country");
+        requestModel.setAddress(addressRequestModel);
 
         mockMvc.perform(post("/api/v1/businesses")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,9 +77,9 @@ class BusinessControllerIntegrationTest {
     void getBusinessById_ShouldReturnOneBusiness() throws Exception {
         Business savedBusiness = createAndSaveBusiness("Target Business");
 
-        mockMvc.perform(get("/api/v1/businesses/{id}", savedBusiness.getId()))
+        mockMvc.perform(get("/api/v1/businesses/{businessId}", savedBusiness.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(savedBusiness.getId().toString())))
+                .andExpect(jsonPath("$.businessId", is(savedBusiness.getBusinessId())))
                 .andExpect(jsonPath("$.name", is("Target Business")));
     }
 
@@ -93,17 +90,17 @@ class BusinessControllerIntegrationTest {
         BusinessRequestModel updateModel = new BusinessRequestModel();
         updateModel.setName("Updated Business");
         updateModel.setCompanySize(CompanySize.LARGE);
-        updateModel.setStreet("Updated St");
-        updateModel.setCity("Updated City");
-        updateModel.setState("Updated State");
-        updateModel.setZipCode("11111");
-        updateModel.setCountry("Updated Country");
+        updateModel.getAddress().setStreet("Updated St");
+        updateModel.getAddress().setCity("Updated City");
+        updateModel.getAddress().setState("Updated State");
+        updateModel.getAddress().setZipCode("11111");
+        updateModel.getAddress().setCountry("Updated Country");
 
-        mockMvc.perform(put("/api/v1/businesses/{id}", savedBusiness.getId())
+        mockMvc.perform(put("/api/v1/businesses/{businessId}", savedBusiness.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateModel)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(savedBusiness.getId().toString())))
+                .andExpect(jsonPath("$.businessId", is(savedBusiness.getBusinessId())))
                 .andExpect(jsonPath("$.name", is("Updated Business")))
                 .andExpect(jsonPath("$.companySize", is("LARGE")))
                 .andExpect(jsonPath("$.address.street", is("Updated St")))
@@ -115,7 +112,7 @@ class BusinessControllerIntegrationTest {
     @Test
     void deleteBusinessById_ShouldDeleteAndReturnBusiness() throws Exception {
         Business savedBusiness = createAndSaveBusiness("Business to Delete");
-        UUID businessId = savedBusiness.getId();
+        String businessId = savedBusiness.getBusinessId().getBusinessId();
 
         mockMvc.perform(delete("/api/v1/businesses/{id}", businessId))
                 .andExpect(status().isOk())
@@ -123,7 +120,7 @@ class BusinessControllerIntegrationTest {
                 .andExpect(jsonPath("$.name", is("Business to Delete")));
 
         assertEquals(0, businessRepository.count());
-        assertFalse(businessRepository.findById(businessId).isPresent());
+        assertNull(businessRepository.findByBusinessId_BusinessId(businessId));
     }
 
     private Business createAndSaveBusiness(String name) {

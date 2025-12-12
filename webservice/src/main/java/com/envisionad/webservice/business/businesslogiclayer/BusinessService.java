@@ -1,19 +1,25 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
-import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface BusinessService {
 
-    Business createBusiness(Business business);
+    BusinessResponseModel createBusiness(BusinessRequestModel business);
 
-    List<Business> getAllBusinesses();
+    List<BusinessResponseModel> getAllBusinesses();
 
-    Business getBusinessById(UUID id);
+    BusinessResponseModel getBusinessById(String id);
 
-    Business updateBusinessById(UUID id, Business business);
+    BusinessResponseModel updateBusinessById(String id, BusinessRequestModel business);
 
-    Business deleteBusinessById(UUID id);
+    BusinessResponseModel deleteBusinessById(String id);
+
+    BusinessResponseModel addBusinessEmployeeById(String businessId, String EmployeeId);
+
+    BusinessResponseModel removeBusinessEmployeeById(String id, String EmployeeId);
+
+    BusinessResponseModel getBusinessByEmployeeId(String employeeId);
 }
