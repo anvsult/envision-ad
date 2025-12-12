@@ -82,7 +82,7 @@ export const updateBusiness = async (
 
 export const getEmployeeBusiness = async (id: string): Promise<BusinessResponse> => {
     const token = await getAccessToken();
-    const res = await fetch(`${API_BASE_URL}/employee/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/employee/${encodeURI(id)}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export const getEmployeeBusiness = async (id: string): Promise<BusinessResponse>
 
 export const removeEmployeeFromBusiness = async (businessId : string, employeeId : string) : Promise<void> => {
     const token = await getAccessToken();
-    const res = await fetch(`${API_BASE_URL}/${businessId}/employees/${employeeId}`, {
+    const res = await fetch(`${API_BASE_URL}/${businessId}/employees/${encodeURI(employeeId)}`, {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",

@@ -64,8 +64,8 @@ export function BusinessEmployees() {
             setBusinessId(business.businessId);
             const employeeData: UserType[] = await Promise.all(
                 business.employees.map(async (employeeId) => {
-                    const res = await fetch(`/api/auth0/get-user/${employeeId}`);
-                    return res.json() as Promise<UserType>;
+                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employeeId)}`);
+                    return await res.json() as Promise<UserType>;
                 })
             );
             setEmployees(employeeData);
