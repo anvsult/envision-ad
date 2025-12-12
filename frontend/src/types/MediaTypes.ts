@@ -44,7 +44,7 @@ export function getJoinedAddress(items: string[]){
 export interface MediaRequest {
     title: string;
     mediaOwnerName: string;
-    mediaLocation: MediaLocationModel | null;
+    mediaLocation: MediaLocationDTO | null;
     typeOfDisplay: string; 
     loopDuration: number;
     resolution: string;
@@ -61,7 +61,7 @@ export interface MediaResponse {
     id: string;
     title: string;
     mediaOwnerName: string;
-    mediaLocation: MediaLocationModel | null;
+    mediaLocation: MediaLocationDTO | null;
     typeOfDisplay: string;
     loopDuration: number;
     resolution: string;
@@ -75,17 +75,6 @@ export interface MediaResponse {
     imageUrl: string;
 }
 
-export interface MediaLocationModel {
-    name: string;
-    description: string;
-    country: string;
-    province: string;
-    city: string;
-    street: string;
-    postalCode: string;
-    latitude: number;
-    longitude: number;
-}
 
 export interface WeeklyScheduleEntry {
     dayOfWeek: string;

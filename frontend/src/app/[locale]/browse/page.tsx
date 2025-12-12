@@ -1,6 +1,6 @@
 'use client'
 
-import { ActionIcon, Container, Group, Pagination, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
@@ -11,8 +11,8 @@ import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-import { getUserGeoLocation} from '@/components/Location';
-import L from 'leaflet';
+import { GetUserGeoLocation} from '@/components/Location';
+import { LatLng } from 'leaflet';
 
 
 
@@ -32,18 +32,21 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
-  const [userLocation, setUserLocation] = useState<L.LatLng | null>(null);
-  const [userLocationError, setUserLocationError] = useState<string>('');
+  const [userLocation, setUserLocation] = useState<LatLng | null>(null);
+  const [message, setMessage] = useState<string>('nomedia.loading');
+  const [loading, setLoading] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<string>("nearest");
 
+
   useEffect(() => {
-    getUserGeoLocation(setUserLocation, setUserLocationError);
+    GetUserGeoLocation(setUserLocation, setMessage);
   }, [])
 
   useEffect(() => {
     if (sortBy == "nearest" && !userLocation){
       return
     } 
+    
     getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation)
       .then((data) => {
         const items = (data || []).filter((m) => m.id != null);
@@ -67,13 +70,14 @@ function BrowsePage() {
         setMedia(mapped);
         setActivePage(1);
         
-        
-        
       })
-      .catch((err) => {
-        console.error("Failed to load media:", err);
+      .catch(() => {
+        setMessage('failedToLoad');
+        setLoading(false);
+      }).finally(() => {
+        setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t]);
 
 
   const paginatedMedia = useMemo(() => {
@@ -98,10 +102,6 @@ function BrowsePage() {
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
-          {userLocationError ? (<Text>{userLocationError}</Text>): 
-          (<>
-          {userLocation ?  (<><Text>Latitude {userLocation.lat}</Text><Text>Longitude {userLocation.lng}</Text></>) : (<Text>Getting location...</Text>)}
-          </>)}
           
           <TextInput
             placeholder="Search title"
@@ -121,17 +121,18 @@ function BrowsePage() {
 
 
           <BrowseActions filters={filters()} setSortBy={setSortBy}/>
-
-          {paginatedMedia.length > 0 ? (<MediaCardGrid medias={paginatedMedia} />):
-            ( 
+          
+            {/* if loading, show loader, if  */}
+          {(paginatedMedia.length > 0) ? (<MediaCardGrid medias={paginatedMedia} />):( 
               <Stack h='20em' justify='center' align='center'>
-                <Text size='32px'>{t('nomedia.notfound')}</Text>
-                <Text>{t('nomedia.changefilters')}</Text>
+                {(loading) ? ( (sortBy == 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
+                  <>
+                    <Text size='32px'>{t('nomedia.notfound')}</Text>
+                    <Text>{t('nomedia.changefilters')}</Text>
+                  </>
+                }
               </Stack>
-            )
-
-          }
-
+          )}
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination

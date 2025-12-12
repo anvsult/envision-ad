@@ -1,9 +1,9 @@
+
 import { getJoinedAddress, MediaLocationDTO } from '@/types/MediaTypes';
-import * as L from 'leaflet'; 
-import 'leaflet-geosearch/assets/css/leaflet.css';
+import { LatLng } from 'leaflet'; 
 
 export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
-
+  
   const address = getJoinedAddress([mediaLocation.street, mediaLocation.city, mediaLocation.province, mediaLocation.country]);
   const url = `${location.protocol}//nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
     address
@@ -17,30 +17,30 @@ export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
 
   const data = await response.json();
 
-  const latlng = await new L.LatLng(data.latitude, data.longitude);
+  const latlng = await new LatLng(data.latitude, data.longitude);
   console.log(latlng);
   return latlng;
   
 }
 
 
-export function getUserGeoLocation(
-  setUserLocation: React.Dispatch<React.SetStateAction<L.LatLng | null>>,
+export function GetUserGeoLocation(
+  setUserLocation: React.Dispatch<React.SetStateAction<LatLng | null>>,
   setError: React.Dispatch<React.SetStateAction<string>>
 ) {
     setUserLocation(null);
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          const newMapCoords:L.LatLng = new L.LatLng(position.coords.latitude, position.coords.longitude);
+          const newMapCoords:LatLng = new LatLng(position.coords.latitude, position.coords.longitude);
           setUserLocation(newMapCoords);
         },
-        (err) => {
-          setError(err.message);
+        () => {
+          setError('nomedia.noUserLocation');
         },
       );
     } else {
-      setError("Geolocation is not supported by your browser.");
+      setError('nomedia.noSupport');
     }
 }
 
