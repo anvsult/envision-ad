@@ -28,6 +28,7 @@ import {
   IconCurrencyDollar,
 } from "@tabler/icons-react";
 import { Link, usePathname } from "@/lib/i18n/navigation";
+import { WeeklyScheduleEntry } from "@/types/MediaTypes";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -93,7 +94,7 @@ export default function MediaOwnerPage() {
       };
 
       if (schedule.weeklySchedule) {
-        schedule.weeklySchedule.forEach((entry: any) => {
+        schedule.weeklySchedule.forEach((entry: WeeklyScheduleEntry) => {
           // entry.dayOfWeek is likely "monday". We need "Monday"
           const dayKey =
             entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
@@ -143,7 +144,7 @@ export default function MediaOwnerPage() {
           backend.dailyImpressions != null
             ? String(backend.dailyImpressions)
             : "",
-        mediaLocationId: backend.mediaLocation.id ?? null,
+        mediaLocationId: backend.mediaLocation.id ?? "",
         activeDaysOfWeek,
         dailyOperatingHours,
         activeMonths,

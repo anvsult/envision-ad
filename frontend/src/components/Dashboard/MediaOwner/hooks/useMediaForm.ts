@@ -3,6 +3,7 @@ import { useState } from "react";
 export interface MediaFormState {
   mediaTitle: string;
   mediaOwnerName: string;
+  mediaLocationId: string;
   resolution: string;
   displayType: string;
   loopDuration: string;
@@ -11,7 +12,6 @@ export interface MediaFormState {
   heightCm: string;
   weeklyPrice: string;
   dailyImpressions: string;
-  mediaLocationId: string | null;
   activeDaysOfWeek: Record<string, boolean>;
   dailyOperatingHours: Record<string, { start: string; end: string }>;
   activeMonths: Record<string, boolean>;
@@ -20,6 +20,7 @@ export interface MediaFormState {
 const getInitialFormState = (): MediaFormState => ({
   mediaTitle: "",
   mediaOwnerName: "",
+  mediaLocationId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380012",
   resolution: "",
   displayType: "DIGITAL",
   loopDuration: "",
@@ -28,7 +29,6 @@ const getInitialFormState = (): MediaFormState => ({
   heightCm: "",
   weeklyPrice: "",
   dailyImpressions: "",
-  mediaLocationId: "",
   activeDaysOfWeek: {
     Monday: true,
     Tuesday: true,

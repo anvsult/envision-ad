@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/services/MediaService";
 import type { MediaRowData } from "../MediaTable/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
-import { MediaDTO } from "@/types/MediaTypes";
+import { MediaRequest } from "@/types/MediaTypes";
 
 export function useMediaList() {
   const [media, setMedia] = useState<MediaRowData[]>([]);
@@ -56,36 +56,24 @@ export function useMediaList() {
 
     const schedule = buildScheduleFromForm(formState);
 
-    const payload: MediaDTO = {
+    const payload: MediaRequest = {
       title: formState.mediaTitle,
       mediaOwnerName: formState.mediaOwnerName,
-      mediaLocation:{
-        id: null,
-        name: "",
-        description: "",
-        country: "",
-        province: "",
-        street: "",
-        city: "",
-        postalCode: "",
-        latitude: null,
-        longitude: null
-      },
+      mediaLocationId: formState.mediaLocationId,
+      typeOfDisplay: formState.displayType,
+      loopDuration: Number(formState.loopDuration),
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
-      loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,
-      width: formState.widthCm ? Number(formState.widthCm) : null,
-      height: formState.heightCm ? Number(formState.heightCm) : null,
-      price: formState.weeklyPrice ? Number(formState.weeklyPrice) : null,
-      dailyImpressions: formState.dailyImpressions ? Number(formState.dailyImpressions) : null,
+      width: Number(formState.widthCm),
+      height: Number(formState.heightCm),
+      price: Number(formState.weeklyPrice),
+      dailyImpressions: Number(formState.dailyImpressions),
       schedule: schedule,
-      status: null,
-      typeOfDisplay: formState.displayType,
-      
+      status: 'PENDING'
     };
 
     try {
-      const created = await addMedia(payload as any);
+      const created = await addMedia(payload as MediaRequest);
       if (!created || created.id == null) {
         throw new Error('Created media did not return an id');
       }
@@ -110,23 +98,24 @@ export function useMediaList() {
   const editMedia = async (id: string | number, formState: MediaFormState) => {
     const schedule = buildScheduleFromForm(formState);
 
-    const payload = {
+    const payload:MediaRequest = {
       title: formState.mediaTitle,
       mediaOwnerName: formState.mediaOwnerName,
+      mediaLocationId: formState.mediaLocationId,
       resolution: formState.resolution,
       aspectRatio: formState.aspectRatio,
-      loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,
-      width: formState.widthCm ? Number(formState.widthCm) : null,
-      height: formState.heightCm ? Number(formState.heightCm) : null,
-      price: formState.weeklyPrice ? Number(formState.weeklyPrice) : null,
-      dailyImpressions: formState.dailyImpressions ? Number(formState.dailyImpressions) : null,
+      loopDuration: Number(formState.loopDuration),
+      width: Number(formState.widthCm),
+      height: Number(formState.heightCm),
+      price: Number(formState.weeklyPrice),
+      dailyImpressions: Number(formState.dailyImpressions),
       schedule: schedule,
-      status: null,
+      status: 'PENDING',
       typeOfDisplay: formState.displayType,
     };
 
     try {
-      const updated = await updateMedia(String(id), payload as any);
+      const updated = await updateMedia(String(id), payload as MediaRequest);
       setMedia((prev) =>
         prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${updated.price}` : r.price } : r))
       );

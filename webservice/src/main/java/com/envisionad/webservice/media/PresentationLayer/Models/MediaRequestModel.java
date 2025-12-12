@@ -14,7 +14,7 @@ import java.util.UUID;
 public class MediaRequestModel {
     private String title;
     private String mediaOwnerName;
-    private UUID mediaLocationId;
+    private String mediaLocationId;
     private TypeOfDisplay typeOfDisplay;
     private Integer loopDuration;
     private String resolution;

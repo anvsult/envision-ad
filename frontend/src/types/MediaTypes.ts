@@ -44,7 +44,7 @@ export function getJoinedAddress(items: string[]){
 export interface MediaRequest {
     title: string;
     mediaOwnerName: string;
-    mediaLocation: MediaLocationDTO | null;
+    mediaLocationId: string | null;
     typeOfDisplay: string; 
     loopDuration: number;
     resolution: string;

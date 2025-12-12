@@ -61,7 +61,7 @@ export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
 // Get the user's latitude and longitude
 export function GetUserGeoLocation(
   setUserLocation: React.Dispatch<React.SetStateAction<LatLngLiteral | null>>,
-  setError: React.Dispatch<React.SetStateAction<string>>
+  setError: React.Dispatch<React.SetStateAction<string | undefined>>
 ) {
 
   setUserLocation(null);

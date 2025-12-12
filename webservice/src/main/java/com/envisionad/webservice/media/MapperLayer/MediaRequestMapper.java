@@ -5,6 +5,8 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 public class MediaRequestMapper {
 
@@ -33,7 +35,7 @@ public class MediaRequestMapper {
 
         if (request.getMediaLocationId() != null) {
             media.setMediaLocation(
-                mediaLocationRepo.findById(request.getMediaLocationId())
+                mediaLocationRepo.findById(UUID.fromString(request.getMediaLocationId()))
                     .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId"))
             );
         }

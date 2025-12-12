@@ -1,4 +1,4 @@
-import { MediaDTO } from "@/types/MediaTypes";
+import { MediaDTO, MediaRequest } from "@/types/MediaTypes";
 import { LatLngLiteral } from "leaflet";
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
@@ -76,7 +76,7 @@ export async function getAllFilteredActiveMedia(
     return response.json();
 }
 
-export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
+export async function addMedia(media: Omit<MediaRequest, 'id'>): Promise<MediaDTO> {
     const response = await fetch(`${API_BASE_URL}/media`, {
         method: 'POST',
         headers: {
@@ -107,7 +107,7 @@ export async function getMediaById(id: string): Promise<MediaDTO> {
     return response.json();
 }
 
-export async function updateMedia(id: string, media: Partial<MediaDTO>): Promise<MediaDTO> {
+export async function updateMedia(id: string, media: Partial<MediaRequest>): Promise<MediaDTO> {
     const response = await fetch(`${API_BASE_URL}/media/${id}`, {
         method: 'PUT',
         headers: {
