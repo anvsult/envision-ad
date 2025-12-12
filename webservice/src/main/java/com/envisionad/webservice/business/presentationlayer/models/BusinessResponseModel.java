@@ -5,26 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
 public class BusinessResponseModel {
-
-    private UUID id;
+    private String businessId;
     private String name;
+    private String owner;
     private CompanySize companySize;
     private AddressResponseModel address;
+    private RoleResponseModel roles;
+    private Set<String> employees;
     private LocalDateTime dateCreated;
-
-    @Data
-    @NoArgsConstructor
-    public static class AddressResponseModel {
-        private UUID id;
-        private String street;
-        private String city;
-        private String state;
-        private String zipCode;
-        private String country;
-    }
 }

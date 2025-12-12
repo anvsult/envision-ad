@@ -1,86 +1,73 @@
-import React from "react";
-import { Table, ScrollArea, ActionIcon, Group, Tooltip } from "@mantine/core";
-import { IconEdit, IconTrash } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { BusinessResponse } from "@/types/BusinessTypes";
+import {Button, Card, Group, Stack, Text, Title} from "@mantine/core";
+import {useTranslations} from "next-intl";
+import {BusinessResponse} from "@/types/BusinessTypes";
+import {IconEdit} from "@tabler/icons-react";
+import {useUser} from "@auth0/nextjs-auth0/client";
 
-interface BusinessTableProps {
-  rows: BusinessResponse[];
-  onEdit?: (id: string | number) => void;
-  onDelete?: (id: string | number) => void;
+interface BusinessDetailProps {
+    business: BusinessResponse;
+    onEdit?: (id: string | number) => void;
 }
 
-export function BusinessTable({ rows, onEdit, onDelete }: BusinessTableProps) {
-  const t = useTranslations("business");
+export function BusinessDetail({business, onEdit}: BusinessDetailProps) {
+    const t = useTranslations("business");
+    const {user, isLoading} = useUser();
 
-  return (
-    <ScrollArea>
-      <Table striped highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>{t("table.name")}</Table.Th>
-            <Table.Th>{t("table.companySize")}</Table.Th>
-            <Table.Th>{t("table.address")}</Table.Th>
-            <Table.Th>{t("table.dateCreated")}</Table.Th>
-            <Table.Th>{t("table.actions")}</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {rows.map((row) => (
-            <Table.Tr key={row.id}>
-              <Table.Td>{row.name}</Table.Td>
-              <Table.Td>
-                {/* 
-                   row.companySize might be "SMALL" string or enum. 
-                   We try to translate sizes.SMALL.
-                */}
-                {t(`sizes.${row.companySize}`)}
-              </Table.Td>
-              <Table.Td>
-                {row.address
-                  ? `${row.address.street}, ${row.address.city}, ${row.address.state}`
-                  : "-"}
-              </Table.Td>
-              <Table.Td>
-                {row.dateCreated
-                  ? new Date(row.dateCreated).toLocaleDateString()
-                  : "-"}
-              </Table.Td>
-              <Table.Td>
-                <Group gap="xs" wrap="nowrap">
-                  <Tooltip label="Edit business">
-                    <ActionIcon
-                      variant="light"
-                      color="blue"
-                      size="md"
-                      onClick={() => onEdit && onEdit(row.id)}
-                    >
-                      <IconEdit size={16} />
-                    </ActionIcon>
-                  </Tooltip>
-                  <Tooltip label="Delete business">
-                    <ActionIcon
-                      variant="light"
-                      color="red"
-                      size="md"
-                      onClick={() => onDelete && onDelete(row.id)}
-                    >
-                      <IconTrash size={16} />
-                    </ActionIcon>
-                  </Tooltip>
+    if (!business) return <Text>No business data found</Text>;
+
+    return (
+        <Card shadow="sm" padding="lg" radius="md" withBorder>
+            <Stack gap="sm">
+                <Group justify="space-between">
+                    <Title order={3}>{business.name}</Title>
+                    <Group gap="xs">
+                        {onEdit && user?.sub === business.owner && (
+                            <Button
+                                leftSection={<IconEdit size={16}/>}
+                                variant="light"
+                                color="blue"
+                                size="xs"
+                                onClick={() => onEdit(business.businessId)}
+                            >
+                                {t("table.edit")}
+                            </Button>
+                        )}
+                    </Group>
                 </Group>
-              </Table.Td>
-            </Table.Tr>
-          ))}
-          {rows.length === 0 && (
-            <Table.Tr>
-              <Table.Td colSpan={5} style={{ textAlign: "center" }}>
-                No businesses found
-              </Table.Td>
-            </Table.Tr>
-          )}
-        </Table.Tbody>
-      </Table>
-    </ScrollArea>
-  );
+
+                <Stack gap={4}>
+                    <Text>
+                        <strong>{t("table.companySize")}: </strong>
+                        {t(`sizes.${business.companySize}`)}
+                    </Text>
+                    <Text>
+                        <strong>{t("table.address")}: </strong>
+                        {business.address
+                            ? `${business.address.street}, ${business.address.city}, ${business.address.state}`
+                            : "-"}
+                    </Text>
+                    <Text>
+                        <strong>{t("table.dateCreated")}: </strong>
+                        {business.dateCreated
+                            ? new Date(business.dateCreated).toLocaleDateString()
+                            : "-"}
+                    </Text>
+                    <Text>
+                        <strong>{t("table.roles")}: </strong>
+                        {business.roles ? (
+                            <>
+                                {business.roles.mediaOwner && t("roles.mediaOwner")}
+                                {business.roles.mediaOwner && business.roles.advertiser && ", "}
+                                {business.roles.advertiser && t("roles.advertiser")}
+
+                                {!business.roles.mediaOwner && !business.roles.advertiser && "-"}
+                            </>
+                        ) : (
+                            "-"
+                        )}
+                    </Text>
+                </Stack>
+            </Stack>
+        </Card>
+    );
 }

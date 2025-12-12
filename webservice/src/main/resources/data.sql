@@ -1,14 +1,22 @@
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO address (street, city, state, zip_code, country)
+VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
+       ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
+       ('789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
+       ('404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
+       ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada') ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22', '500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
+VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
+        true, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
+NOW()) ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO address (id, street, city, state, zip_code, country)
-VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', '789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada')
-    ON CONFLICT (id) DO NOTHING;
+INSERT INTO business_employees (business_id, employee_id)
+VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
+       (1, 'auth0|693746439e8a7ab9e8b910b2') ON CONFLICT (business_id, employee_id) DO NOTHING;
 
 INSERT INTO address (id, street, city, state, zip_code, country)
 VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', '404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada')

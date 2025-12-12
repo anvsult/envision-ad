@@ -19,6 +19,20 @@
     "profile": "Profile",
     "logout": "Logout"
   },
+  "sideBar": {
+    "mediaOwnerTitle": "Media Owner",
+    "media-owner": {
+      "overview": "Overview",
+      "media": "Media",
+      "displayedAds": "Displayed ads",
+      "adRequests": "Ad requests"
+    },
+    "businessTitle" : "Business",
+    "business": {
+      "overview": "Overview",
+      "employees": "Employees"
+    }
+  },
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",
@@ -162,22 +176,21 @@
   "business": {
     "title": "Business",
     "createButton": "Create Business",
+    "roles": {
+      "mediaOwner": "Media Owner",
+      "advertiser": "Advertiser"
+    },
     "table": {
       "name": "Name",
       "companySize": "Size",
       "address": "Address",
       "dateCreated": "Date Created",
-      "actions": "Actions"
+      "roles": "Roles",
+      "actions": "Actions",
+      "edit": "Edit"
     },
     "errors": {
-      "loadFailed": "Failed to load business for editing",
-      "deleteFailed": "Failed to delete business"
-    },
-    "deleteConfirm": {
-      "title": "Delete Business",
-      "message": "Are you sure you want to delete this business? This action cannot be undone.",
-      "confirm": "Delete",
-      "cancel": "Cancel"
+      "loadFailed": "Failed to load business for editing"
     },
     "form": {
       "title": "Business Details",
@@ -196,6 +209,7 @@
       "zipPlaceholder": "10001",
       "countryLabel": "Country",
       "countryPlaceholder": "USA",
+      "roleLabel": "Business Roles",
       "submit": "Create Business",
       "cancel": "Cancel"
     },
@@ -204,16 +218,25 @@
       "MEDIUM": "Medium (51-150)",
       "LARGE": "Large (151-500)",
       "ENTERPRISE": "Enterprise (500+)"
+    },
+    "employees": {
+      "title": "Employees",
+      "pending": "Pending Invitations",
+      "active": "Active Employees",
+      "addButton": "Invite Employee",
+      "name": "Name",
+      "email": "Email",
+      "actions": "Actions",
+      "form": {
+        "title": "Add Employee",
+        "submit": "Invite Employee",
+        "cancel": "Cancel",
+        "email": "Email",
+        "placeholder": "email@email.com"
+      }
     }
   },
   "media": {
-    "sidebar": {
-      "overview": "Overview",
-      "media": "Media",
-      "displayedAds": "Displayed ads",
-      "adRequests": "Ad requests",
-      "transactions": "Transactions"
-    },
     "errors": {
       "loadFailed": "Failed to load media for editing",
       "deleteFailed": "Failed to delete media"

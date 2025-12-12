@@ -19,6 +19,20 @@
     "profile": "Profil",
     "logout": "Se déconnecter"
   },
+  "sideBar": {
+    "mediaOwnerTitle": "Propriétaire de médias",
+    "media-owner": {
+      "overview": "Aperçu",
+      "media": "Médias",
+      "displayedAds": "Annonces affichées",
+      "adRequests": "Demandes d'annonce"
+    },
+    "businessTitle" : "Entreprise",
+    "business": {
+      "overview": "Aperçu",
+      "employees": "Employés"
+    }
+  },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -163,22 +177,21 @@
   "business": {
     "title": "Entreprise",
     "createButton": "Créer une entreprise",
+    "roles": {
+      "mediaOwner": "Propriétaire de médias",
+      "advertiser": "Annonceur"
+    },
     "table": {
       "name": "Nom",
       "companySize": "Taille",
       "address": "Adresse",
       "dateCreated": "Date de création",
-      "actions": "Actions"
+      "roles": "rôles",
+      "actions": "Actions",
+      "edit": "Modifier"
     },
     "errors": {
-      "loadFailed": "Échec du chargement de l'entreprise pour modification",
-      "deleteFailed": "Échec de la suppression de l'entreprise"
-    },
-    "deleteConfirm": {
-      "title": "Supprimer l'entreprise",
-      "message": "Êtes-vous sûr de vouloir supprimer cette entreprise? Cette action ne peut pas être annulée.",
-      "confirm": "Supprimer",
-      "cancel": "Annuler"
+      "loadFailed": "Échec du chargement de l'entreprise pour modification"
     },
     "form": {
       "title": "Détails de l'entreprise",
@@ -197,6 +210,7 @@
       "zipPlaceholder": "H1A 1A1",
       "countryLabel": "Pays",
       "countryPlaceholder": "Canada",
+      "roleLabel": "Rôles de l'entreprise",
       "submit": "Créer l'entreprise",
       "cancel": "Annuler"
     },
@@ -205,16 +219,25 @@
       "MEDIUM": "Moyenne (51-150)",
       "LARGE": "Grande (151-500)",
       "ENTERPRISE": "Entreprise (500+)"
+    },
+    "employees": {
+      "title": "Employés",
+      "pending": "Invitations en attente",
+      "active": "Employés actifs",
+      "addButton": "Inviter un employé",
+      "name": "Nom",
+      "email": "Courriel",
+      "actions": "Actions",
+      "form": {
+        "title": "Ajouter un employé",
+        "submit": "Inviter un employé",
+        "cancel": "Annuler",
+        "email": "Courriel",
+        "placeholder": "email@email.com"
+      }
     }
   },
   "media": {
-    "sidebar": {
-      "overview": "Aperçu",
-      "media": "Médias",
-      "displayedAds": "Annonces affichées",
-      "adRequests": "Demandes d'annonces",
-      "transactions": "Transactions"
-    },
     "errors": {
       "loadFailed": "Échec du chargement du média pour modification",
       "deleteFailed": "Échec de la suppression du média"

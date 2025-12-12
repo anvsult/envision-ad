@@ -1,9 +1,9 @@
 "use client";
 
 import React from "react";
-import { TextInput, Select } from "@mantine/core";
-import { useTranslations } from "next-intl";
-import { BusinessRequest, CompanySize } from "@/types/BusinessTypes";
+import {Checkbox, Select, TextInput} from "@mantine/core";
+import {useTranslations} from "next-intl";
+import {BusinessRequest, CompanySize} from "@/types/BusinessTypes";
 
 interface BusinessDetailsFormProps {
     formState: BusinessRequest;
@@ -14,9 +14,9 @@ interface BusinessDetailsFormProps {
 }
 
 export function BusinessDetailsForm({
-    formState,
-    onFieldChange,
-}: BusinessDetailsFormProps) {
+                                        formState,
+                                        onFieldChange,
+                                    }: BusinessDetailsFormProps) {
     const t = useTranslations("business");
 
     const companySizeOptions = Object.values(CompanySize).map((size) => ({
@@ -26,7 +26,6 @@ export function BusinessDetailsForm({
 
     return (
         <>
-            <h3>{t("form.title")}</h3>
             <TextInput
                 label={t("form.nameLabel")}
                 placeholder={t("form.namePlaceholder")}
@@ -34,7 +33,6 @@ export function BusinessDetailsForm({
                 onChange={(e) => onFieldChange("name", e.currentTarget.value)}
                 required
             />
-            <div style={{ height: 12 }} />
 
             <Select
                 label={t("form.sizeLabel")}
@@ -47,53 +45,64 @@ export function BusinessDetailsForm({
                 required
             />
 
-            <div style={{ height: 12 }} />
             <h4>{t("form.addressLabel")}</h4>
             <TextInput
                 label={t("form.streetLabel")}
                 placeholder={t("form.streetPlaceholder")}
-                value={formState.street}
-                onChange={(e) => onFieldChange("street", e.currentTarget.value)}
+                value={formState.address.street}
+                onChange={(e) => onFieldChange("address", {...formState.address, street: e.currentTarget.value,})}
                 required
             />
-            <div style={{ height: 12 }} />
 
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{display: "flex", gap: 12}}>
                 <TextInput
                     label={t("form.cityLabel")}
                     placeholder={t("form.cityPlaceholder")}
-                    value={formState.city}
-                    onChange={(e) => onFieldChange("city", e.currentTarget.value)}
+                    value={formState.address.city}
+                    onChange={(e) => onFieldChange("address", {...formState.address, city: e.currentTarget.value,})}
                     required
-                    style={{ flex: 1 }}
+                    style={{flex: 1}}
                 />
                 <TextInput
                     label={t("form.stateLabel")}
                     placeholder={t("form.statePlaceholder")}
-                    value={formState.state}
-                    onChange={(e) => onFieldChange("state", e.currentTarget.value)}
+                    value={formState.address.state}
+                    onChange={(e) => onFieldChange("address", {...formState.address, state: e.currentTarget.value,})}
                     required
-                    style={{ flex: 1 }}
+                    style={{flex: 1}}
                 />
             </div>
-            <div style={{ height: 12 }} />
 
-            <div style={{ display: "flex", gap: 12 }}>
+            <div style={{display: "flex", gap: 12}}>
                 <TextInput
                     label={t("form.zipLabel")}
                     placeholder={t("form.zipPlaceholder")}
-                    value={formState.zipCode}
-                    onChange={(e) => onFieldChange("zipCode", e.currentTarget.value)}
+                    value={formState.address.zipCode}
+                    onChange={(e) => onFieldChange("address", {...formState.address, zipCode: e.currentTarget.value,})}
                     required
-                    style={{ flex: 1 }}
+                    style={{flex: 1}}
                 />
                 <TextInput
                     label={t("form.countryLabel")}
                     placeholder={t("form.countryPlaceholder")}
-                    value={formState.country}
-                    onChange={(e) => onFieldChange("country", e.currentTarget.value)}
+                    value={formState.address.country}
+                    onChange={(e) => onFieldChange("address", {...formState.address, country: e.currentTarget.value,})}
                     required
-                    style={{ flex: 1 }}
+                    style={{flex: 1}}
+                />
+            </div>
+
+            <h4>{t("form.roleLabel")}</h4>
+            <div style={{display: "flex", flexDirection: "column", gap: 12}}>
+                <Checkbox
+                    label={t("roles.advertiser")}
+                    checked={formState.roles.advertiser}
+                    onChange={(e) => onFieldChange("roles", {...formState.roles, advertiser: e.currentTarget.checked,})}
+                />
+                <Checkbox
+                    label={t("roles.mediaOwner")}
+                    checked={formState.roles.mediaOwner}
+                    onChange={(e) => onFieldChange("roles", {...formState.roles, mediaOwner: e.currentTarget.checked,})}
                 />
             </div>
         </>

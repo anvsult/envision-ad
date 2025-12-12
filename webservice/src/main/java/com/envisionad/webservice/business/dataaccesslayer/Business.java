@@ -1,29 +1,28 @@
 package com.envisionad.webservice.business.dataaccesslayer;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class Business {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
-    @Column(name = "name")
+    private BusinessIdentifier businessId;
+
     private String name;
 
+    private String ownerId;
+
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private CompanySize companySize;
 
     // TODO - Remove Address Class from business subdomain, and convert it into just a String.
@@ -33,7 +32,18 @@ public class Business {
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;
 
+    @Embedded
+    private Roles roles;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "business_employees",
+            joinColumns = @JoinColumn(name = "business_id")
+    )
+    @Column(name = "employee_id")
+    private Set<String> employeeIds = new HashSet<>();
+
     @CreationTimestamp
-    @Column(nullable = false, updatable = false) // updatable=false ensures it never changes after creation
+    @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreated;
 }

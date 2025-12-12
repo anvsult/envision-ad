@@ -8,46 +8,48 @@ export function useMediaList() {
   const [media, setMedia] = useState<MediaRowData[]>([]);
   
 
-  useEffect(() => {
-    getAllMedia()
-      .then((data) => {
-        const items = (data || []).filter((m) => m.id != null);
-        const mapped = items.map((m) => ({
-          id: String(m.id),
-          name: m.title,
-          image: m.imageUrl ?? null,
-          adsDisplayed: 0,
-          pending: 0,
-          status: m.status ?? "Pending",
-          timeUntil: "-",
-          price: m.price ? `$${m.price}` : "$0",
+    useEffect(() => {
+        getAllMedia()
+            .then((data) => {
+                const items = (data || []).filter((m) => m.id != null);
+                const mapped = items.map((m) => ({
+                    id: String(m.id),
+                    name: m.title,
+                    image: m.imageUrl ?? null,
+                    adsDisplayed: 0,
+                    pending: 0,
+                    status: m.status ?? "Pending",
+                    timeUntil: "-",
+                    price: m.price ? `$${m.price}` : "$0",
+                }));
+                setMedia(mapped);
+            })
+            .catch((err) => {
+                console.error("Failed to load media:", err);
+            });
+    }, []);
+
+    const buildScheduleFromForm = (formState: MediaFormState) => {
+        const selectedMonths = Object.keys(formState.activeMonths).filter(
+            (m) => !!formState.activeMonths[m]
+        );
+
+        const weeklySchedule = [
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+        ].map(day => ({
+            dayOfWeek: day.toLowerCase(),
+            isActive: !!formState.activeDaysOfWeek[day],
+            startTime: formState.dailyOperatingHours[day]?.start ?? null,
+            endTime: formState.dailyOperatingHours[day]?.end ?? null
         }));
-        setMedia(mapped);
-      })
-      .catch((err) => {
-        console.error("Failed to load media:", err);
-      });
-  }, []);
 
-  const buildScheduleFromForm = (formState: MediaFormState) => {
-    const selectedMonths = Object.keys(formState.activeMonths).filter(
-      (m) => !!formState.activeMonths[m]
-    );
-
-    const weeklySchedule = [
-      "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-    ].map(day => ({
-      dayOfWeek: day.toLowerCase(),
-      isActive: !!formState.activeDaysOfWeek[day],
-      startTime: formState.dailyOperatingHours[day]?.start ?? null,
-      endTime: formState.dailyOperatingHours[day]?.end ?? null
-    }));
-
-    return {
-      selectedMonths,
-      weeklySchedule,
+        return {
+            selectedMonths,
+            weeklySchedule,
+        };
     };
-  };
+
+    
 
   const addNewMedia = async (formState: MediaFormState) => {
     if (!formState.mediaTitle) {

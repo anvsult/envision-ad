@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 
 export interface MediaFormState {
   mediaTitle: string;
@@ -69,37 +69,37 @@ const getInitialFormState = (): MediaFormState => ({
 });
 
 export function useMediaForm() {
-  const [formState, setFormState] = useState<MediaFormState>(getInitialFormState());
+    const [formState, setFormState] = useState<MediaFormState>(getInitialFormState());
 
-  const updateField = <K extends keyof MediaFormState>(
-    field: K,
-    value: MediaFormState[K]
-  ) => {
-    setFormState((prev) => ({ ...prev, [field]: value }));
-  };
+    const updateField = <K extends keyof MediaFormState>(
+        field: K,
+        value: MediaFormState[K]
+    ) => {
+        setFormState((prev) => ({...prev, [field]: value}));
+    };
 
-  const updateDayTime = (day: string, part: "start" | "end", value: string) => {
-    setFormState((prev) => ({
-      ...prev,
-      dailyOperatingHours: {
-        ...prev.dailyOperatingHours,
-        [day]: {
-          ...prev.dailyOperatingHours[day],
-          [part]: value,
-        },
-      },
-    }));
-  };
+    const updateDayTime = (day: string, part: "start" | "end", value: string) => {
+        setFormState((prev) => ({
+            ...prev,
+            dailyOperatingHours: {
+                ...prev.dailyOperatingHours,
+                [day]: {
+                    ...prev.dailyOperatingHours[day],
+                    [part]: value,
+                },
+            },
+        }));
+    };
 
-  const resetForm = () => {
-    setFormState(getInitialFormState());
-  };
+    const resetForm = () => {
+        setFormState(getInitialFormState());
+    };
 
-  return {
-    formState,
-    updateField,
-    updateDayTime,
-    resetForm,
-    setFormState,
-  };
+    return {
+        formState,
+        updateField,
+        updateDayTime,
+        resetForm,
+        setFormState,
+    };
 }
