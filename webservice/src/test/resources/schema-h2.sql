@@ -1,17 +1,12 @@
-CREATE
-EXTENSION IF NOT EXISTS "pgcrypto";
-
--- 1. Clean up old tables (Order matters: drop tables with FKs first)
 DROP TABLE IF EXISTS business_employees CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS media;
+DROP TABLE IF EXISTS address CASCADE;
+DROP TABLE IF EXISTS media CASCADE;
 
--- 2. Create Address Table (Must be first because Business links to it)
 CREATE TABLE address
 (
-    id       SERIAL PRIMARY KEY,
+    id       INT AUTO_INCREMENT PRIMARY KEY,
     street   VARCHAR(255) NOT NULL,
     city     VARCHAR(255) NOT NULL,
     state    VARCHAR(255) NOT NULL,
@@ -19,15 +14,14 @@ CREATE TABLE address
     country  VARCHAR(255) NOT NULL
 );
 
--- 3. Create Business Table
 CREATE TABLE business
 (
-    id           SERIAL PRIMARY KEY,
-    business_id  varchar(36) UNIQUE NOT NULL,
+    id           INT AUTO_INCREMENT PRIMARY KEY,
+    business_id  VARCHAR(36) UNIQUE NOT NULL,
     name         VARCHAR(255)       NOT NULL,
     company_size VARCHAR(50)        NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    address_id   SERIAL,
+    address_id   INT,
     owner_id     VARCHAR(36),
     media_owner  BOOLEAN,
     advertiser   BOOLEAN,
@@ -40,14 +34,13 @@ CREATE TABLE business
 
 CREATE TABLE business_employees
 (
-    business_id SERIAL             NOT NULL,
-    employee_id VARCHAR(36) UNIQUE NOT NULL,
+    business_id INT         NOT NULL,
+    employee_id VARCHAR(36) NOT NULL,
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
     PRIMARY KEY (business_id, employee_id)
 );
 
--- 4. Create Media Table (Your new table)
 CREATE TABLE media
 (
     media_id           VARCHAR(36) PRIMARY KEY,
@@ -62,9 +55,9 @@ CREATE TABLE media
     height             DOUBLE PRECISION,
     price              DECIMAL(10, 2),
     daily_impressions  INTEGER,
-    schedule           JSONB,
+    schedule           CLOB,
     status             VARCHAR(50),
     image_file_name    VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data         byte
+    image_data         BLOB
 );

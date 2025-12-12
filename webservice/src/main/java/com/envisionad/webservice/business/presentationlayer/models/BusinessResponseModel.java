@@ -1,13 +1,11 @@
 package com.envisionad.webservice.business.presentationlayer.models;
 
-import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

@@ -1,9 +1,6 @@
-package com.envisionad.webservice.util;
+package com.envisionad.webservice.utils;
 
-import com.envisionad.webservice.business.exceptions.BusinessEmployeeNotFoundException;
-import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
-import com.envisionad.webservice.business.exceptions.DuplicateBusinessEmployeeException;
-import com.envisionad.webservice.business.exceptions.DuplicateBusinessNameException;
+import com.envisionad.webservice.business.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -2,6 +2,7 @@ package com.envisionad.webservice.business.mappinglayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.Roles;
 import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
@@ -27,8 +28,8 @@ public class BusinessModelMapper {
         );
 
         Business business = new Business();
+        business.setBusinessId(new BusinessIdentifier());
         business.setName(requestModel.getName());
-        business.setOwnerId(requestModel.getOwner());
         business.setCompanySize(requestModel.getCompanySize());
         business.setAddress(address);
         business.setRoles(roles);

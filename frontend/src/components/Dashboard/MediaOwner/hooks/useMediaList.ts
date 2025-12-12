@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/services/MediaService";
 import type { MediaRowData } from "../MediaTable/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
+import {getAccessToken} from "@auth0/nextjs-auth0";
 
 export function useMediaList() {
   const [media, setMedia] = useState<MediaRowData[]>([]);
