@@ -57,12 +57,17 @@ public class MediaServiceImpl implements MediaService {
         // Sort by Nearest
         if ("nearest".equals(sortBy) && userLat != null && userLng != null) {
             filtered.sort(Comparator.comparingDouble(
-                    m -> distance(
-                            userLat,
-                            userLng,
-                            m.getMediaLocation().getLatitude(),
-                            m.getMediaLocation().getLongitude()
-                    )
+                    m -> {
+                        if (m.getMediaLocation() == null) {
+                            return Double.POSITIVE_INFINITY;
+                        }
+                        return distance(
+                                userLat,
+                                userLng,
+                                m.getMediaLocation().getLatitude(),
+                                m.getMediaLocation().getLongitude()
+                        );
+                    }
             ));
             return filtered;
         }

@@ -38,7 +38,7 @@ function BrowsePage() {
   useEffect(() => GetUserGeoLocation(setUserLocation, setMessage), []);
 
   useEffect(() => {
-    if (sortBy == "nearest" && !userLocation){
+    if (sortBy === "nearest" && !userLocation){
       return
     } 
     
