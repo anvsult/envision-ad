@@ -236,7 +236,8 @@
   "media": {
     "errors": {
       "loadFailed": "Échec du chargement du média pour modification",
-      "deleteFailed": "Échec de la suppression du média"
+      "deleteFailed": "Échec de la suppression du média",
+      "statusToggleFailed": "Échec de la modification du statut du média."
     },
     "deleteConfirm": {
       "title": "Supprimer le média",

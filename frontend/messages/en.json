@@ -235,7 +235,8 @@
   "media": {
     "errors": {
       "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media"
+      "deleteFailed": "Failed to delete media",
+      "statusToggleFailed": "Failed to change media status."
     },
     "deleteConfirm": {
       "title": "Delete Media",
