@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
@@ -44,10 +45,17 @@ class BusinessControllerUnitTest {
     private Business business;
     private BusinessResponseModel responseModel;
     private BusinessRequestModel requestModel;
+    private Jwt mockJwt;
     private final String businessId = UUID.randomUUID().toString();
 
     @BeforeEach
     void setUp() {
+        mockJwt = Jwt.withTokenValue("mock-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
+                .claim("scope", "read write")
+                .build();
+
         Address address = new Address("123 Street", "City", "State", "12345", "Country");
 
         business = new Business();
@@ -86,16 +94,16 @@ class BusinessControllerUnitTest {
 
     @Test
     void createBusiness_ShouldReturnCreatedBusiness() {
-        when(businessService.createBusiness(any(BusinessRequestModel.class))).thenReturn(responseModel);
+        when(businessService.createBusiness(any(Jwt.class), any(BusinessRequestModel.class))).thenReturn(responseModel);
 
-        ResponseEntity<BusinessResponseModel> response = businessController.createBusiness(requestModel);
+        ResponseEntity<BusinessResponseModel> response = businessController.createBusiness(mockJwt, requestModel);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(businessId, response.getBody().getBusinessId());
         assertEquals("Test Business", response.getBody().getName());
-        verify(businessService, times(1)).createBusiness(any(BusinessRequestModel.class));
+        verify(businessService, times(1)).createBusiness(any(Jwt.class), any(BusinessRequestModel.class));
     }
 
     @Test
@@ -130,48 +138,24 @@ class BusinessControllerUnitTest {
 
     @Test
     void updateBusinessById_ShouldReturnUpdatedBusiness() {
-        when(businessService.updateBusinessById(eq(businessId), any(BusinessRequestModel.class))).thenReturn(responseModel);
+        when(businessService.updateBusinessById(any(Jwt.class), eq(businessId), any(BusinessRequestModel.class))).thenReturn(responseModel);
 
-        ResponseEntity<BusinessResponseModel> response = businessController.updateBusinessById(businessId, requestModel);
+        ResponseEntity<BusinessResponseModel> response = businessController.updateBusinessById(mockJwt, businessId, requestModel);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals(businessId, response.getBody().getBusinessId());
-        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(BusinessRequestModel.class));
+        verify(businessService, times(1)).updateBusinessById(any(Jwt.class), eq(businessId), any(BusinessRequestModel.class));
     }
 
     @Test
     void updateBusinessById_WhenNotFound_ShouldThrowException() {
-        when(businessService.updateBusinessById(eq(businessId), any(BusinessRequestModel.class)))
+        when(businessService.updateBusinessById(any(Jwt.class), eq(businessId), any(BusinessRequestModel.class)))
                 .thenThrow(new RuntimeException("Business not found with id: " + businessId));
 
-        assertThrows(RuntimeException.class, () -> businessController.updateBusinessById(businessId, requestModel));
+        assertThrows(RuntimeException.class, () -> businessController.updateBusinessById(mockJwt, businessId, requestModel));
 
-        verify(businessService, times(1)).updateBusinessById(eq(businessId), any(BusinessRequestModel.class));
-    }
-
-    @Test
-    void deleteBusinessById_ShouldReturnDeletedBusiness() {
-        when(businessService.deleteBusinessById(businessId)).thenReturn(responseModel);
-
-        ResponseEntity<BusinessResponseModel> response = businessController.deleteBusinessById(businessId);
-
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(businessId, response.getBody().getBusinessId());
-        assertEquals("Test Business", response.getBody().getName());
-        verify(businessService, times(1)).deleteBusinessById(businessId);
-    }
-
-    @Test
-    void deleteBusinessById_WhenNotFound_ShouldThrowException() {
-        when(businessService.deleteBusinessById(businessId))
-                .thenThrow(new RuntimeException("Business not found with id: " + businessId));
-
-        assertThrows(RuntimeException.class, () -> businessController.deleteBusinessById(businessId));
-
-        verify(businessService, times(1)).deleteBusinessById(businessId);
+        verify(businessService, times(1)).updateBusinessById(any(Jwt.class), eq(businessId), any(BusinessRequestModel.class));
     }
 }

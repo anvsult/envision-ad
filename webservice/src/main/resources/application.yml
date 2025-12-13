@@ -20,3 +20,8 @@ spring:
       platform: psql
       mode: always
       schema-locations: classpath:schema.sql
+
+okta:
+  oauth2:
+    issuer: https://dev-frns5opcuy7k1288.us.auth0.com/
+    audience: http://localhost:8080

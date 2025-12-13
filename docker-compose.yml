@@ -31,7 +31,6 @@ services:
     networks:
       - appnet
 
-
   frontend:
     build:
       context: ./frontend

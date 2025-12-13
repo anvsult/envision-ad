@@ -34,7 +34,7 @@ export function Header({
 }: HeaderProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  const { user, isLoading } = useUser();
+  const { user } = useUser();
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
 
@@ -107,10 +107,6 @@ export function Header({
       </Menu.Dropdown>
     </Menu>
   );
-
-  if (isLoading) {
-    return null;
-  }
 
   return (
     <Box>

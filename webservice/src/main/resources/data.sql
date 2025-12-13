@@ -12,7 +12,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-NOW()) ON CONFLICT (id) DO NOTHING;
+        NOW()) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business_employees (business_id, employee_id)
 VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
