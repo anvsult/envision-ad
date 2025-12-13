@@ -1,32 +1,10 @@
+import { MediaDTO, MediaRequest } from "@/types/MediaTypes";
+import { LatLngLiteral } from "leaflet";
 import {getAccessToken} from "@auth0/nextjs-auth0";
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
-export interface MediaDTO {
-    id?: string;
-    title: string;
-    mediaOwnerName: string;
-    address: string;
-    resolution: string;
-    aspectRatio: string;
-    loopDuration: number | null;
-    width: number | null;
-    height: number | null;
-    price: number | null;
-    dailyImpressions: number | null;
-    schedule: {
-        selectedMonths: string[];
-        weeklySchedule: {
-            dayOfWeek: string;
-            isActive: boolean;
-            startTime: string | null;
-            endTime: string | null;
-        }[];
-    };
-    status: string | null;
-    typeOfDisplay: string;
-    imageUrl?: string | null;
-}
+
 
 export async function getAllMedia(): Promise<MediaDTO[]> {
     const response = await fetch(`${API_BASE_URL}/media`, {
@@ -55,6 +33,8 @@ export async function getAllFilteredActiveMedia(
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
+    sortBy?: string | null,
+    userLatLng?: LatLngLiteral | null,
     ): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
@@ -75,6 +55,15 @@ export async function getAllFilteredActiveMedia(
         params.append("minDailyImpressions", minDailyImpressions.toString());
     }
 
+    if (sortBy) {
+        params.append("sortBy", sortBy.toString());
+    }
+
+    if (userLatLng) {
+        params.append("userLat", userLatLng.lat.toString());
+        params.append("userLng", userLatLng.lng.toString());
+    }
+
     const url = `${API_BASE_URL}/media/active?${params.toString()}`;
 
     const response = await fetch(url, {
@@ -88,7 +77,7 @@ export async function getAllFilteredActiveMedia(
     return response.json();
 }
 
-export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
+export async function addMedia(media: Omit<MediaRequest, 'id'>): Promise<MediaDTO> {
     const token = await getAccessToken();
     const response = await fetch(`${API_BASE_URL}/media`, {
         method: 'POST',
@@ -121,7 +110,7 @@ export async function getMediaById(id: string): Promise<MediaDTO> {
     return response.json();
 }
 
-export async function updateMedia(id: string, media: Partial<MediaDTO>): Promise<MediaDTO> {
+export async function updateMedia(id: string, media: Partial<MediaRequest>): Promise<MediaDTO> {
     const token = await getAccessToken();
     const response = await fetch(`${API_BASE_URL}/media/${id}`, {
         method: 'PUT',
@@ -148,4 +137,3 @@ export async function deleteMedia(id: string): Promise<void> {
         throw new Error(`Failed to delete media: ${response.statusText}`);
     }
 }
-

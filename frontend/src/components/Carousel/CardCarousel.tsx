@@ -41,7 +41,7 @@ export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
                         imageUrl={media.imageUrl}
                         title={media.title}
                         mediaOwnerName={media.mediaOwnerName}
-                        address={media.address}
+                        mediaLocation={media.mediaLocation}
                         aspectRatio={media.aspectRatio}
                         typeOfDisplay={media.typeOfDisplay}
                         price={media.price} 

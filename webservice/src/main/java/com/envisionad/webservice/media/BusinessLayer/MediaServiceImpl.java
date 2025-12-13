@@ -8,7 +8,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MediaServiceImpl implements MediaService {
@@ -29,9 +31,12 @@ public class MediaServiceImpl implements MediaService {
             String title,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            Integer minDailyImpressions
+            Integer minDailyImpressions,
+            String sortBy,
+            Double userLat,
+            Double userLng
             ) {
-
+        // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
 
         if (title != null) {
@@ -46,12 +51,32 @@ public class MediaServiceImpl implements MediaService {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
         }
 
+        // SORTING
+        List<Media> filtered = mediaRepository.findAll(spec);
 
-        return mediaRepository.findAll(spec);
+        // Sort by Nearest
+        if ("nearest".equals(sortBy) && userLat != null && userLng != null) {
+            filtered.sort(Comparator.comparingDouble(
+                    m -> {
+                        if (m.getMediaLocation() == null) {
+                            return Double.POSITIVE_INFINITY;
+                        }
+                        return distance(
+                                userLat,
+                                userLng,
+                                m.getMediaLocation().getLatitude(),
+                                m.getMediaLocation().getLongitude()
+                        );
+                    }
+            ));
+            return filtered;
+        }
+
+        return filtered;
     }
 
     @Override
-    public Media getMediaById(String id) {
+    public Media getMediaById(UUID id) {
         return mediaRepository.findById(id).orElse(null);
     }
 
@@ -66,7 +91,28 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public void deleteMedia(String id) {
+    public void deleteMedia(UUID id) {
         mediaRepository.deleteById(id);
     }
+
+
+
+
+
+    // Calculating distance using the Haversine Formula
+    private double distance(double lat1, double lon1, double lat2, double lon2) {
+        double R = 6371; // the earth's radius
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    }
+
 }

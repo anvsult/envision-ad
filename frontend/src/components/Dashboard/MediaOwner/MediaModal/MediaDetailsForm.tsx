@@ -13,9 +13,9 @@ interface MediaDetailsFormProps {
 }
 
 export function MediaDetailsForm({
-                                     formState,
-                                     onFieldChange,
-                                 }: MediaDetailsFormProps) {
+      formState,
+      onFieldChange,
+  }: MediaDetailsFormProps) {
     const handleRestrictedChange = (
         field: keyof MediaFormState,
         value: string,
@@ -43,15 +43,6 @@ export function MediaDetailsForm({
                 onChange={(e) => onFieldChange("mediaOwnerName", e.currentTarget.value)}
             />
             <div style={{height: 12}}/>
-
-            <div style={{height: 12}}/>
-            <TextInput
-                label="Address"
-                placeholder="Placeholder text"
-                value={formState.mediaAddress}
-                onChange={(e) => onFieldChange("mediaAddress", e.currentTarget.value)}
-                required
-            />
 
             <div style={{height: 12}}/>
             <Select

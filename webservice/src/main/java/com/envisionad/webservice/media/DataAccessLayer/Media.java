@@ -8,6 +8,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.UUID;
 
 @Entity
 @Data
@@ -17,19 +18,20 @@ public class Media {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "media_id")
-    private String id;
+    @Column(name = "media_id", nullable = false)
+    private UUID id;
 
-    @Column(name = "title")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "media_location_id", nullable = false)
+    private MediaLocation mediaLocation;
+
+    @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "media_owner_name")
+    @Column(name = "media_owner_name", nullable = false)
     private String mediaOwnerName;
 
-    @Column(name = "address")
-    private String address;
-
-    @Column(name = "type_of_display")
+    @Column(name = "type_of_display", nullable = false)
     @Enumerated(EnumType.STRING)
     private TypeOfDisplay typeOfDisplay;
 
@@ -58,7 +60,7 @@ public class Media {
     @JdbcTypeCode(SqlTypes.JSON)
     private ScheduleModel schedule;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
 

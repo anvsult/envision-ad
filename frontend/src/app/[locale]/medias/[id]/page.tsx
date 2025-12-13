@@ -19,8 +19,9 @@ import { Header } from "@/components/Header/Header";
 import { BackButton } from "@/components/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getMediaById, MediaDTO } from "@/services/MediaService";
+import { getMediaById } from "@/services/MediaService";
 import { useTranslations } from "next-intl";
+import { getJoinedAddress, MediaDTO } from "@/types/MediaTypes";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -160,7 +161,7 @@ export default function MediaPage() {
 
             <Stack gap={4}>
               <Text fw={600} size="lg">
-                {media.address}
+                {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
               </Text>
               <Text size="sm">{media.mediaOwnerName}</Text>
               <Text size="sm" c="dimmed">

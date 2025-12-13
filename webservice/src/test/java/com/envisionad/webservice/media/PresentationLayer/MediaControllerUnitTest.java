@@ -2,6 +2,7 @@ package com.envisionad.webservice.media.PresentationLayer;
 
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
@@ -45,15 +46,41 @@ class MediaControllerUnitTest {
     private Media media;
     private MediaResponseModel responseModel;
     private MediaRequestModel requestModel;
-    private final String mediaId = UUID.randomUUID().toString();
+    private final UUID mediaLocationId = UUID.randomUUID();
+    private final UUID mediaId = UUID.randomUUID();
 
     @BeforeEach
     void setUp() {
+
+        MediaLocation mediaLocation = new MediaLocation();
+        mediaLocation.setId(mediaLocationId);
+        mediaLocation.setName("Name");
+        mediaLocation.setDescription("This is a location");
+        mediaLocation.setCountry("Canada");
+        mediaLocation.setProvince("Quebec");
+        mediaLocation.setCity("Montreal");
+        mediaLocation.setStreet("Sesame Street 101");
+        mediaLocation.setPostalCode("J3G");
+        mediaLocation.setLatitude(30.5);
+        mediaLocation.setLongitude(-50.7);
+
+        MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
+        mediaLocationResponseModel.setId(mediaLocationId);
+        mediaLocationResponseModel.setName("Name");
+        mediaLocationResponseModel.setDescription("This is a location");
+        mediaLocationResponseModel.setCountry("Canada");
+        mediaLocationResponseModel.setProvince("Quebec");
+        mediaLocationResponseModel.setCity("Montreal");
+        mediaLocationResponseModel.setStreet("Sesame Street 101");
+        mediaLocationResponseModel.setPostalCode("J3G");
+        mediaLocationResponseModel.setLatitude(30.5);
+        mediaLocationResponseModel.setLongitude(-50.7);
+
         media = new Media();
         media.setId(mediaId);
         media.setTitle("Test Media");
         media.setMediaOwnerName("Owner");
-        media.setAddress("123 Test St");
+        media.setMediaLocation(mediaLocation);
         media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         media.setPrice(new BigDecimal("100.00"));
         media.setStatus(Status.ACTIVE);
@@ -62,7 +89,7 @@ class MediaControllerUnitTest {
         responseModel.setId(mediaId);
         responseModel.setTitle("Test Media");
         responseModel.setMediaOwnerName("Owner");
-        responseModel.setAddress("123 Test St");
+        responseModel.setMediaLocation(mediaLocationResponseModel);
         responseModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         responseModel.setPrice(new BigDecimal("100.00"));
         responseModel.setStatus(Status.ACTIVE);
@@ -70,7 +97,7 @@ class MediaControllerUnitTest {
         requestModel = new MediaRequestModel();
         requestModel.setTitle("Test Media");
         requestModel.setMediaOwnerName("Owner");
-        requestModel.setAddress("123 Test St");
+        requestModel.setMediaLocationId(mediaLocationId);
         requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         requestModel.setPrice(new BigDecimal("100.00"));
         requestModel.setStatus(Status.ACTIVE);
@@ -99,18 +126,18 @@ class MediaControllerUnitTest {
         List<Media> mediaList = List.of(media);
         List<MediaResponseModel> responseList = List.of(responseModel);
 
-        when(mediaService.getAllFilteredActiveMedia(null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(null, null, null, null, null, null, null))
                 .thenReturn(mediaList);
         when(responseMapper.entityListToResponseModelList(mediaList))
                 .thenReturn(responseList);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(responseList, response.getBody());
 
-        verify(mediaService).getAllFilteredActiveMedia(null, null, null, null);
+        verify(mediaService).getAllFilteredActiveMedia(null, null, null, null, null, null, null);
     }
 
 
@@ -119,18 +146,18 @@ class MediaControllerUnitTest {
         List<Media> mediaList = List.of(media);
         List<MediaResponseModel> responseList = List.of(responseModel);
 
-        when(mediaService.getAllFilteredActiveMedia("Test", null, null, null))
+        when(mediaService.getAllFilteredActiveMedia("Test", null, null, null, null, null, null))
                 .thenReturn(mediaList);
         when(responseMapper.entityListToResponseModelList(mediaList))
                 .thenReturn(responseList);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia("Test", null, null, null);
+                mediaController.getAllFilteredActiveMedia("Test", null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(responseList, response.getBody());
 
-        verify(mediaService).getAllFilteredActiveMedia("Test", null, null, null);
+        verify(mediaService).getAllFilteredActiveMedia("Test", null, null, null, null, null, null);
     }
 
     @Test
@@ -142,7 +169,10 @@ class MediaControllerUnitTest {
                 "Billboard",
                 BigDecimal.valueOf(50),
                 BigDecimal.valueOf(200),
-                1000))
+                1000,
+                "nearest",
+                50.0,
+                50.0))
                 .thenReturn(mediaList);
 
         when(responseMapper.entityListToResponseModelList(mediaList))
@@ -153,7 +183,10 @@ class MediaControllerUnitTest {
                         "Billboard",
                         BigDecimal.valueOf(50),
                         BigDecimal.valueOf(200),
-                        1000
+                        1000,
+                        "nearest",
+                        50.0,
+                        50.0
                 );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -163,33 +196,36 @@ class MediaControllerUnitTest {
                 "Billboard",
                 BigDecimal.valueOf(50),
                 BigDecimal.valueOf(200),
-                1000
+                1000,
+                "nearest",
+                50.0,
+                50.0
         );
     }
 
     @Test
     void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyList() {
-        when(mediaService.getAllFilteredActiveMedia("NoMatch", null, null, null))
+        when(mediaService.getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null))
                 .thenReturn(List.of());
 
         when(responseMapper.entityListToResponseModelList(List.of()))
                 .thenReturn(List.of());
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia("NoMatch", null, null, null);
+                mediaController.getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         List<?> body = (List<?>) response.getBody();
         assertTrue(body.isEmpty());
 
-        verify(mediaService).getAllFilteredActiveMedia("NoMatch", null, null, null);
+        verify(mediaService).getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null);
     }
 
 
     @Test
     void getAllFilteredActiveMedia_MinPriceNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, BigDecimal.valueOf(-1), null, null);
+                mediaController.getAllFilteredActiveMedia(null, BigDecimal.valueOf(-1), null, null, null, null, null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("minPrice must be non-negative.", response.getBody());
@@ -200,7 +236,7 @@ class MediaControllerUnitTest {
     @Test
     void getAllFilteredActiveMedia_MaxPriceNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, BigDecimal.valueOf(-5), null);
+                mediaController.getAllFilteredActiveMedia(null, null, BigDecimal.valueOf(-5), null, null, null, null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("maxPrice must be non-negative.", response.getBody());
@@ -216,6 +252,9 @@ class MediaControllerUnitTest {
                         null,
                         BigDecimal.valueOf(50),
                         BigDecimal.valueOf(10),
+                        null,
+                        null,
+                        null,
                         null
                 );
 
@@ -228,7 +267,7 @@ class MediaControllerUnitTest {
     @Test
     void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, null, -10);
+                mediaController.getAllFilteredActiveMedia(null, null, null, -10, null, null, null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("minDailyImpressions must be non-negative.", response.getBody());
@@ -243,7 +282,7 @@ class MediaControllerUnitTest {
         when(mediaService.getMediaById(mediaId)).thenReturn(media);
         when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
 
-        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(mediaId);
+        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(String.valueOf(mediaId));
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -257,7 +296,7 @@ class MediaControllerUnitTest {
     void getMediaById_WhenNotFound_ShouldReturn404() {
         when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(mediaId);
+        ResponseEntity<MediaResponseModel> response = mediaController.getMediaById(String.valueOf(mediaId));
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -288,7 +327,7 @@ class MediaControllerUnitTest {
         when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
         when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-        ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(mediaId, requestModel);
+        ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(String.valueOf(mediaId), requestModel);
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -301,7 +340,7 @@ class MediaControllerUnitTest {
 
     @Test
     void deleteMedia_ShouldReturnNoContent() {
-        ResponseEntity<Void> response = mediaController.deleteMedia(mediaId);
+        ResponseEntity<Void> response = mediaController.deleteMedia(String.valueOf(mediaId));
 
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -317,7 +356,7 @@ class MediaControllerUnitTest {
         when(mediaService.getMediaById(mediaId)).thenReturn(media);
         when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
 
-        ResponseEntity<?> response = mediaController.uploadImage(mediaId, file);
+        ResponseEntity<?> response = mediaController.uploadImage(String.valueOf(mediaId), file);
 
         assertNotNull(response);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -332,7 +371,7 @@ class MediaControllerUnitTest {
 
         when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        ResponseEntity<?> response = mediaController.uploadImage(mediaId, file);
+        ResponseEntity<?> response = mediaController.uploadImage(String.valueOf(mediaId), file);
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -347,7 +386,7 @@ class MediaControllerUnitTest {
 
         when(mediaService.getMediaById(mediaId)).thenReturn(media);
 
-        ResponseEntity<byte[]> response = mediaController.getImage(mediaId);
+        ResponseEntity<byte[]> response = mediaController.getImage(String.valueOf(mediaId));
 
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -361,7 +400,7 @@ class MediaControllerUnitTest {
     void getImage_WhenMediaNotFound_ShouldReturnNotFound() {
         when(mediaService.getMediaById(mediaId)).thenReturn(null);
 
-        ResponseEntity<byte[]> response = mediaController.getImage(mediaId);
+        ResponseEntity<byte[]> response = mediaController.getImage(String.valueOf(mediaId));
 
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
