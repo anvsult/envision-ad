@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,7 +56,7 @@ public class Media {
 
     @Column(name = "schedule")
     @JdbcTypeCode(SqlTypes.JSON)
-    private com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel schedule;
+    private ScheduleModel schedule;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

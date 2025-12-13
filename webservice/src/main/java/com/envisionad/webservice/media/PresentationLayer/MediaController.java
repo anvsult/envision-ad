@@ -11,6 +11,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
+@CrossOrigin(origins = "http://localhost:3000")
 public class MediaController {
 
     private final MediaService mediaService;
@@ -75,6 +77,7 @@ public class MediaController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAuthority('create:media')")
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
         try {
             validator.validate(requestModel);
@@ -91,6 +94,7 @@ public class MediaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update:media')")
     public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
             @RequestBody MediaRequestModel requestModel) {
         try {
@@ -108,12 +112,14 @@ public class MediaController {
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updatedEntity));
     }
 
+    //this endpoint will probably be deleted
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMedia(@PathVariable String id) {
         mediaService.deleteMedia(id);
         return ResponseEntity.noContent().build();
     }
 
+    //image handling will not be done this way
     @PostMapping("/{id}/image")
     public ResponseEntity<?> uploadImage(@PathVariable String id,
             @RequestParam("file") MultipartFile file) {

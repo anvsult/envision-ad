@@ -3,20 +3,22 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
        ('789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
        ('404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
-       ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada') ON CONFLICT (id) DO NOTHING;
+       ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada');
 
 INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
-        true, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
+        true, CURRENT_TIMESTAMP),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true,
+        CURRENT_TIMESTAMP),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, CURRENT_TIMESTAMP),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false,
+        CURRENT_TIMESTAMP),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-        NOW()) ON CONFLICT (id) DO NOTHING;
+        CURRENT_TIMESTAMP);
 
 INSERT INTO business_employees (business_id, employee_id)
 VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
-       (1, 'auth0|693746439e8a7ab9e8b910b2') ON CONFLICT (business_id, employee_id) DO NOTHING;
+       (1, 'auth0|693746439e8a7ab9e8b910b2');
 
 INSERT INTO media (media_id, title, media_owner_name, address,
                    type_of_display, loop_duration, resolution, aspect_ratio,
@@ -34,18 +36,7 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         9.2,
         50.00,
         30,
-        '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "weeklySchedule": [
-                {"dayOfWeek": "monday",    "isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "tuesday",   "isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "wednesday", "isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "thursday",  "isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "friday",    "isActive": true, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "saturday",  "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "sunday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"}
-            ]
-        }'::jsonb,
+        '{"selectedMonths": ["January", "February", "March", "April", "May", "June"], "weeklySchedule": [{"dayOfWeek": "monday", "isActive": true, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "tuesday", "isActive": true, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "wednesday", "isActive": true, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "thursday", "isActive": true, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "friday", "isActive": true, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "saturday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "sunday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}]}',
         'ACTIVE',
         NULL, NULL, NULL),
        ('b1eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
@@ -60,18 +51,7 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         10.0,
         48.50,
         20,
-        '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "weeklySchedule": [
-                {"dayOfWeek": "monday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "tuesday",   "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "wednesday", "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "thursday",  "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "friday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "saturday",  "isActive": true, "startTime": "00:00", "endTime": "00:00"},
-                {"dayOfWeek": "sunday",    "isActive": true, "startTime": "00:00", "endTime": "00:00"}
-            ]
-        }'::jsonb,
+        '{"selectedMonths": ["January", "February", "March", "April", "May", "June"], "weeklySchedule": [{"dayOfWeek": "monday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "tuesday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "wednesday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "thursday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "friday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "saturday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}, {"dayOfWeek": "sunday", "isActive": true, "startTime": "00:00", "endTime": "00:00"}]}',
         'INACTIVE',
         NULL, NULL, NULL),
        ('c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a33',
@@ -86,18 +66,7 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         4.5,
         30.75,
         25,
-        '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-            "weeklySchedule": [
-                {"dayOfWeek": "monday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "tuesday",   "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "wednesday", "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "thursday",  "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "friday",    "isActive": false, "startTime": "09:00", "endTime": "17:00"},
-                {"dayOfWeek": "saturday",  "isActive": true, "startTime": "10:00", "endTime": "22:00"},
-                {"dayOfWeek": "sunday",    "isActive": true, "startTime": "10:00", "endTime": "18:00"}
-            ]
-        }'::jsonb,
+        '{"selectedMonths": ["January", "February", "March", "April", "May", "June"], "weeklySchedule": [{"dayOfWeek": "monday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "tuesday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "wednesday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "thursday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "friday", "isActive": false, "startTime": "09:00", "endTime": "17:00"}, {"dayOfWeek": "saturday", "isActive": true, "startTime": "10:00", "endTime": "22:00"}, {"dayOfWeek": "sunday", "isActive": true, "startTime": "10:00", "endTime": "18:00"}]}',
         'PENDING',
         NULL, NULL, NULL),
        ('8c76db81-2cee-4e42-8cd7-9e70583f6ae9', 'Downtown LED Tower', 'Prime Outdoor', '500 Yonge St, Toronto, ON',
@@ -120,7 +89,6 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         10, '1080x1920', '9:16', 1.8, 3.0, 12.00, 20,
         '{"selectedMonths": ["June"], "weeklySchedule": [{"isActive": true, "startTime": "07:00", "endTime": "21:00", "dayOfWeek": "friday"}]}',
         'ACTIVE', NULL, NULL, NULL),
-
        ('e72cc1bf-6ec9-476f-a27b-97ff8cd3cbd9', 'Casino Entrance Wall', 'Luxury Media',
         '10 Fortune Ave, Niagara Falls, ON', 'DIGITAL', 30, '3840x2160', '16:9', 20.0, 11.0, 95.00, 170,
         '{"selectedMonths": ["July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:59", "dayOfWeek": "saturday"}]}',
@@ -141,7 +109,6 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         '150 Fashion Rd, Richmond Hill, ON', 'DIGITAL', 12, '1080x1920', '9:16', 2.3, 4.1, 14.00, 30,
         '{"selectedMonths": ["October"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "21:00", "dayOfWeek": "tuesday"}]}',
         'ACTIVE', NULL, NULL, NULL),
-
        ('c7a3ae85-bd73-4720-87bf-a8d12b17985b', 'Boat Terminal Screen', 'Harbor Media', '77 Dock St, Kingston, ON',
         'DIGITAL', 25, '1920x1080', '16:9', 7.0, 4.0, 26.00, 55,
         '{"selectedMonths": ["April"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "20:00", "dayOfWeek": "wednesday"}]}',
@@ -162,7 +129,6 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         'DIGITAL', 35, '1920x1080', '16:9', 6.5, 4.0, 45.00, 140,
         '{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "18:00", "dayOfWeek": "saturday"}]}',
         'ACTIVE', NULL, NULL, NULL),
-
        ('f2de193e-8802-4cb6-b10b-4d2cc46d8471', 'Farmers Market Board', 'Community Ads', '22 Fresh St, Guelph, ON',
         'DIGITAL', 18, '1920x1080', '16:9', 4.5, 3.0, 19.00, 60,
         '{"selectedMonths": ["August"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "14:00", "dayOfWeek": "sunday"}]}',
@@ -183,7 +149,6 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         '1 Shoreline Rd, Wasaga Beach, ON', 'DIGITAL', 40, '1920x1080', '16:9', 10.0, 6.0, 65.00, 180,
         '{"selectedMonths": ["July", "August"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "22:00", "dayOfWeek": "saturday"}]}',
         'ACTIVE', NULL, NULL, NULL),
-
        ('0e6e753d-5175-4f0f-8bbc-197bb18eb8b3', 'Street LED Wall', 'Vision Ads', '210 Queen St, Toronto, ON', 'DIGITAL',
         30, '1920x1080', '16:9', 20.0, 11.5, 55.00, 90,
         '{"selectedMonths": ["June"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "22:00", "dayOfWeek": "monday"}]}',
@@ -204,7 +169,6 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         10, '1080x1920', '9:16', 2.0, 4.2, 15.00, 35,
         '{"selectedMonths": ["May"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "21:00", "dayOfWeek": "saturday"}]}',
         'ACTIVE', NULL, NULL, NULL),
-
        ('9dbef6d8-ba35-4ee3-adc2-7ba821ffebf1', 'University Screen', 'Campus Ads', '200 College St, Guelph, ON',
         'DIGITAL', 30, '1920x1080', '16:9', 7.0, 4.0, 32.00, 75,
         '{"selectedMonths": ["September"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "18:00", "dayOfWeek": "monday"}]}',
@@ -224,5 +188,4 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
        ('954f2e96-f728-40ea-8763-78a2f79db102', 'Stadium Ring', 'Sports Media', '1 Arena Way, Toronto, ON', 'DIGITAL',
         15, '3840x2160', '16:9', 30.0, 12.0, 120.00, 250,
         '{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:00", "dayOfWeek": "saturday"}]}',
-        'ACTIVE', NULL, NULL, NULL) ON CONFLICT (media_id) DO
-UPDATE SET schedule = EXCLUDED.schedule;
+        'ACTIVE', NULL, NULL, NULL);

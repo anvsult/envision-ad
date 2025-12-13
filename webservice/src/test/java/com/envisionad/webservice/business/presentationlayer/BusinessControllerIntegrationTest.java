@@ -3,47 +3,71 @@ package com.envisionad.webservice.business.presentationlayer;
 import com.envisionad.webservice.business.dataaccesslayer.*;
 import com.envisionad.webservice.business.presentationlayer.models.AddressRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.envisionad.webservice.business.presentationlayer.models.RoleRequestModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.reactive.function.BodyInserters;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.UUID;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties  = {"spring.datasource.url=jdbc:h2:mem:user-db"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessControllerIntegrationTest {
 
+    private final String BASE_URI_BUSINESSES = "/api/v1/businesses";
+
     @Autowired
-    private MockMvc mockMvc;
+    private WebTestClient webTestClient;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
 
     @Autowired
     private BusinessRepository businessRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @BeforeEach
     void setUp() {
-        businessRepository.deleteAll();
+        Jwt jwt = Jwt.withTokenValue("mock-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
+                .claim("scope", "read write")
+                .build();
+
+        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
     }
 
     @Test
-    void createBusiness_ShouldPersistAndReturnBusiness() throws Exception {
+    void getAllBusinesses_ShouldReturnAllBusinesses() {
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder.path(BASE_URI_BUSINESSES)
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange().expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.length()").isEqualTo(5);
+    }
+
+    @Test
+    void createBusiness_ShouldPersistAndReturnBusiness() {
+        // Arrange
         BusinessRequestModel requestModel = new BusinessRequestModel();
         requestModel.setName("Integration Business");
         requestModel.setCompanySize(CompanySize.MEDIUM);
+
         AddressRequestModel addressRequestModel = new AddressRequestModel();
         addressRequestModel.setStreet("Integration St");
         addressRequestModel.setCity("Integration City");
@@ -52,83 +76,100 @@ class BusinessControllerIntegrationTest {
         addressRequestModel.setCountry("Country");
         requestModel.setAddress(addressRequestModel);
 
-        mockMvc.perform(post("/api/v1/businesses")
+        RoleRequestModel roleRequestModel = new RoleRequestModel();
+        roleRequestModel.setAdvertiser(true);
+        roleRequestModel.setMediaOwner(true);
+        requestModel.setRoles(roleRequestModel);
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_BUSINESSES)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(requestModel)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name", is("Integration Business")))
-                .andExpect(jsonPath("$.id").isNotEmpty())
-                .andExpect(jsonPath("$.address.street", is("Integration St")));
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.name").isEqualTo("Integration Business")
+                .jsonPath("$.companySize").isEqualTo("MEDIUM")
+                .jsonPath("$.businessId").isNotEmpty()
+                .jsonPath("$.address.street").isEqualTo("Integration St")
+                .jsonPath("$.address.city").isEqualTo("Integration City");
 
-        assertEquals(1, businessRepository.count());
+        assertEquals(6, businessRepository.count());
     }
 
     @Test
-    void getAllBusinesses_ShouldReturnAllBusinesses() throws Exception {
-        createAndSaveBusiness("Business 1");
-        createAndSaveBusiness("Business 2");
+    void getBusinessById_ShouldReturnOneBusiness() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
 
-        mockMvc.perform(get("/api/v1/businesses"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+        webTestClient.get()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}", businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.businessId").isEqualTo(businessId)
+                .jsonPath("$.name").isEqualTo("Mom & Pop Bakery")
+                .jsonPath("$.companySize").isEqualTo("SMALL");
     }
 
     @Test
-    void getBusinessById_ShouldReturnOneBusiness() throws Exception {
-        Business savedBusiness = createAndSaveBusiness("Target Business");
+    void getBusinessById_WithInvalidId_ShouldReturnNotFound() {
+        String invalidBusinessId = UUID.randomUUID().toString();
 
-        mockMvc.perform(get("/api/v1/businesses/{businessId}", savedBusiness.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.businessId", is(savedBusiness.getBusinessId())))
-                .andExpect(jsonPath("$.name", is("Target Business")));
+        webTestClient.get()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}", invalidBusinessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange()
+                .expectStatus().isNotFound();
     }
 
     @Test
-    void updateBusinessById_ShouldUpdateAndReturnBusiness() throws Exception {
-        Business savedBusiness = createAndSaveBusiness("Original Business");
+    void updateBusinessById_ShouldUpdateAndReturnBusiness() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
 
-        BusinessRequestModel updateModel = new BusinessRequestModel();
-        updateModel.setName("Updated Business");
-        updateModel.setCompanySize(CompanySize.LARGE);
-        updateModel.getAddress().setStreet("Updated St");
-        updateModel.getAddress().setCity("Updated City");
-        updateModel.getAddress().setState("Updated State");
-        updateModel.getAddress().setZipCode("11111");
-        updateModel.getAddress().setCountry("Updated Country");
+        // Arrange
+        BusinessRequestModel requestModel = new BusinessRequestModel();
+        requestModel.setName("Integration Business");
+        requestModel.setCompanySize(CompanySize.LARGE);
 
-        mockMvc.perform(put("/api/v1/businesses/{businessId}", savedBusiness.getId())
+        AddressRequestModel addressRequestModel = new AddressRequestModel();
+        addressRequestModel.setStreet("Integration St");
+        addressRequestModel.setCity("Integration City");
+        addressRequestModel.setState("State");
+        addressRequestModel.setZipCode("00000");
+        addressRequestModel.setCountry("Country");
+        requestModel.setAddress(addressRequestModel);
+
+        RoleRequestModel roleRequestModel = new RoleRequestModel();
+        roleRequestModel.setAdvertiser(true);
+        roleRequestModel.setMediaOwner(true);
+        requestModel.setRoles(roleRequestModel);
+
+        // Act & Assert
+        webTestClient.put()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}", businessId)
+                .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateModel)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.businessId", is(savedBusiness.getBusinessId())))
-                .andExpect(jsonPath("$.name", is("Updated Business")))
-                .andExpect(jsonPath("$.companySize", is("LARGE")))
-                .andExpect(jsonPath("$.address.street", is("Updated St")))
-                .andExpect(jsonPath("$.address.city", is("Updated City")));
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.businessId").isEqualTo(businessId)
+                .jsonPath("$.name").isEqualTo("Integration Business")
+                .jsonPath("$.companySize").isEqualTo("LARGE")
+                .jsonPath("$.address.street").isEqualTo("Integration St")
+                .jsonPath("$.address.city").isEqualTo("Integration City")
+                .jsonPath("$.address.state").isEqualTo("State");
 
-        assertEquals(1, businessRepository.count());
-    }
-
-    @Test
-    void deleteBusinessById_ShouldDeleteAndReturnBusiness() throws Exception {
-        Business savedBusiness = createAndSaveBusiness("Business to Delete");
-        String businessId = savedBusiness.getBusinessId().getBusinessId();
-
-        mockMvc.perform(delete("/api/v1/businesses/{id}", businessId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(businessId.toString())))
-                .andExpect(jsonPath("$.name", is("Business to Delete")));
-
-        assertEquals(0, businessRepository.count());
-        assertNull(businessRepository.findByBusinessId_BusinessId(businessId));
-    }
-
-    private Business createAndSaveBusiness(String name) {
-        Address address = new Address("Street", "City", "State", "Zip", "Country");
-        Business business = new Business();
-        business.setName(name);
-        business.setCompanySize(CompanySize.SMALL);
-        business.setAddress(address);
-        return businessRepository.save(business);
+        assertEquals(5, businessRepository.count());
     }
 }
