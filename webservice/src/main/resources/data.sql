@@ -226,3 +226,35 @@ VALUES ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
         '{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:00", "dayOfWeek": "saturday"}]}',
         'ACTIVE', NULL, NULL, NULL) ON CONFLICT (media_id) DO
 UPDATE SET schedule = EXCLUDED.schedule;
+
+
+
+-- =========================== ADS AND CAMPAIGNS DATA ===========================
+
+-- 1. Insert Dummy Ad Campaigns
+INSERT INTO ad_campaigns (campaign_id, name, start_date, end_date)
+VALUES
+    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025', '2025-06-01 00:00:00', '2025-08-31 23:59:59'),
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz', '2025-11-20 00:00:00', '2025-11-30 23:59:59'),
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch', '2025-12-25 00:00:00', '2026-01-31 23:59:59');
+
+-- 2. Insert Dummy Ads
+-- Note: We use integers (1, 2, 3) for ad_campaign_ref_id based on the order of insertion above.
+
+-- Ads for Campaign 1 (Summer Sale)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://cdn.envisionad.com/summer-beach.jpg', 30, 'IMAGE', 1),
+    ('22222222-3333-4444-5555-666666666666', 'Summer Video Promo', 'https://cdn.envisionad.com/summer-video.mp4', 30, 'VIDEO', 1);
+
+-- Ads for Campaign 2 (Black Friday)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://cdn.envisionad.com/bf-timer.html', 15, 'IMAGE', 2),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://cdn.envisionad.com/bf-main.png', 15, 'VIDEO', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://cdn.envisionad.com/cyber-teaser.jpg', 30, 'VIDEO', 2);
+
+-- Ads for Campaign 3 (New Year)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('66666666-7777-8888-9999-000000000000', 'New Year Fireworks', 'https://cdn.envisionad.com/ny-fireworks.mp4', 15, 'VIDEO', 3);

@@ -71,24 +71,28 @@ package "Media Subdomain" #LightGreen {
 ' ===============================
 package "Advertising Subdomain" #LightCoral {
   AGGREGATE_ROOT(AdvertisementCampaign) #LightBlue {
+    name: String
     startDate: Date
     endDate: Date
-    budget: Decimal
   }
 
-  AGGREGATE(Advertisement) #LightBlue {
-    mediaId: UUID
-    screenTimeMinutes: Int
-    cost: Decimal
-    approvedByOwner: Boolean
+  AGGREGATE(Ad) #LightBlue {
+    name: String
+    adDurationSeconds: Int
+    adUrl: URL
   }
 
-  ENUM(Status) #Orange {
-    ACTIVE
-    PENDING
-    REJECTED
-    EXPIRED
+  ENUM(AdType) #Orange {
+    IMAGE
+    VIDEO
   }
+
+'  ENUM(AdCampaignApprovalStatus) #Orange {
+'    ACTIVE
+'    PENDING
+'    REJECTED
+'    EXPIRED
+'  }
 
   VALUE_OBJECT(AdIdentifier) #Bisque {
     adId: UUID
@@ -100,8 +104,9 @@ package "Advertising Subdomain" #LightCoral {
 
   AdvertisementCampaign "1" o--> "1" AdCampaignIdentifier
   AdvertisementCampaign "1" o--> "1..*" AdIdentifier
-  AdvertisementCampaign "1" o--> "1" Status
+'  AdvertisementCampaign "1" o--> "1" Status
   Advertisement "1" o--> "1" AdIdentifier
+  Advertisement "1" o--> "1" AdType
 }
 
 ' ===============================
