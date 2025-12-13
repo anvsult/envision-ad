@@ -17,7 +17,7 @@ export function BusinessDetailsForm({
   formState,
   onFieldChange,
 }: BusinessDetailsFormProps) {
-  const t = useTranslations("businesses");
+  const t = useTranslations("business");
 
   const companySizeOptions = Object.values(CompanySize).map((size) => ({
     value: size,
