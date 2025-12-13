@@ -14,7 +14,7 @@ import java.util.Set;
 public class Business {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private BusinessIdentifier businessId;
 

@@ -1,4 +1,4 @@
-package com.envisionad.webservice.util;
+package com.envisionad.webservice.utils;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
