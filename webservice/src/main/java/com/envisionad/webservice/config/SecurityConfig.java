@@ -24,16 +24,7 @@ public class SecurityConfig {
     public SecurityFilterChain httpSecurity(final HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(authz -> authz
-                        //Media Owner
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/media").hasAuthority("create:media")
-//                        .requestMatchers(HttpMethod.PUT, "/api/v1/media/{id}").hasAuthority("update:media")
-                        //Advertiser
-
-                        //Admin
-
-                        //others
                         .requestMatchers("/api/v1/businesses/**").authenticated()
-
                         .anyRequest().permitAll())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

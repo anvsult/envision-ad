@@ -90,7 +90,6 @@ export async function getAllFilteredActiveMedia(
 
 export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
     const token = await getAccessToken();
-
     const response = await fetch(`${API_BASE_URL}/media`, {
         method: 'POST',
         headers: {
@@ -123,10 +122,12 @@ export async function getMediaById(id: string): Promise<MediaDTO> {
 }
 
 export async function updateMedia(id: string, media: Partial<MediaDTO>): Promise<MediaDTO> {
+    const token = await getAccessToken();
     const response = await fetch(`${API_BASE_URL}/media/${id}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
+            Authorization : `Bearer ${token}`
         },
         body: JSON.stringify(media),
     });
