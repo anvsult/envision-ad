@@ -111,7 +111,12 @@ class MediaControllerIntegrationTest {
 
         MediaRequestModel updateRequest = new MediaRequestModel();
         updateRequest.setTitle("Updated Title");
+        updateRequest.setMediaOwnerName("Updated Owner");
+        updateRequest.setAddress("Updated Address");
         updateRequest.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        updateRequest.setPrice(new BigDecimal("150.00"));
+        updateRequest.setDailyImpressions(2000);
+        updateRequest.setLoopDuration(20);
         updateRequest.setStatus(Status.ACTIVE);
 
         mockMvc.perform(put("/api/v1/media/{id}", savedMedia.getId())

@@ -12,9 +12,9 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Envision Ad Logo"
-        }
+      "envisionAdLogo": {
+        "alt": "Envision Ad Logo"
+      }
     },
     "profile": "Profile",
     "logout": "Logout"
@@ -121,7 +121,6 @@
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "dailyImpressionPerDay": "~{count} daily impressions",
-
     "months": {
       "january": "January",
       "february": "February",
@@ -153,18 +152,18 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filter:",
       "sort": "Sort by:"
     },
-    "filters":{
+    "filters": {
       "price": "Price ($)",
       "impressions": "Minimum impressions",
       "from": "From",
       "to": "To",
       "showresults": "Add filter"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "No media found",
       "changefilters": "Please change your filters"
     }
@@ -232,16 +231,72 @@
       }
     }
   },
-  "media": {
+  "mediaModal": {
+    "ownerLabel": "Media Owner",
+    "form": {
+      "nameLabel": "Media Name",
+      "namePlaceholder": "Media name",
+      "ownerPlaceholder": "Media owner",
+      "addressLabel": "Address",
+      "addressPlaceholder": "Ex. 123 Main St",
+      "typePlaceholder": "Select type",
+      "loopDurationLabel": "Loop duration (sec)",
+      "loopDurationPlaceholder": "e.g. 30",
+      "resolutionLabel": "Resolution (px)",
+      "resolutionPlaceholder": "Ex. 1920x1080",
+      "aspectRatioPlaceholder": "e.g. 16:9",
+      "widthLabel": "Width (cm)",
+      "widthPlaceholder": "Ex. 80",
+      "heightLabel": "Height (cm)",
+      "heightPlaceholder": "Ex. 200",
+      "priceLabel": "Price (per week)",
+      "pricePlaceholder": "$50",
+      "impressionsLabel": "Daily impressions",
+      "impressionsPlaceholder": "Daily impressions",
+      "daysTimesTitle": "Days & Times",
+      "startTimeLabel": "Start",
+      "endTimeLabel": "End"
+    },
+    "sidebar": {
+      "overview": "Overview",
+      "media": "Media",
+      "displayedAds": "Displayed ads",
+      "adRequests": "Ad requests",
+      "transactions": "Transactions"
+    },
     "errors": {
       "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media"
+      "deleteFailed": "Failed to delete media",
+      "titleRequired": "Media Name is required",
+      "ownerRequired": "Media Owner is required",
+      "addressRequired": "Media Address is required",
+      "priceRequired": "Price is required",
+      "impressionsRequired": "Daily Impressions are required",
+      "displayTypeRequired": "Type of display is required",
+      "loopDurationRequired": "Loop duration is required for Digital displays",
+      "resolutionRequired": "Resolution is required for Digital displays",
+      "widthRequired": "Width is required for Poster displays",
+      "heightRequired": "Height is required for Poster displays",
+      "atLeastOneDayRequired": "At least one day must be selected in the schedule",
+      "timeRequiredForDay": "Start and End times are required for {day}",
+      "invalidTimeRangeForDay": "Start time must be before End time for {day}",
+      "atLeastOneMonthRequired": "At least one month must be selected"
     },
     "deleteConfirm": {
       "title": "Delete Media",
       "message": "Are you sure you want to delete this media? This action cannot be undone.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Success",
+        "message": "Media created successfully"
+      },
+      "updateSuccess": {
+        "title": "Success",
+        "message": "Media has been successfully updated"
+      }
     }
   }
 }

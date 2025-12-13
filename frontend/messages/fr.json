@@ -12,9 +12,9 @@
     "signIn": "Se connecter",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Logo de Envision Ad"
-        }
+      "envisionAdLogo": {
+        "alt": "Logo de Envision Ad"
+      }
     },
     "profile": "Profil",
     "logout": "Se déconnecter"
@@ -122,7 +122,6 @@
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
     "dailyImpressionPerDay": "~{count} impressions par jour",
-
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -154,18 +153,18 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filtres:",
       "sort": "Trier:"
     },
-    "filters":{
+    "filters": {
       "price": "Prix ($)",
       "impressions": "Impressions minimum",
       "from": "Minimum",
       "to": "Maximum",
       "showresults": "Ajouter le filtre"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "Aucun média trouvé",
       "changefilters": "Veuillez changer vos filtres"
     }
@@ -187,7 +186,14 @@
       "edit": "Modifier"
     },
     "errors": {
-      "loadFailed": "Échec du chargement de l'entreprise pour modification"
+      "loadFailed": "Échec du chargement de l'entreprise pour modification",
+      "deleteFailed": "Échec de la suppression de l'entreprise"
+    },
+    "deleteConfirm": {
+      "title": "Supprimer l'entreprise",
+      "message": "Êtes-vous sûr de vouloir supprimer cette entreprise? Cette action ne peut pas être annulée.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
     },
     "form": {
       "title": "Détails de l'entreprise",
@@ -233,16 +239,76 @@
       }
     }
   },
-  "media": {
+  "mediaModal": {
+    "ownerLabel": "Propriétaire du média",
+    "form": {
+      "nameLabel": "Nom du média",
+      "namePlaceholder": "Nom du média",
+      "ownerPlaceholder": "Propriétaire du média",
+      "addressLabel": "Adresse",
+      "addressPlaceholder": "Ex. 123 Rue Principale",
+      "typeLabel": "Type d'affichage",
+      "typePlaceholder": "Sélectionner le type",
+      "digitalLabel": "Numérique",
+      "posterLabel": "Affiche",
+      "loopDurationLabel": "Durée de la boucle (sec)",
+      "loopDurationPlaceholder": "ex. 30",
+      "resolutionLabel": "Résolution (px)",
+      "resolutionPlaceholder": "Ex. 1920x1080",
+      "aspectRatioLabel": "Format",
+      "aspectRatioPlaceholder": "ex. 16:9",
+      "widthLabel": "Largeur (cm)",
+      "widthPlaceholder": "Ex. 80",
+      "heightLabel": "Hauteur (cm)",
+      "heightPlaceholder": "Ex. 200",
+      "priceLabel": "Prix (par semaine)",
+      "pricePlaceholder": "50 $",
+      "impressionsLabel": "Impressions quotidiennes",
+      "impressionsPlaceholder": "Impressions quotidiennes",
+      "daysTimesTitle": "Jours & Heures",
+      "startTimeLabel": "Début",
+      "endTimeLabel": "Fin"
+    },
+    "sidebar": {
+      "overview": "Aperçu",
+      "media": "Médias",
+      "displayedAds": "Annonces affichées",
+      "adRequests": "Demandes d'annonces",
+      "transactions": "Transactions"
+    },
     "errors": {
       "loadFailed": "Échec du chargement du média pour modification",
-      "deleteFailed": "Échec de la suppression du média"
+      "deleteFailed": "Échec de la suppression du média",
+      "titleRequired": "Le nom du média est requis",
+      "ownerRequired": "Le propriétaire du média est requis",
+      "addressRequired": "L'adresse du média est requise",
+      "priceRequired": "Le prix est requis",
+      "impressionsRequired": "Les impressions quotidiennes sont requises",
+      "displayTypeRequired": "Le type d'affichage est requis",
+      "loopDurationRequired": "La durée de la boucle est requise pour les affichages numériques",
+      "resolutionRequired": "La résolution est requise pour les affichages numériques",
+      "widthRequired": "La largeur est requise pour les affiches",
+      "heightRequired": "La hauteur est requise pour les affiches",
+      "atLeastOneDayRequired": "Au moins un jour doit être sélectionné dans l'horaire",
+      "timeRequiredForDay": "Les heures de début et de fin sont requises pour {day}",
+      "invalidTimeRangeForDay": "L'heure de début doit être avant l'heure de fin pour {day}",
+      "atLeastOneMonthRequired": "Au moins un mois doit être sélectionné"
     },
     "deleteConfirm": {
       "title": "Supprimer le média",
       "message": "Êtes-vous sûr de vouloir supprimer ce média? Cette action ne peut pas être annulée.",
       "confirm": "Supprimer",
       "cancel": "Annuler"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Succès",
+        "message": "Média créé avec succès"
+      },
+      "updateSuccess": {
+        "title": "Succès",
+        "message": "Média mis à jour avec succès"
+      }
     }
   }
 }

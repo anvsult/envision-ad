@@ -17,4 +17,4 @@ spring:
         format_sql: true
   sql:
     init:
-      mode: always
+      mode: never

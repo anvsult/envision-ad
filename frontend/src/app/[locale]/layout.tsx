@@ -1,11 +1,14 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 
 import {
   ColorSchemeScript,
   mantineHtmlProps,
   MantineProvider,
 } from "@mantine/core";
+import { Notifications } from "@mantine/notifications";
+import { Auth0Provider } from "@auth0/nextjs-auth0/client";
 import { josefinSans, lato, theme } from "../../theme";
 import type { ReactNode } from "react";
 import Footer from "../../components/Footer/Footer";
@@ -37,26 +40,29 @@ export default async function RootLayout({
   const messages = await getMessages({ locale });
 
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
-      <html
-        lang={locale}
-        {...mantineHtmlProps}
-        className={`${lato.variable} ${josefinSans.variable}`}
-      >
-        <head>
-          <ColorSchemeScript />
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
-          />
-        </head>
-        <body>
-          <MantineProvider theme={theme}>
-            {children}
-            <Footer />
-          </MantineProvider>
-        </body>
-      </html>
-    </NextIntlClientProvider>
+    <Auth0Provider>
+      <NextIntlClientProvider messages={messages} locale={locale}>
+        <html
+          lang={locale}
+          {...mantineHtmlProps}
+          className={`${lato.variable} ${josefinSans.variable}`}
+        >
+          <head>
+            <ColorSchemeScript />
+            <meta
+              name="viewport"
+              content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
+            />
+          </head>
+          <body>
+            <MantineProvider theme={theme}>
+              <Notifications />
+              {children}
+              <Footer />
+            </MantineProvider>
+          </body>
+        </html>
+      </NextIntlClientProvider>
+    </Auth0Provider>
   );
 }
