@@ -8,7 +8,8 @@ public interface MediaService {
 
     List<Media> getAllMedia();
 
-    List<Media> getAllFilteredActiveMedia(String title, BigDecimal minPrice, BigDecimal maxPrice, Integer minDailyImpressions);
+    List<Media> getAllFilteredActiveMedia(String title, BigDecimal minPrice, BigDecimal maxPrice,
+            Integer minDailyImpressions);
 
     Media getMediaById(String id);
 

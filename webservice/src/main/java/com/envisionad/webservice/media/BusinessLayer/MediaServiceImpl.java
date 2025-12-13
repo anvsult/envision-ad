@@ -29,8 +29,7 @@ public class MediaServiceImpl implements MediaService {
             String title,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            Integer minDailyImpressions
-            ) {
+            Integer minDailyImpressions) {
 
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
 
@@ -45,7 +44,6 @@ public class MediaServiceImpl implements MediaService {
         if (minDailyImpressions != null) {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
         }
-
 
         return mediaRepository.findAll(spec);
     }

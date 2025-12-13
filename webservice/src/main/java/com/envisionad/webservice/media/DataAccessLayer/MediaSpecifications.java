@@ -8,8 +8,7 @@ import java.math.BigDecimal;
 public class MediaSpecifications {
 
     public static Specification<Media> hasStatus(Status status) {
-        return (root, query, cb) ->
-            status == null ? null : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
     public static Specification<Media> titleContains(String title) {
@@ -40,7 +39,7 @@ public class MediaSpecifications {
     }
 
     public static Specification<Media> dailyImpressionsGreaterThan(Integer minDailyImpressions) {
-        return (root, query, cb) ->
-            minDailyImpressions == null ? null : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
+        return (root, query, cb) -> minDailyImpressions == null ? null
+                : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
     }
 }

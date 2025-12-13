@@ -18,13 +18,11 @@ public class BusinessModelMapper {
                 requestModel.getAddress().getCity(),
                 requestModel.getAddress().getState(),
                 requestModel.getAddress().getZipCode(),
-                requestModel.getAddress().getCountry()
-        );
+                requestModel.getAddress().getCountry());
 
         Roles roles = new Roles(
                 requestModel.getRoles().isMediaOwner(),
-                requestModel.getRoles().isAdvertiser()
-        );
+                requestModel.getRoles().isAdvertiser());
 
         Business business = new Business();
         business.setName(requestModel.getName());

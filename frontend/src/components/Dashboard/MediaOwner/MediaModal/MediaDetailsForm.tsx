@@ -53,6 +53,7 @@ export function MediaDetailsForm({
         value={formState.mediaAddress}
         onChange={(e) => onFieldChange("mediaAddress", e.currentTarget.value)}
         required
+        maxLength={52}
       />
 
       <div style={{ height: 12 }} />
@@ -87,7 +88,7 @@ export function MediaDetailsForm({
           onChange={(e) =>
             handleRestrictedChange("loopDuration", e.currentTarget.value, /[^0-9]/g)
           }
-          maxLength={12}
+          maxLength={10}
         />
       )}
       {formState.displayType?.toLowerCase() === "digital" && (
@@ -101,7 +102,7 @@ export function MediaDetailsForm({
               handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
             }
             required
-            maxLength={12}
+            maxLength={10}
           />
 
           <div style={{ height: 12 }} />
@@ -155,17 +156,19 @@ export function MediaDetailsForm({
         onChange={(e) =>
           handleRestrictedChange("weeklyPrice", e.currentTarget.value, /[^0-9]/g)
         }
-        maxLength={12}
+        maxLength={10}
       />
 
       <div style={{ height: 12 }} />
       <TextInput
         label={t("form.impressionsLabel")}
         placeholder={t("form.impressionsPlaceholder")}
-        type="number"
+        type="text"
         value={formState.dailyImpressions}
-        onChange={(e) => onFieldChange("dailyImpressions", e.currentTarget.value)}
-        maxLength={12}
+        onChange={(e) =>
+          handleRestrictedChange("dailyImpressions", e.currentTarget.value, /[^0-9]/g)
+        }
+        maxLength={9}
       />
     </>
   );

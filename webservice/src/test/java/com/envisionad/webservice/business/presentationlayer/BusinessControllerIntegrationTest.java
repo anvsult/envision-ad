@@ -53,8 +53,8 @@ class BusinessControllerIntegrationTest {
         requestModel.setAddress(addressRequestModel);
 
         mockMvc.perform(post("/api/v1/businesses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(requestModel)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestModel)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("Integration Business")))
                 .andExpect(jsonPath("$.id").isNotEmpty())
@@ -97,8 +97,8 @@ class BusinessControllerIntegrationTest {
         updateModel.getAddress().setCountry("Updated Country");
 
         mockMvc.perform(put("/api/v1/businesses/{businessId}", savedBusiness.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateModel)))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateModel)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.businessId", is(savedBusiness.getBusinessId())))
                 .andExpect(jsonPath("$.name", is("Updated Business")))

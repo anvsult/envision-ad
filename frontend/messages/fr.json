@@ -27,7 +27,7 @@
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce"
     },
-    "businessTitle" : "Entreprise",
+    "businessTitle": "Entreprise",
     "business": {
       "overview": "Aperçu",
       "employees": "Employés"
@@ -240,6 +240,8 @@
     }
   },
   "mediaModal": {
+    "createTitle": "Publier un média",
+    "updateTitle": "Mettre à jour le média",
     "ownerLabel": "Propriétaire du média",
     "form": {
       "nameLabel": "Nom du média",

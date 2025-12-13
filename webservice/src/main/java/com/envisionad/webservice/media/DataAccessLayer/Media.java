@@ -47,7 +47,7 @@ public class Media {
     @Column(name = "height")
     private Double height;
 
-    @Column(name = "price")
+    @Column(name = "price", precision = 10, scale = 2)
     private BigDecimal price;
 
     @Column(name = "daily_impressions")

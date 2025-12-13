@@ -76,6 +76,12 @@ public class MediaController {
 
     @PostMapping
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
+        try {
+            validator.validate(requestModel);
+        } catch (IllegalArgumentException e) {
+            throw new org.springframework.web.server.ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        }
+
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
         Media savedEntity = mediaService.addMedia(entity);

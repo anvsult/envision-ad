@@ -18,7 +18,7 @@ const ITEMS_PER_PAGE = 20;
 export default function MediaOwnerPage() {
     const { media, addNewMedia, editMedia, deleteMediaById, fetchMediaById } =
         useMediaList();
-    const { formState, updateField, updateDayTime, resetForm, setFormState } =
+    const { formState, updateField, updateDayTime, resetForm, setFormState, validateForm } =
         useMediaForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -27,10 +27,16 @@ export default function MediaOwnerPage() {
     const [opened, { toggle, close }] = useDisclosure(false);
     const pathname = usePathname();
     const isMobile = useMediaQuery("(max-width: 768px)");
-    const t = useTranslations("media");
+    const t = useTranslations("mediaModal");
 
     const handleSave = async () => {
         try {
+            const validationError = validateForm(t);
+            if (validationError) {
+                setError(validationError);
+                return;
+            }
+
             if (editingId) {
                 await editMedia(editingId, formState);
             } else {
@@ -226,6 +232,7 @@ export default function MediaOwnerPage() {
                             onSave={handleSave}
                             error={error}
                             formState={formState}
+                            title={editingId ? t("updateTitle") : t("createTitle")}
                             onFieldChange={updateField}
                             onDayTimeChange={updateDayTime}
                         />

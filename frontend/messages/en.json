@@ -27,7 +27,7 @@
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests"
     },
-    "businessTitle" : "Business",
+    "businessTitle": "Business",
     "business": {
       "overview": "Overview",
       "employees": "Employees"
@@ -232,6 +232,8 @@
     }
   },
   "mediaModal": {
+    "createTitle": "Publish Media",
+    "updateTitle": "Update Media",
     "ownerLabel": "Media Owner",
     "form": {
       "nameLabel": "Media Name",

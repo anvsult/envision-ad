@@ -42,10 +42,10 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
 }
 
 function escapeLike(input: string): string {
-  return input
-    .replace(/\\/g, "\\\\")
-    .replace(/%/g, "\\%")
-    .replace(/_/g, "\\_");
+    return input
+        .replace(/\\/g, "\\\\")
+        .replace(/%/g, "\\%")
+        .replace(/_/g, "\\_");
 }
 
 export async function getAllFilteredActiveMedia(
@@ -53,7 +53,7 @@ export async function getAllFilteredActiveMedia(
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
-    ): Promise<MediaDTO[]> {
+): Promise<MediaDTO[]> {
     const params = new URLSearchParams();
 
     if (title && title.trim() !== "") {
@@ -76,7 +76,7 @@ export async function getAllFilteredActiveMedia(
     const url = `${API_BASE_URL}/media/active?${params.toString()}`;
 
     const response = await fetch(url, {
-    method: "GET",
+        method: "GET",
     });
 
     if (!response.ok) {
@@ -96,7 +96,8 @@ export async function addMedia(media: Omit<MediaDTO, 'id'>): Promise<MediaDTO> {
     });
 
     if (!response.ok) {
-        throw new Error(`Failed to create media: ${response.statusText}`);
+        const errorText = await response.text();
+        throw new Error(`Failed to create media: ${response.statusText}. Details: ${errorText}`);
     }
 
     return response.json();
