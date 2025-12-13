@@ -76,6 +76,7 @@ public class BusinessServiceImpl implements BusinessService {
         newBusiness.setId(existingBusiness.getId());
         newBusiness.setBusinessId(existingBusiness.getBusinessId());
         newBusiness.setOwnerId(existingBusiness.getOwnerId());
+        newBusiness.setEmployeeIds(existingBusiness.getEmployeeIds());
 
         return businessModelMapper.entityToResponseModel(businessRepository.save(newBusiness));
     }
