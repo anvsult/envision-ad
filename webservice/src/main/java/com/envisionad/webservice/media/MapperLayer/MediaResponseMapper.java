@@ -2,6 +2,7 @@ package com.envisionad.webservice.media.MapperLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -57,6 +58,12 @@ public class MediaResponseMapper {
 
     public List<MediaResponseModel> entityListToResponseModelList(List<Media> list) {
         return list.stream()
+                .map(this::entityToResponseModel)
+                .toList();
+    }
+
+    public List<MediaResponseModel> entityListToResponseModelList(Page<Media> page) {
+        return page.stream()
                 .map(this::entityToResponseModel)
                 .toList();
     }

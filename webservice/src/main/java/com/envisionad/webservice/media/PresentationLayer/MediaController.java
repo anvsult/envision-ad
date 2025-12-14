@@ -6,6 +6,8 @@ import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -42,15 +44,16 @@ public class MediaController {
 
     @GetMapping("/active")
     public ResponseEntity<?> getAllFilteredActiveMedia(
+            Pageable pageable,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions,
-            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng
+
     ) {
-        // Input validation
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             return ResponseEntity.badRequest().body("minPrice must be non-negative.");
         }
@@ -63,18 +66,22 @@ public class MediaController {
         if (minDailyImpressions != null && minDailyImpressions < 0) {
             return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
         }
-        List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
-            mediaService.getAllFilteredActiveMedia(
-                title,
-                minPrice,
-                maxPrice,
-                minDailyImpressions,
-                sortBy,
-                userLat,
-                userLng)
-        );
-        return ResponseEntity.ok(result);
+
+        Page<MediaResponseModel> responsePage =
+                mediaService.getAllFilteredActiveMedia(
+                        pageable,
+                        title,
+                        minPrice,
+                        maxPrice,
+                        minDailyImpressions,
+                        specialSort,
+                        userLat,
+                        userLng
+                ).map(responseMapper::entityToResponseModel);
+
+        return ResponseEntity.ok(responsePage);
     }
+
 
 
     @GetMapping("/{id}")

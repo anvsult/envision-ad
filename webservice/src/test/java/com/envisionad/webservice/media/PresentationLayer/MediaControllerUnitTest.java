@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -125,7 +126,6 @@ class MediaControllerUnitTest {
     void getAllFilteredActiveMedia_NoFilters_ShouldReturnList() {
         List<Media> mediaList = List.of(media);
         List<MediaResponseModel> responseList = List.of(responseModel);
-
         when(mediaService.getAllFilteredActiveMedia(null, null, null, null, null, null, null))
                 .thenReturn(mediaList);
         when(responseMapper.entityListToResponseModelList(mediaList))

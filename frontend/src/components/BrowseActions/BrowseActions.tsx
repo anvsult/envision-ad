@@ -23,7 +23,12 @@ export default function BrowseActions({filters, sort, setSortBy}: BrowseActionsP
                     data={
                         [
                             { value: "nearest", label: t('nearest') },
-                            
+                            { value: "price,asc", label: "Price (Low to High)" },
+                            { value: "price,desc", label: "Price (High to Low)" },
+                            { value: "dailyImpressions,asc", label: "Impressions (Low to High)" },
+                            { value: "dailyImpressions,desc", label: "Impressions (High to Low)" },
+                            { value: "loopDuration,asc", label: "Loop duration (High to Low)" },
+                            { value: "loopDuration,desc", label: "Loop duration (High to Low)" },
                         ]
                     }
                     defaultValue="nearest"

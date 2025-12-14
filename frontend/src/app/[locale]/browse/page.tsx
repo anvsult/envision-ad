@@ -19,10 +19,9 @@ function BrowsePage() {
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
-  const ITEMS_PER_PAGE = 16;
+  const ITEMS_PER_PAGE = 3;
   const [activePage, setActivePage] = useState(1);
-
-  const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
+  const [totalPages, setTotalPages] = useState(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -42,9 +41,9 @@ function BrowsePage() {
       return
     } 
     
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation)
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
       .then((data) => {
-        const items = (data || []).filter((m) => m.id != null);
+        const items = (data.content || []).filter((m) => m.id != null);
 
         const mapped = items.map((m) => ({
           id: String(m.id),
@@ -63,7 +62,7 @@ function BrowsePage() {
         }));
         
         setMedia(mapped);
-        setActivePage(1);
+        setTotalPages(data.totalPages);
         
       })
       .catch(() => {
@@ -72,14 +71,8 @@ function BrowsePage() {
       }).finally(() => {
         setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t, activePage]);
 
-
-  const paginatedMedia = useMemo(() => {
-    const start = (activePage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return media.slice(start, end);
-  }, [media, activePage]);
 
 
   function filters(){
@@ -118,7 +111,7 @@ function BrowsePage() {
           <BrowseActions filters={filters()} setSortBy={setSortBy}/>
           
             {/* if loading, show loader, if  */}
-          {(paginatedMedia.length > 0) ? (<MediaCardGrid medias={paginatedMedia} />):( 
+          {(media.length > 0) ? (<MediaCardGrid medias={media} />):( 
               <Stack h='20em' justify='center' align='center'>
                 {(loading) ? ( (sortBy == 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
                   <>

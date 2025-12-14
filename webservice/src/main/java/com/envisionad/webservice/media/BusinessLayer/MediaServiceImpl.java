@@ -4,8 +4,12 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
+
 import java.math.BigDecimal;
 
 import java.util.Comparator;
@@ -27,15 +31,18 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<Media> getAllFilteredActiveMedia(
+    public Page<Media> getAllFilteredActiveMedia(
+            Pageable pageable,
             String title,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
-            String sortBy,
+            String specialSort,
             Double userLat,
             Double userLng
             ) {
+        // PAGING
+
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
 
@@ -51,12 +58,12 @@ public class MediaServiceImpl implements MediaService {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
         }
 
-        // SORTING
-        List<Media> filtered = mediaRepository.findAll(spec);
 
         // Sort by Nearest
-        if ("nearest".equals(sortBy) && userLat != null && userLng != null) {
-            filtered.sort(Comparator.comparingDouble(
+        if ("nearest".equals(specialSort) && userLat != null && userLng != null) {
+            List<Media> list = mediaRepository.findAll(spec);
+
+            list.sort(Comparator.comparingDouble(
                     m -> {
                         if (m.getMediaLocation() == null) {
                             return Double.POSITIVE_INFINITY;
@@ -69,10 +76,16 @@ public class MediaServiceImpl implements MediaService {
                         );
                     }
             ));
-            return filtered;
+
+            int pageStart = (int) pageable.getOffset();
+            int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
+
+            List<Media> paged = list.subList(pageStart, pageEnd);
+
+            return new PageImpl<>(paged, pageable, list.size());
         }
 
-        return filtered;
+        return mediaRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -94,10 +107,6 @@ public class MediaServiceImpl implements MediaService {
     public void deleteMedia(UUID id) {
         mediaRepository.deleteById(id);
     }
-
-
-
-
 
     // Calculating distance using the Haversine Formula
     private double distance(double lat1, double lon1, double lat2, double lon2) {
