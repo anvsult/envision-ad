@@ -1,6 +1,7 @@
 package com.envisionad.webservice.advertisement.presentationlayer;
 
 import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
+import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignResponseModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdResponseModel;
@@ -22,6 +23,15 @@ public class AdCampaignController {
     @GetMapping()
     public ResponseEntity<List<AdCampaignResponseModel>> getAllAdCampaigns() {
         return ResponseEntity.ok(adCampaignService.getAllAdCampaigns());
+    }
+
+    @PostMapping()
+    public ResponseEntity<AdCampaignResponseModel> createAdCampaign(
+            @RequestBody AdCampaignRequestModel adCampaignRequestModel
+            ) {
+        AdCampaignResponseModel newCampaign = adCampaignService.createAdCampaign(adCampaignRequestModel);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(newCampaign);
     }
 
     @PostMapping("/{campaignId}/ads")

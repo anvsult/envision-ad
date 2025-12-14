@@ -9,6 +9,7 @@ import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundExce
 import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
+import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignResponseModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdResponseModel;
@@ -36,6 +37,14 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     public List<AdCampaignResponseModel> getAllAdCampaigns() {
         List<AdCampaign> adCampaigns = adCampaignRepository.findAll();
         return adCampaignResponseMapper.entitiesToResponseModelList(adCampaigns);
+    }
+
+    @Override
+    public AdCampaignResponseModel createAdCampaign(AdCampaignRequestModel adCampaignRequestModel) {
+        AdCampaign newCampaign = adCampaignRequestMapper.requestModelToEntity(adCampaignRequestModel);
+        newCampaign.setCampaignId(new AdCampaignIdentifier());
+
+        return adCampaignResponseMapper.entityToResponseModel(adCampaignRepository.save(newCampaign));
     }
 
     @Override

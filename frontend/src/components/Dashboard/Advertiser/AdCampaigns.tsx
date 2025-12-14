@@ -10,9 +10,11 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 
 // Imports from our new files
 import { AdCampaign, CreateAdPayload } from "@/types/AdTypes";
-import { getAllAdCampaigns, addAdToCampaign, deleteAdFromCampaign } from "@/services/AdCampaignService";
+import { getAllAdCampaigns, addAdToCampaign, deleteAdFromCampaign, createAdCampaign } from "@/services/AdCampaignService";
+import { CreateAdCampaignPayload } from "@/types/AdCampaignTypes";
 import { AdCampaignsTable } from "@/components/Dashboard/Advertiser/Tables/AdCampaignsTable";
 import { AddAdModal } from "@/components/Dashboard/Advertiser/Modals/AddAdModal";
+import { CreateCampaignModal } from "@/components/Dashboard/Advertiser/Modals/CreateCampaignModal";
 import { ConfirmationModal } from "@/shared/modals/ConfirmationModal";
 
 export function AdCampaigns() {
@@ -26,6 +28,9 @@ export function AdCampaigns() {
     // Modal State
     const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
     const [targetCampaignId, setTargetCampaignId] = useState<string | null>(null);
+
+    // Create Campaign Modal State
+    const [isCreateCampaignOpen, setIsCreateCampaignOpen] = useState(false);
 
     // Confirmation Modal State
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
@@ -48,7 +53,8 @@ export function AdCampaigns() {
             try {
                 const data = await getAllAdCampaigns();
                 setCampaigns(data);
-            } catch (e) {
+            } catch (error) {
+                console.error('Failed to load campaigns', error);
                 notifications.show({ title: 'Error', message: 'Failed to load campaigns', color: 'red' });
             }
         };
@@ -69,7 +75,8 @@ export function AdCampaigns() {
             notifications.show({ title: 'Success', message: 'Ad Added', color: 'green' });
             setIsAddAdModalOpen(false);
             loadCampaigns(); // Refresh list
-        } catch (e) {
+        } catch (error) {
+            console.error('Failed to save ad', error);
             notifications.show({ title: 'Error', message: 'Failed to save ad', color: 'red' });
         }
     };
@@ -86,11 +93,25 @@ export function AdCampaigns() {
             await deleteAdFromCampaign(adToDelete.campaignId, adToDelete.adId);
             notifications.show({ title: 'Deleted', message: 'Ad removed', color: 'green' });
             loadCampaigns(); // Refresh list
-        } catch (e) {
+        } catch (error) {
+            console.error('Failed to delete ad', error);
             notifications.show({ title: 'Error', message: 'Failed to delete ad', color: 'red' });
         } finally {
             setConfirmDeleteOpen(false);
             setAdToDelete(null);
+        }
+    };
+
+    // Create Campaign Handler
+    const handleCreateCampaign = async (payload: CreateAdCampaignPayload) => {
+        try {
+            await createAdCampaign(payload);
+            notifications.show({ title: 'Success', message: 'Campaign created', color: 'green' });
+            setIsCreateCampaignOpen(false);
+            loadCampaigns();
+        } catch (error) {
+            console.error('Failed to create campaign', error);
+            notifications.show({ title: 'Error', message: 'Failed to create campaign', color: 'red' });
         }
     };
 
@@ -119,7 +140,7 @@ export function AdCampaigns() {
                             {/* Page Title & Top Actions */}
                             <Group justify="space-between">
                                 <Title order={2}>My Campaigns</Title>
-                                <Button onClick={() => console.log("Create Campaign Logic")}>
+                                <Button onClick={() => setIsCreateCampaignOpen(true)}>
                                     Create Campaign
                                 </Button>
                             </Group>
@@ -134,6 +155,12 @@ export function AdCampaigns() {
                                 opened={isAddAdModalOpen}
                                 onClose={() => setIsAddAdModalOpen(false)}
                                 onSuccess={handleSuccessAddAd}
+                            />
+
+                            <CreateCampaignModal
+                                opened={isCreateCampaignOpen}
+                                onClose={() => setIsCreateCampaignOpen(false)}
+                                onSuccess={handleCreateCampaign}
                             />
 
                             <ConfirmationModal

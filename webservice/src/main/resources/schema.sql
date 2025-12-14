@@ -1,12 +1,13 @@
-CREATE
-EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
+-- Drop tables that have foreign keys to `media` first, then `media` itself.
+DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS business_employees CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS media;
+DROP TABLE IF EXISTS address CASCADE;
 DROP TABLE IF EXISTS ad_campaigns CASCADE;
 DROP TABLE IF EXISTS ads CASCADE;
 
@@ -92,9 +93,7 @@ CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL
+    name VARCHAR(255) NOT NULL
 );
 -- 6. Create Ads Table
 CREATE TABLE ads

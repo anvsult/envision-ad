@@ -12,7 +12,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-NOW()) ON CONFLICT (id) DO NOTHING;
+        NOW()) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business_employees (business_id, employee_id)
 VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
@@ -45,64 +45,64 @@ VALUES
      49.289300, -123.116226),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007', 'Toronto Eaton Centre LED Wall', 'Indoor shopping mall LED mega wall',
-    'Canada', 'ON', 'Toronto', '220 Yonge St', 'M5B 2H1',
-    43.654438, -79.380699),
+     'Canada', 'ON', 'Toronto', '220 Yonge St', 'M5B 2H1',
+     43.654438, -79.380699),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008', 'Ottawa Parliament Hill Board', 'Digital board near major tourist attraction',
-    'Canada', 'ON', 'Ottawa', '111 Wellington St', 'K1A 0A6',
-    45.423593, -75.700929),
+     'Canada', 'ON', 'Ottawa', '111 Wellington St', 'K1A 0A6',
+     45.423593, -75.700929),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009', 'Edmonton ICE District Screen', 'Large outdoor screen in entertainment district',
-    'Canada', 'AB', 'Edmonton', '10220 104 Ave NW', 'T5J 0H6',
-    53.546761, -113.497108),
+     'Canada', 'AB', 'Edmonton', '10220 104 Ave NW', 'T5J 0H6',
+     53.546761, -113.497108),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010', 'Halifax Harbourfront Board', 'Waterfront display visible from pedestrian paths',
-    'Canada', 'NS', 'Halifax', '150 Lower Water St', 'B3J 1R7',
-    44.646299, -63.573021),
+     'Canada', 'NS', 'Halifax', '150 Lower Water St', 'B3J 1R7',
+     44.646299, -63.573021),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380011', 'Winnipeg Portage Avenue Screen', 'High-visibility downtown digital board',
-    'Canada', 'MB', 'Winnipeg', '393 Portage Ave', 'R3B 3H6',
-    49.896090, -97.143097),
+     'Canada', 'MB', 'Winnipeg', '393 Portage Ave', 'R3B 3H6',
+     49.896090, -97.143097),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380012', 'Quebec City Old Port Display', 'Tourism-heavy outdoor signage',
-    'Canada', 'QC', 'Quebec City', '84 Rue Dalhousie', 'G1K 4C4',
-    46.815183, -71.202423),
+     'Canada', 'QC', 'Quebec City', '84 Rue Dalhousie', 'G1K 4C4',
+     46.815183, -71.202423),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380013', 'Surrey Central Transit Screen', 'Transit hub screen with commuter traffic',
-    'Canada', 'BC', 'Surrey', '10277 City Pkwy', 'V3T 4C6',
-    49.187640, -122.849014),
+     'Canada', 'BC', 'Surrey', '10277 City Pkwy', 'V3T 4C6',
+     49.187640, -122.849014),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380014', 'Brampton Downtown Centre Display', 'Medium digital board on main street',
-    'Canada', 'ON', 'Brampton', '2 Wellington St W', 'L6Y 4R2',
-    43.684211, -79.760070),
+     'Canada', 'ON', 'Brampton', '2 Wellington St W', 'L6Y 4R2',
+     43.684211, -79.760070),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380015', 'Hamilton Pier 8 Waterfront Screen', 'Outdoor marina-side digital display',
-    'Canada', 'ON', 'Hamilton', '47 Discovery Dr', 'L8L 8K4',
-    43.276543, -79.857674),
+     'Canada', 'ON', 'Hamilton', '47 Discovery Dr', 'L8L 8K4',
+     43.276543, -79.857674),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380016', 'Regina Mosaic Stadium Board', 'Sports venue outdoor digital board',
-    'Canada', 'SK', 'Regina', '1700 Elphinstone St', 'S4P 2Z6',
-    50.454960, -104.633560),
+     'Canada', 'SK', 'Regina', '1700 Elphinstone St', 'S4P 2Z6',
+     50.454960, -104.633560),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380017', 'Saskatoon River Landing Display', 'Popular riverfront walkway screen',
-    'Canada', 'SK', 'Saskatoon', '414 Spadina Crescent E', 'S7K 3G5',
-    52.123982, -106.670300),
+     'Canada', 'SK', 'Saskatoon', '414 Spadina Crescent E', 'S7K 3G5',
+     52.123982, -106.670300),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380018', 'Kelowna Lakeside LED Board', 'Tourist-heavy waterfront pathway display',
-    'Canada', 'BC', 'Kelowna', '1350 Water St', 'V1Y 9P3',
-    49.888159, -119.496582),
+     'Canada', 'BC', 'Kelowna', '1350 Water St', 'V1Y 9P3',
+     49.888159, -119.496582),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380019', 'London Richmond Row Display', 'Downtown nightlife district signage',
-    'Canada', 'ON', 'London', '215 Dundas St', 'N6A 1H1',
-    42.984923, -81.246079),
+     'Canada', 'ON', 'London', '215 Dundas St', 'N6A 1H1',
+     42.984923, -81.246079),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380020', 'Victoria Inner Harbour Board', 'High-vis digital signage at harbour entrance',
-    'Canada', 'BC', 'Victoria', '900 Wharf St', 'V8W 1T3',
-    48.422299, -123.369232),
+     'Canada', 'BC', 'Victoria', '900 Wharf St', 'V8W 1T3',
+     48.422299, -123.369232),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380021', 'Niagara Falls Clifton Hill Screen', 'Tourist area mega-screen near main attractions',
-    'Canada', 'ON', 'Niagara Falls', '4955 Clifton Hill', 'L2G 3N5',
-    43.090490, -79.074376);
+     'Canada', 'ON', 'Niagara Falls', '4955 Clifton Hill', 'L2G 3N5',
+     43.090490, -79.074376);
 
 INSERT INTO media (
     media_location_id,
@@ -113,402 +113,359 @@ INSERT INTO media (
     image_content_type, image_data
 )
 VALUES (
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-    'Downtown Digital Board', 'MetroAds', 'DIGITAL',
-    30, '1920x1080', '16:9',
-    1920, 1080, 150.00, 25000,
-    '{
-        "selectedMonths": ["January", "February", "March", "April", "May", "June"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-            {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-            {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-            {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'screen1.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002',
-    'Highway 401 Mega Screen', 'Express Media', 'DIGITAL',
-    60, '3840x1080', '32:9',
-    3840, 1080, 300.00, 40000,
-    '{
-        "selectedMonths": ["January", "February", "March"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-            {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-            {"dayOfWeek": "saturday", "isActive": true,  "startTime": "08:00", "endTime": "20:00"},
-            {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'highway1.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
-    'Union Station Atrium Screen', 'Transit Media', 'DIGITAL',
-    20, '1920x1080', '16:9',
-    1920, 1080, 120.00, 15000,
-    '{
-        "selectedMonths": ["April", "May", "June"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-            {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-            {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-            {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'unionstation.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
-    'Montreal Downtown Wrap', 'Urban Media', 'DIGITAL',
-    45, '1080x1920', '9:16',
-    1080, 1920, 200.00, 18000,
-    '{
-        "selectedMonths": ["July", "August", "September"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "saturday", "isActive": true,  "startTime": "12:00", "endTime": "20:00"},
-            {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'montreal_wrap.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
-    'Calgary Stadium DIGITAL', 'Sports Media', 'DIGITAL',
-    60, '3840x2160', '16:9',
-    3840, 2160, 350.00, 50000,
-    '{
-        "selectedMonths": ["September", "October", "November"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": false, "startTime": null, "endTime": null},
-            {"dayOfWeek": "tuesday",  "isActive": false, "startTime": null, "endTime": null},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-            {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "23:00"},
-            {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "20:00"}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'calgary_stadium.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006',
-    'Vancouver Waterfront DIGITAL', 'Tourism Media', 'DIGITAL',
-    30, '1920x1080', '16:9',
-    1920, 1080, 180.00, 22000,
-    '{
-        "selectedMonths": ["December", "January", "February"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-            {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-            {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-            {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-            {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-            {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-            {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"}
-        ]
-    }'::jsonb,
-    'PENDING', 'vancouver_waterfront.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-    'Eaton Centre LED Wall', 'ShopMedia', 'DIGITAL',
-    20, '1920x1080', '16:9',
-    1920, 1080, 175.00, 30000,
-    '{
-        "selectedMonths": ["January", "February", "March"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "23:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'eaton_wall.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-    'Parliament Hill Digital Board', 'GovMedia', 'DIGITAL',
-    25, '2560x1440', '16:9',
-    2560, 1440, 220.00, 26000,
-    '{
-        "selectedMonths": ["April", "May", "June"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": false, "startTime": null,"endTime": null},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'parliament.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-    'ICE District Mega Screen', 'Arena Media', 'DIGITAL',
-    30, '3840x2160', '16:9',
-    3840, 2160, 300.00, 42000,
-    '{
-        "selectedMonths": ["July", "August", "September"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "23:59"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "23:59"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'ice_district.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-    'Halifax Harbourfront Screen', 'Atlantic Media', 'DIGITAL',
-    40, '1920x1080', '16:9',
-    1920, 1080, 160.00, 20000,
-    '{
-        "selectedMonths": ["January", "February", "December"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime": "09:00","endTime": "21:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-        ]
-    }'::jsonb,
-    'PENDING', 'halifax_board.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-    'Eaton Centre LED Wall - North', 'ShopMedia', 'DIGITAL',
-    20, '1920x1080', '16:9',
-    1920, 1080, 175.00, 30000,
-    '{
-        "selectedMonths": ["January", "February", "March"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'eaton_wall_north.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-    'Eaton Centre LED Wall - South', 'AdCentral', 'DIGITAL',
-    25, '2560x1440', '16:9',
-    2560, 1440, 185.00, 28000,
-    '{
-        "selectedMonths": ["April", "May"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"11:00","endTime":"22:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'eaton_wall_south.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-    'Parliament Hill Visitor Screen', 'GovMedia', 'DIGITAL',
-    30, '1920x1080', '16:9',
-    1920, 1080, 190.00, 24000,
-    '{
-        "selectedMonths": ["March", "April", "May"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"21:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"19:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'parliament_visitor.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-    'Parliament Hill South Gate Screen', 'FederalAds', 'DIGITAL',
-    35, '2560x1440', '16:9',
-    2560, 1440, 210.00, 26000,
-    '{
-        "selectedMonths": ["June", "July"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"09:00","endTime":"20:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'PENDING', 'parliament_south_gate.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-    'ICE District Arena Board', 'ArenaMedia', 'DIGITAL',
-    20, '1920x1080', '16:9',
-    1920, 1080, 250.00, 45000,
-    '{
-        "selectedMonths": ["January", "February"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'ice_arena.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-    'ICE Plaza Outdoor Screen', 'NorthernAds', 'DIGITAL',
-    45, '3840x2160', '16:9',
-    3840, 2160, 320.00, 47000,
-    '{
-        "selectedMonths": ["April", "May", "June"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'ice_plaza.jpg', 'image/jpeg', NULL
-),
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'Downtown Digital Board', 'MetroAds', 'DIGITAL',
+           30, '1920x1080', '16:9',
+           1920, 1080, 150.00, 25000,
+           '{
+               "selectedMonths": ["January", "February", "March", "April", "May", "June"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'screen1.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002',
+           'Highway 401 Mega Screen', 'Express Media', 'DIGITAL',
+           60, '3840x1080', '32:9',
+           3840, 1080, 300.00, 40000,
+           '{
+               "selectedMonths": ["January", "February", "March"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "06:00", "endTime": "22:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "08:00", "endTime": "20:00"},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'highway1.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
+           'Union Station Atrium Screen', 'Transit Media', 'DIGITAL',
+           20, '1920x1080', '16:9',
+           1920, 1080, 120.00, 15000,
+           '{
+               "selectedMonths": ["April", "May", "June"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'unionstation.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
+           'Montreal Downtown Wrap', 'Urban Media', 'DIGITAL',
+           45, '1080x1920', '9:16',
+           1080, 1920, 200.00, 18000,
+           '{
+               "selectedMonths": ["July", "August", "September"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "12:00", "endTime": "20:00"},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'montreal_wrap.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
+           'Calgary Stadium DIGITAL', 'Sports Media', 'DIGITAL',
+           60, '3840x2160', '16:9',
+           3840, 2160, 350.00, 50000,
+           '{
+               "selectedMonths": ["September", "October", "November"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "tuesday",  "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "12:00", "endTime": "23:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "23:00"},
+                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "20:00"}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'calgary_stadium.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006',
+           'Vancouver Waterfront DIGITAL', 'Tourism Media', 'DIGITAL',
+           30, '1920x1080', '16:9',
+           1920, 1080, 180.00, 22000,
+           '{
+               "selectedMonths": ["December", "January", "February"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
+                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"}
+               ]
+           }'::jsonb,
+           'PENDING', 'vancouver_waterfront.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
+           'Eaton Centre LED Wall', 'ShopMedia', 'DIGITAL',
+           20, '1920x1080', '16:9',
+           1920, 1080, 175.00, 30000,
+           '{
+               "selectedMonths": ["January", "February", "March"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "23:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'eaton_wall.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
+           'Parliament Hill Digital Board', 'GovMedia', 'DIGITAL',
+           25, '2560x1440', '16:9',
+           2560, 1440, 220.00, 26000,
+           '{
+               "selectedMonths": ["April", "May", "June"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": false, "startTime": null,"endTime": null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "08:00","endTime": "20:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "20:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'parliament.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
+           'ICE District Mega Screen', 'Arena Media', 'DIGITAL',
+           30, '3840x2160', '16:9',
+           3840, 2160, 300.00, 42000,
+           '{
+               "selectedMonths": ["July", "August", "September"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime": "11:00","endTime": "23:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "11:00","endTime": "23:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "23:59"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "23:59"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'ice_district.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
+           'Halifax Harbourfront Screen', 'Atlantic Media', 'DIGITAL',
+           40, '1920x1080', '16:9',
+           1920, 1080, 160.00, 20000,
+           '{
+               "selectedMonths": ["January", "February", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "09:00","endTime": "21:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+               ]
+           }'::jsonb,
+           'PENDING', 'halifax_board.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
+           'Eaton Centre LED Wall - North', 'ShopMedia', 'DIGITAL',
+           20, '1920x1080', '16:9',
+           1920, 1080, 175.00, 30000,
+           '{
+               "selectedMonths": ["January", "February", "March"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'eaton_wall_north.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
+           'Eaton Centre LED Wall - South', 'AdCentral', 'DIGITAL',
+           25, '2560x1440', '16:9',
+           2560, 1440, 185.00, 28000,
+           '{
+               "selectedMonths": ["April", "May"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"21:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"21:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"11:00","endTime":"22:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'eaton_wall_south.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
+           'Parliament Hill Visitor Screen', 'GovMedia', 'DIGITAL',
+           30, '1920x1080', '16:9',
+           1920, 1080, 190.00, 24000,
+           '{
+               "selectedMonths": ["March", "April", "May"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"20:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"21:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"19:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'parliament_visitor.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
+           'Parliament Hill South Gate Screen', 'FederalAds', 'DIGITAL',
+           35, '2560x1440', '16:9',
+           2560, 1440, 210.00, 26000,
+           '{
+               "selectedMonths": ["June", "July"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"09:00","endTime":"18:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"09:00","endTime":"18:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"09:00","endTime":"20:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'PENDING', 'parliament_south_gate.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
+           'ICE District Arena Board', 'ArenaMedia', 'DIGITAL',
+           20, '1920x1080', '16:9',
+           1920, 1080, 250.00, 45000,
+           '{
+               "selectedMonths": ["January", "February"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'ice_arena.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
+           'ICE Plaza Outdoor Screen', 'NorthernAds', 'DIGITAL',
+           45, '3840x2160', '16:9',
+           3840, 2160, 320.00, 47000,
+           '{
+               "selectedMonths": ["April", "May", "June"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'ice_plaza.jpg', 'image/jpeg', NULL
+       ),
 
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-    'Harbourfront Pier Screen', 'AtlanticAds', 'DIGITAL',
-    25, '1920x1080', '16:9',
-    1920, 1080, 140.00, 23000,
-    '{
-        "selectedMonths": ["September", "October"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"22:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
-            {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'halifax_pier.jpg', 'image/jpeg', NULL
-),
-(
-    'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-    'Harbourfront Market Screen', 'Seaside Media', 'DIGITAL',
-    35, '2560x1440', '16:9',
-    2560, 1440, 165.00, 21000,
-    '{
-        "selectedMonths": ["November", "December"],
-        "weeklySchedule": [
-            {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
-            {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-            {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-            {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-            {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"20:00"},
-            {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-            {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
-        ]
-    }'::jsonb,
-    'ACTIVE', 'halifax_market.jpg', 'image/jpeg', NULL
-);
-
-       ('0e6e753d-5175-4f0f-8bbc-197bb18eb8b3', 'Street LED Wall', 'Vision Ads', '210 Queen St, Toronto, ON', 'DIGITAL',
-        30, '1920x1080', '16:9', 20.0, 11.5, 55.00, 90,
-        '{"selectedMonths": ["June"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "22:00", "dayOfWeek": "monday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('e254d0b4-7282-4ef4-a9e7-da2fd85f231c', 'Food Court Screen', 'Indoor Media', '88 Mall Dr, Mississauga, ON',
-        'DIGITAL', 20, '1080x1920', '9:16', 3.0, 5.5, 25.50, 50,
-        '{"selectedMonths": ["July"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "20:00", "dayOfWeek": "tuesday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('fde4f0f2-45c7-4c78-8a78-1eb82e8e7087', 'Gym Display', 'Fit Media', '300 Health Blvd, Scarborough, ON',
-        'DIGITAL', 15, '1920x1080', '16:9', 6.0, 3.5, 19.00, 40,
-        '{"selectedMonths": ["March"], "weeklySchedule": [{"isActive": true, "startTime": "06:00", "endTime": "22:00", "dayOfWeek": "wednesday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('7de72786-c808-42d9-bc29-ffdf7397dfcc', 'Cinema Lobby', 'Movie Ads', '77 Cinema Way, Vaughan, ON', 'DIGITAL',
-        25, '3840x2160', '16:9', 9.0, 5.5, 70.00, 120,
-        '{"selectedMonths": ["August"], "weeklySchedule": [{"isActive": true, "startTime": "14:00", "endTime": "23:59", "dayOfWeek": "friday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('65234ef1-df9d-4f65-a4f4-85ecf730d7b9', 'Retail Endcap', 'Store Media', '10 Retail Rd, Brampton, ON', 'DIGITAL',
-        10, '1080x1920', '9:16', 2.0, 4.2, 15.00, 35,
-        '{"selectedMonths": ["May"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "21:00", "dayOfWeek": "saturday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-
-       ('9dbef6d8-ba35-4ee3-adc2-7ba821ffebf1', 'University Screen', 'Campus Ads', '200 College St, Guelph, ON',
-        'DIGITAL', 30, '1920x1080', '16:9', 7.0, 4.0, 32.00, 75,
-        '{"selectedMonths": ["September"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "18:00", "dayOfWeek": "monday"}]}',
-        'PENDING', NULL, NULL, NULL),
-       ('4c383d2e-8393-4f9e-826c-e5e0eb439c01', 'Hospital Hallway', 'Care Media', '400 Health Ave, London, ON',
-        'DIGITAL', 20, '1920x1080', '16:9', 5.0, 3.0, 28.00, 60,
-        '{"selectedMonths": ["October"], "weeklySchedule": [{"isActive": true, "startTime": "07:00", "endTime": "19:00", "dayOfWeek": "tuesday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('d2499f91-35ab-408d-812c-3028e9e1d99d', 'Convention Banner', 'Expo Media', '600 Event Blvd, Hamilton, ON',
-        'POSTER', 0, '3000x1000', '3:1', 25.0, 8.0, 45.00, 100,
-        '{"selectedMonths": ["November"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "17:00", "dayOfWeek": "thursday"}]}',
-        'INACTIVE', NULL, NULL, NULL),
-       ('159e1a11-81e9-49b7-a72d-6f5989744dad', 'Suburban LED', 'Metro Vision', '55 Suburb Rd, Markham, ON', 'DIGITAL',
-        40, '1920x1080', '16:9', 18.0, 10.0, 60.00, 95,
-        '{"selectedMonths": ["December"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "18:00", "dayOfWeek": "sunday"}]}',
-        'ACTIVE', NULL, NULL, NULL),
-       ('954f2e96-f728-40ea-8763-78a2f79db102', 'Stadium Ring', 'Sports Media', '1 Arena Way, Toronto, ON', 'DIGITAL',
-        15, '3840x2160', '16:9', 30.0, 12.0, 120.00, 250,
-        '{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:00", "dayOfWeek": "saturday"}]}',
-        'ACTIVE', NULL, NULL, NULL) ON CONFLICT (media_id) DO
-UPDATE SET schedule = EXCLUDED.schedule;
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
+           'Harbourfront Pier Screen', 'AtlanticAds', 'DIGITAL',
+           25, '1920x1080', '16:9',
+           1920, 1080, 140.00, 23000,
+           '{
+               "selectedMonths": ["September", "October"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"22:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'halifax_pier.jpg', 'image/jpeg', NULL
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
+           'Harbourfront Market Screen', 'Seaside Media', 'DIGITAL',
+           35, '2560x1440', '16:9',
+           2560, 1440, 165.00, 21000,
+           '{
+               "selectedMonths": ["November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"20:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'halifax_market.jpg', 'image/jpeg', NULL
+       );;
 
 
 
 -- =========================== ADS AND CAMPAIGNS DATA ===========================
 
 -- 1. Insert Dummy Ad Campaigns
-INSERT INTO ad_campaigns (campaign_id, name, start_date, end_date)
+INSERT INTO ad_campaigns (campaign_id, name)
 VALUES
-    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025', '2025-06-01 00:00:00', '2025-08-31 23:59:59'),
-    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz', '2025-11-20 00:00:00', '2025-11-30 23:59:59'),
-    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch', '2025-12-25 00:00:00', '2026-01-31 23:59:59');
+    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025'),
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz'),
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch');
 
 -- 2. Insert Dummy Ads
 -- Note: We use integers (1, 2, 3) for ad_campaign_ref_id based on the order of insertion above.
@@ -516,17 +473,18 @@ VALUES
 -- Ads for Campaign 1 (Summer Sale)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
-    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://cdn.envisionad.com/summer-beach.jpg', 30, 'IMAGE', 1),
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1),
     ('22222222-3333-4444-5555-666666666666', 'Summer Video Promo', 'https://cdn.envisionad.com/summer-video.mp4', 30, 'VIDEO', 1);
 
 -- Ads for Campaign 2 (Black Friday)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
-    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://cdn.envisionad.com/bf-timer.html', 15, 'IMAGE', 2),
-    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://cdn.envisionad.com/bf-main.png', 15, 'VIDEO', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://cdn.envisionad.com/cyber-teaser.jpg', 30, 'VIDEO', 2);
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2);
 
 -- Ads for Campaign 3 (New Year)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
     ('66666666-7777-8888-9999-000000000000', 'New Year Fireworks', 'https://cdn.envisionad.com/ny-fireworks.mp4', 15, 'VIDEO', 3);
+

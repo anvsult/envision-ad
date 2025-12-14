@@ -24,7 +24,7 @@ export const getAllAdCampaigns = async (): Promise<AdCampaign[]> => {
 
 export const createAdCampaign = async (
     data: CreateAdCampaignPayload
-): Promise<void> => {
+): Promise<AdCampaign> => {
     const token = await getAccessToken();
     const res = await fetch(API_BASE_URL, {
         method: "POST",
@@ -34,7 +34,13 @@ export const createAdCampaign = async (
         },
         body: JSON.stringify(data),
     });
-}
+
+    if (!res.ok) {
+        throw new Error(`Failed to create ad campaign: ${res.statusText}`);
+    }
+
+    return res.json();
+};
 
 export const addAdToCampaign = async (
     campaignId: string,

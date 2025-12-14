@@ -69,8 +69,10 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
             form.setFieldValue('adType', type);
 
             // 3. Handle Video Specifics
-            if (type === 'VIDEO' && results.info.duration) {
-                setOriginalVideoDuration(results.info.duration);
+            if (type === 'VIDEO' && results?.info?.duration != null) {
+                // coerce to number and validate
+                const durationNum = Number(results.info.duration);
+                setOriginalVideoDuration(Number.isFinite(durationNum) ? durationNum : null);
             } else {
                 setOriginalVideoDuration(null);
             }
@@ -141,7 +143,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                         />
 
                         <Select
-                            label="Duration"
+                            label="Duration in Seconds"
                             data={['10', '15', '30']}
                             required
                             allowDeselect={false}

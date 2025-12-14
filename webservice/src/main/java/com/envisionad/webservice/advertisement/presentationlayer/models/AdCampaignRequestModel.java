@@ -10,6 +10,4 @@ import java.util.List;
 @NoArgsConstructor
 public class AdCampaignRequestModel {
     private String name;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
 }

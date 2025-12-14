@@ -25,12 +25,6 @@ public class AdCampaign {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "start_date")
-    private Date startDate;
-
-    @Column(name = "end_date")
-    private Date endDate;
-
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude // this prevents infinite loops with Lombok
     private List<Ad> ads = new ArrayList<>();

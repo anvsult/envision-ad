@@ -13,8 +13,5 @@ public class AdCampaignResponseModel {
     private String campaignId;
 
     private String name;
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
-
     private List<AdResponseModel> ads;
 }
