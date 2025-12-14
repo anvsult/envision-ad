@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Checkbox, TextInput } from "@mantine/core";
-import { IconClock } from "@tabler/icons-react";
 import type { MediaFormState } from "../hooks/useMediaForm";
 
 import { useTranslations } from "next-intl";
