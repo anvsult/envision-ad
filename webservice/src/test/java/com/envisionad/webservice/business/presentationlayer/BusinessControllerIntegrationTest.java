@@ -17,6 +17,8 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.UUID;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,6 +39,9 @@ class BusinessControllerIntegrationTest {
 
     @Autowired
     private BusinessRepository businessRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @BeforeEach
     void setUp() {
@@ -152,6 +157,18 @@ class BusinessControllerIntegrationTest {
         roleRequestModel.setAdvertiser(true);
         roleRequestModel.setMediaOwner(true);
         requestModel.setRoles(roleRequestModel);
+
+        // Add the test user to the business employees so they are authorized to update
+        // it
+        new TransactionTemplate(transactionManager).execute(status -> {
+            com.envisionad.webservice.business.dataaccesslayer.Business business = businessRepository
+                    .findByBusinessId_BusinessId(businessId);
+            if (business != null) {
+                business.getEmployeeIds().add("auth0|65702e81e9661e14ab3aac89");
+                businessRepository.save(business);
+            }
+            return null;
+        });
 
         // Act & Assert
         webTestClient.put()

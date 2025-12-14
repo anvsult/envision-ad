@@ -78,6 +78,14 @@ class MediaControllerUnitTest {
                 mediaLocationResponseModel.setLatitude(30.5);
                 mediaLocationResponseModel.setLongitude(-50.7);
 
+                ScheduleModel schedule = new ScheduleModel();
+                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
+                entry.setDayOfWeek("Monday");
+                entry.setActive(true);
+                entry.setStartTime("09:00");
+                entry.setEndTime("17:00");
+                schedule.setWeeklySchedule(List.of(entry));
+
                 media = new Media();
                 media.setId(mediaId);
                 media.setTitle("Test Media");
@@ -86,6 +94,10 @@ class MediaControllerUnitTest {
                 media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
                 media.setPrice(new BigDecimal("100.00"));
                 media.setStatus(Status.ACTIVE);
+                media.setResolution("1920x1080");
+                media.setAspectRatio("16:9");
+                media.setLoopDuration(30);
+                media.setSchedule(schedule);
 
                 responseModel = new MediaResponseModel();
                 responseModel.setId(mediaId);
@@ -95,14 +107,11 @@ class MediaControllerUnitTest {
                 responseModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
                 responseModel.setPrice(new BigDecimal("100.00"));
                 responseModel.setStatus(Status.ACTIVE);
-
-                ScheduleModel schedule = new ScheduleModel();
-                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-                entry.setDayOfWeek("Monday");
-                entry.setActive(true);
-                entry.setStartTime("09:00");
-                entry.setEndTime("17:00");
-                schedule.setWeeklySchedule(List.of(entry));
+                responseModel.setResolution("1920x1080");
+                responseModel.setAspectRatio("16:9");
+                responseModel.setLoopDuration(30);
+                responseModel.setDailyImpressions(1000);
+                responseModel.setSchedule(schedule);
 
                 requestModel = new MediaRequestModel();
                 requestModel.setTitle("Test Media");
@@ -113,6 +122,7 @@ class MediaControllerUnitTest {
                 requestModel.setStatus(Status.ACTIVE);
                 requestModel.setDailyImpressions(1000);
                 requestModel.setResolution("1920x1080");
+                requestModel.setAspectRatio("16:9");
                 requestModel.setLoopDuration(30);
                 requestModel.setSchedule(schedule);
         }
