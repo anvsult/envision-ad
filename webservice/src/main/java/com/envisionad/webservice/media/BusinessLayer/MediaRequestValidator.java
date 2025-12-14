@@ -86,8 +86,14 @@ public class MediaRequestValidator {
             if (request.getWidth() == null || request.getWidth() <= 0) {
                 throw new IllegalArgumentException("Width is required and must be positive for Poster displays");
             }
+            if (request.getWidth() > 99999) {
+                throw new IllegalArgumentException("Width cannot exceed 99999");
+            }
             if (request.getHeight() == null || request.getHeight() <= 0) {
                 throw new IllegalArgumentException("Height is required and must be positive for Poster displays");
+            }
+            if (request.getHeight() > 99999) {
+                throw new IllegalArgumentException("Height cannot exceed 99999");
             }
         }
     }
