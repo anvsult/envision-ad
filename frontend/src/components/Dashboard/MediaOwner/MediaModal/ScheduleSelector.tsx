@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import { Checkbox, TextInput } from "@mantine/core";
 import { IconClock } from "@tabler/icons-react";
 import type { MediaFormState } from "../hooks/useMediaForm";
