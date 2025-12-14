@@ -123,7 +123,6 @@ export function MediaModal({
 
                     if (Object.keys(newErrors).length > 0) {
                         onFieldChange("errors", newErrors);
-                        // notifications.show({ message: t("errors.fixForm"), color: "red" });
                         return;
                     }
 
