@@ -12,9 +12,9 @@
     "signIn": "Se connecter",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Logo de Envision Ad"
-        }
+      "envisionAdLogo": {
+        "alt": "Logo de Envision Ad"
+      }
     },
     "profile": "Profil",
     "logout": "Se déconnecter"
@@ -27,7 +27,7 @@
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce"
     },
-    "businessTitle" : "Entreprise",
+    "businessTitle": "Entreprise",
     "business": {
       "overview": "Aperçu",
       "employees": "Employés"
@@ -122,7 +122,6 @@
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
     "dailyImpressionPerDay": "~{count} impressions par jour",
-
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -154,19 +153,19 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filtres:",
       "sort": "Trier:",
       "nearest": "Proximité"
     },
-    "filters":{
+    "filters": {
       "price": "Prix ($)",
       "impressions": "Impressions minimum",
       "from": "Minimum",
       "to": "Maximum",
       "showresults": "Ajouter le filtre"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "Aucun média trouvé",
       "changefilters": "Veuillez changer vos filtres",
       "failedToLoad": "Erreur lors du chargement des média: ",
@@ -258,7 +257,6 @@
       "activateModalTitle": "Activer {{name}}",
       "deactivateModalMessage": "Êtes-vous sûr de vouloir désactiver cet affichage ? Aucun nouvel utilisateur ne pourra effectuer une réservation.",
       "deactivateModalTitle": "Désactiver {{name}}",
-
       "pendingToolTip": "Ce média est en attente d'approbation et ne peut pas être activé pour le moment.",
       "rejectedToolTip": "Ce média a été rejeté et ne peut pas être activé."
     },
@@ -268,6 +266,93 @@
       "dangerZone": "Zone de danger",
       "deleteMedia": "Supprimer le média",
       "cancel": "Annuler"
+    }
+  },
+  "mediaModal": {
+    "title": {
+      "create": "Publier un média",
+      "update": "Mettre à jour le média"
+    },
+    "sections": {
+      "details": "Détails",
+      "months": "Mois",
+      "schedule": "Jours et heures",
+      "start": "Début",
+      "end": "Fin"
+    },
+    "labels": {
+      "mediaName": "Nom du média",
+      "typeOfDisplay": "Type d'affichage",
+      "loopDuration": "Durée de la boucle (sec)",
+      "resolution": "Résolution (px)",
+      "aspectRatio": "Format",
+      "width": "Largeur (cm)",
+      "height": "Hauteur (cm)",
+      "price": "Prix (par semaine)",
+      "dailyImpressions": "Impressions promedias"
+    },
+    "placeholders": {
+      "mediaName": "Nom du média",
+      "selectType": "Sélectionner le type",
+      "loopDuration": "ex. 30",
+      "resolution": "Ex. 1920x1080",
+      "aspectRatio": "ex. 16:9",
+      "width": "Ex. 80",
+      "height": "Ex. 200",
+      "price": "50,00 $",
+      "dailyImpressions": "Impressions promedias",
+      "timeOpen": "00:00",
+      "timeClosed": "Fermé"
+    },
+    "tooltips": {
+      "max5": "Max 5 caractères",
+      "max52": "Max 52 caractères",
+      "max20": "Max 20 caractères",
+      "max10": "Max 10 caractères",
+      "max8": "Max 8 caractères",
+      "maxDecimals": "Max 2 décimales"
+    },
+    "errors": {
+      "required": "Requis",
+      "mediaTitleRequired": "Le titre du média est requis",
+      "loopDurationRequired": "La durée de la boucle est requise",
+      "resolutionRequired": "La résolution est requise",
+      "widthRequired": "La largeur est requise",
+      "heightRequired": "La hauteur est requise",
+      "priceRequired": "Le prix est requis",
+      "impressionsRequired": "Les impressions quotidiennes sont requises",
+      "scheduleRequired": "Au moins un jour doit être actif dans l'horaire",
+      "startTimeAfterEndTime": "L'heure de fin doit être après l'heure de début",
+      "fixForm": "Veuillez corriger les erreurs dans le formulaire"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "calendar": {
+      "months": {
+        "january": "Janvier",
+        "february": "Février",
+        "march": "Mars",
+        "april": "Avril",
+        "may": "Mai",
+        "june": "Juin",
+        "july": "Juillet",
+        "august": "Août",
+        "september": "Septembre",
+        "october": "Octobre",
+        "november": "Novembre",
+        "december": "Décembre"
+      },
+      "days": {
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche"
+      }
     }
   }
 }

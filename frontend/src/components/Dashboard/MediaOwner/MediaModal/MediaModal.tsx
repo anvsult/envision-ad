@@ -1,9 +1,11 @@
 "use client";
 
-import {Button, Modal, ScrollArea} from "@mantine/core";
-import {MediaDetailsForm} from "./MediaDetailsForm";
-import {ScheduleSelector} from "./ScheduleSelector";
-import type {MediaFormState} from "../hooks/useMediaForm";
+import { Button, Modal, ScrollArea } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
+import { MediaDetailsForm } from "./MediaDetailsForm";
+import { ScheduleSelector } from "./ScheduleSelector";
+import type { MediaFormState } from "../hooks/useMediaForm";
+import { useTranslations } from "next-intl";
 
 // Why do we need this?
 interface MediaModalProps {
@@ -16,27 +18,31 @@ interface MediaModalProps {
         value: MediaFormState[K]
     ) => void;
     onDayTimeChange: (day: string, part: "start" | "end", value: string) => void;
+    isEditing: boolean;
 }
 
 export function MediaModal({
-                               opened,
-                               onClose,
-                               onSave,
-                               formState,
-                               onFieldChange,
-                               onDayTimeChange,
-                           }: MediaModalProps) {
+    opened,
+    onClose,
+    onSave,
+    formState,
+    onFieldChange,
+    onDayTimeChange,
+    isEditing,
+}: MediaModalProps) {
+    const t = useTranslations("mediaModal");
+
     return (
         <Modal
             opened={opened}
             onClose={onClose}
-            title="Publish Media"
+            title={isEditing ? t("title.update") : t("title.create")}
             size="lg"
             centered
-            overlayProps={{opacity: 0.55}}
+            overlayProps={{ opacity: 0.55 }}
         >
-            <ScrollArea style={{height: 420}}>
-                <div style={{paddingRight: 8}}>
+            <ScrollArea style={{ height: 420 }}>
+                <div style={{ paddingRight: 8 }}>
                     <MediaDetailsForm
                         formState={formState}
                         onFieldChange={onFieldChange}
@@ -57,10 +63,71 @@ export function MediaModal({
                     marginTop: 12,
                 }}
             >
-                <Button variant="default" onClick={onClose} style={{marginRight: 8}}>
-                    Cancel
+                <Button variant="default" onClick={onClose} style={{ marginRight: 8 }}>
+                    {t("buttons.cancel")}
                 </Button>
-                <Button onClick={onSave}>Save</Button>
+                <Button onClick={() => {
+                    // Validation
+                    const newErrors: Record<string, string> = {};
+
+                    if (!formState.mediaTitle.trim()) {
+                        newErrors["mediaTitle"] = t("errors.mediaTitleRequired");
+                    }
+
+                    if (formState.displayType === 'DIGITAL') {
+                        if (!formState.loopDuration) {
+                            newErrors["loopDuration"] = t("errors.loopDurationRequired");
+                        }
+                        if (!formState.resolution.trim()) {
+                            newErrors["resolution"] = t("errors.resolutionRequired");
+                        }
+                    } else if (formState.displayType === 'POSTER') {
+                        if (!formState.widthCm) {
+                            newErrors["widthCm"] = t("errors.widthRequired");
+                        }
+                        if (!formState.heightCm) {
+                            newErrors["heightCm"] = t("errors.heightRequired");
+                        }
+                    }
+
+                    if (!formState.weeklyPrice) {
+                        newErrors["weeklyPrice"] = t("errors.priceRequired");
+                    }
+                    if (!formState.dailyImpressions) {
+                        newErrors["dailyImpressions"] = t("errors.impressionsRequired");
+                    }
+
+                    const hasActiveDay = Object.values(formState.activeDaysOfWeek).some(v => v);
+                    if (!hasActiveDay) {
+                        notifications.show({ message: t("errors.scheduleRequired"), color: "red" });
+                        return;
+                    }
+
+                    for (const [day, isActive] of Object.entries(formState.activeDaysOfWeek)) {
+                        if (isActive) {
+                            const { start, end } = formState.dailyOperatingHours[day];
+                            if (!start) {
+                                newErrors[`${day}_start`] = t("errors.required");
+                            }
+                            if (!end) {
+                                newErrors[`${day}_end`] = t("errors.required");
+                            }
+                            if (start && end && end <= start) {
+                                newErrors[`${day}_end`] = t("errors.startTimeAfterEndTime");
+                            }
+                        }
+                    }
+
+                    if (Object.keys(newErrors).length > 0) {
+                        onFieldChange("errors", newErrors);
+                        notifications.show({ message: t("errors.fixForm"), color: "red" });
+                        return;
+                    }
+
+                    // Clear errors if any existed previously
+                    onFieldChange("errors", {});
+                    onSave();
+                }}>{t("buttons.save")}</Button>
             </div>
         </Modal>
     );

@@ -12,9 +12,9 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Envision Ad Logo"
-        }
+      "envisionAdLogo": {
+        "alt": "Envision Ad Logo"
+      }
     },
     "profile": "Profile",
     "logout": "Logout"
@@ -27,7 +27,7 @@
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests"
     },
-    "businessTitle" : "Business",
+    "businessTitle": "Business",
     "business": {
       "overview": "Overview",
       "employees": "Employees"
@@ -121,7 +121,6 @@
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "dailyImpressionPerDay": "~{count} daily impressions",
-
     "months": {
       "january": "January",
       "february": "February",
@@ -153,19 +152,19 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions":{
+    "browseactions": {
       "filter": "Filter:",
       "sort": "Sort by:",
       "nearest": "Nearest"
     },
-    "filters":{
+    "filters": {
       "price": "Price ($)",
       "impressions": "Minimum impressions",
       "from": "From",
       "to": "To",
       "showresults": "Add filter"
     },
-    "nomedia":{
+    "nomedia": {
       "notfound": "No media found",
       "changefilters": "Please change your filters",
       "failedToLoad": "Failed to load media: ",
@@ -250,7 +249,7 @@
     },
     "changeStatus": {
       "activate": "Activate",
-      "deactivate" : "Deactivate",
+      "deactivate": "Deactivate",
       "waitApproval": "Awaiting Approval",
       "rejected": "Rejected",
       "activateModalMessage": "Are you sure you want to activate this display? Users will be able to reserve this media.",
@@ -267,6 +266,92 @@
       "deleteMedia": "Delete Media",
       "cancel": "Cancel"
     }
-
+  },
+  "mediaModal": {
+    "title": {
+      "create": "Publish Media",
+      "update": "Update Media"
+    },
+    "sections": {
+      "details": "Details",
+      "months": "Months",
+      "schedule": "Days & Times",
+      "start": "Start",
+      "end": "End"
+    },
+    "labels": {
+      "mediaName": "Media Name",
+      "typeOfDisplay": "Type of display",
+      "loopDuration": "Loop duration (sec)",
+      "resolution": "Resolution (px)",
+      "aspectRatio": "Aspect ratio",
+      "width": "Width (cm)",
+      "height": "Height (cm)",
+      "price": "Price (per week)",
+      "dailyImpressions": "Daily impressions"
+    },
+    "placeholders": {
+      "mediaName": "Media name",
+      "selectType": "Select type",
+      "loopDuration": "e.g. 30",
+      "resolution": "Ex. 1920x1080",
+      "aspectRatio": "e.g. 16:9",
+      "width": "Ex. 80",
+      "height": "Ex. 200",
+      "price": "$50.00",
+      "dailyImpressions": "Daily impressions",
+      "timeOpen": "00:00",
+      "timeClosed": "Closed"
+    },
+    "tooltips": {
+      "max5": "Max 5 characters",
+      "max52": "Max 52 characters",
+      "max20": "Max 20 characters",
+      "max10": "Max 10 characters",
+      "max8": "Max 8 characters",
+      "maxDecimals": "Max 2 decimal places"
+    },
+    "errors": {
+      "required": "Required",
+      "mediaTitleRequired": "Media Title is required",
+      "loopDurationRequired": "Loop Duration is required",
+      "resolutionRequired": "Resolution is required",
+      "widthRequired": "Width is required",
+      "heightRequired": "Height is required",
+      "priceRequired": "Price is required",
+      "impressionsRequired": "Daily Impressions is required",
+      "scheduleRequired": "At least one day must be active in the schedule",
+      "startTimeAfterEndTime": "End time must be after Start time",
+      "fixForm": "Please fix the errors in the form"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "calendar": {
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
+    }
   }
 }
