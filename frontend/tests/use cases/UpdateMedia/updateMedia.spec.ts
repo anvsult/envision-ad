@@ -6,13 +6,21 @@ test('Update Media', async ({ homePage, mediaDashboardPage }) => {
     await homePage.usernameTextbox().fill('megadoxs');
     await homePage.passwordTextbox().fill('Password1!');
     await homePage.loginButton().click();
-    await homePage.dashboardLink().click();
+    await homePage.clickDashboardLink();
 
-    await mediaDashboardPage.mediaLink().click();
+    await mediaDashboardPage.clickMediaLink();
     await mediaDashboardPage.openMediaActions('Montreal Downtown Wrap');
     await mediaDashboardPage.editMenuItem().click();
 
     await mediaDashboardPage.mediaNameInput().fill('Montreal Downtown Updated');
     await mediaDashboardPage.priceInput().fill('15074.77');
     await mediaDashboardPage.saveButton().click();
+
+    // await mediaDashboardPage.clickMediaLink();
+    // await mediaDashboardPage.openMediaActions('Montreal Downtown Updated');
+    // await mediaDashboardPage.editMenuItem().click();
+
+    // await mediaDashboardPage.mediaNameInput().fill('Montreal Downtown Wrap');
+    // await mediaDashboardPage.priceInput().fill('333.77');
+    // await mediaDashboardPage.saveButton().click();
 });
