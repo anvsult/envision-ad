@@ -257,7 +257,9 @@
       "impressionsPlaceholder": "Daily impressions",
       "daysTimesTitle": "Days & Times",
       "startTimeLabel": "Start",
-      "endTimeLabel": "End"
+      "endTimeLabel": "End",
+      "limitReached": "Character limit of {limit} reached",
+      "decimalLimit": "Maximum of 2 numbers after the decimal point"
     },
     "sidebar": {
       "overview": "Overview",

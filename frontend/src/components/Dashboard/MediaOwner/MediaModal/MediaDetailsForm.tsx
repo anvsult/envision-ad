@@ -28,31 +28,51 @@ export function MediaDetailsForm({
     onFieldChange(field, cleaned);
   };
 
+  const renderLabel = (
+    label: string,
+    value: string | number | null | undefined,
+    maxLength: number,
+    required: boolean = false,
+    customError?: string | null
+  ) => {
+    const currentLength = value ? String(value).length : 0;
+    const isLimitReached = currentLength >= maxLength;
+    const errorMessage = customError || (isLimitReached ? t("form.limitReached", { limit: maxLength }) : null);
+
+    return (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+        <span>{label}</span>
+        {required && <span style={{ color: "#fa5252" }}> *</span>}
+        {errorMessage && (
+          <span style={{ color: "red", fontSize: "12px" }}>
+            {errorMessage}
+          </span>
+        )}
+      </span>
+    );
+  };
+
   return (
     <>
       <h3>{tPage("detailsTitle")}</h3>
       <TextInput
-        label={t("form.nameLabel")}
+        label={renderLabel(t("form.nameLabel"), formState.mediaTitle, 52, true)}
         placeholder={t("form.namePlaceholder")}
         value={formState.mediaTitle}
         onChange={(e) => onFieldChange("mediaTitle", e.currentTarget.value)}
         required
+        withAsterisk={false}
         maxLength={52}
       />
+
       <div style={{ height: 12 }} />
       <TextInput
-        label={t("ownerLabel")}
-        placeholder={t("form.ownerPlaceholder")}
-        value={formState.mediaOwnerName}
-        disabled
-      />
-      <div style={{ height: 12 }} />
-      <TextInput
-        label={t("form.addressLabel")}
+        label={renderLabel(t("form.addressLabel"), formState.mediaAddress, 52, true)}
         placeholder={t("form.addressPlaceholder")}
         value={formState.mediaAddress}
         onChange={(e) => onFieldChange("mediaAddress", e.currentTarget.value)}
         required
+        withAsterisk={false}
         maxLength={52}
       />
 
@@ -82,7 +102,7 @@ export function MediaDetailsForm({
       <div style={{ height: 12 }} />
       {formState.displayType?.toLowerCase() === "digital" && (
         <TextInput
-          label={t("form.loopDurationLabel")}
+          label={renderLabel(t("form.loopDurationLabel"), formState.loopDuration, 10)}
           placeholder={t("form.loopDurationPlaceholder")}
           value={formState.loopDuration}
           onChange={(e) =>
@@ -95,13 +115,14 @@ export function MediaDetailsForm({
         <>
           <div style={{ height: 12 }} />
           <TextInput
-            label={t("form.resolutionLabel")}
+            label={renderLabel(t("form.resolutionLabel"), formState.resolution, 10, true)}
             placeholder={t("form.resolutionPlaceholder")}
             value={formState.resolution}
             onChange={(e) =>
               handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
             }
             required
+            withAsterisk={false}
             maxLength={10}
           />
 
@@ -122,7 +143,7 @@ export function MediaDetailsForm({
           <div style={{ height: 12 }} />
           <div style={{ display: "flex", gap: 8 }}>
             <TextInput
-              label={t("form.widthLabel")}
+              label={renderLabel(t("form.widthLabel"), formState.widthCm, 12)}
               placeholder={t("form.widthPlaceholder")}
               type="text"
               style={{ flex: 1 }}
@@ -133,7 +154,7 @@ export function MediaDetailsForm({
               maxLength={12}
             />
             <TextInput
-              label={t("form.heightLabel")}
+              label={renderLabel(t("form.heightLabel"), formState.heightCm, 12)}
               placeholder={t("form.heightPlaceholder")}
               type="text"
               style={{ flex: 1 }}
@@ -149,19 +170,26 @@ export function MediaDetailsForm({
 
       <div style={{ height: 12 }} />
       <TextInput
-        label={t("form.priceLabel")}
+        label={renderLabel(
+          t("form.priceLabel"),
+          formState.weeklyPrice,
+          8,
+          false,
+          /^\d+\.\d{2,}$/.test(String(formState.weeklyPrice || "")) ? t("form.decimalLimit") : null
+        )}
         placeholder={t("form.pricePlaceholder")}
         type="text"
         value={formState.weeklyPrice}
         onChange={(e) =>
-          handleRestrictedChange("weeklyPrice", e.currentTarget.value, /[^0-9]/g)
+          /^\d*\.?\d{0,2}$/.test(e.currentTarget.value) &&
+          onFieldChange("weeklyPrice", e.currentTarget.value)
         }
-        maxLength={10}
+        maxLength={8}
       />
 
       <div style={{ height: 12 }} />
       <TextInput
-        label={t("form.impressionsLabel")}
+        label={renderLabel(t("form.impressionsLabel"), formState.dailyImpressions, 9)}
         placeholder={t("form.impressionsPlaceholder")}
         type="text"
         value={formState.dailyImpressions}

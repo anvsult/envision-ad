@@ -269,7 +269,9 @@
       "impressionsPlaceholder": "Impressions quotidiennes",
       "daysTimesTitle": "Jours & Heures",
       "startTimeLabel": "Début",
-      "endTimeLabel": "Fin"
+      "endTimeLabel": "Fin",
+      "limitReached": "Limite de {limit} caractères atteinte",
+      "decimalLimit": "Maximum de 2 chiffres après la virgule"
     },
     "sidebar": {
       "overview": "Aperçu",

@@ -1,6 +1,10 @@
 spring:
   application:
     name: webservice
+application:
+  client-origin-urls:
+    - http://localhost:3000
+    - http://localhost:3001
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
