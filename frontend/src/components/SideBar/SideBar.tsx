@@ -19,7 +19,7 @@ export default function SideBar() {
         <Accordion
             multiple
             variant="separated"
-            defaultValue={["business", "media-owner", "advertiser"]}
+            defaultValue={["business", "media-owner"]}
         >
             <Accordion.Item value="media-owner">
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
@@ -90,28 +90,6 @@ export default function SideBar() {
                 {/*    active={pathname?.includes("/transactions")}*/}
                 {/*    onClick={isMobile ? close : undefined}*/}
                 {/*/>*/}
-            <Accordion.Item value="advertiser">
-                <Accordion.Control>{t("advertiserTitle")}</Accordion.Control>
-                <Accordion.Panel>
-                    <Stack gap="xs">
-                        {/*<NavLink*/}
-                        {/*    component={Link}*/}
-                        {/*    href="/dashboard/advertiser/overview"*/}
-                        {/*    label={t("business.overview")}*/}
-                        {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
-                        {/*    active={pathname?.endsWith("/business/overview")}*/}
-                        {/*/>*/}
-
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/advertiser/campaigns"
-                            label={t("advertiser.myAds")}
-                            leftSection={<IconAd size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/advertiser/campaigns")}
-                        />
-                    </Stack>
-                </Accordion.Panel>
-            </Accordion.Item>
         </Accordion>
     )
 }

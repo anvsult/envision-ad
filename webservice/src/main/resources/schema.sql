@@ -2,16 +2,14 @@ CREATE
 EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS media CASCADE;
-DROP TABLE IF EXISTS media_location;
 DROP TABLE IF EXISTS business_employees CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
-
 DROP TABLE IF EXISTS media;
 DROP TABLE IF EXISTS ad_campaigns CASCADE;
 DROP TABLE IF EXISTS ads CASCADE;
+
 
 -- 2. Create Address Table (Must be first because Business links to it)
 CREATE TABLE address
@@ -43,7 +41,6 @@ CREATE TABLE business
             ON DELETE CASCADE
 );
 
--- 3. Create Business Employee Table
 CREATE TABLE business_employees
 (
     business_id INTEGER            NOT NULL,
@@ -87,7 +84,7 @@ CREATE TABLE media (
     status VARCHAR(50) NOT NULL,
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data         bytea
+    image_data BYTEA
 );
 
 -- 5. Create Ad Campaigns Table
@@ -111,4 +108,7 @@ CREATE TABLE ads
 
     ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE
 );
+
+
+
 

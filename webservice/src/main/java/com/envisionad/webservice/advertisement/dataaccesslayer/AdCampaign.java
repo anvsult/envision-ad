@@ -8,7 +8,6 @@ import lombok.ToString;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -21,7 +20,7 @@ public class AdCampaign {
     private Integer id;
 
     @Embedded
-    private CampaignIdentifier campaignId;
+    private AdCampaignIdentifier campaignId;
 
     @Column(name = "name")
     private String name;

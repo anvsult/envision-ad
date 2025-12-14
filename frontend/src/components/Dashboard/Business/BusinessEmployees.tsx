@@ -10,7 +10,7 @@ import {useUser} from "@auth0/nextjs-auth0";
 import {getEmployeeBusiness, removeEmployeeFromBusiness} from "@/services/BusinessService";
 import {EmployeeTable} from "@/components/Dashboard/Business/BusinessTable/EmployeesTable";
 import SideBar from "@/components/SideBar/SideBar";
-import {ConfirmRemoveEmployeeModal} from "@/components/Dashboard/Business/BusinessModal/ConfirmationModal";
+import {ConfirmationModal} from "@/shared/modals/ConfirmationModal";
 import type {UserType} from "@/types/UserType";
 
 export function BusinessEmployees() {
@@ -138,9 +138,16 @@ export function BusinessEmployees() {
                                 />
                             )}
 
-                            <ConfirmRemoveEmployeeModal
+                            <ConfirmationModal
                                 opened={confirmOpen}
-                                employeeName={employees.find((e) => e.user_id === employeeToRemove)?.name || ""}
+                                title="Confirm Removal"
+                                message={
+                                    <>
+                                        Are you sure you want to remove <strong>{employees.find((e) => e.user_id === employeeToRemove)?.name || ""}</strong> from your business?
+                                    </>
+                                }
+                                confirmLabel="Remove"
+                                confirmColor="red"
                                 onCancel={() => setConfirmOpen(false)}
                                 onConfirm={confirmRemove}
                             />

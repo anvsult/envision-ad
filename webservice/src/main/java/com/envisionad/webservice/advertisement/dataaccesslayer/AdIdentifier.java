@@ -10,9 +10,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class AdIdentifier {
     @Column(name = "ad_id")
-    private String adId;
+    private String adIdentifier;
 
     public AdIdentifier() {
-        this.adId = java.util.UUID.randomUUID().toString();
+        this.adIdentifier = java.util.UUID.randomUUID().toString();
     }
 }

@@ -1,6 +1,6 @@
 package com.envisionad.webservice.advertisement.dataaccesslayer;
 
-import com.envisionad.webservice.advertisement.exceptions.UnsupportedAdDurationException;
+import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
 
 public enum AdDuration {
     S10(10),
@@ -23,7 +23,7 @@ public enum AdDuration {
             case 10 -> S10;
             case 15 -> S15;
             case 30 -> S30;
-            default -> throw new UnsupportedAdDurationException(seconds);
+            default -> throw new InvalidAdDurationException(seconds);
         };
     }
 }

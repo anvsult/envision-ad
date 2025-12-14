@@ -125,9 +125,9 @@ package "Advertising Subdomain" #LightCoral {
 
   AdvertisementCampaign "1" o--> "1" AdCampaignIdentifier
   AdvertisementCampaign "1" o--> "1..*" AdIdentifier
-'  AdvertisementCampaign "1" o--> "1" Status
-  Advertisement "1" o--> "1" AdIdentifier
-  Advertisement "1" o--> "1" AdType
+  AdvertisementCampaign "1" o--> "1" Status
+  Ad "1" o--> "1" AdIdentifier
+  Ad "1" o--> "1" AdType
 }
 
 ' ===============================

@@ -31,6 +31,12 @@
     "business": {
       "overview": "Aperçu",
       "employees": "Employés"
+    },
+    "advertiserTitle": "Annonceur",
+    "advertiser": {
+      "overview": "Aperçu",
+      "adRequests": "Demandes d'annonce",
+      "myAds": "Mes Campagnes"
     }
   },
   "homepage": {

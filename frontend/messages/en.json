@@ -31,6 +31,12 @@
     "business": {
       "overview": "Overview",
       "employees": "Employees"
+    },
+    "advertiserTitle": "Advertiser",
+    "advertiser": {
+      "overview": "Overview",
+      "adRequests": "Ad requests",
+      "myAds": "My Campaigns"
     }
   },
   "homepage": {
