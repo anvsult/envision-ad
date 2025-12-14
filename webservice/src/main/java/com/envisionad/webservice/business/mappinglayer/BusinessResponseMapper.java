@@ -4,6 +4,7 @@ import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -11,11 +12,11 @@ public class BusinessResponseMapper {
 
     public Business requestModelToEntity(BusinessRequestModel requestModel) {
         Address address = new Address(
-                requestModel.getStreet(),
-                requestModel.getCity(),
-                requestModel.getState(),
-                requestModel.getZipCode(),
-                requestModel.getCountry());
+                requestModel.getAddress().getStreet(),
+                requestModel.getAddress().getCity(),
+                requestModel.getAddress().getState(),
+                requestModel.getAddress().getZipCode(),
+                requestModel.getAddress().getCountry());
 
         Business business = new Business();
         business.setName(requestModel.getName());
@@ -27,14 +28,15 @@ public class BusinessResponseMapper {
 
     public BusinessResponseModel entityToResponseModel(Business business) {
         BusinessResponseModel response = new BusinessResponseModel();
-        response.setId(business.getId());
+        if (business.getBusinessId() != null) {
+            response.setBusinessId(business.getBusinessId().getBusinessId());
+        }
         response.setName(business.getName());
         response.setCompanySize(business.getCompanySize());
         response.setDateCreated(business.getDateCreated());
 
         if (business.getAddress() != null) {
-            BusinessResponseModel.AddressResponseModel addressModel = new BusinessResponseModel.AddressResponseModel();
-            addressModel.setId(business.getAddress().getId());
+            AddressResponseModel addressModel = new AddressResponseModel();
             addressModel.setStreet(business.getAddress().getStreet());
             addressModel.setCity(business.getAddress().getCity());
             addressModel.setState(business.getAddress().getState());
