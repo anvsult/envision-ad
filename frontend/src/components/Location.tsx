@@ -29,35 +29,6 @@ function storeLatLngSession(latlng: LatLngLiteral) {
     sessionStorage.setItem(userLocationKey, JSON.stringify(item));
 }
 
-export async function getAddressLocation(mediaLocation: MediaLocationDTO) {
-  
-  const address = getJoinedAddress([mediaLocation.street, mediaLocation.city, mediaLocation.province, mediaLocation.country]);
-  const url = `${location.protocol}//nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-    address
-  )}`;
-
-  try {
-    const response = await fetch(url, {});
-    if (!response.ok) {
-      throw new Error('Geocoding request failed');
-    }
-    const data = await response.json();
-    if (!Array.isArray(data) || data.length === 0) {
-      throw new Error('No geocoding results found');
-    }
-    const lat = parseFloat(data[0].lat);
-    const lng = parseFloat(data[0].lon);
-    if (isNaN(lat) || isNaN(lng)) {
-      throw new Error('Invalid geocoding coordinates');
-    }
-    const latlng: LatLngLiteral = {lat, lng};
-    return latlng;
-  } catch (error) {
-    // You may want to handle the error differently, e.g., return null or rethrow
-    throw error;
-  }
-}
-
 // Get the user's latitude and longitude
 export function GetUserGeoLocation(
   setUserLocation: React.Dispatch<React.SetStateAction<LatLngLiteral | null>>,
