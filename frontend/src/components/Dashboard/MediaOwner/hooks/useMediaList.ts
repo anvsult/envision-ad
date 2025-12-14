@@ -6,28 +6,28 @@ import { MediaRequest } from "@/types/MediaTypes";
 
 export function useMediaList() {
   const [media, setMedia] = useState<MediaRowData[]>([]);
-  
 
-    useEffect(() => {
-        getAllMedia()
-            .then((data) => {
-                const items = (data || []).filter((m) => m.id != null);
-                const mapped = items.map((m) => ({
-                    id: String(m.id),
-                    name: m.title,
-                    image: m.imageUrl ?? null,
-                    adsDisplayed: 0,
-                    pending: 0,
-                    status: m.status ?? "Pending",
-                    timeUntil: "-",
-                    price: m.price ? `$${m.price}` : "$0",
-                }));
-                setMedia(mapped);
-            })
-            .catch((err) => {
-                console.error("Failed to load media:", err);
-            });
-    }, []);
+
+  useEffect(() => {
+    getAllMedia()
+      .then((data) => {
+        const items = (data || []).filter((m) => m.id != null);
+        const mapped = items.map((m) => ({
+          id: String(m.id),
+          name: m.title,
+          image: m.imageUrl ?? null,
+          adsDisplayed: 0,
+          pending: 0,
+          status: m.status ?? "PENDING",
+          timeUntil: "-",
+          price: m.price ? `$${m.price}` : "$0",
+        }));
+        setMedia(mapped);
+      })
+      .catch((err) => {
+        console.error("Failed to load media:", err);
+      });
+  }, []);
 
     const buildScheduleFromForm = (formState: MediaFormState) => {
         const selectedMonths = Object.keys(formState.activeMonths).filter(
@@ -49,7 +49,7 @@ export function useMediaList() {
         };
     };
 
-    
+
 
   const addNewMedia = async (formState: MediaFormState) => {
     if (!formState.mediaTitle) {
@@ -85,7 +85,7 @@ export function useMediaList() {
         image: created.imageUrl ?? null,
         adsDisplayed: 0,
         pending: 0,
-        status: created.status ?? "Pending Admin Approval",
+        status: created.status ?? "PENDING",
         timeUntil: "-",
         price: formState.weeklyPrice || "$0",
       };
@@ -142,11 +142,70 @@ export function useMediaList() {
     return getMediaById(String(id));
   };
 
+  // Toggle status
+  const toggleMediaStatus = async (id: string | number) => {
+    const targetId = String(id);
+
+    // find current row in UI
+    const currentRow = media.find((m) => String(m.id) === targetId);
+    if (!currentRow) return;
+
+    if (currentRow.status === "PENDING" || currentRow.status === "REJECTED") {
+      console.warn("Cannot toggle status while media is pending approval or has been rejected");
+      return;
+    }
+
+    const currentStatus = currentRow.status;
+    const nextStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
+
+    setMedia((prev) =>
+        prev.map((m) =>
+            String(m.id) === targetId ? { ...m, status: nextStatus } : m
+        )
+    );
+
+    try {
+      // Get full backend DTO so updateMedia gets what it expects
+      const backend = await getMediaById(targetId);
+
+      const payload = {
+        ...backend,
+        status: nextStatus,
+      };
+
+      const updated = await updateMedia(targetId, payload as any);
+
+      // Ensure local list matches whatever backend finally saved
+      setMedia((prev) =>
+          prev.map((m) =>
+              String(m.id) === targetId
+                  ? {
+                    ...m,
+                    status: updated.status ?? nextStatus,
+                  }
+                  : m
+          )
+      );
+    } catch (err) {
+      console.error("Failed to toggle media status:", err);
+
+      // Revert optimistic change on error
+      setMedia((prev) =>
+          prev.map((m) =>
+              String(m.id) === targetId ? { ...m, status: currentStatus } : m
+          )
+      );
+      throw err;
+    }
+  };
+
+
   return {
     media,
     addNewMedia,
     editMedia,
     deleteMediaById,
     fetchMediaById,
+    toggleMediaStatus,
   };
 }
