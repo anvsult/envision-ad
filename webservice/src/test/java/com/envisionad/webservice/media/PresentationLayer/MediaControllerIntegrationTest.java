@@ -63,7 +63,6 @@ class MediaControllerIntegrationTest {
 
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);
 
-        // Seed data manually to avoid broken schema-h2.sql
         com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
         location.setName("Downtown Billboard A");
         location.setDescription("Large DIGITAL billboard");
