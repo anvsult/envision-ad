@@ -10,4 +10,6 @@ public interface BusinessRepository extends JpaRepository<Business, String> {
     Business findByEmployeeIdsContains(String employeeId);
 
     boolean existsByName(String name);
+
+    boolean existsByEmployeeIdsContains(String employeeId);
 }

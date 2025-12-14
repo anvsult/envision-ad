@@ -14,7 +14,7 @@ import java.util.Set;
 public class Business {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private BusinessIdentifier businessId;
 
@@ -25,6 +25,9 @@ public class Business {
     @Enumerated(EnumType.STRING)
     private CompanySize companySize;
 
+    // TODO - Remove Address Class from business subdomain, and convert it into just a String.
+    //  Separate fields for country, province, city, etc. will still be entered separately in the front-end,
+    //  but just concatenated into an address string once sent to the backend
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id", referencedColumnName = "id")
     private Address address;

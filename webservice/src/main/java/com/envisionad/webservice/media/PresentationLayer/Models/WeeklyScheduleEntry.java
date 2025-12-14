@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.PresentationLayer.Models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -7,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WeeklyScheduleEntry {
     private String dayOfWeek;
-    @com.fasterxml.jackson.annotation.JsonProperty("isActive")
+    @JsonProperty("isActive")
     private boolean active;
     private String startTime;
     private String endTime;

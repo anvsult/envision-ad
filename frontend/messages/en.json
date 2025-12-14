@@ -155,7 +155,8 @@
   "browse": {
     "browseactions":{
       "filter": "Filter:",
-      "sort": "Sort by:"
+      "sort": "Sort by:",
+      "nearest": "Nearest"
     },
     "filters":{
       "price": "Price ($)",
@@ -166,7 +167,10 @@
     },
     "nomedia":{
       "notfound": "No media found",
-      "changefilters": "Please change your filters"
+      "changefilters": "Please change your filters",
+      "failedToLoad": "Failed to load media: ",
+      "noUserLocation": "Could not get nearest media. Please allow access to your location.",
+      "noSupport": "Geolocation is not supported by your browser."
     }
   },
   "business": {

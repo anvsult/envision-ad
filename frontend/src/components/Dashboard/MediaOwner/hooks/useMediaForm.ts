@@ -1,71 +1,71 @@
 import {useState} from "react";
 
 export interface MediaFormState {
-    mediaTitle: string;
-    mediaOwnerName: string;
-    resolution: string;
-    displayType: string | null;
-    loopDuration: string;
-    aspectRatio: string;
-    widthCm: string;
-    heightCm: string;
-    weeklyPrice: string;
-    dailyImpressions: string;
-    mediaAddress: string;
-    activeDaysOfWeek: Record<string, boolean>;
-    dailyOperatingHours: Record<string, { start: string; end: string }>;
-    activeMonths: Record<string, boolean>;
+  mediaTitle: string;
+  mediaOwnerName: string;
+  mediaLocationId: string;
+  resolution: string;
+  displayType: string | null;
+  loopDuration: string;
+  aspectRatio: string;
+  widthCm: string;
+  heightCm: string;
+  weeklyPrice: string;
+  dailyImpressions: string;
+  activeDaysOfWeek: Record<string, boolean>;
+  dailyOperatingHours: Record<string, { start: string; end: string }>;
+  activeMonths: Record<string, boolean>;
 }
 
 const getInitialFormState = (): MediaFormState => ({
-    mediaTitle: "",
-    mediaOwnerName: "",
-    resolution: "",
-    displayType: null,
-    loopDuration: "",
-    aspectRatio: "",
-    widthCm: "",
-    heightCm: "",
-    weeklyPrice: "",
-    dailyImpressions: "",
-    mediaAddress: "",
-    activeDaysOfWeek: {
-        Monday: true,
-        Tuesday: true,
-        Wednesday: true,
-        Thursday: true,
-        Friday: true,
-        Saturday: false,
-        Sunday: false,
-    },
-    dailyOperatingHours: {
-        Monday: {start: "", end: ""},
-        Tuesday: {start: "", end: ""},
-        Wednesday: {start: "", end: ""},
-        Thursday: {start: "", end: ""},
-        Friday: {start: "", end: ""},
-        Saturday: {start: "", end: ""},
-        Sunday: {start: "", end: ""},
-    },
-    activeMonths: (() => {
-        const months = [
-            "January",
-            "February",
-            "March",
-            "April",
-            "May",
-            "June",
-            "July",
-            "August",
-            "September",
-            "October",
-            "November",
-            "December",
-        ];
-        const obj: Record<string, boolean> = {};
-        months.forEach((m) => (obj[m] = true));
-        return obj;
-    })(),
+  mediaTitle: "",
+  mediaOwnerName: "",
+  mediaLocationId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380012",
+  resolution: "",
+  displayType: "DIGITAL",
+  loopDuration: "",
+  aspectRatio: "",
+  widthCm: "",
+  heightCm: "",
+  weeklyPrice: "",
+  dailyImpressions: "",
+  activeDaysOfWeek: {
+    Monday: true,
+    Tuesday: true,
+    Wednesday: true,
+    Thursday: true,
+    Friday: true,
+    Saturday: false,
+    Sunday: false,
+  },
+  dailyOperatingHours: {
+    Monday: { start: "", end: "" },
+    Tuesday: { start: "", end: "" },
+    Wednesday: { start: "", end: "" },
+    Thursday: { start: "", end: "" },
+    Friday: { start: "", end: "" },
+    Saturday: { start: "", end: "" },
+    Sunday: { start: "", end: "" },
+  },
+  activeMonths: (() => {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const obj: Record<string, boolean> = {};
+    months.forEach((m) => (obj[m] = true));
+    return obj;
+  })(),
 });
 
 export function useMediaForm() {

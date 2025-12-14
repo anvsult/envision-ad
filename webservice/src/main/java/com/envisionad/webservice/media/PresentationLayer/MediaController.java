@@ -10,14 +10,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.math.BigDecimal;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
+@CrossOrigin(origins = "http://localhost:3000")
 public class MediaController {
 
     private final MediaService mediaService;
@@ -42,7 +45,10 @@ public class MediaController {
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Integer minDailyImpressions
+            @RequestParam(required = false) Integer minDailyImpressions,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) Double userLat,
+            @RequestParam(required = false) Double userLng
     ) {
         // Input validation
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
@@ -58,7 +64,14 @@ public class MediaController {
             return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
         }
         List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
-            mediaService.getAllFilteredActiveMedia(title, minPrice, maxPrice, minDailyImpressions)
+            mediaService.getAllFilteredActiveMedia(
+                title,
+                minPrice,
+                maxPrice,
+                minDailyImpressions,
+                sortBy,
+                userLat,
+                userLng)
         );
         return ResponseEntity.ok(result);
     }
@@ -66,15 +79,15 @@ public class MediaController {
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
-        Media media = mediaService.getMediaById(id);
+        Media media = mediaService.getMediaById(UUID.fromString(id));
         if (media == null) {
             return ResponseEntity.notFound().build(); // Returns 404 if not found
         }
         return ResponseEntity.ok(responseMapper.entityToResponseModel(media));
     }
 
-
     @PostMapping
+    @PreAuthorize("hasAuthority('create:media')")
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
@@ -85,26 +98,29 @@ public class MediaController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('update:media')")
     public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
                                                           @RequestBody MediaRequestModel requestModel) {
         Media entity = requestMapper.requestModelToEntity(requestModel);
 
-        entity.setId(id);
+        entity.setId(UUID.fromString(id));
 
         Media updatedEntity = mediaService.updateMedia(entity);
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updatedEntity));
     }
 
+    //this endpoint will probably be deleted
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMedia(@PathVariable String id) {
-        mediaService.deleteMedia(id);
+        mediaService.deleteMedia(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 
+    //image handling will not be done this way
     @PostMapping("/{id}/image")
     public ResponseEntity<?> uploadImage(@PathVariable String id,
                                          @RequestParam("file") MultipartFile file) {
-        Media media = mediaService.getMediaById(id);
+        Media media = mediaService.getMediaById(UUID.fromString(id));
         if (media == null) {
             return ResponseEntity.notFound().build();
         }
@@ -124,7 +140,7 @@ public class MediaController {
 
     @GetMapping("/{id}/image")
     public ResponseEntity<byte[]> getImage(@PathVariable String id) {
-        Media media = mediaService.getMediaById(id);
+        Media media = mediaService.getMediaById(UUID.fromString(id));
         if (media == null || media.getImageData() == null) {
             return ResponseEntity.notFound().build();
         }

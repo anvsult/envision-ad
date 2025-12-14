@@ -10,6 +10,5 @@ public class BusinessRequestModel {
     private String name;
     private CompanySize companySize;
     private AddressRequestModel address;
-    private String owner;
-    private RoleResponseModel roles;
+    private RoleRequestModel roles;
 }

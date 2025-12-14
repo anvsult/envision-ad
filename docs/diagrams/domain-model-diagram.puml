@@ -23,15 +23,20 @@ title Envision Ad Platform - Domain Driven Design Domain Model
 ' Media
 ' ===============================
 package "Media Subdomain" #LightGreen {
-  AGGREGATE_ROOT(MediaAsset) #LightBlue {
+  AGGREGATE_ROOT(Media) #LightBlue {
     title: String
-    estimatedWeeklyViews: Int
-    pricePerWeek: Decimal
+    estimatedDailyViews: Int
+    pricePerHour: Decimal
     width: Decimal
     height: Decimal
+    resolution: Decimal
     image: URL
     mediaCorners: double[4]
   }
+
+  note right of Media::height
+    Width and height are in CM.
+  end note
 
   ENTITY(MediaType) #LightBlue {
     name: String
@@ -42,28 +47,44 @@ package "Media Subdomain" #LightGreen {
     mediaTypeId: UUID
   }
 
-  ENUM(Status) #Orange {
-    ACTIVE
-    INACTIVE
+  ENUM(ApprovalStatus) #Orange {
     PENDING
     REJECTED
+    APPROVED
+  }
+
+  ENUM(ListingStatus) #Orange {
+    DRAFT
+    LISTED
+    UNLISTED
   }
 
   VALUE_OBJECT(MediaIdentifier) #Bisque {
     mediaId: UUID
   }
 
-  VALUE_OBJECT(MediaLocation) #Bisque {
+  AGGREGATE(MediaLocation) #LightBlue {
+    name: String
+    description: String
+    country: String
+    province: String
+    city: String
+    postalCode: String
     latitude: Float
     longitude: Float
-    address: String
   }
 
+  VALUE_OBJECT(MediaLocationIdentifier) #Bisque {
+      mediaLocationId: UUID
+}
+
   MediaType "1" o--> "1" MediaTypeIdentifier
-  MediaAsset "1" o--> "1" MediaLocation
-  MediaAsset "1" o--> "1" MediaIdentifier
-  MediaAsset "1" o--> "1" MediaTypeIdentifier
-  MediaAsset "1" o--> "1" Status
+  Media "1" o--> "1" MediaIdentifier
+  Media "1" o--> "1" MediaTypeIdentifier
+  Media "1" o--> "1" ListingStatus
+  Media "1" o--> "1" ApprovalStatus
+  MediaLocation "1" o--> "*" "MediaIdentifier"
+  MediaLocation "1" o--> "1" "MediaLocationIdentifier"
 }
 
 ' ===============================
@@ -232,7 +253,7 @@ package "Customer Subdomain" #Lavender {
 ' ===============================
 
 Report "1" o--> "1" BusinessIdentifier
-MediaAsset "1" o--> "1" BusinessIdentifier
+Media "1" o--> "1" BusinessIdentifier
 AdvertisementCampaign "1" o--> "1" BusinessIdentifier
 Transaction "1" o--> "1" BusinessIdentifier
 UserReport "1" o--> "1" BusinessIdentifier

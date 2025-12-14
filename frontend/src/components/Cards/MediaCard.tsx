@@ -1,6 +1,7 @@
 import { Paper, Text, Image, Space, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
+import { getJoinedAddress, MediaLocationDTO } from "@/types/MediaTypes";
 // import StatusBadge from "../StatusBadge/StatusBadge";
 // import { MediaAdStatuses } from "@/types/MediaAdStatus";
 
@@ -8,7 +9,7 @@ export interface MediaCardProps {
     id?: string;
     title: string;
     mediaOwnerName: string;
-    address: string;
+    mediaLocation: MediaLocationDTO;
     resolution: string;
     aspectRatio: string;
     price: number ;
@@ -18,7 +19,7 @@ export interface MediaCardProps {
     // TODO: Add `dateAdded: Date` property if/when date tracking is required.
 }
 
-function MediaCard({id, imageUrl, title, mediaOwnerName, address, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
+function MediaCard({id, imageUrl, title, mediaOwnerName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
@@ -54,7 +55,7 @@ function MediaCard({id, imageUrl, title, mediaOwnerName, address, aspectRatio, r
                         </Text>
                     <Stack gap="3px">
                         <Text size="xs" lineClamp={1}>
-                            {address}
+                            {getJoinedAddress([mediaLocation.city, mediaLocation.province])}
                         </Text>
                         <Text size="xs" lineClamp={1} >
                             {t('dailyImpressions', {dailyImpressions: dailyImpressions})}

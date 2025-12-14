@@ -1,10 +1,12 @@
-import {useEffect, useState} from "react";
-import {addMedia, deleteMedia, getAllMedia, getMediaById, updateMedia} from "@/services/MediaService";
-import type {MediaRowData} from "../MediaTable/MediaRow";
-import type {MediaFormState} from "./useMediaForm";
+import { useState, useEffect } from "react";
+import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/services/MediaService";
+import type { MediaRowData } from "../MediaTable/MediaRow";
+import type { MediaFormState } from "./useMediaForm";
+import { MediaRequest } from "@/types/MediaTypes";
 
 export function useMediaList() {
-    const [media, setMedia] = useState<MediaRowData[]>([]);
+  const [media, setMedia] = useState<MediaRowData[]>([]);
+
 
   useEffect(() => {
     getAllMedia()
@@ -47,31 +49,33 @@ export function useMediaList() {
         };
     };
 
-    const addNewMedia = async (formState: MediaFormState) => {
-        if (!formState.mediaTitle) {
-            throw new Error("Please enter a media name");
-        }
 
-        const schedule = buildScheduleFromForm(formState);
 
-        const payload = {
-            title: formState.mediaTitle,
-            mediaOwnerName: formState.mediaOwnerName,
-            address: formState.mediaAddress,
-            resolution: formState.resolution,
-            aspectRatio: formState.aspectRatio,
-            loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,
-            width: formState.widthCm ? Number(formState.widthCm) : null,
-            height: formState.heightCm ? Number(formState.heightCm) : null,
-            price: formState.weeklyPrice ? Number(formState.weeklyPrice) : null,
-            dailyImpressions: formState.dailyImpressions ? Number(formState.dailyImpressions) : null,
-            schedule: schedule,
-            status: null,
-            typeOfDisplay: formState.displayType,
-        };
+  const addNewMedia = async (formState: MediaFormState) => {
+    if (!formState.mediaTitle) {
+      throw new Error("Please enter a media name");
+    }
+
+    const schedule = buildScheduleFromForm(formState);
+
+    const payload: MediaRequest = {
+      title: formState.mediaTitle,
+      mediaOwnerName: formState.mediaOwnerName,
+      mediaLocationId: formState.mediaLocationId,
+      typeOfDisplay: formState.displayType,
+      loopDuration: Number(formState.loopDuration),
+      resolution: formState.resolution,
+      aspectRatio: formState.aspectRatio,
+      width: Number(formState.widthCm),
+      height: Number(formState.heightCm),
+      price: Number(formState.weeklyPrice),
+      dailyImpressions: Number(formState.dailyImpressions),
+      schedule: schedule,
+      status: 'PENDING'
+    };
 
     try {
-      const created = await addMedia(payload as any);
+      const created = await addMedia(payload as MediaRequest);
       if (!created || created.id == null) {
         throw new Error('Created media did not return an id');
       }
@@ -93,56 +97,50 @@ export function useMediaList() {
     }
   };
 
-    const editMedia = async (id: string | number, formState: MediaFormState) => {
-        const schedule = buildScheduleFromForm(formState);
+  const editMedia = async (id: string | number, formState: MediaFormState) => {
+    const schedule = buildScheduleFromForm(formState);
 
-        const payload = {
-            title: formState.mediaTitle,
-            mediaOwnerName: formState.mediaOwnerName,
-            address: formState.mediaAddress,
-            resolution: formState.resolution,
-            aspectRatio: formState.aspectRatio,
-            loopDuration: formState.loopDuration ? Number(formState.loopDuration) : null,
-            width: formState.widthCm ? Number(formState.widthCm) : null,
-            height: formState.heightCm ? Number(formState.heightCm) : null,
-            price: formState.weeklyPrice ? Number(formState.weeklyPrice) : null,
-            dailyImpressions: formState.dailyImpressions ? Number(formState.dailyImpressions) : null,
-            schedule: schedule,
-            status: null,
-            typeOfDisplay: formState.displayType,
-        };
-
-        try {
-            const updated = await updateMedia(String(id), payload as any);
-            setMedia((prev) =>
-                prev.map((r) => (String(r.id) === String(id) ? {
-                    ...r,
-                    name: updated.title,
-                    image: updated.imageUrl ?? r.image,
-                    status: updated.status ?? r.status,
-                    price: updated.price ? `$${updated.price}` : r.price
-                } : r))
-            );
-            return updated;
-        } catch (err: unknown) {
-            console.error("Failed to update media:", err);
-            throw err;
-        }
+    const payload:MediaRequest = {
+      title: formState.mediaTitle,
+      mediaOwnerName: formState.mediaOwnerName,
+      mediaLocationId: formState.mediaLocationId,
+      resolution: formState.resolution,
+      aspectRatio: formState.aspectRatio,
+      loopDuration: Number(formState.loopDuration),
+      width: Number(formState.widthCm),
+      height: Number(formState.heightCm),
+      price: Number(formState.weeklyPrice),
+      dailyImpressions: Number(formState.dailyImpressions),
+      schedule: schedule,
+      status: 'PENDING',
+      typeOfDisplay: formState.displayType,
     };
 
-    const deleteMediaById = async (id: string | number) => {
-        try {
-            await deleteMedia(String(id));
-            setMedia((prev) => prev.filter((r) => String(r.id) !== String(id)));
-        } catch (err: unknown) {
-            console.error("Failed to delete media:", err);
-            throw err;
-        }
-    };
+    try {
+      const updated = await updateMedia(String(id), payload as MediaRequest);
+      setMedia((prev) =>
+        prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${updated.price}` : r.price } : r))
+      );
+      return updated;
+    } catch (err: unknown) {
+      console.error("Failed to update media:", err);
+      throw err;
+    }
+  };
 
-    const fetchMediaById = async (id: string | number) => {
-        return getMediaById(String(id));
-    };
+  const deleteMediaById = async (id: string | number) => {
+    try {
+      await deleteMedia(String(id));
+      setMedia((prev) => prev.filter((r) => String(r.id) !== String(id)));
+    } catch (err: unknown) {
+      console.error("Failed to delete media:", err);
+      throw err;
+    }
+  };
+
+  const fetchMediaById = async (id: string | number) => {
+    return getMediaById(String(id));
+  };
 
   // Toggle status
   const toggleMediaStatus = async (id: string | number) => {

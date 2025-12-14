@@ -1,6 +1,6 @@
 'use client'
 
-import { ActionIcon, Container, Group, Pagination, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
@@ -11,30 +11,38 @@ import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-
+import { GetUserGeoLocation} from '@/components/Location';
+import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {
   const t = useTranslations('browse');
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
-
   const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
 
   const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
-
+  
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
   const [titleFilter, setTitleFilter] = useState("");
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
+  const [userLocation, setUserLocation] = useState<LatLngLiteral | null>(null);
+  const [message, setMessage] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<string>("nearest");
 
-
+  useEffect(() => GetUserGeoLocation(setUserLocation, setMessage), []);
 
   useEffect(() => {
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions)
+    if (sortBy === "nearest" && !userLocation){
+      return
+    } 
+    
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation)
       .then((data) => {
         const items = (data || []).filter((m) => m.id != null);
 
@@ -42,7 +50,7 @@ function BrowsePage() {
           id: String(m.id),
           title: m.title,
           mediaOwnerName: m.mediaOwnerName,
-          address: m.address,
+          mediaLocation: m.mediaLocation,
           resolution: m.resolution,
           aspectRatio: m.aspectRatio,
           loopDuration: m.loopDuration,
@@ -53,14 +61,18 @@ function BrowsePage() {
           typeOfDisplay: m.typeOfDisplay,
           imageUrl: m.imageUrl,
         }));
-
+        
         setMedia(mapped);
         setActivePage(1);
+        
       })
-      .catch((err) => {
-        console.error("Failed to load media:", err);
+      .catch(() => {
+        setMessage('failedToLoad');
+        setLoading(false);
+      }).finally(() => {
+        setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t]);
 
 
   const paginatedMedia = useMemo(() => {
@@ -85,6 +97,7 @@ function BrowsePage() {
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
+          
           <TextInput
             placeholder="Search title"
             value={draftTitleFilter}
@@ -102,17 +115,19 @@ function BrowsePage() {
           />
 
 
-          <BrowseActions filters={filters()}/>
-          {paginatedMedia.length > 0 ? (<MediaCardGrid medias={paginatedMedia} />):
-            ( 
+          <BrowseActions filters={filters()} setSortBy={setSortBy}/>
+          
+            {/* if loading, show loader, if  */}
+          {(paginatedMedia.length > 0) ? (<MediaCardGrid medias={paginatedMedia} />):( 
               <Stack h='20em' justify='center' align='center'>
-                <Text size='32px'>{t('nomedia.notfound')}</Text>
-                <Text>{t('nomedia.changefilters')}</Text>
+                {(loading) ? ( (sortBy == 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
+                  <>
+                    <Text size='32px'>{t('nomedia.notfound')}</Text>
+                    <Text>{t('nomedia.changefilters')}</Text>
+                  </>
+                }
               </Stack>
-            )
-
-          }
-
+          )}
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination
