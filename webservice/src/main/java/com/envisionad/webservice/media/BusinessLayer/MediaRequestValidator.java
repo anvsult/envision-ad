@@ -17,6 +17,9 @@ public class MediaRequestValidator {
         }
 
         validateTitle(request.getTitle());
+        if (request.getMediaLocationId() == null || request.getMediaLocationId().trim().isEmpty()) {
+            throw new IllegalArgumentException("Media location ID is required");
+        }
         validatePrice(request.getPrice());
         validateDailyImpressions(request.getDailyImpressions());
         validateTypeOfDisplay(request);
