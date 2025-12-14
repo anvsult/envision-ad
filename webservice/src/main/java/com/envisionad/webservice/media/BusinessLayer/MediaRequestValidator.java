@@ -61,7 +61,10 @@ public class MediaRequestValidator {
             throw new IllegalArgumentException("Type of display cannot be null");
         }
 
-        if (request.getMediaOwnerName() != null && request.getMediaOwnerName().length() > 52) {
+        if (request.getMediaOwnerName() == null || request.getMediaOwnerName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Media owner name cannot be empty");
+        }
+        if (request.getMediaOwnerName().length() > 52) {
             throw new IllegalArgumentException("Media owner name cannot exceed 52 characters");
         }
 
