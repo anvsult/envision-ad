@@ -170,7 +170,7 @@ export function useMediaList() {
 
             const payload = {
                 ...backend,
-                mediaLocationId: backend.mediaLocation?.id,
+                mediaLocationId: backend.mediaLocation?.id ?? null,
                 status: nextStatus,
             };
 
