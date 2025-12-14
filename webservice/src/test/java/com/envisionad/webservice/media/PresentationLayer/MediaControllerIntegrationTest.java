@@ -93,7 +93,7 @@ class MediaControllerIntegrationTest {
 
         ScheduleModel schedule = new ScheduleModel();
         WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-        entry.setDayOfWeek("monday");
+        entry.setDayOfWeek("Monday");
         entry.setActive(true);
         entry.setStartTime("09:00");
         entry.setEndTime("17:00");
