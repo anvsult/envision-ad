@@ -12,7 +12,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-        NOW()) ON CONFLICT (id) DO NOTHING;
+NOW()) ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business_employees (business_id, employee_id)
 VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
@@ -455,3 +455,78 @@ VALUES (
     }'::jsonb,
     'ACTIVE', 'halifax_market.jpg', 'image/jpeg', NULL
 );
+
+       ('0e6e753d-5175-4f0f-8bbc-197bb18eb8b3', 'Street LED Wall', 'Vision Ads', '210 Queen St, Toronto, ON', 'DIGITAL',
+        30, '1920x1080', '16:9', 20.0, 11.5, 55.00, 90,
+        '{"selectedMonths": ["June"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "22:00", "dayOfWeek": "monday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('e254d0b4-7282-4ef4-a9e7-da2fd85f231c', 'Food Court Screen', 'Indoor Media', '88 Mall Dr, Mississauga, ON',
+        'DIGITAL', 20, '1080x1920', '9:16', 3.0, 5.5, 25.50, 50,
+        '{"selectedMonths": ["July"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "20:00", "dayOfWeek": "tuesday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('fde4f0f2-45c7-4c78-8a78-1eb82e8e7087', 'Gym Display', 'Fit Media', '300 Health Blvd, Scarborough, ON',
+        'DIGITAL', 15, '1920x1080', '16:9', 6.0, 3.5, 19.00, 40,
+        '{"selectedMonths": ["March"], "weeklySchedule": [{"isActive": true, "startTime": "06:00", "endTime": "22:00", "dayOfWeek": "wednesday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('7de72786-c808-42d9-bc29-ffdf7397dfcc', 'Cinema Lobby', 'Movie Ads', '77 Cinema Way, Vaughan, ON', 'DIGITAL',
+        25, '3840x2160', '16:9', 9.0, 5.5, 70.00, 120,
+        '{"selectedMonths": ["August"], "weeklySchedule": [{"isActive": true, "startTime": "14:00", "endTime": "23:59", "dayOfWeek": "friday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('65234ef1-df9d-4f65-a4f4-85ecf730d7b9', 'Retail Endcap', 'Store Media', '10 Retail Rd, Brampton, ON', 'DIGITAL',
+        10, '1080x1920', '9:16', 2.0, 4.2, 15.00, 35,
+        '{"selectedMonths": ["May"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "21:00", "dayOfWeek": "saturday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+
+       ('9dbef6d8-ba35-4ee3-adc2-7ba821ffebf1', 'University Screen', 'Campus Ads', '200 College St, Guelph, ON',
+        'DIGITAL', 30, '1920x1080', '16:9', 7.0, 4.0, 32.00, 75,
+        '{"selectedMonths": ["September"], "weeklySchedule": [{"isActive": true, "startTime": "08:00", "endTime": "18:00", "dayOfWeek": "monday"}]}',
+        'PENDING', NULL, NULL, NULL),
+       ('4c383d2e-8393-4f9e-826c-e5e0eb439c01', 'Hospital Hallway', 'Care Media', '400 Health Ave, London, ON',
+        'DIGITAL', 20, '1920x1080', '16:9', 5.0, 3.0, 28.00, 60,
+        '{"selectedMonths": ["October"], "weeklySchedule": [{"isActive": true, "startTime": "07:00", "endTime": "19:00", "dayOfWeek": "tuesday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('d2499f91-35ab-408d-812c-3028e9e1d99d', 'Convention Banner', 'Expo Media', '600 Event Blvd, Hamilton, ON',
+        'POSTER', 0, '3000x1000', '3:1', 25.0, 8.0, 45.00, 100,
+        '{"selectedMonths": ["November"], "weeklySchedule": [{"isActive": true, "startTime": "09:00", "endTime": "17:00", "dayOfWeek": "thursday"}]}',
+        'INACTIVE', NULL, NULL, NULL),
+       ('159e1a11-81e9-49b7-a72d-6f5989744dad', 'Suburban LED', 'Metro Vision', '55 Suburb Rd, Markham, ON', 'DIGITAL',
+        40, '1920x1080', '16:9', 18.0, 10.0, 60.00, 95,
+        '{"selectedMonths": ["December"], "weeklySchedule": [{"isActive": true, "startTime": "10:00", "endTime": "18:00", "dayOfWeek": "sunday"}]}',
+        'ACTIVE', NULL, NULL, NULL),
+       ('954f2e96-f728-40ea-8763-78a2f79db102', 'Stadium Ring', 'Sports Media', '1 Arena Way, Toronto, ON', 'DIGITAL',
+        15, '3840x2160', '16:9', 30.0, 12.0, 120.00, 250,
+        '{"selectedMonths": ["June", "July"], "weeklySchedule": [{"isActive": true, "startTime": "12:00", "endTime": "23:00", "dayOfWeek": "saturday"}]}',
+        'ACTIVE', NULL, NULL, NULL) ON CONFLICT (media_id) DO
+UPDATE SET schedule = EXCLUDED.schedule;
+
+
+
+-- =========================== ADS AND CAMPAIGNS DATA ===========================
+
+-- 1. Insert Dummy Ad Campaigns
+INSERT INTO ad_campaigns (campaign_id, name, start_date, end_date)
+VALUES
+    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025', '2025-06-01 00:00:00', '2025-08-31 23:59:59'),
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz', '2025-11-20 00:00:00', '2025-11-30 23:59:59'),
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch', '2025-12-25 00:00:00', '2026-01-31 23:59:59');
+
+-- 2. Insert Dummy Ads
+-- Note: We use integers (1, 2, 3) for ad_campaign_ref_id based on the order of insertion above.
+
+-- Ads for Campaign 1 (Summer Sale)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://cdn.envisionad.com/summer-beach.jpg', 30, 'IMAGE', 1),
+    ('22222222-3333-4444-5555-666666666666', 'Summer Video Promo', 'https://cdn.envisionad.com/summer-video.mp4', 30, 'VIDEO', 1);
+
+-- Ads for Campaign 2 (Black Friday)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://cdn.envisionad.com/bf-timer.html', 15, 'IMAGE', 2),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://cdn.envisionad.com/bf-main.png', 15, 'VIDEO', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://cdn.envisionad.com/cyber-teaser.jpg', 30, 'VIDEO', 2);
+
+-- Ads for Campaign 3 (New Year)
+INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+VALUES
+    ('66666666-7777-8888-9999-000000000000', 'New Year Fireworks', 'https://cdn.envisionad.com/ny-fireworks.mp4', 15, 'VIDEO', 3);
