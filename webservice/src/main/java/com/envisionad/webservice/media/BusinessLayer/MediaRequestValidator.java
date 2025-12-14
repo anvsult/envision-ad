@@ -64,7 +64,10 @@ public class MediaRequestValidator {
             throw new IllegalArgumentException("Type of display cannot be null");
         }
 
-        if (request.getMediaOwnerName() != null && request.getMediaOwnerName().length() > 52) {
+        if (request.getMediaOwnerName() == null || request.getMediaOwnerName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Media owner name cannot be empty");
+        }
+        if (request.getMediaOwnerName().length() > 52) {
             throw new IllegalArgumentException("Media owner name cannot exceed 52 characters");
         }
 
@@ -90,13 +93,13 @@ public class MediaRequestValidator {
                 throw new IllegalArgumentException("Width is required and must be positive for Poster displays");
             }
             if (request.getWidth() > 99999) {
-                throw new IllegalArgumentException("Width cannot exceed 99999");
+                throw new IllegalArgumentException("Width must be 99999 or less");
             }
             if (request.getHeight() == null || request.getHeight() <= 0) {
                 throw new IllegalArgumentException("Height is required and must be positive for Poster displays");
             }
             if (request.getHeight() > 99999) {
-                throw new IllegalArgumentException("Height cannot exceed 99999");
+                throw new IllegalArgumentException("Height must be 99999 or less");
             }
         }
     }

@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useRef } from "react";
-import { ActionIcon, Checkbox, TextInput } from "@mantine/core";
-import { IconClock } from "@tabler/icons-react";
+import React from "react";
+import { Checkbox, TextInput } from "@mantine/core";
 import type { MediaFormState } from "../hooks/useMediaForm";
 
 import { useTranslations } from "next-intl";

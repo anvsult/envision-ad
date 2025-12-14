@@ -78,7 +78,7 @@ export function MediaModal({
                         if (!formState.loopDuration) {
                             newErrors["loopDuration"] = t("errors.loopDurationRequired");
                         }
-                        if (!formState.resolution.trim() || !/^\d+x\d+$/i.test(formState.resolution)) {
+                        if (!formState.resolution.trim() || !/^\d+x\d+$/.test(formState.resolution)) {
                             newErrors["resolution"] = t("errors.resolutionRequired");
                         }
                         if (!formState.aspectRatio.trim() || !/^\d+:\d+$/.test(formState.aspectRatio)) {
@@ -123,7 +123,6 @@ export function MediaModal({
 
                     if (Object.keys(newErrors).length > 0) {
                         onFieldChange("errors", newErrors);
-                        // notifications.show({ message: t("errors.fixForm"), color: "red" });
                         return;
                     }
 

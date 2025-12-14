@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:spec-test-db",
-        "spring.sql.init.mode=never" // Ensure we don't use broken schema/data files
+        "spring.sql.init.mode=never"
 })
 class MediaSpecificationsRepositoryTest {
 
@@ -52,8 +52,7 @@ class MediaSpecificationsRepositoryTest {
         m1.setStatus(Status.ACTIVE);
         m1.setPrice(new BigDecimal("100.00"));
         m1.setDailyImpressions(1000);
-        m1.setResolution("1920x1080"); // Required validation likely applies? Repository save might not validate all
-                                       // but good to have.
+        m1.setResolution("1920x1080");
         mediaRepository.save(m1);
 
         // Media 2: Inactive, "Poster Wall", Price 50, Imp 500
