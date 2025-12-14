@@ -297,7 +297,7 @@
       "width": "Largeur (cm)",
       "height": "Hauteur (cm)",
       "price": "Prix (par semaine)",
-      "dailyImpressions": "Impressions promedias"
+      "dailyImpressions": "Impressions quotidiennes"
     },
     "placeholders": {
       "mediaName": "Nom du média",
