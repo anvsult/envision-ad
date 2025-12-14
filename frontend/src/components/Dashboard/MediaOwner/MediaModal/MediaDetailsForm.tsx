@@ -113,49 +113,114 @@ export function MediaDetailsForm({
       {formState.displayType?.toLowerCase() === "digital" && (
         <>
           <div style={{ height: 12 }} />
-          <Tooltip
-            label={t("tooltips.max20")}
-            opened={focusedField === "resolution" && isMaxLength(formState.resolution, 20)}
-            withArrow
-            position="right"
-            color="orange"
-          >
-            <TextInput
-              label={t("labels.resolution")}
-              placeholder={t("placeholders.resolution")}
-              value={formState.resolution}
-              onChange={(e) =>
-                handleRestrictedChange("resolution", e.currentTarget.value, /[^0-9xX]/g)
-              }
-              onFocus={() => handleFocus("resolution")}
-              onBlur={handleBlur}
-              maxLength={20}
-              required
-              error={formState.errors["resolution"]}
-            />
-          </Tooltip>
+          <div style={{ height: 12 }} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <Tooltip
+              label={t("tooltips.max4")}
+              opened={focusedField === "resWidth" && isMaxLength(formState.resolution.split("x")[0] || "", 4)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.resolutionWidth")}
+                placeholder={t("placeholders.resolutionWidth")}
+                value={formState.resolution ? formState.resolution.toLowerCase().split("x")[0] : ""}
+                onChange={(e) => {
+                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
+                  const currentHeight = formState.resolution ? formState.resolution.toLowerCase().split("x")[1] : "";
+                  const newRes = `${val}x${currentHeight || ""}`;
+                  onFieldChange("resolution", newRes === "x" ? "" : newRes);
+                }}
+                onFocus={() => handleFocus("resWidth")}
+                onBlur={handleBlur}
+                maxLength={4}
+                required
+                style={{ flex: 1 }}
+                error={formState.errors["resolution"]}
+              />
+            </Tooltip>
+            <Tooltip
+              label={t("tooltips.max4")}
+              opened={focusedField === "resHeight" && isMaxLength(formState.resolution.split("x")[1] || "", 4)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.resolutionHeight")}
+                placeholder={t("placeholders.resolutionHeight")}
+                value={formState.resolution ? formState.resolution.toLowerCase().split("x")[1] : ""}
+                onChange={(e) => {
+                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
+                  const currentWidth = formState.resolution ? formState.resolution.toLowerCase().split("x")[0] : "";
+                  const newRes = `${currentWidth || ""}x${val}`;
+                  onFieldChange("resolution", newRes === "x" ? "" : newRes);
+                }}
+                onFocus={() => handleFocus("resHeight")}
+                onBlur={handleBlur}
+                maxLength={4}
+                required
+                style={{ flex: 1 }}
+                error={formState.errors["resolution"]}
+              />
+            </Tooltip>
+          </div>
 
           <div style={{ height: 12 }} />
-          <Tooltip
-            label={t("tooltips.max10")}
-            opened={focusedField === "aspectRatio" && isMaxLength(formState.aspectRatio, 10)}
-            withArrow
-            position="right"
-            color="orange"
-          >
-            <TextInput
-              label={t("labels.aspectRatio")}
-              placeholder={t("placeholders.aspectRatio")}
-              value={formState.aspectRatio}
-              onChange={(e) =>
-                handleRestrictedChange("aspectRatio", e.currentTarget.value, /[^0-9:]/g)
-              }
-              onFocus={() => handleFocus("aspectRatio")}
-              onBlur={handleBlur}
-              maxLength={10}
-              error={formState.errors["aspectRatio"]}
-            />
-          </Tooltip>
+          <div style={{ height: 12 }} />
+          <div style={{ display: "flex", gap: 8 }}>
+            <Tooltip
+              label={t("tooltips.max2")}
+              opened={focusedField === "arWidth" && isMaxLength(formState.aspectRatio.split(":")[0] || "", 2)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.aspectRatioWidth")}
+                placeholder={t("placeholders.aspectRatioWidth")}
+                value={formState.aspectRatio ? formState.aspectRatio.split(":")[0] : ""}
+                onChange={(e) => {
+                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
+                  const currentHeight = formState.aspectRatio ? formState.aspectRatio.split(":")[1] : "";
+                  const newAr = `${val}:${currentHeight || ""}`;
+                  onFieldChange("aspectRatio", newAr === ":" ? "" : newAr);
+                }}
+                onFocus={() => handleFocus("arWidth")}
+                onBlur={handleBlur}
+                maxLength={2}
+                required
+                style={{ flex: 1 }}
+                error={formState.errors["aspectRatio"]}
+              />
+            </Tooltip>
+            <Tooltip
+              label={t("tooltips.max2")}
+              opened={focusedField === "arHeight" && isMaxLength(formState.aspectRatio.split(":")[1] || "", 2)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.aspectRatioHeight")}
+                placeholder={t("placeholders.aspectRatioHeight")}
+                value={formState.aspectRatio ? formState.aspectRatio.split(":")[1] : ""}
+                onChange={(e) => {
+                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
+                  const currentWidth = formState.aspectRatio ? formState.aspectRatio.split(":")[0] : "";
+                  const newAr = `${currentWidth || ""}:${val}`;
+                  onFieldChange("aspectRatio", newAr === ":" ? "" : newAr);
+                }}
+                onFocus={() => handleFocus("arHeight")}
+                onBlur={handleBlur}
+                maxLength={2}
+                required
+                style={{ flex: 1 }}
+                error={formState.errors["aspectRatio"]}
+              />
+            </Tooltip>
+          </div>
         </>
       )}
 

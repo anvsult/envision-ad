@@ -266,6 +266,10 @@
       "dangerZone": "Zone de danger",
       "deleteMedia": "Supprimer le média",
       "cancel": "Annuler"
+    },
+    "success": {
+      "create": "Média créé avec succès",
+      "update": "Média mis à jour avec succès"
     }
   },
   "mediaModal": {
@@ -285,7 +289,11 @@
       "typeOfDisplay": "Type d'affichage",
       "loopDuration": "Durée de la boucle (sec)",
       "resolution": "Résolution (px)",
+      "resolutionWidth": "Résolution - Largeur (px)",
+      "resolutionHeight": "Résolution - Hauteur (px)",
       "aspectRatio": "Format",
+      "aspectRatioWidth": "Format - Largeur",
+      "aspectRatioHeight": "Format - Hauteur",
       "width": "Largeur (cm)",
       "height": "Hauteur (cm)",
       "price": "Prix (par semaine)",
@@ -296,7 +304,11 @@
       "selectType": "Sélectionner le type",
       "loopDuration": "ex. 30",
       "resolution": "Ex. 1920x1080",
-      "aspectRatio": "ex. 16:9",
+      "resolutionWidth": "1920",
+      "resolutionHeight": "1080",
+      "aspectRatio": "Ex. 16:9",
+      "aspectRatioWidth": "16",
+      "aspectRatioHeight": "9",
       "width": "Ex. 80",
       "height": "Ex. 200",
       "price": "50,00 $",
@@ -306,10 +318,12 @@
     },
     "tooltips": {
       "max5": "Max 5 caractères",
+      "max4": "Max 4 caractères",
       "max52": "Max 52 caractères",
       "max20": "Max 20 caractères",
       "max10": "Max 10 caractères",
       "max8": "Max 8 caractères",
+      "max2": "Max 2 caractères",
       "maxDecimals": "Max 2 décimales"
     },
     "errors": {
@@ -317,6 +331,7 @@
       "mediaTitleRequired": "Le titre du média est requis",
       "loopDurationRequired": "La durée de la boucle est requise",
       "resolutionRequired": "La résolution est requise",
+      "aspectRatioRequired": "Le format est requis",
       "widthRequired": "La largeur est requise",
       "heightRequired": "La hauteur est requise",
       "priceRequired": "Le prix est requis",
