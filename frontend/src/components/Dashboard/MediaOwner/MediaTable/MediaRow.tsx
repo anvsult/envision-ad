@@ -203,7 +203,7 @@ export function MediaRow({
           </Button>
 
           <Button
-              color={isActivating ? "green" : "red"}
+              color={isActivating ? "blue" : "red"}
               onClick={() => {
                 closeModal();
                 onToggleStatus?.(row.id);

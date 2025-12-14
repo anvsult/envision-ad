@@ -16,7 +16,7 @@ import SideBar from "@/components/SideBar/SideBar";
 const ITEMS_PER_PAGE = 20;
 
 export default function MediaOwnerPage() {
-    const {media, addNewMedia, editMedia, deleteMediaById, fetchMediaById} =
+    const {media, addNewMedia, editMedia, deleteMediaById, fetchMediaById, toggleMediaStatus} =
         useMediaList();
     const {formState, updateField, updateDayTime, resetForm, setFormState} =
         useMediaForm();
@@ -162,6 +162,16 @@ export default function MediaOwnerPage() {
         });
     };
 
+    const handleToggleStatus = async (id: string | number) => {
+        try {
+            await toggleMediaStatus(id);
+        } catch (err) {
+            console.error("Failed to toggle media status:", err);
+            alert(t("errors.statusToggleFailed") || "Failed to change media status.");
+        }
+    };
+
+
     const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
     const paginatedMedia = useMemo(() => {
         const start = (activePage - 1) * ITEMS_PER_PAGE;
@@ -229,6 +239,7 @@ export default function MediaOwnerPage() {
                             rows={paginatedMedia}
                             onEdit={handleEdit}
                             onDelete={handleDelete}
+                            onToggleStatus={handleToggleStatus}
                         />
                         {totalPages > 1 && (
                             <Group justify="center" mt="md">
