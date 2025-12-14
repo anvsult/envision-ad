@@ -228,28 +228,50 @@ export function MediaDetailsForm({
         <>
           <div style={{ height: 12 }} />
           <div style={{ display: "flex", gap: 8 }}>
-            <TextInput
-              label={t("labels.width")}
-              placeholder={t("placeholders.width")}
-              type="text"
-              style={{ flex: 1 }}
-              value={formState.widthCm}
-              onChange={(e) =>
-                handleRestrictedChange("widthCm", e.currentTarget.value, /[^0-9]/g)
-              }
-              error={formState.errors["widthCm"]}
-            />
-            <TextInput
-              label={t("labels.height")}
-              placeholder={t("placeholders.height")}
-              type="text"
-              style={{ flex: 1 }}
-              value={formState.heightCm}
-              onChange={(e) =>
-                handleRestrictedChange("heightCm", e.currentTarget.value, /[^0-9]/g)
-              }
-              error={formState.errors["heightCm"]}
-            />
+            <Tooltip
+              label={t("tooltips.max5")}
+              opened={focusedField === "widthCm" && isMaxLength(formState.widthCm, 5)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.width")}
+                placeholder={t("placeholders.width")}
+                type="text"
+                style={{ flex: 1 }}
+                value={formState.widthCm}
+                onChange={(e) =>
+                  handleRestrictedChange("widthCm", e.currentTarget.value, /[^0-9]/g)
+                }
+                onFocus={() => handleFocus("widthCm")}
+                onBlur={handleBlur}
+                maxLength={5}
+                error={formState.errors["widthCm"]}
+              />
+            </Tooltip>
+            <Tooltip
+              label={t("tooltips.max5")}
+              opened={focusedField === "heightCm" && isMaxLength(formState.heightCm, 5)}
+              withArrow
+              position="right"
+              color="orange"
+            >
+              <TextInput
+                label={t("labels.height")}
+                placeholder={t("placeholders.height")}
+                type="text"
+                style={{ flex: 1 }}
+                value={formState.heightCm}
+                onChange={(e) =>
+                  handleRestrictedChange("heightCm", e.currentTarget.value, /[^0-9]/g)
+                }
+                onFocus={() => handleFocus("heightCm")}
+                onBlur={handleBlur}
+                maxLength={5}
+                error={formState.errors["heightCm"]}
+              />
+            </Tooltip>
           </div>
         </>
       )}

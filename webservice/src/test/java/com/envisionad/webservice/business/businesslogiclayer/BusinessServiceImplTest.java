@@ -83,12 +83,10 @@ class BusinessServiceImplTest {
         // Arrange
         String businessId = "b1";
         String employeeId = "e1";
-        String userId = "user1"; // The user performing the action (must be an employee)
+        String userId = "user1";
 
         Business business = new Business();
         business.setBusinessId(new BusinessIdentifier(businessId));
-        // User must be in employee list to authorize, and target employee must be in
-        // list to delete
         business.setEmployeeIds(new HashSet<>(Set.of(userId, employeeId)));
 
         Jwt jwt = mock(Jwt.class);
@@ -130,11 +128,11 @@ class BusinessServiceImplTest {
         // Arrange
         String businessId = "b1";
         String employeeId = "e1";
-        String userId = "user1"; // User performing action
+        String userId = "user1";
 
         Business business = new Business();
         business.setBusinessId(new BusinessIdentifier(businessId));
-        business.setEmployeeIds(new HashSet<>()); // User is NOT an employee
+        business.setEmployeeIds(new HashSet<>());
 
         Jwt jwt = mock(Jwt.class);
         when(jwt.getClaim("sub")).thenReturn(userId);
@@ -150,12 +148,11 @@ class BusinessServiceImplTest {
     void removeBusinessEmployeeById_WhenEmployeeNotFound_ShouldThrowException() {
         // Arrange
         String businessId = "b1";
-        String employeeId = "e1"; // Target employee to remove
-        String userId = "user1"; // User performing action
-
+        String employeeId = "e1";
+        String userId = "user1";
         Business business = new Business();
         business.setBusinessId(new BusinessIdentifier(businessId));
-        business.setEmployeeIds(new HashSet<>(Set.of(userId))); // User acts, but target e1 is not there
+        business.setEmployeeIds(new HashSet<>(Set.of(userId)));
 
         Jwt jwt = mock(Jwt.class);
         when(jwt.getClaim("sub")).thenReturn(userId);
@@ -175,7 +172,7 @@ class BusinessServiceImplTest {
         business.setBusinessId(new BusinessIdentifier("b1"));
 
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getClaim("sub")).thenReturn(employeeId); // User requesting their own business
+        when(jwt.getClaim("sub")).thenReturn(employeeId);
 
         BusinessResponseModel responseModel = new BusinessResponseModel();
         responseModel.setBusinessId("b1");
@@ -195,7 +192,7 @@ class BusinessServiceImplTest {
     void getBusinessByEmployeeId_WhenUnauthorized_ShouldThrowAccessDenied() {
         // Arrange
         String employeeId = "e1";
-        String userId = "otherUser"; // User trying to get someone else's business info
+        String userId = "otherUser";
 
         Jwt jwt = mock(Jwt.class);
         when(jwt.getClaim("sub")).thenReturn(userId);
