@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties  = {"spring.datasource.url=jdbc:h2:mem:user-db"})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = { "spring.datasource.url=jdbc:h2:mem:user-db" })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessControllerIntegrationTest {
 
@@ -44,6 +44,7 @@ class BusinessControllerIntegrationTest {
                 .header("alg", "none")
                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
                 .claim("scope", "read write")
+                .claim("permissions", java.util.List.of("read:business", "readAll:business", "update:business"))
                 .build();
 
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);

@@ -49,6 +49,7 @@ class MediaControllerIntegrationTest {
                 .header("alg", "none")
                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
                 .claim("scope", "read write")
+                .claim("permissions", java.util.List.of("create:media", "update:media"))
                 .build();
 
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);

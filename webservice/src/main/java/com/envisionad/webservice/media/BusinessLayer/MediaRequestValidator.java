@@ -76,7 +76,10 @@ public class MediaRequestValidator {
             if (request.getResolution().length() > 20) {
                 throw new IllegalArgumentException("Resolution cannot exceed 20 characters");
             }
-            if (request.getAspectRatio() != null && request.getAspectRatio().length() > 10) {
+            if (request.getAspectRatio() == null || request.getAspectRatio().trim().isEmpty()) {
+                throw new IllegalArgumentException("Aspect ratio is required for Digital displays");
+            }
+            if (request.getAspectRatio().length() > 10) {
                 throw new IllegalArgumentException("Aspect ratio cannot exceed 10 characters");
             }
         } else if (request.getTypeOfDisplay() == TypeOfDisplay.POSTER) {

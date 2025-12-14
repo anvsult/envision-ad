@@ -265,6 +265,10 @@
       "dangerZone": "Danger zone",
       "deleteMedia": "Delete Media",
       "cancel": "Cancel"
+    },
+    "success": {
+      "create": "Media created successfully",
+      "update": "Media updated successfully"
     }
   },
   "mediaModal": {
@@ -284,7 +288,11 @@
       "typeOfDisplay": "Type of display",
       "loopDuration": "Loop duration (sec)",
       "resolution": "Resolution (px)",
+      "resolutionWidth": "Resolution - Width (px)",
+      "resolutionHeight": "Resolution - Height (px)",
       "aspectRatio": "Aspect ratio",
+      "aspectRatioWidth": "Aspect ratio - Width",
+      "aspectRatioHeight": "Aspect ratio - Height",
       "width": "Width (cm)",
       "height": "Height (cm)",
       "price": "Price (per week)",
@@ -295,7 +303,11 @@
       "selectType": "Select type",
       "loopDuration": "e.g. 30",
       "resolution": "Ex. 1920x1080",
+      "resolutionWidth": "1920",
+      "resolutionHeight": "1080",
       "aspectRatio": "e.g. 16:9",
+      "aspectRatioWidth": "16",
+      "aspectRatioHeight": "9",
       "width": "Ex. 80",
       "height": "Ex. 200",
       "price": "$50.00",
@@ -305,10 +317,12 @@
     },
     "tooltips": {
       "max5": "Max 5 characters",
+      "max4": "Max 4 characters",
       "max52": "Max 52 characters",
       "max20": "Max 20 characters",
       "max10": "Max 10 characters",
       "max8": "Max 8 characters",
+      "max2": "Max 2 characters",
       "maxDecimals": "Max 2 decimal places"
     },
     "errors": {
@@ -316,6 +330,7 @@
       "mediaTitleRequired": "Media Title is required",
       "loopDurationRequired": "Loop Duration is required",
       "resolutionRequired": "Resolution is required",
+      "aspectRatioRequired": "Aspect Ratio is required",
       "widthRequired": "Width is required",
       "heightRequired": "Height is required",
       "priceRequired": "Price is required",

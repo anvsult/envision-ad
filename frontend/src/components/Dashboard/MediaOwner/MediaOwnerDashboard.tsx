@@ -14,6 +14,7 @@ import { notifications } from "@mantine/notifications";
 import { usePathname } from "@/lib/i18n/navigation";
 import SideBar from "@/components/SideBar/SideBar";
 import { WeeklyScheduleEntry } from "@/types/MediaTypes";
+import { IconCheck } from "@tabler/icons-react";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -35,14 +36,18 @@ export default function MediaOwnerPage() {
             if (editingId) {
                 await editMedia(editingId, formState);
                 notifications.show({
-                    message: "Media updated successfully",
+                    title: t("success.update"),
+                    message: t("success.update"),
                     color: "green",
+                    icon: <IconCheck size="1.1rem" />,
                 });
             } else {
                 await addNewMedia(formState);
                 notifications.show({
-                    message: "Media created successfully",
+                    title: t("success.create"),
+                    message: t("success.create"),
                     color: "green",
+                    icon: <IconCheck size="1.1rem" />,
                 });
             }
             setIsModalOpen(false);
@@ -241,10 +246,10 @@ export default function MediaOwnerPage() {
                                 resetForm();
                             }}
                             onSave={handleSave}
+                            isEditing={!!editingId}
                             formState={formState}
                             onFieldChange={updateField}
                             onDayTimeChange={updateDayTime}
-                            isEditing={!!editingId}
                         />
 
                         <MediaTable
