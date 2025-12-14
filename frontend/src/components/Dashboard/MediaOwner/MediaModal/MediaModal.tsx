@@ -115,6 +115,7 @@ export function MediaModal({
                             if (!end) {
                                 newErrors[`${day}_end`] = t("errors.required");
                             }
+                            // String comparison works for time in "HH:mm" format (e.g. "09:00" < "17:00")
                             if (start && end && end <= start) {
                                 newErrors[`${day}_end`] = t("errors.startTimeAfterEndTime");
                             }
