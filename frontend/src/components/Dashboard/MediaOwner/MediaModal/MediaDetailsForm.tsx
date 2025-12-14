@@ -14,7 +14,6 @@ interface MediaDetailsFormProps {
 
 import { useTranslations } from "next-intl";
 
-// ... (imports)
 
 export function MediaDetailsForm({
   formState,
