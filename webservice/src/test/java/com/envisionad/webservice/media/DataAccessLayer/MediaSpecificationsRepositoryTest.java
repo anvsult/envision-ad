@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DataJpaTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:spec-test-db",
-        "spring.sql.init.mode=never" // Ensure we don't use broken schema/data files
+        "spring.sql.init.mode=never"
 })
 class MediaSpecificationsRepositoryTest {
 
