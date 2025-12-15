@@ -27,13 +27,13 @@ export default function SideBar() {
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                 <Accordion.Panel>
                     <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/overview"
-                            label={t("media-owner.overview")}
-                            leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/overview")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/overview"*/}
+                        {/*    label={t("media-owner.overview")}*/}
+                        {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/overview")}*/}
+                        {/*/>*/}
 
                         <NavLink
                             component={Link}
@@ -43,21 +43,21 @@ export default function SideBar() {
                             active={pathname?.endsWith("/media-owner/media")}
                         />
 
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/displayed-ads"
-                            label={t("media-owner.displayedAds")}
-                            leftSection={<IconAd size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/displayed-ads")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/displayed-ads"*/}
+                        {/*    label={t("media-owner.displayedAds")}*/}
+                        {/*    leftSection={<IconAd size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/displayed-ads")}*/}
+                        {/*/>*/}
 
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/ad-requests"
-                            label={t("media-owner.adRequests")}
-                            leftSection={<IconFileDescription size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/ad-requests")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/ad-requests"*/}
+                        {/*    label={t("media-owner.adRequests")}*/}
+                        {/*    leftSection={<IconFileDescription size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/ad-requests")}*/}
+                        {/*/>*/}
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>

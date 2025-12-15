@@ -13,22 +13,22 @@ export default class HomePage {
     }
 
     //Locators - non-authenticated user
-    loginLink = () => this.page.getByRole('button', { name: 'Sign In' });
-    signupLink = () => this.page.getByRole('button', { name: 'Register' });
-    languageButton = () => this.page.getByRole('button', { name: 'Switch language' });
-    homeLink = () => this.page.getByRole('link', { name: 'Home' });
-    browseLink = () => this.page.getByRole('link', { name: 'Browse' });
-    
-    usernameTextbox = () => this.page.getByRole('textbox', { name: 'Username or Email address' });
-    passwordTextbox = () => this.page.getByRole('textbox', { name: 'Password' });
-    loginButton = () => this.page.getByRole('button', { name: 'Continue', exact: true });
-    
+    loginLink = () => this.page.getByRole('button', {name: 'Sign In'});
+    signupLink = () => this.page.getByRole('button', {name: 'Register'});
+    languageButton = () => this.page.getByRole('button', {name: 'Switch language'});
+    homeLink = () => this.page.getByRole('link', {name: 'Home'});
+    browseLink = () => this.page.getByRole('link', {name: 'Browse'});
+
+    usernameTextbox = () => this.page.getByRole('textbox', {name: 'Username or Email address'});
+    passwordTextbox = () => this.page.getByRole('textbox', {name: 'Password'});
+    loginButton = () => this.page.getByRole('button', {name: 'Continue', exact: true});
+
     //Locators - authenticated user
-    dashboardLink = () => this.page.getByRole('link', { name: 'Dashboard' });
+    dashboardLink = () => this.page.getByRole('link', {name: 'Dashboard'});
     loginErrorMessage = () => this.page.getByText('Incorrect email address, username, or password');
-    userDropdown = (username: string) => this.page.getByRole('button', { name: username })
-    profileLink = () => this.page.getByRole('link', { name: 'Profile', exact: true });
-    logoutLink = () => this.page.getByRole('button', { name: 'Logout' });
+    userDropdown = (username: string) => this.page.getByRole('button', {name: username})
+    profileLink = () => this.page.getByRole('link', {name: 'Profile', exact: true});
+    logoutLink = () => this.page.getByRole('button', {name: 'Logout'});
     hamburgerMenuButton = () => this.page.getByRole('banner').getByRole('button');
 
     //Actions
@@ -75,10 +75,4 @@ export default class HomePage {
         await this.userDropdown(username).click();
         await this.profileLink().click();
     }
-
-    public async login(username: string, pass: string) {
-        await this.clickLoginLink();
-        await this.usernameTextbox().fill(username);
-        await this.passwordTextbox().fill(pass);
-        await this.loginButton().click();
-    }}
+}

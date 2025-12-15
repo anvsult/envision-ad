@@ -32,6 +32,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.mapstruct:mapstruct:1.6.3'
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'

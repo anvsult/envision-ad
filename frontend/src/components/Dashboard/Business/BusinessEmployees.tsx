@@ -21,7 +21,6 @@ import type {UserType} from "@/types/UserType";
 import {InvitationResponse} from "@/types/InvitationType";
 import {InvitationTable} from "@/components/Dashboard/Business/BusinessTable/InvitationsTable";
 import {ConfirmRemoveInviteModal} from "@/components/Dashboard/Business/BusinessModal/ConfirmRemoveInviteModal";
-import {ConfirmRemoveEmployeeModal} from "@/components/Dashboard/Business/BusinessModal/ConfirmRemoveEmployeeModal";
 
 export function BusinessEmployees() {
     const [opened, {toggle, close}] = useDisclosure(false);
@@ -188,18 +187,14 @@ export function BusinessEmployees() {
                             )}
 
                             <ConfirmationModal
-                                opened={confirmOpen}
+                                opened={confirmEmployeeOpen}
                                 title="Confirm Removal"
-                                message={
-                                    <>
-                                        Are you sure you want to remove <strong>{employees.find((e) => e.user_id === employeeToRemove)?.name || ""}</strong> from your business?
-                                    </>
-                                }
+                                message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your business?`}
                                 confirmLabel="Remove"
                                 confirmColor="red"
-                                onCancel={() => setConfirmOpen(false)}
-                                onConfirm={confirmRemove}
-
+                                onCancel={() => setConfirmEmployeeOpen(false)}
+                                onConfirm={confirmEmployeeRemove}
+                            />
                             <ConfirmRemoveInviteModal
                                 opened={confirmInviteOpen}
                                 email={invitationToRemove?.email || ""}

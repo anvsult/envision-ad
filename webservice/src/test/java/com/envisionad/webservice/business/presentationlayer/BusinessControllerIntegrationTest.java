@@ -51,6 +51,9 @@ class BusinessControllerIntegrationTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @BeforeEach
     void setUp() {
         Jwt jwt = Jwt.withTokenValue("mock-token")

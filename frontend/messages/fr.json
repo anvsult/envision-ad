@@ -444,9 +444,9 @@
   },
   "adCampaigns": {
     "page": {
-        "title": "Mes campagnes",
-        "createButton": "Créer une campagne",
-        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+      "title": "Mes campagnes",
+      "createButton": "Créer une campagne",
+      "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
     },
     "createCampaignModal": {
       "title": "Créer une campagne",
@@ -462,7 +462,9 @@
       },
       "validation": {
         "nameTooShort": "Nom trop court"
-      },
+      }
+    }
+  },
   "admin": {
     "adminActions": {
       "noMediaPending": "Aucun média en attente d’approbation.",
@@ -486,6 +488,6 @@
       "dailyImpressions": "Impressions quotidiennes"
     }
   }
-  }
 }
-}
+
+

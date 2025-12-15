@@ -462,7 +462,7 @@
     "page": {
       "title": "My Campaigns",
       "createButton": "Create Campaign",
-        "noCampaigns": "No campaigns found. Create your first campaign!"
+      "noCampaigns": "No campaigns found. Create your first campaign!"
     },
     "notifications": {
       "loadFailed": {
@@ -470,16 +470,34 @@
         "message": "Failed to load campaigns"
       },
       "addAd": {
-        "success": { "title": "Success", "message": "Ad added" },
-        "error": { "title": "Error", "message": "Failed to save ad" }
+        "success": {
+          "title": "Success",
+          "message": "Ad added"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to save ad"
+        }
       },
       "deleteAd": {
-        "success": { "title": "Deleted", "message": "Ad removed" },
-        "error": { "title": "Error", "message": "Failed to delete ad" }
+        "success": {
+          "title": "Deleted",
+          "message": "Ad removed"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to delete ad"
+        }
       },
       "createCampaign": {
-        "success": { "title": "Success", "message": "Campaign created" },
-        "error": { "title": "Error", "message": "Failed to create campaign" }
+        "success": {
+          "title": "Success",
+          "message": "Campaign created"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to create campaign"
+        }
       }
     },
     "confirmations": {
@@ -488,6 +506,7 @@
         "message": "Are you sure you want to delete this ad? This action cannot be undone.",
         "confirm": "Delete"
       }
+    }
   },
   "admin": {
     "adminActions": {
@@ -511,6 +530,5 @@
       "location": "Location",
       "dailyImpressions": "Daily Impressions"
     }
-  }
   }
 }
