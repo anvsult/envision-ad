@@ -538,6 +538,7 @@
       "save": "Save"
     },
     "editButton": "Edit Profile"
+  },
   "admin": {
     "adminActions": {
       "noMediaPending": "No pending media to approve.",
