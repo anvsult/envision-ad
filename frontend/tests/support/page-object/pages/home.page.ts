@@ -40,16 +40,6 @@ export default class HomePage {
         await this.loginLink().click();
     }
 
-    public async clickDashboardLink() {
-        const mobile = await isMobileView(this.page);
-
-        if (mobile) {
-            await this.hamburgerMenuButton().click();
-        }
-        await this.dashboardLink().click();
-        await this.page.waitForURL(/.*\/dashboard.*/);
-    }
-
     public async clickLogoutLink(username: string) {
         await this.userDropdown(username).click();
         await this.logoutLink().click();
