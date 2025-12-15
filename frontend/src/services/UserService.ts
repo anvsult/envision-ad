@@ -5,7 +5,18 @@ export interface UpdateUserRequest {
     name?: string;
 }
 
-export const updateUser = async (id: string, data: UpdateUserRequest): Promise<any> => {
+// Minimal User interface, extend as needed to match your backend response
+export interface User {
+    user_id: string;
+    email: string;
+    given_name?: string;
+    family_name?: string;
+    nickname?: string;
+    name?: string;
+    [key: string]: any; // Allow extra fields if present
+}
+
+export const updateUser = async (id: string, data: UpdateUserRequest): Promise<User> => {
     const res = await fetch(`/api/auth0/update-user/${encodeURIComponent(id)}`, {
         method: "PATCH",
         headers: {
