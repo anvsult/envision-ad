@@ -34,6 +34,7 @@ export enum SpecialSort {
 
 export async function getAllFilteredActiveMedia(
     title?: string | null,
+    location?: string | null,
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
@@ -48,6 +49,12 @@ export async function getAllFilteredActiveMedia(
         const escaped = escapeLike(title);
         params.append("title", escaped);
     }
+
+    if (location && location.trim() !== "") {
+        const escaped = escapeLike(location);
+        params.append("location", escaped);
+    }
+
 
     if (minPrice) {
         params.append("minPrice", minPrice.toString());

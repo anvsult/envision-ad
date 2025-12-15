@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -15,6 +16,7 @@ public interface MediaService {
     Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
+            String location,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,

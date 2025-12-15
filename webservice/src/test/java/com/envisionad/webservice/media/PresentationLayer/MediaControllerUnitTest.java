@@ -182,19 +182,19 @@ class MediaControllerUnitTest {
         Page<Media> mediaPage = new PageImpl<>(List.of(media));
         Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(pageable, null, null,null, null, null, null, null, null))
                 .thenReturn(mediaPage);
         when(responseMapper.entityToResponseModel(media))
                 .thenReturn(responseModel);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Page<?> body = (Page<?>) response.getBody();
         assertEquals(1, body.getTotalElements());
 
-        verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
+        verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null);
     }
 
 
@@ -204,13 +204,31 @@ class MediaControllerUnitTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null))
                 .thenReturn(mediaPage);
         when(responseMapper.entityToResponseModel(media))
                 .thenReturn(responseModel);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        Page<?> body = (Page<?>) response.getBody();
+        assertEquals(1, body.getContent().size());
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_LocationOnly_ShouldReturnFiltered() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(pageable, null, "Montreal, Canada", null, null, null, null, null, null))
+                .thenReturn(mediaPage);
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
+
+        ResponseEntity<?> response =
+                mediaController.getAllFilteredActiveMedia(pageable, null, "Montreal, Canada", null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Page<?> body = (Page<?>) response.getBody();
@@ -226,6 +244,7 @@ class MediaControllerUnitTest {
         when(mediaService.getAllFilteredActiveMedia(
                 pageable,
                 "Billboard",
+                null,
                 BigDecimal.valueOf(50),
                 BigDecimal.valueOf(200),
                 1000,
@@ -241,6 +260,7 @@ class MediaControllerUnitTest {
                 mediaController.getAllFilteredActiveMedia(
                         pageable,
                         "Billboard",
+                        null,
                         BigDecimal.valueOf(50),
                         BigDecimal.valueOf(200),
                         1000,
@@ -260,11 +280,11 @@ class MediaControllerUnitTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Media> emptyPage = Page.empty();
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null, null, null, null, null))
                 .thenReturn(emptyPage);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Page<?> body = (Page<?>) response.getBody();
@@ -277,6 +297,7 @@ class MediaControllerUnitTest {
             mediaController.getAllFilteredActiveMedia(
                 null,
                 null,
+                    null,
                 BigDecimal.valueOf(-1),
                 null,
                 null,
@@ -294,6 +315,7 @@ class MediaControllerUnitTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             mediaController.getAllFilteredActiveMedia(
                 null,
+                    null,
                 null,
                 null,
                 BigDecimal.valueOf(-5),
@@ -314,6 +336,7 @@ class MediaControllerUnitTest {
             mediaController.getAllFilteredActiveMedia(
                 null,
                 null,
+                    null,
                 BigDecimal.valueOf(50),
                 BigDecimal.valueOf(10),
                 null,
@@ -333,6 +356,7 @@ class MediaControllerUnitTest {
                 null,
                 null,
                 null,
+                        null,
                 null,
                 -10,
                 null,
