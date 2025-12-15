@@ -45,31 +45,31 @@ export default class BrowsePage {
     searchTitleBar = () => this.page.getByRole('textbox', { name: 'Search title' })
     searchTitleEnter = () => this.page.getByRole('button').nth(3)
     mediaCard = (index: string) => this.page.locator('#MediaCard' + index)
-    noLocation = () => this.page.getByText('Could not find nearest media.')
+    noLocation = () => this.page.getByText('Could not get nearest media.')
     noMediaFound = () => this.page.getByText('No media found')
     //Filter Locators
-    filterPrice = () => this.page.getByRole('button', { name: 'Price ($)' })
+    filterPriceButton = () => this.page.getByRole('button', { name: 'Price ($)' })
     filterPriceFrom = () => this.page.getByRole('textbox', { name: 'From' })
     filterPriceTo = () => this.page.getByRole('textbox', { name: 'To' })
     filterPriceAdd = () => this.page.getByRole('button', { name: 'Add filter' })
-    filterMinimumImpressions = () => this.page.getByRole('button', { name: 'Minimum impressions' })
+    filterMinimumImpressionsButton = () => this.page.getByRole('button', { name: 'Minimum impressions' })
     filterMinimumImpressionsMinimum = () => this.page.getByRole('textbox', { name: 'Minimum impressions' })
     filterMinimumImpressionsAdd = () => this.page.getByRole('button', { name: 'Add filter' })
     //Sort Locators
-    sortSelect = () => this.page.getByRole('textbox', { name: 'Nearest' })
+    sortSelect = () => this.page.locator('#SortSelect')
     sortSelectOption = (option: string) => this.page.getByRole('option', { name: option })
     
     
     //Actions
     public async addPriceFilter(min: number, max: number) {
-        await this.filterPrice().click();
+        await this.filterPriceButton().click();
         await this.filterPriceFrom().fill(min.toString());
         await this.filterPriceTo().fill(max.toString());
         await this.filterPriceAdd().click();
     }
 
     public async addMinimumImpressionsFilter(min: number) {
-        await this.filterMinimumImpressions().click();
+        await this.filterMinimumImpressionsButton().click();
         await this.filterMinimumImpressionsMinimum().fill(min.toString());
         await this.filterMinimumImpressionsAdd().click();
     }
