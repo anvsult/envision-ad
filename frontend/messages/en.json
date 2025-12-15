@@ -274,8 +274,9 @@
       "cancel": "Cancel"
     },
     "success": {
-      "create": "Media created successfully",
-      "update": "Media updated successfully"
+      "title": "Success!",
+      "create": "Media created",
+      "update": "Media updated"
     }
   },
   "mediaModal": {
