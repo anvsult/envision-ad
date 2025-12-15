@@ -15,7 +15,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
     const t = useTranslations("profilePage");
     const [opened, { open, close }] = useDisclosure(false);
 
-    // Helper helper to ensure strings
+    // Helper function to ensure strings
     const safeStr = (val: any, fallback = "") => typeof val === 'string' ? val : diffType(val, fallback);
     const diffType = (val: any, fallback: string) => val ? String(val) : fallback;
 
