@@ -1,6 +1,6 @@
-import { MediaDTO, MediaRequest } from "@/types/MediaTypes";
+import { MediaDTO, MediaRequest, MediaResponse } from "@/types/MediaTypes";
 import { LatLngLiteral } from "leaflet";
-import {getAccessToken} from "@auth0/nextjs-auth0";
+import { getAccessToken } from "@auth0/nextjs-auth0";
 
 const API_BASE_URL = 'http://localhost:8080/api/v1';
 
@@ -22,10 +22,14 @@ export async function getAllMedia(): Promise<MediaDTO[]> {
 }
 
 function escapeLike(input: string): string {
-  return input
-    .replace(/\\/g, "\\\\")
-    .replace(/%/g, "\\%")
-    .replace(/_/g, "\\_");
+    return input
+        .replace(/\\/g, "\\\\")
+        .replace(/%/g, "\\%")
+        .replace(/_/g, "\\_");
+}
+
+export enum SpecialSort {
+    nearest = "nearest",
 }
 
 export async function getAllFilteredActiveMedia(
@@ -33,9 +37,11 @@ export async function getAllFilteredActiveMedia(
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,
-    sortBy?: string | null,
+    sort?: string | null,
     userLatLng?: LatLngLiteral | null,
-    ): Promise<MediaDTO[]> {
+    page?: number,
+    size?: number
+    ): Promise<MediaResponse> {
     const params = new URLSearchParams();
 
     if (title && title.trim() !== "") {
@@ -55,19 +61,32 @@ export async function getAllFilteredActiveMedia(
         params.append("minDailyImpressions", minDailyImpressions.toString());
     }
 
-    if (sortBy) {
-        params.append("sortBy", sortBy.toString());
+    if (sort){
+        if (Object.values(SpecialSort).includes(sort as SpecialSort)) {
+            params.append("specialSort", sort.toString());
+        } else {
+            params.append("sort", sort.toString());
+        }
     }
+    
 
-    if (userLatLng) {
+    if (userLatLng && userLatLng.lat != null && userLatLng.lng != null) {
         params.append("userLat", userLatLng.lat.toString());
         params.append("userLng", userLatLng.lng.toString());
+    }
+
+    if (page) {
+        params.append("page", page.toString());
+    } 
+
+    if (size) {
+        params.append("size", size.toString());
     }
 
     const url = `${API_BASE_URL}/media/active?${params.toString()}`;
 
     const response = await fetch(url, {
-    method: "GET",
+        method: "GET",
     });
 
     if (!response.ok) {
@@ -83,7 +102,7 @@ export async function addMedia(media: Omit<MediaRequest, 'id'>): Promise<MediaDT
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization : `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(media),
     });
@@ -116,7 +135,7 @@ export async function updateMedia(id: string, media: Partial<MediaRequest>): Pro
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            Authorization : `Bearer ${token}`
+            Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(media),
     });

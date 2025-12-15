@@ -18,13 +18,15 @@ import org.springframework.web.reactive.function.BodyInserters;
 
 import java.util.Arrays;
 import java.util.UUID;
+import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties  = {"spring.datasource.url=jdbc:h2:mem:user-db"})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = { "spring.datasource.url=jdbc:h2:mem:user-db" })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessControllerIntegrationTest {
 
@@ -38,6 +40,9 @@ class BusinessControllerIntegrationTest {
 
     @Autowired
     private BusinessRepository businessRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @BeforeEach
     void setUp() {
@@ -165,6 +170,18 @@ class BusinessControllerIntegrationTest {
         roleRequestModel.setAdvertiser(true);
         roleRequestModel.setMediaOwner(true);
         requestModel.setRoles(roleRequestModel);
+
+        // Add the test user to the business employees so they are authorized to update
+        // it
+        new TransactionTemplate(transactionManager).execute(status -> {
+            com.envisionad.webservice.business.dataaccesslayer.Business business = businessRepository
+                    .findByBusinessId_BusinessId(businessId);
+            if (business != null) {
+                business.getEmployeeIds().add("auth0|65702e81e9661e14ab3aac89");
+                businessRepository.save(business);
+            }
+            return null;
+        });
 
         // Act & Assert
         webTestClient.put()

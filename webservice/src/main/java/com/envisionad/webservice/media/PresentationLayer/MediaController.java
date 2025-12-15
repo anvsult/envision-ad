@@ -6,6 +6,9 @@ import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import com.envisionad.webservice.media.BusinessLayer.MediaRequestValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,8 +31,8 @@ public class MediaController {
     private final MediaResponseMapper responseMapper;
 
     public MediaController(MediaService mediaService,
-                           MediaRequestMapper requestMapper,
-                           MediaResponseMapper responseMapper) {
+            MediaRequestMapper requestMapper,
+            MediaResponseMapper responseMapper) {
         this.mediaService = mediaService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
@@ -42,39 +45,44 @@ public class MediaController {
 
     @GetMapping("/active")
     public ResponseEntity<?> getAllFilteredActiveMedia(
+            Pageable pageable,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions,
-            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng
+
     ) {
-        // Input validation
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
-            return ResponseEntity.badRequest().body("minPrice must be non-negative.");
+            throw new IllegalArgumentException("minPrice must be non-negative.");
         }
         if (maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) < 0) {
-            return ResponseEntity.badRequest().body("maxPrice must be non-negative.");
+            throw new IllegalArgumentException("maxPrice must be non-negative.");
         }
         if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
-            return ResponseEntity.badRequest().body("minPrice must not be greater than maxPrice.");
+            throw new IllegalArgumentException("minPrice must not be greater than maxPrice.");
         }
         if (minDailyImpressions != null && minDailyImpressions < 0) {
-            return ResponseEntity.badRequest().body("minDailyImpressions must be non-negative.");
+            throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
-        List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
-            mediaService.getAllFilteredActiveMedia(
-                title,
-                minPrice,
-                maxPrice,
-                minDailyImpressions,
-                sortBy,
-                userLat,
-                userLng)
-        );
-        return ResponseEntity.ok(result);
+
+        Page<MediaResponseModel> responsePage =
+                mediaService.getAllFilteredActiveMedia(
+                        pageable,
+                        title,
+                        minPrice,
+                        maxPrice,
+                        minDailyImpressions,
+                        specialSort,
+                        userLat,
+                        userLng
+                ).map(responseMapper::entityToResponseModel);
+
+        return ResponseEntity.ok(responsePage);
     }
+
 
 
     @GetMapping("/{id}")
@@ -89,8 +97,8 @@ public class MediaController {
     @PostMapping
     @PreAuthorize("hasAuthority('create:media')")
     public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
+        MediaRequestValidator.validateMediaRequest(requestModel);
         Media entity = requestMapper.requestModelToEntity(requestModel);
-
         Media savedEntity = mediaService.addMedia(entity);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -100,26 +108,26 @@ public class MediaController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('update:media')")
     public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
-                                                          @RequestBody MediaRequestModel requestModel) {
+            @RequestBody MediaRequestModel requestModel) {
+        MediaRequestValidator.validateMediaRequest(requestModel);
         Media entity = requestMapper.requestModelToEntity(requestModel);
-
         entity.setId(UUID.fromString(id));
 
         Media updatedEntity = mediaService.updateMedia(entity);
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updatedEntity));
     }
 
-    //this endpoint will probably be deleted
+    // this endpoint will probably be deleted
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMedia(@PathVariable String id) {
         mediaService.deleteMedia(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
 
-    //image handling will not be done this way
+    // image handling will not be done this way
     @PostMapping("/{id}/image")
     public ResponseEntity<?> uploadImage(@PathVariable String id,
-                                         @RequestParam("file") MultipartFile file) {
+            @RequestParam("file") MultipartFile file) {
         Media media = mediaService.getMediaById(UUID.fromString(id));
         if (media == null) {
             return ResponseEntity.notFound().build();
@@ -146,7 +154,8 @@ public class MediaController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        String contentType = media.getImageContentType() != null ? media.getImageContentType() : "application/octet-stream";
+        String contentType = media.getImageContentType() != null ? media.getImageContentType()
+                : "application/octet-stream";
         headers.setContentType(MediaType.parseMediaType(contentType));
         if (media.getImageFileName() != null) {
             headers.setContentDispositionFormData("inline", media.getImageFileName());
