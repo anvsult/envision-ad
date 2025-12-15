@@ -1,0 +1,20 @@
+package com.envisionad.webservice.reservation.presentationlayer.models;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+@Data
+@NoArgsConstructor
+public class ReservationRequestModel {
+    @NotBlank
+    private String mediaId;
+    @NotBlank
+    private String campaignId;
+    @NotNull
+    private LocalDateTime startDate;
+    @NotNull
+    private LocalDateTime endDate;
+}
