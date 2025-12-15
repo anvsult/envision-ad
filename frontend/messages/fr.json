@@ -430,6 +430,7 @@
       "save": "Enregistrer"
     },
     "editButton": "Modifier le profil"
+  },
   "AddAdModal": {
     "title": "Ajouter une nouvelle annonce",
     "labels": {
