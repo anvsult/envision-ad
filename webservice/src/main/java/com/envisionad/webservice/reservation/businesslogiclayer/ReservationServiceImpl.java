@@ -62,7 +62,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         long days = Duration.between(request.getStartDate(), request.getEndDate()).toDays();
-        double weeks = Math.max(1.0, Math.ceil(days / 7.0));
+        int weeks = (int)Math.max(1, Math.ceil(days / 7.0));
         Double totalPrice = (media.getPrice() != null ? media.getPrice().doubleValue() : 0.0) * weeks;
 
         Reservation reservation = reservationRequestMapper.requestModelToEntity(request);
