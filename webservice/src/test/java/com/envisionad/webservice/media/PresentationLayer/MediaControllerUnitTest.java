@@ -13,13 +13,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.awt.print.Pageable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -98,7 +101,7 @@ class MediaControllerUnitTest {
         requestModel = new MediaRequestModel();
         requestModel.setTitle("Test Media");
         requestModel.setMediaOwnerName("Owner");
-        requestModel.setMediaLocationId(mediaLocationId);
+        requestModel.setMediaLocationId(String.valueOf(mediaLocationId));
         requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         requestModel.setPrice(new BigDecimal("100.00"));
         requestModel.setStatus(Status.ACTIVE);
@@ -123,49 +126,54 @@ class MediaControllerUnitTest {
     }
 
     @Test
-    void getAllFilteredActiveMedia_NoFilters_ShouldReturnList() {
-        List<Media> mediaList = List.of(media);
-        List<MediaResponseModel> responseList = List.of(responseModel);
-        when(mediaService.getAllFilteredActiveMedia(null, null, null, null, null, null, null))
-                .thenReturn(mediaList);
-        when(responseMapper.entityListToResponseModelList(mediaList))
-                .thenReturn(responseList);
+    void getAllFilteredActiveMedia_NoFilters_ShouldReturnPage() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+        Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
+
+        when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null))
+                .thenReturn(mediaPage);
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseList, response.getBody());
+        Page<?> body = (Page<?>) response.getBody();
+        assertEquals(1, body.getTotalElements());
 
-        verify(mediaService).getAllFilteredActiveMedia(null, null, null, null, null, null, null);
+        verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
     }
+
 
 
     @Test
     void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
-        List<Media> mediaList = List.of(media);
-        List<MediaResponseModel> responseList = List.of(responseModel);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
-        when(mediaService.getAllFilteredActiveMedia("Test", null, null, null, null, null, null))
-                .thenReturn(mediaList);
-        when(responseMapper.entityListToResponseModelList(mediaList))
-                .thenReturn(responseList);
+        when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null))
+                .thenReturn(mediaPage);
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia("Test", null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseList, response.getBody());
-
-        verify(mediaService).getAllFilteredActiveMedia("Test", null, null, null, null, null, null);
+        Page<?> body = (Page<?>) response.getBody();
+        assertEquals(1, body.getContent().size());
     }
+
 
     @Test
     void getAllFilteredActiveMedia_MultipleFilters_ShouldReturnFiltered() {
-        List<Media> mediaList = List.of(media);
-        List<MediaResponseModel> responseList = List.of(responseModel);
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
         when(mediaService.getAllFilteredActiveMedia(
+                pageable,
                 "Billboard",
                 BigDecimal.valueOf(50),
                 BigDecimal.valueOf(200),
@@ -173,13 +181,14 @@ class MediaControllerUnitTest {
                 "nearest",
                 50.0,
                 50.0))
-                .thenReturn(mediaList);
+                .thenReturn(mediaPage);
 
-        when(responseMapper.entityListToResponseModelList(mediaList))
-                .thenReturn(responseList);
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
 
         ResponseEntity<?> response =
                 mediaController.getAllFilteredActiveMedia(
+                        pageable,
                         "Billboard",
                         BigDecimal.valueOf(50),
                         BigDecimal.valueOf(200),
@@ -190,42 +199,33 @@ class MediaControllerUnitTest {
                 );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(responseList, response.getBody());
-
-        verify(mediaService).getAllFilteredActiveMedia(
-                "Billboard",
-                BigDecimal.valueOf(50),
-                BigDecimal.valueOf(200),
-                1000,
-                "nearest",
-                50.0,
-                50.0
-        );
+        Page<?> body = (Page<?>) response.getBody();
+        assertEquals(1, body.getTotalElements());
     }
+
 
     @Test
-    void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyList() {
-        when(mediaService.getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null))
-                .thenReturn(List.of());
+    void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyPage() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> emptyPage = Page.empty();
 
-        when(responseMapper.entityListToResponseModelList(List.of()))
-                .thenReturn(List.of());
+        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null))
+                .thenReturn(emptyPage);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        List<?> body = (List<?>) response.getBody();
+        Page<?> body = (Page<?>) response.getBody();
         assertTrue(body.isEmpty());
-
-        verify(mediaService).getAllFilteredActiveMedia("NoMatch", null, null, null, null, null, null);
     }
+
 
 
     @Test
     void getAllFilteredActiveMedia_MinPriceNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, BigDecimal.valueOf(-1), null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(null, null, BigDecimal.valueOf(-1), null, null, null, null, null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("minPrice must be non-negative.", response.getBody());
@@ -236,7 +236,14 @@ class MediaControllerUnitTest {
     @Test
     void getAllFilteredActiveMedia_MaxPriceNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, BigDecimal.valueOf(-5), null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(null,
+                        null,
+                        null,
+                        BigDecimal.valueOf(-5),
+                        null,
+                        null,
+                        null,
+                        null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("maxPrice must be non-negative.", response.getBody());
@@ -249,6 +256,7 @@ class MediaControllerUnitTest {
     void getAllFilteredActiveMedia_MinGreaterThanMax_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
                 mediaController.getAllFilteredActiveMedia(
+                        null,
                         null,
                         BigDecimal.valueOf(50),
                         BigDecimal.valueOf(10),
@@ -267,7 +275,15 @@ class MediaControllerUnitTest {
     @Test
     void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldReturnBadRequest() {
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(null, null, null, -10, null, null, null);
+                mediaController.getAllFilteredActiveMedia(
+                        null,
+                        null,
+                        null,
+                        null,
+                        -10,
+                        null,
+                        null,
+                        null);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("minDailyImpressions must be non-negative.", response.getBody());

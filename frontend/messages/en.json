@@ -154,16 +154,25 @@
   },
   "browse": {
     "browseactions":{
-      "filter": "Filter:",
-      "sort": "Sort by:",
-      "nearest": "Nearest"
-    },
-    "filters":{
-      "price": "Price ($)",
-      "impressions": "Minimum impressions",
-      "from": "From",
-      "to": "To",
-      "showresults": "Add filter"
+      
+      "filters":{
+        "actionName": "Filter:",
+        "price": "Price ($)",
+        "impressions": "Minimum impressions",
+        "from": "From",
+        "to": "To",
+        "showresults": "Add filter"
+      },
+      "sort": {
+        "actionName": "Sort by:",
+        "nearest": "Nearest",
+        "priceAsc" : "Price (Low to High)",
+        "priceDesc" : "Price (High to Low)",
+        "impressionsAsc" : "Impressions (Low to High)",
+        "impressionsDesc" : "Impressions (High to Low)",
+        "loopAsc" : "Loop duration (Low to High)",
+        "loopDesc" : "Loop duration (High to Low)"
+      }
     },
     "nomedia":{
       "notfound": "No media found",

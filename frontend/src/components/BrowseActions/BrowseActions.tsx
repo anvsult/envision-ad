@@ -7,28 +7,27 @@ interface BrowseActionsProps{
     setSortBy: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export default function BrowseActions({filters, sort, setSortBy}: BrowseActionsProps){
+export default function BrowseActions({filters,  setSortBy}: BrowseActionsProps){
     const t = useTranslations('browse.browseactions');
     return(
         <Group justify="space-between">
             <Group>
-                <Text>{t('filter')}</Text>
+                <Text>{t('filters.actionName')}</Text>
                 {filters}
             </Group>
             <Group>
-                <Text>{t('sort')}</Text>
-                {sort}
+                <Text>{t('sort.actionName')}</Text>
                 <Select
-                    placeholder="Nearest"
+                    placeholder={t('nearest')}
                     data={
                         [
-                            { value: "nearest", label: t('nearest') },
-                            { value: "price,asc", label: "Price (Low to High)" },
-                            { value: "price,desc", label: "Price (High to Low)" },
-                            { value: "dailyImpressions,asc", label: "Impressions (Low to High)" },
-                            { value: "dailyImpressions,desc", label: "Impressions (High to Low)" },
-                            { value: "loopDuration,asc", label: "Loop duration (High to Low)" },
-                            { value: "loopDuration,desc", label: "Loop duration (High to Low)" },
+                            { value: "nearest", label: t('sort.nearest') },
+                            { value: "price,asc", label: t('sort.priceAsc') },
+                            { value: "price,desc", label: t('sort.priceDesc') },
+                            { value: "dailyImpressions,asc", label: t('sort.impressionsAsc') },
+                            { value: "dailyImpressions,desc", label: t('sort.impressionsDesc') },
+                            { value: "loopDuration,asc", label: t('sort.loopAsc') },
+                            { value: "loopDuration,desc", label: t('sort.loopDesc') },
                         ]
                     }
                     defaultValue="nearest"
