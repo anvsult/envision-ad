@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/lib/auth0/auth0";
 
-// Force rebuild
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
