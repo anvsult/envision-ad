@@ -20,19 +20,20 @@ export default function SideBar() {
         <Accordion
             multiple
             variant="separated"
-            defaultValue={["business", "media-owner", "admin"]}
+
+            defaultValue={["business", "media-owner", "advertiser", "admin"]}
         >
             <Accordion.Item value="media-owner">
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                 <Accordion.Panel>
                     <Stack gap="xs">
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/overview"
-                            label={t("media-owner.overview")}
-                            leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/overview")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/overview"*/}
+                        {/*    label={t("media-owner.overview")}*/}
+                        {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/overview")}*/}
+                        {/*/>*/}
 
                         <NavLink
                             component={Link}
@@ -42,21 +43,21 @@ export default function SideBar() {
                             active={pathname?.endsWith("/media-owner/media")}
                         />
 
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/displayed-ads"
-                            label={t("media-owner.displayedAds")}
-                            leftSection={<IconAd size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/displayed-ads")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/displayed-ads"*/}
+                        {/*    label={t("media-owner.displayedAds")}*/}
+                        {/*    leftSection={<IconAd size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/displayed-ads")}*/}
+                        {/*/>*/}
 
-                        <NavLink
-                            component={Link}
-                            href="/dashboard/media-owner/ad-requests"
-                            label={t("media-owner.adRequests")}
-                            leftSection={<IconFileDescription size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/media-owner/ad-requests")}
-                        />
+                        {/*<NavLink*/}
+                        {/*    component={Link}*/}
+                        {/*    href="/dashboard/media-owner/ad-requests"*/}
+                        {/*    label={t("media-owner.adRequests")}*/}
+                        {/*    leftSection={<IconFileDescription size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/media-owner/ad-requests")}*/}
+                        {/*/>*/}
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>
@@ -83,28 +84,58 @@ export default function SideBar() {
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>
-            <Accordion.Item value="admin">
-                <Accordion.Control>{t("adminTitle")}</Accordion.Control>
+            {/*<NavLink*/}
+            {/*    component={Link}*/}
+            {/*    href="/dashboard/transactions"*/}
+            {/*    label={t("sidebar.transactions")}*/}
+            {/*    leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}*/}
+            {/*    active={pathname?.includes("/transactions")}*/}
+            {/*    onClick={isMobile ? close : undefined}*/}
+            {/*/>*/}
+            <Accordion.Item value="advertiser">
+                <Accordion.Control>{t("advertiserTitle")}</Accordion.Control>
                 <Accordion.Panel>
                     <Stack gap="xs">
+                        {/*<NavLink*/}
+                        {/*    component={Link}* /}
+                        {/*    href="/dashboard/advertiser/overview"*/}
+                        {/*    label={t("business.overview")}*/}
+                        {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
+                        {/*    active={pathname?.endsWith("/business/overview")}*/}
+                        {/*/>*/}
+
                         <NavLink
                             component={Link}
-                            href="/dashboard/admin/medias/pending"
-                            label={t("admin.pendingMedia")}
-                            leftSection={<IconShieldCheck size={20} stroke={1.5} />}
-                            active={pathname?.includes("/dashboard/admin/medias/pending")}
+                            href="/dashboard/advertiser/campaigns"
+                            label={t("advertiser.myAds")}
+                            leftSection={<IconAd size={20} stroke={1.5} />}
+                            active={pathname?.endsWith("/advertiser/campaigns")}
                         />
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>
-                {/*<NavLink*/}
-                {/*    component={Link}*/}
-                {/*    href="/dashboard/transactions"*/}
-                {/*    label={t("sidebar.transactions")}*/}
-                {/*    leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}*/}
-                {/*    active={pathname?.includes("/transactions")}*/}
-                {/*    onClick={isMobile ? close : undefined}*/}
-                {/*/>*/}
+            <Accordion.Item value="admin">
+                        <Accordion.Control>{t("adminTitle")}</Accordion.Control>
+                    <Accordion.Panel>
+                        <Stack gap="xs">
+                            <NavLink
+                                component={Link}
+                                href="/dashboard/admin/medias/pending"
+                                label={t("admin.pendingMedia")}
+                                leftSection={<IconShieldCheck size={20} stroke={1.5} />}
+                                active={pathname?.includes("/dashboard/admin/medias/pending")}
+                            />
+                        </Stack>
+                    </Accordion.Panel>
+            </Accordion.Item>
+            {/*<NavLink*/}
+            {/*    component={Link}*/}
+            {/*    href="/dashboard/transactions"*/}
+            {/*    label={t("sidebar.transactions")}*/}
+            {/*    leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}*/}
+            {/*    active={pathname?.includes("/transactions")}*/}
+            {/*    onClick={isMobile ? close : undefined}*/}
+            {/*/>*/}
         </Accordion>
-    )
+)
 }

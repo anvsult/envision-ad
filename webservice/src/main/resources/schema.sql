@@ -1,14 +1,16 @@
-CREATE
-EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS invitation CASCADE;
+-- Drop tables that have foreign keys to `media` first, then `media` itself.
+DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS media CASCADE;
-DROP TABLE IF EXISTS media_location CASCADE;
+DROP TABLE IF EXISTS address CASCADE;
+DROP TABLE IF EXISTS ad_campaigns CASCADE;
+DROP TABLE IF EXISTS ads CASCADE;
+DROP TABLE IF EXISTS invitation CASCADE;
 
 
 -- 2. Create Address Table (Must be first because Business links to it)
@@ -100,6 +102,27 @@ CREATE TABLE media (
     image_content_type VARCHAR(100),
     image_data BYTEA
 );
+
+-- 5. Create Ad Campaigns Table
+CREATE TABLE ad_campaigns
+(
+    id SERIAL PRIMARY KEY,
+    campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+-- 6. Create Ads Table
+CREATE TABLE ads
+(
+    id SERIAL PRIMARY KEY,
+    ad_id VARCHAR(36) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    ad_url VARCHAR(512) NOT NULL,
+    ad_duration_seconds INTEGER NOT NULL,
+    ad_type VARCHAR(50) NOT NULL,
+
+    ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE
+);
+
 
 
 

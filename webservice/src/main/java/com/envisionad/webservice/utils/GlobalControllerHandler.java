@@ -1,5 +1,8 @@
 package com.envisionad.webservice.utils;
 
+import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
+import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
 import com.envisionad.webservice.business.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +48,24 @@ public class GlobalControllerHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public HttpErrorInfo handleIllegalArgumentException(IllegalArgumentException ex) {
         return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(InvalidAdTypeException.class)
+    public HttpErrorInfo handleInvalidAdType(InvalidAdTypeException ex) {
+        return createHttpErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY, ex);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(InvalidAdDurationException.class)
+    public HttpErrorInfo handleInvalidAdDuration(InvalidAdDurationException ex) {
+        return createHttpErrorInfo(HttpStatus.UNPROCESSABLE_ENTITY, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(AdCampaignNotFoundException.class)
+    public HttpErrorInfo handleAdCampaignNotFoundException(AdCampaignNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
     }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
