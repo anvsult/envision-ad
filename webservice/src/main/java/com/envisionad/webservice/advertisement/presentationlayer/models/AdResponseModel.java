@@ -1,10 +1,10 @@
 package com.envisionad.webservice.advertisement.presentationlayer.models;
 
-import com.envisionad.webservice.advertisement.dataaccesslayer.Ad;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+
 
 @Data
 @NoArgsConstructor
