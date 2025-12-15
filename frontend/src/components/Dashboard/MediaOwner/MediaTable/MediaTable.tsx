@@ -1,7 +1,9 @@
 "use client";
 
-import {MediaRow, MediaRowData} from "./MediaRow";
-import {Paper, ScrollArea, Table, Text} from "@mantine/core";
+import { MediaRow, MediaRowData } from "./MediaRow";
+import { Paper, ScrollArea, Table, Text, Card, Group, Avatar, Badge, Stack } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+import { MediaActions } from "./MediaActions";
 
 interface MediaTableProps {
   rows: MediaRowData[];
@@ -11,6 +13,70 @@ interface MediaTableProps {
 }
 
 export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTableProps) {
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const statusColorMap: Record<string, string> = {
+    ACTIVE: "green",
+    PENDING: "yellow",
+    REJECTED: "red",
+  };
+
+  function getStatusColor(status: string) {
+    return statusColorMap[status] ?? "gray";
+  }
+
+  if (isMobile) {
+    return (
+      <Stack gap="md">
+        {rows.length > 0 ? (
+          rows.map((row) => (
+            <Card key={row.id} shadow="sm" radius="md" withBorder>
+              <Group justify="space-between" mb="xs">
+                <Group>
+                  <Avatar src={row.image} alt={row.name} size="md" radius="md" />
+                  <div style={{ maxWidth: '180px' }}>
+                    <Text fw={500} lineClamp={1}>{row.name}</Text>
+                    <Text size="xs" c="dimmed">
+                      {row.timeUntil}
+                    </Text>
+                  </div>
+                </Group>
+                <MediaActions
+                  row={row}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onToggleStatus={onToggleStatus}
+                />
+              </Group>
+
+              <Group grow mb="xs">
+                <div>
+                  <Text size="xs" c="dimmed">Displayed</Text>
+                  <Text fw={700} c="blue">{row.adsDisplayed}</Text>
+                </div>
+                <div>
+                  <Text size="xs" c="dimmed">Pending</Text>
+                  <Text fw={700} c="orange">{row.pending}</Text>
+                </div>
+              </Group>
+
+              <Group justify="space-between" align="center">
+                <Badge color={getStatusColor(row.status)} variant="light">
+                  {row.status}
+                </Badge>
+                <Text fw={600} c="teal">{row.price}</Text>
+              </Group>
+            </Card>
+          ))
+        ) : (
+          <Text ta="center" c="dimmed" py="xl">
+            No media found. Add your first media to get started.
+          </Text>
+        )}
+      </Stack>
+    );
+  }
+
   return (
     <Paper shadow="sm" radius="md" withBorder>
       <ScrollArea>
