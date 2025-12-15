@@ -2,47 +2,64 @@ package com.envisionad.webservice.media.MapperLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MediaResponseMapper {
 
-    private static final Logger log = LoggerFactory.getLogger(MediaResponseMapper.class);
-
-    public MediaResponseMapper() {
-    }
-
     public MediaResponseModel entityToResponseModel(Media media) {
-        MediaResponseModel responseModel = new MediaResponseModel();
-        responseModel.setId(media.getId());
-        responseModel.setMediaOwnerName(media.getMediaOwnerName());
-        responseModel.setTitle(media.getTitle());
-        responseModel.setResolution(media.getResolution());
-        responseModel.setLoopDuration(media.getLoopDuration());
-        responseModel.setTypeOfDisplay(media.getTypeOfDisplay());
-        responseModel.setAspectRatio(media.getAspectRatio());
-        responseModel.setAddress(media.getAddress());
-        responseModel.setSchedule(media.getSchedule());
 
-        responseModel.setStatus(media.getStatus());
-        responseModel.setWidth(media.getWidth());
-        responseModel.setHeight(media.getHeight());
-        responseModel.setPrice(media.getPrice());
-        responseModel.setDailyImpressions(media.getDailyImpressions());
-        if (media.getImageData() != null && media.getId() != null) {
-            responseModel.setImageUrl("/api/v1/medias/" + media.getId() + "/image");
+        MediaResponseModel response = new MediaResponseModel();
+
+        response.setId(media.getId());
+        response.setMediaOwnerName(media.getMediaOwnerName());
+        response.setTitle(media.getTitle());
+        response.setResolution(media.getResolution());
+        response.setLoopDuration(media.getLoopDuration());
+        response.setTypeOfDisplay(media.getTypeOfDisplay());
+        response.setAspectRatio(media.getAspectRatio());
+        response.setSchedule(media.getSchedule());
+        response.setStatus(media.getStatus());
+        response.setWidth(media.getWidth());
+        response.setHeight(media.getHeight());
+        response.setPrice(media.getPrice());
+        response.setDailyImpressions(media.getDailyImpressions());
+
+        if (media.getImageData() != null) {
+            response.setImageUrl("/api/v1/media/" + media.getId() + "/image");
         }
-        return responseModel;
+
+        if (media.getMediaLocation() != null) {
+            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(media);
+
+            response.setMediaLocation(mediaLocationResponseModel);
+        }
+
+        return response;
     }
 
-    public List<MediaResponseModel> entityListToResponseModelList(List<Media> mediaList) {
-        return mediaList.stream()
-                .map(this::entityToResponseModel)
-                .collect(Collectors.toList());
+    private static MediaResponseModel.MediaLocationResponseModel getMediaLocationResponseModel(Media media) {
+        MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
+        mediaLocationResponseModel.setId(media.getMediaLocation().getId());
+        mediaLocationResponseModel.setName(media.getMediaLocation().getName());
+        mediaLocationResponseModel.setDescription(media.getMediaLocation().getDescription());
+        mediaLocationResponseModel.setCountry(media.getMediaLocation().getCountry());
+        mediaLocationResponseModel.setProvince(media.getMediaLocation().getProvince());
+        mediaLocationResponseModel.setCity(media.getMediaLocation().getCity());
+        mediaLocationResponseModel.setStreet(media.getMediaLocation().getStreet());
+        mediaLocationResponseModel.setPostalCode(media.getMediaLocation().getPostalCode());
+        mediaLocationResponseModel.setLatitude(media.getMediaLocation().getLatitude());
+        mediaLocationResponseModel.setLongitude(media.getMediaLocation().getLongitude());
+        return mediaLocationResponseModel;
     }
+
+    public List<MediaResponseModel> entityListToResponseModelList(List<Media> list) {
+        return list.stream()
+                .map(this::entityToResponseModel)
+                .toList();
+    }
+
 }

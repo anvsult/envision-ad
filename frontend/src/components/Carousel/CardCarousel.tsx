@@ -26,22 +26,24 @@ function CardCarousel({title, children}: CardCarouselProps) {
 }
 
 interface MediaCardCarouselProps {
+    id?: string;
     title?: string;
     medias: MediaCardProps[]; 
 }
 
-export function MediaCardCarousel({title, medias}: MediaCardCarouselProps) {
+export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
     return(
         <div>
             <CardCarousel title={title}>
                 {medias.map((media) => (
-                <CarouselSlide key={media.id} py="sm">
+                <CarouselSlide key={media.index} py="sm">
                     <MediaCard
-                        id={media.id}
+                        index={id ? id + media.index : media.index}
+                        href={media.href}
                         imageUrl={media.imageUrl}
                         title={media.title}
                         mediaOwnerName={media.mediaOwnerName}
-                        address={media.address}
+                        mediaLocation={media.mediaLocation}
                         aspectRatio={media.aspectRatio}
                         typeOfDisplay={media.typeOfDisplay}
                         price={media.price} 

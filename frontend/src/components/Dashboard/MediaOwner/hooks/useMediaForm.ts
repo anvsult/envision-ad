@@ -1,8 +1,9 @@
-import {useState} from "react";
+import { useState } from "react";
 
 export interface MediaFormState {
     mediaTitle: string;
     mediaOwnerName: string;
+    mediaLocationId: string;
     resolution: string;
     displayType: string | null;
     loopDuration: string;
@@ -11,24 +12,24 @@ export interface MediaFormState {
     heightCm: string;
     weeklyPrice: string;
     dailyImpressions: string;
-    mediaAddress: string;
     activeDaysOfWeek: Record<string, boolean>;
     dailyOperatingHours: Record<string, { start: string; end: string }>;
     activeMonths: Record<string, boolean>;
+    errors: Record<string, string>;
 }
 
 const getInitialFormState = (): MediaFormState => ({
     mediaTitle: "",
     mediaOwnerName: "",
+    mediaLocationId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380012",
     resolution: "",
-    displayType: null,
+    displayType: "DIGITAL",
     loopDuration: "",
     aspectRatio: "",
     widthCm: "",
     heightCm: "",
     weeklyPrice: "",
     dailyImpressions: "",
-    mediaAddress: "",
     activeDaysOfWeek: {
         Monday: true,
         Tuesday: true,
@@ -39,13 +40,13 @@ const getInitialFormState = (): MediaFormState => ({
         Sunday: false,
     },
     dailyOperatingHours: {
-        Monday: {start: "", end: ""},
-        Tuesday: {start: "", end: ""},
-        Wednesday: {start: "", end: ""},
-        Thursday: {start: "", end: ""},
-        Friday: {start: "", end: ""},
-        Saturday: {start: "", end: ""},
-        Sunday: {start: "", end: ""},
+        Monday: { start: "", end: "" },
+        Tuesday: { start: "", end: "" },
+        Wednesday: { start: "", end: "" },
+        Thursday: { start: "", end: "" },
+        Friday: { start: "", end: "" },
+        Saturday: { start: "", end: "" },
+        Sunday: { start: "", end: "" },
     },
     activeMonths: (() => {
         const months = [
@@ -66,6 +67,7 @@ const getInitialFormState = (): MediaFormState => ({
         months.forEach((m) => (obj[m] = true));
         return obj;
     })(),
+    errors: {},
 });
 
 export function useMediaForm() {
@@ -75,7 +77,7 @@ export function useMediaForm() {
         field: K,
         value: MediaFormState[K]
     ) => {
-        setFormState((prev) => ({...prev, [field]: value}));
+        setFormState((prev) => ({ ...prev, [field]: value }));
     };
 
     const updateDayTime = (day: string, part: "start" | "end", value: string) => {

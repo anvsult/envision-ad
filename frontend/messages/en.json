@@ -12,9 +12,9 @@
     "signIn": "Sign In",
     "platformName": "Envision Ad",
     "images": {
-        "envisionAdLogo": {
-          "alt": "Envision Ad Logo"
-        }
+      "envisionAdLogo": {
+        "alt": "Envision Ad Logo"
+      }
     },
     "profile": "Profile",
     "logout": "Logout"
@@ -27,12 +27,16 @@
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests"
     },
-    "businessTitle" : "Business",
+    "businessTitle": "Business",
     "business": {
       "overview": "Overview",
       "employees": "Employees"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Pending Media"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",
@@ -121,7 +125,6 @@
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "dailyImpressionPerDay": "~{count} daily impressions",
-
     "months": {
       "january": "January",
       "february": "February",
@@ -154,19 +157,30 @@
   },
   "browse": {
     "browseactions":{
-      "filter": "Filter:",
-      "sort": "Sort by:"
+      "filters":{
+        "actionName": "Filter:",
+        "price": "Price ($)",
+        "impressions": "Minimum impressions",
+        "from": "From",
+        "to": "To",
+        "showresults": "Add filter"
+      },
+      "sort": {
+        "actionName": "Sort by:",
+        "nearest": "Nearest",
+        "price" : "Price",
+        "impressions" : "Impressions",
+        "loop" : "Loop duration",
+        "asc": " (Low to High)",
+        "desc": " (High to Low)"
+      }
     },
-    "filters":{
-      "price": "Price ($)",
-      "impressions": "Minimum impressions",
-      "from": "From",
-      "to": "To",
-      "showresults": "Add filter"
-    },
-    "nomedia":{
+    "nomedia": {
       "notfound": "No media found",
-      "changefilters": "Please change your filters"
+      "changefilters": "Please change your filters",
+      "failedToLoad": "Failed to load media: ",
+      "noUserLocation": "Could not get nearest media. Please allow access to your location.",
+      "noSupport": "Geolocation is not supported by your browser."
     }
   },
   "business": {
@@ -247,13 +261,159 @@
   "media": {
     "errors": {
       "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media"
+      "deleteFailed": "Failed to delete media",
+      "statusToggleFailed": "Failed to change media status."
     },
     "deleteConfirm": {
       "title": "Delete Media",
       "message": "Are you sure you want to delete this media? This action cannot be undone.",
       "confirm": "Delete",
       "cancel": "Cancel"
+    },
+    "changeStatus": {
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "waitApproval": "Awaiting Approval",
+      "rejected": "Rejected",
+      "activateModalMessage": "Are you sure you want to activate this display? Users will be able to reserve this media.",
+      "deactivateModalMessage": "Are you sure you want to deactivate this display? No new users will be able to make reservations.",
+      "activateModalTitle": "Activate {{name}}",
+      "deactivateModalTitle": "Deactivate {{name}}",
+      "pendingToolTip": "This media is awaiting admin approval and cannot be activated yet.",
+      "rejectedToolTip": "This media was rejected and cannot be activated."
+    },
+    "actionsMenu": {
+      "title": "Actions",
+      "edit": "Edit",
+      "dangerZone": "Danger zone",
+      "deleteMedia": "Delete Media",
+      "cancel": "Cancel"
+    },
+    "success": {
+      "title": "Success!",
+      "create": "Media created",
+      "update": "Media updated"
+    }
+  },
+  "mediaModal": {
+    "title": {
+      "create": "Publish Media",
+      "update": "Update Media"
+    },
+    "sections": {
+      "details": "Details",
+      "months": "Months",
+      "schedule": "Days & Times",
+      "start": "Start",
+      "end": "End"
+    },
+    "labels": {
+      "mediaName": "Media Name",
+      "typeOfDisplay": "Type of display",
+      "loopDuration": "Loop duration (sec)",
+      "resolution": "Resolution (px)",
+      "resolutionWidth": "Resolution - Width (px)",
+      "resolutionHeight": "Resolution - Height (px)",
+      "aspectRatio": "Aspect ratio",
+      "aspectRatioWidth": "Aspect ratio - Width",
+      "aspectRatioHeight": "Aspect ratio - Height",
+      "width": "Width (cm)",
+      "height": "Height (cm)",
+      "price": "Price (per week)",
+      "dailyImpressions": "Daily impressions"
+    },
+    "placeholders": {
+      "mediaName": "Media name",
+      "selectType": "Select type",
+      "loopDuration": "Ex. 12",
+      "resolution": "Ex. 1920x1080",
+      "resolutionWidth": "Ex. 1920",
+      "resolutionHeight": "Ex. 1080",
+      "aspectRatio": "Ex. 16:9",
+      "aspectRatioWidth": "Ex. 16",
+      "aspectRatioHeight": "Ex. 9",
+      "width": "Ex. 80",
+      "height": "Ex. 200",
+      "price": "$50.00",
+      "dailyImpressions": "Daily impressions",
+      "timeOpen": "00:00",
+      "timeClosed": "Closed"
+    },
+    "tooltips": {
+      "max5": "Max 5 characters",
+      "max4": "Max 4 characters",
+      "max52": "Max 52 characters",
+      "max20": "Max 20 characters",
+      "max10": "Max 10 characters",
+      "max8": "Max 8 characters",
+      "max2": "Max 2 characters",
+      "maxDecimals": "Max 2 decimal places"
+    },
+    "errors": {
+      "required": "Required",
+      "mediaTitleRequired": "Media Title is required",
+      "loopDurationRequired": "Loop Duration is required",
+      "resolutionRequired": "Resolution is required",
+      "aspectRatioRequired": "Aspect Ratio is required",
+      "widthRequired": "Width is required",
+      "heightRequired": "Height is required",
+      "priceRequired": "Price is required",
+      "impressionsRequired": "Daily Impressions is required",
+      "scheduleRequired": "At least one day must be active in the schedule",
+      "startTimeAfterEndTime": "End time must be after Start time",
+      "fixForm": "Please fix the errors in the form"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "calendar": {
+      "months": {
+        "january": "January",
+        "february": "February",
+        "march": "March",
+        "april": "April",
+        "may": "May",
+        "june": "June",
+        "july": "July",
+        "august": "August",
+        "september": "September",
+        "october": "October",
+        "november": "November",
+        "december": "December"
+      },
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      }
+    }
+  },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "No pending media to approve.",
+      "approveMedia": "Approve Media",
+      "denyMedia": "Deny Media",
+      "approveMediaConfirmation": "Approve this media?",
+      "denyMediaConfirmation": "Deny this media?",
+      "approveMediaText": "Are you sure you want to approve this media?",
+      "denyMediaText": "Are you sure you want to deny this media?",
+      "deny": "Deny",
+      "approve": "Approve",
+      "reviewUnavailable": "Review not available",
+      "reviewDone": "This media has already been reviewed ({status}). You can’t approve/deny it again.",
+      "pendingMedia": "Pending Media Approval",
+      "image": "Image",
+      "name":"Name",
+      "status": "Status",
+      "price": "Price",
+      "mediaOwner": "Media Owner",
+      "location": "Location",
+      "dailyImpressions": "Daily Impressions"
     }
   }
 }

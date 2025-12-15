@@ -1,5 +1,6 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 
 import {
   ColorSchemeScript,
@@ -11,6 +12,7 @@ import type { ReactNode } from "react";
 import Footer from "../../components/Footer/Footer";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
+import { Notifications } from "@mantine/notifications";
 
 export async function generateMetadata({
   params,
@@ -52,6 +54,7 @@ export default async function RootLayout({
         </head>
         <body>
           <MantineProvider theme={theme}>
+            <Notifications />
             {children}
             <Footer />
           </MantineProvider>

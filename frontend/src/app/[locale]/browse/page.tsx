@@ -1,80 +1,83 @@
 'use client'
 
-import { ActionIcon, Container, Group, Pagination, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
 import BrowseActions from '@/components/BrowseActions/BrowseActions';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {  getAllFilteredActiveMedia } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
-import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
+import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-
+import { GetUserGeoLocation} from '@/components/Location';
+import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {
   const t = useTranslations('browse');
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
-
   const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
-
-  const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
-
+  const [totalPages, setTotalPages] = useState(1);
+  
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
   const [titleFilter, setTitleFilter] = useState("");
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
+  const [userLocation, setUserLocation] = useState<LatLngLiteral | null>(null);
+  const [message, setMessage] = useState<string>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [sortBy, setSortBy] = useState<string>("nearest");
 
-
+  useEffect(() => GetUserGeoLocation(setUserLocation, setMessage), []);
 
   useEffect(() => {
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions)
+    if (sortBy === "nearest" && !userLocation){
+      return
+    } 
+    
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
       .then((data) => {
-        const items = (data || []).filter((m) => m.id != null);
+        const items = (data.content || []).filter((m) => m.id != null);
 
-        const mapped = items.map((m) => ({
-          id: String(m.id),
+        const mapped = items.map((m, index) => ({
+          index: String(index),
+          href: String(m.id),
           title: m.title,
           mediaOwnerName: m.mediaOwnerName,
-          address: m.address,
+          mediaLocation: m.mediaLocation,
           resolution: m.resolution,
           aspectRatio: m.aspectRatio,
-          loopDuration: m.loopDuration,
-          width: m.width ?? 0,
-          height: m.height ?? 0,
           price: m.price ?? 0,
           dailyImpressions: m.dailyImpressions ?? 0,
           typeOfDisplay: m.typeOfDisplay,
-          imageUrl: m.imageUrl,
+          imageUrl: m.imageUrl
         }));
-
+        
         setMedia(mapped);
-        setActivePage(1);
+        setTotalPages(data.totalPages);
+        
       })
-      .catch((err) => {
-        console.error("Failed to load media:", err);
+      .catch(() => {
+        setMessage('failedToLoad');
+        setLoading(false);
+      }).finally(() => {
+        setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
 
-
-  const paginatedMedia = useMemo(() => {
-    const start = (activePage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return media.slice(start, end);
-  }, [media, activePage]);
 
 
   function filters(){
   return(
     <>
       <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-      <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('filters.impressions')} placeholder={t('filters.impressions')}/>
+      <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
     </>
   )
 }
@@ -85,6 +88,7 @@ function BrowsePage() {
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
+          
           <TextInput
             placeholder="Search title"
             value={draftTitleFilter}
@@ -102,17 +106,19 @@ function BrowsePage() {
           />
 
 
-          <BrowseActions filters={filters()}/>
-          {paginatedMedia.length > 0 ? (<MediaCardGrid medias={paginatedMedia} />):
-            ( 
+          <BrowseActions filters={filters()} setSortBy={setSortBy}/>
+          
+            {/* if loading, show loader, if  */}
+          {(media.length > 0) ? (<MediaCardGrid medias={media} />):( 
               <Stack h='20em' justify='center' align='center'>
-                <Text size='32px'>{t('nomedia.notfound')}</Text>
-                <Text>{t('nomedia.changefilters')}</Text>
+                {(loading) ? ( (sortBy === 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
+                  <>
+                    <Text size='32px'>{t('nomedia.notfound')}</Text>
+                    <Text>{t('nomedia.changefilters')}</Text>
+                  </>
+                }
               </Stack>
-            )
-
-          }
-
+          )}
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination
