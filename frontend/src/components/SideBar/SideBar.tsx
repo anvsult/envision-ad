@@ -5,7 +5,8 @@ import {
     IconDeviceTv,
     IconFileDescription,
     IconLayoutDashboard,
-    IconUsers
+    IconUsers,
+    IconShieldCheck,
 } from "@tabler/icons-react";
 import React from "react";
 import {useTranslations} from "next-intl";
@@ -19,7 +20,7 @@ export default function SideBar() {
         <Accordion
             multiple
             variant="separated"
-            defaultValue={["business", "media-owner"]}
+            defaultValue={["business", "media-owner", "admin"]}
         >
             <Accordion.Item value="media-owner">
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
@@ -78,6 +79,20 @@ export default function SideBar() {
                             label={t("business.employees")}
                             leftSection={<IconUsers size={20} stroke={1.5} />}
                             active={pathname?.endsWith("/business/employees")}
+                        />
+                    </Stack>
+                </Accordion.Panel>
+            </Accordion.Item>
+            <Accordion.Item value="admin">
+                <Accordion.Control>{t("adminTitle")}</Accordion.Control>
+                <Accordion.Panel>
+                    <Stack gap="xs">
+                        <NavLink
+                            component={Link}
+                            href="/dashboard/admin/medias/pending"
+                            label={t("admin.pendingMedia")}
+                            leftSection={<IconShieldCheck size={20} stroke={1.5} />}
+                            active={pathname?.includes("/dashboard/admin/medias/pending")}
                         />
                     </Stack>
                 </Accordion.Panel>

@@ -31,8 +31,12 @@
     "business": {
       "overview": "Overview",
       "employees": "Employees"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Pending Media"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",

@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { addMedia, getAllMedia, getMediaById, updateMedia, deleteMedia } from "@/services/MediaService";
+import {
+  addMedia,
+  getAllMedia,
+  getMediaById,
+  updateMedia,
+  deleteMedia,
+} from "@/services/MediaService";
 import type { MediaRowData } from "../MediaTable/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequest } from "@/types/MediaTypes";
@@ -29,25 +35,31 @@ export function useMediaList() {
             });
     }, []);
 
-    const buildScheduleFromForm = (formState: MediaFormState) => {
-        const selectedMonths = Object.keys(formState.activeMonths).filter(
-            (m) => !!formState.activeMonths[m]
-        );
+  const buildScheduleFromForm = (formState: MediaFormState) => {
+    const selectedMonths = Object.keys(formState.activeMonths).filter(
+        (m) => !!formState.activeMonths[m]
+    );
 
-        const weeklySchedule = [
-            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-        ].map(day => ({
-            dayOfWeek: day.toLowerCase(),
-            isActive: !!formState.activeDaysOfWeek[day],
-            startTime: formState.dailyOperatingHours[day]?.start ?? null,
-            endTime: formState.dailyOperatingHours[day]?.end ?? null
-        }));
+    const weeklySchedule = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ].map((day) => ({
+      dayOfWeek: day.toLowerCase(),
+      isActive: !!formState.activeDaysOfWeek[day],
+      startTime: formState.dailyOperatingHours[day]?.start ?? null,
+      endTime: formState.dailyOperatingHours[day]?.end ?? null,
+    }));
 
-        return {
-            selectedMonths,
-            weeklySchedule,
-        };
+    return {
+      selectedMonths,
+      weeklySchedule,
     };
+  };
 
 
 
