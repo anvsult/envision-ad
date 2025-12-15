@@ -393,6 +393,19 @@
       "address": "Address",
       "role": "Role",
       "noBusiness": "No business associated."
-    }
+    },
+    "editModal": {
+      "title": "Edit Profile",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "required": "This field is required",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "editButton": "Edit Profile"
   }
 }

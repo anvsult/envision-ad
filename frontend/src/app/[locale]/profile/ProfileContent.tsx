@@ -4,6 +4,8 @@ import { Card, Text, Group, Avatar, Stack, Badge, ThemeIcon, Title, Box, Divider
 import { IconUser, IconBuildingStore, IconMail, IconMapPin, IconBriefcase, IconPencil, IconPhone, IconArrowLeft } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
+import { useDisclosure } from "@mantine/hooks";
+import { EditProfileModal } from "@/components/Profile/EditProfileModal";
 
 interface ProfileContentProps {
     user: any;
@@ -11,6 +13,7 @@ interface ProfileContentProps {
 
 export default function ProfileContent({ user }: ProfileContentProps) {
     const t = useTranslations("profilePage");
+    const [opened, { open, close }] = useDisclosure(false);
 
     // Helper helper to ensure strings
     const safeStr = (val: any, fallback = "") => typeof val === 'string' ? val : diffType(val, fallback);
@@ -59,6 +62,9 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                 <Text c="dimmed" size="sm"> EnvisionAd Member</Text>
                             </Box>
                         </Group>
+                        <Button variant="light" leftSection={<IconPencil size={16} />} onClick={open}>
+                            {t("editButton")}
+                        </Button>
                     </Group>
 
                     {/* Main Content Sections */}
@@ -96,6 +102,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     </Paper>
                 </Stack>
             </Paper>
+            <EditProfileModal opened={opened} onClose={close} user={user} />
         </Stack>
     );
 }

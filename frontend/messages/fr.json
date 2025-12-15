@@ -394,6 +394,19 @@
       "address": "Adresse",
       "role": "Rôle",
       "noBusiness": "Aucune entreprise associée."
-    }
+    },
+    "editModal": {
+      "title": "Modifier le profil",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Entrez votre nom",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "required": "Ce champ est requis",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "editButton": "Modifier le profil"
   }
 }

@@ -1,4 +1,5 @@
 import { auth0 } from "@/lib/auth0/auth0";
+import { Auth0ManagementService } from "@/lib/auth0/management";
 import { getTranslations } from "next-intl/server";
 import { Container } from "@mantine/core";
 import { Header } from "@/components/Header/Header";
@@ -13,7 +14,11 @@ export default async function ProfilePage() {
         redirect("/api/auth/login");
     }
 
-    const user = session.user;
+    // Fetch fresh user data from Auth0 Management API to ensure updates are reflected immediately
+    // The session cookie only contains the profile state at login time
+    const auth0User = await Auth0ManagementService.getUser(session.user.sub);
+    const user = auth0User ? { ...auth0User, sub: auth0User.user_id } : session.user;
+
     const t = await getTranslations("profilePage");
 
     return (
