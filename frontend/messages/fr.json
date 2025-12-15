@@ -157,6 +157,8 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
+    "searchTitle": "Titre",
+    "searchAddress": "Addresse",
     "browseactions":{
       "filters":{
         "actionName": "Filtres:",

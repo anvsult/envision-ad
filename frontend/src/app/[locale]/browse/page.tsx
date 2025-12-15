@@ -110,7 +110,7 @@ function BrowsePage() {
         <Stack gap="sm">
           <Group grow>
             <TextInput
-              placeholder="Search title"
+              placeholder={t('searchTitle')}
               value={draftTitleFilter}
               onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
               onKeyDown={(event) => {
@@ -125,7 +125,7 @@ function BrowsePage() {
               }
             />
             <Autocomplete
-              placeholder="Search location"
+              placeholder={t('searchAddress')}
               data={locationOptions.map((o) => o.display_name)}
               value={draftLocationFilter}
               onChange={ setDraftLocationFilter }

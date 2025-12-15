@@ -156,6 +156,8 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
+    "searchTitle": "Title",
+    "searchAddress": "Address",
     "browseactions":{
       "filters":{
         "actionName": "Filter:",
