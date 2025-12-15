@@ -535,7 +535,7 @@
       "usernamePlaceholder": "Enter your username",
       "required": "This field is required",
       "cancel": "Cancel",
-      "save": "Save Changes"
+      "save": "Save"
     },
     "editButton": "Edit Profile"
   "admin": {
