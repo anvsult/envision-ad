@@ -31,8 +31,12 @@
     "business": {
       "overview": "Aperçu",
       "employees": "Employés"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Médias en attente"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
