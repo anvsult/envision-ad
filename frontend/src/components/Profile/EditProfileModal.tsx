@@ -77,7 +77,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
                     />
                     <Group justify="flex-end" mt="md">
                         <Button variant="default" onClick={onClose}>{t("cancel")}</Button>
-                        <Button type="submit">{t("save")}</Button>
+                        <Button type="submit" loading={loading}>{t("save")}</Button>
                     </Group>
                 </Stack>
             </form>
