@@ -22,6 +22,22 @@ export async function PATCH(
     try {
         const body = await request.json();
 
+        // Validate request body - only allow specific user profile fields
+        const allowedFields = ['given_name', 'family_name', 'nickname', 'name'];
+        const sanitizedBody: Record<string, string> = {};
+        
+        for (const field of allowedFields) {
+            if (field in body && typeof body[field] === 'string') {
+                // Basic sanitization: trim whitespace
+                sanitizedBody[field] = body[field].trim();
+            }
+        }
+
+        // Ensure at least one field is being updated
+        if (Object.keys(sanitizedBody).length === 0) {
+            return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 });
+        }
+
         // Get Management API Token
         const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
             method: 'POST',
@@ -59,7 +75,7 @@ export async function PATCH(
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify(body),
+                body: JSON.stringify(sanitizedBody),
             }
         );
 

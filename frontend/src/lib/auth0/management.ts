@@ -1,5 +1,17 @@
+import { UpdateUserRequest } from "@/services/UserService";
+
+// Token cache
+let cachedToken: string | null = null;
+let tokenExpiry: number = 0;
+
 export class Auth0ManagementService {
     private static async getAccessToken() {
+        // Check if cached token is still valid (with 5-minute buffer)
+        const now = Date.now();
+        if (cachedToken && tokenExpiry > now + 5 * 60 * 1000) {
+            return cachedToken;
+        }
+
         try {
             const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
                 method: 'POST',
@@ -23,6 +35,12 @@ export class Auth0ManagementService {
                 console.error("Auth0 token response missing access_token:", data);
                 throw new Error("Auth0 token response missing access_token");
             }
+            
+            // Cache the token with expiry (default 24 hours, use expires_in if provided)
+            cachedToken = data.access_token;
+            const expiresInSeconds = data.expires_in || 86400; // Default to 24 hours
+            tokenExpiry = Date.now() + expiresInSeconds * 1000;
+            
             return data.access_token;
         } catch (error) {
             console.error("Error in Auth0ManagementService.getAccessToken:", error);
@@ -55,7 +73,7 @@ export class Auth0ManagementService {
         }
     }
 
-    static async updateUser(userId: string, data: any) {
+    static async updateUser(userId: string, data: UpdateUserRequest) {
         const token = await this.getAccessToken();
         const res = await fetch(
             `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,

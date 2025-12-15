@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { updateUser } from "@/services/UserService";
 import { useRouter } from "next/navigation";
+import { notifications } from "@mantine/notifications";
 
 interface EditProfileModalProps {
     opened: boolean;
@@ -36,7 +37,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             family_name: user.family_name || "",
             nickname: user.nickname || user.name || "",
         });
-    }, [user]);
+    }, [user, form]);
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);
@@ -48,9 +49,18 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             await updateUser(user.sub, updateData);
             router.refresh();
             onClose();
+            notifications.show({
+                title: "Success",
+                message: "Profile updated successfully",
+                color: "green"
+            });
         } catch (error) {
             console.error("Failed to update profile", error);
-            alert("Failed to update profile");
+            notifications.show({
+                title: "Error",
+                message: "Failed to update profile. Please try again.",
+                color: "red"
+            });
         } finally {
             setLoading(false);
         }
