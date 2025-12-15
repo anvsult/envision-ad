@@ -20,6 +20,17 @@ spring:
       platform: psql
       mode: always
       schema-locations: classpath:schema.sql
+  mail:
+    host: ${SPRING_EMAIL_SMTP}
+    port: ${SPRING_EMAIL_PORT}
+    username: ${SPRING_EMAIL_USERNAME}
+    password: ${SPRING_EMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 okta:
   oauth2:

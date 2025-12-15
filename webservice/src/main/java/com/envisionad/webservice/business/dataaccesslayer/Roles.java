@@ -2,13 +2,10 @@ package com.envisionad.webservice.business.dataaccesslayer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Getter
 @Embeddable
-@AllArgsConstructor
+@Data
 @NoArgsConstructor
 public class Roles {
     @Column(name = "media_owner")

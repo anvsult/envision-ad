@@ -7,45 +7,30 @@ export enum CompanySize {
 
 export interface BusinessRequest {
     name: string;
-    owner: string;
     companySize: CompanySize;
-    address: AddressRequest;
-    roles: RolesRequest;
-}
-
-export interface AddressRequest {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
-}
-
-export interface AddressResponse {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-    country: string;
+    address: Address;
+    roles: Roles;
 }
 
 export interface BusinessResponse {
     businessId: string;
     name: string;
-    owner: string;
+    ownerId: string;
     companySize: CompanySize | string; // Handle potential string response from backend if enum serialization varies
-    address: AddressResponse;
-    roles: RolesResponse;
-    employees: string[];
+    address: Address;
+    roles: Roles;
     dateCreated: string;
 }
 
-export interface RolesResponse {
-    mediaOwner: boolean;
-    advertiser: boolean;
+export interface Address {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
 }
 
-export interface RolesRequest {
+export interface Roles {
     mediaOwner: boolean;
     advertiser: boolean;
 }

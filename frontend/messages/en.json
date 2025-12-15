@@ -31,8 +31,12 @@
     "business": {
       "overview": "Overview",
       "employees": "Employees"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Pending Media"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",
@@ -230,15 +234,27 @@
       "pending": "Pending Invitations",
       "active": "Active Employees",
       "addButton": "Invite Employee",
+      "invites": "Pending invitations",
       "name": "Name",
       "email": "Email",
+      "expire": "Expires in",
       "actions": "Actions",
+      "invitationNotFound": "No pending invitations found",
+      "employeeNotFound": "No active employees found",
       "form": {
         "title": "Add Employee",
         "submit": "Invite Employee",
         "cancel": "Cancel",
         "email": "Email",
         "placeholder": "email@email.com"
+      },
+      "modal": {
+        "employeeTitle": "Remove Employee",
+        "invitationTitle": "Cancel Invitation",
+        "employeeMessage": "Are you sure you want to remove <bold>{name}</bold> from your business?",
+        "invitationMessage": "Are you sure you want to cancel the invitation for <bold>{email}</bold> to join your business?",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     }
   },
@@ -407,5 +423,27 @@
       "save": "Save Changes"
     },
     "editButton": "Edit Profile"
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "No pending media to approve.",
+      "approveMedia": "Approve Media",
+      "denyMedia": "Deny Media",
+      "approveMediaConfirmation": "Approve this media?",
+      "denyMediaConfirmation": "Deny this media?",
+      "approveMediaText": "Are you sure you want to approve this media?",
+      "denyMediaText": "Are you sure you want to deny this media?",
+      "deny": "Deny",
+      "approve": "Approve",
+      "reviewUnavailable": "Review not available",
+      "reviewDone": "This media has already been reviewed ({status}). You can’t approve/deny it again.",
+      "pendingMedia": "Pending Media Approval",
+      "image": "Image",
+      "name":"Name",
+      "status": "Status",
+      "price": "Price",
+      "mediaOwner": "Media Owner",
+      "location": "Location",
+      "dailyImpressions": "Daily Impressions"
+    }
   }
 }

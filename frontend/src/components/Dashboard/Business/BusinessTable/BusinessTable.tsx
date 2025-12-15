@@ -11,7 +11,7 @@ interface BusinessDetailProps {
 
 export function BusinessDetail({business, onEdit}: BusinessDetailProps) {
     const t = useTranslations("business");
-    const {user, isLoading} = useUser();
+    const {user} = useUser();
 
     if (!business) return <Text>No business data found</Text>;
 
@@ -21,7 +21,7 @@ export function BusinessDetail({business, onEdit}: BusinessDetailProps) {
                 <Group justify="space-between">
                     <Title order={3}>{business.name}</Title>
                     <Group gap="xs">
-                        {onEdit && user?.sub === business.owner && (
+                        {onEdit && user?.sub === business.ownerId && (
                             <Button
                                 leftSection={<IconEdit size={16}/>}
                                 variant="light"
