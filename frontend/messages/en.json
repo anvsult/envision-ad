@@ -560,5 +560,36 @@
       "location": "Location",
       "dailyImpressions": "Daily Impressions"
     }
+  },
+  "reserveModal": {
+    "title": "Reserve: {title}",
+    "selectCampaign": "Select Campaign",
+    "chooseCampaign": "Choose one of your campaigns",
+    "selectStartDateNote": "Select a Start Date. End dates are restricted to weekly intervals.",
+    "endDateWeekday": "End date must be on the same weekday as start date.",
+    "errors": {
+      "selectCampaign": "Please select a campaign to proceed",
+      "selectDate": "Please select a valid start and end date"
+    },
+    "mediaIdMissing": "Media id is missing.",
+    "successTitle": "Reservation Successful!",
+    "successMessage": "Reservation Confirmed!",
+    "successMessageLong": "Your ad slot has been successfully booked. You can view it in your dashboard schedule.",
+    "duplicateTitle": "Duplicate",
+    "duplicateMessage": "Already reserved for these dates.",
+    "failedReserve": "Failed to reserve.",
+    "networkError": "Network error occurred.",
+    "doneButton": "Done",
+    "cancelButton": "Cancel",
+    "backButton": "Back",
+    "nextStepButton": "Next step",
+    "confirmPayButton": "Confirm & Pay",
+    "reviewTitle": "Review Reservation",
+    "labels": {
+      "media": "Media",
+      "campaign": "Campaign",
+      "dates": "Dates",
+      "totalCost": "Total Cost"
+    }
   }
 }
