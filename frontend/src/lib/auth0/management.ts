@@ -4,8 +4,8 @@ import { UpdateUserRequest } from "@/services/UserService";
 const TOKEN_CACHE_BUFFER_MS = 5 * 60 * 1000; // 5 minutes buffer before expiry
 const DEFAULT_TOKEN_EXPIRY_SECONDS = 86400; // 24 hours
 
-// Simple in-memory token cache (Note: In production with multiple instances, 
-// consider using a distributed cache like Redis)
+// Simple in-memory token cache (Note: Cache is per-process and will reset on restart.
+// For production with multiple instances, consider using a distributed cache like Redis)
 const tokenCache = {
     token: null as string | null,
     expiry: 0,
