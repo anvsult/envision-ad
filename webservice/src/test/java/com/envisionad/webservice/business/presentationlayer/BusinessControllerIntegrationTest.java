@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,11 +43,24 @@ class BusinessControllerIntegrationTest {
     void setUp() {
         Jwt jwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")
-                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
-                .claim("scope", "read write")
-                .build();
+                .claim("sub", "auth0|6934e8515479d2b6d3cf7575")
+                .claim("scope", "openid profile email")
+                .claim("permissions", Arrays.asList(
 
+                        "create:employee",
+                        "create:media",
+                        "delete:employee",
+                        "update:business",
+                        "update:media",
+                        "update:business",
+                        "delete:employee",
+                        "create:employee",
+                        "readAll:business",
+                        "read:business"
+                ))
+                .build();
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+
     }
 
     @Test

@@ -23,8 +23,6 @@ test('createAd', async ({ homePage, campaignsPage }) => {
     const imagePath = path.join(__dirname, '../../fixtures/test-ad-image.jpg');
     await campaignsPage.uploadAdFile(imagePath);
 
-    await campaignsPage.submitAd();
-
-    await campaignsPage.assertAdCreated('My First Ad');
+    await campaignsPage.assertAdCreated(campaignName, 'My First Ad');
 
 });

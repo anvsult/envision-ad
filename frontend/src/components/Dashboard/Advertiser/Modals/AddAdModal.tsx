@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, TextInput, Select, Button, Group, Box, Text, Stack, ThemeIcon, Alert } from '@mantine/core';
+import { Modal, TextInput, Select, Button, Group, Box, Text, Stack, ThemeIcon, Alert, Badge } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUpload, IconCheck, IconInfoCircle } from '@tabler/icons-react';
 import { CreateAdPayload } from "@/types/AdTypes";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary';
+import { useTranslations } from 'next-intl'
 
 interface AddAdModalProps {
     opened: boolean;
@@ -12,6 +13,7 @@ interface AddAdModalProps {
 }
 
 export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
+    const t = useTranslations('AddAdModal');
     const [submitting, setSubmitting] = useState(false);
 
     // Cloudinary State
@@ -26,7 +28,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
             adDurationSeconds: "15",
         },
         validate: {
-            name: (value) => (value.length < 2 ? "Name too short" : null),
+            name: (value) => (value.length < 2 ? t('validation.nameTooShort') : null),
         },
     });
 
@@ -44,33 +46,25 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
     };
 
     // --- Trimming Checker ---
-    // Runs whenever the user changes the Duration Dropdown OR uploads a new video
     useEffect(() => {
         const selectedDuration = parseInt(form.values.adDurationSeconds);
 
         if (form.values.adType === 'VIDEO' && originalVideoDuration && originalVideoDuration > selectedDuration) {
-            setTrimWarning(`Video is ${Math.round(originalVideoDuration)}s. It will be cropped to the first ${selectedDuration}s.`);
+            setTrimWarning(t('alerts.croppingMessage', { orig: Math.round(originalVideoDuration), keep: selectedDuration }));
         } else {
             setTrimWarning(null);
         }
-    }, [form.values.adDurationSeconds, originalVideoDuration, form.values.adType]);
-
+    }, [form.values.adDurationSeconds, originalVideoDuration, form.values.adType, t]);
 
     // --- Cloudinary Success Callback ---
     const handleUploadSuccess = (results: CloudinaryUploadWidgetResults) => {
         if (typeof results.info === 'object' && results.info.secure_url) {
-
-            // 1. Set URL
             setUploadedFileUrl(results.info.secure_url);
 
-            // 2. Auto-Detect Type
-            // Cloudinary returns 'image' or 'video' in resource_type
             const type = results.info.resource_type === 'video' ? 'VIDEO' : 'IMAGE';
             form.setFieldValue('adType', type);
 
-            // 3. Handle Video Specifics
             if (type === 'VIDEO' && results?.info?.duration != null) {
-                // coerce to number and validate
                 const durationNum = Number(results.info.duration);
                 setOriginalVideoDuration(Number.isFinite(durationNum) ? durationNum : null);
             } else {
@@ -88,12 +82,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
             let finalUrl = uploadedFileUrl;
             const durationInt = parseInt(values.adDurationSeconds);
 
-            // Apply Trimming Transformation if needed
             if (values.adType === 'VIDEO' && originalVideoDuration && originalVideoDuration > durationInt) {
-                // Cloudinary URL manipulation: Insert transformation after "/upload/"
-                // Example: .../upload/v123/video.mp4 -> .../upload/so_0,eo_15/v123/video.mp4
-                // so_0 = Start Offset 0s
-                // eo_15 = End Offset 15s
                 finalUrl = uploadedFileUrl.replace(
                     '/upload/',
                     `/upload/so_0,eo_${durationInt}/`
@@ -112,47 +101,49 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
         }
     };
 
-    // Widget Options: allow both image and video
+    const typeOptions = [
+        { value: 'IMAGE', label: t('type.image') },
+        { value: 'VIDEO', label: t('type.video') },
+    ];
+
+    const durationOptions = [
+        { value: '10', label: t('duration.10') },
+        { value: '15', label: t('duration.15') },
+        { value: '30', label: t('duration.30') },
+    ];
+
     const widgetOptions = {
         sources: ['local', 'url'] as ('local' | 'url')[],
-        resourceType: 'auto', // Allows uploading both images and videos
+        resourceType: 'auto',
         multiple: false,
-        maxFileSize: 50000000, // Optional: 50MB limit
+        maxFileSize: 50000000,
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Add New Ad" centered closeOnClickOutside={!submitting}>
+        <Modal opened={opened} onClose={handleClose} title={t('title')} centered closeOnClickOutside={!submitting}>
             <Box pos="relative">
                 <form onSubmit={form.onSubmit(handleSubmit)}>
                     <Stack gap="md">
                         <TextInput
-                            label="Name"
-                            placeholder="Ad Name"
+                            label={t('labels.name')}
+                            placeholder={t('placeholders.name')}
                             required
                             {...form.getInputProps('name')}
                         />
 
-                        {/* Auto-detected, so we disable user interaction but show the value */}
+                        {/* Duration select remains in place */}
                         <Select
-                            label="Type"
-                            data={['IMAGE', 'VIDEO']}
-                            required
-                            disabled // User cannot change this manually anymore
-                            {...form.getInputProps('adType')}
-                            description="Automatically set based on uploaded file"
-                        />
+                             label={t('labels.duration')}
+                             data={durationOptions}
+                             required
+                             allowDeselect={false}
+                             {...form.getInputProps('adDurationSeconds')}
+                         />
 
-                        <Select
-                            label="Duration (seconds)"
-                            data={['10', '15', '30']}
-                            required
-                            allowDeselect={false}
-                            {...form.getInputProps('adDurationSeconds')}
-                        />
-
-                        {/* --- CLOUDINARY WIDGET SECTION --- */}
-                        <Box>
-                            <Text size="sm" fw={500} mb={4}>Media <span style={{color: 'var(--mantine-color-red-text)'}}>*</span></Text>
+                         <Box>
+                            <Text size="sm" fw={500} mb={4}>
+                                {t('labels.media')} <span style={{color: 'var(--mantine-color-red-text)'}}>*</span>
+                            </Text>
 
                             <CldUploadWidget
                                 signatureEndpoint="/api/cloudinary/sign-upload"
@@ -167,7 +158,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                             onClick={() => open()}
                                             disabled={submitting}
                                         >
-                                            {uploadedFileUrl ? "Change File" : "Upload File"}
+                                            {uploadedFileUrl ? t('buttons.changeFile') : t('buttons.uploadFile')}
                                         </Button>
 
                                         {uploadedFileUrl && (
@@ -176,36 +167,46 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                                     <IconCheck size={12} />
                                                 </ThemeIcon>
                                                 <Text size="sm" c="green">
-                                                    {form.values.adType === 'VIDEO' ? 'Video' : 'Image'} Uploaded
+                                                    {form.values.adType === 'VIDEO' ? t('status.videoUploaded') : t('status.imageUploaded')}
                                                 </Text>
                                             </Group>
                                         )}
                                     </Group>
                                 )}
                             </CldUploadWidget>
+                             {!uploadedFileUrl && form.isTouched() && (
+                                 <Text c="red" size="xs" mt={4}>{t('validation.fileRequired')}</Text>
+                             )}
+                            {/* Show detected media type under the upload widget as a non-interactive Badge */}
+                            <Box mt="sm">
+                                <Text size="sm" fw={500} mb={4}>{t('labels.type')}</Text>
+                                <Group align="center">
+                                    <Badge color={form.values.adType === 'VIDEO' ? 'blue' : 'gray'} variant="filled">
+                                        {form.values.adType === 'VIDEO' ? t('type.video') : t('type.image')}
+                                    </Badge>
+                                    <Text size="xs" color="dimmed">{t('description.autoDetect')}</Text>
+                                </Group>
+                            </Box>
 
-                            {/* Warning Alert for Cropping */}
-                            {trimWarning && (
-                                <Alert
-                                    variant="light"
-                                    color="orange"
-                                    title="Automatic Cropping"
-                                    icon={<IconInfoCircle />}
-                                    mt="sm"
-                                >
-                                    {trimWarning}
-                                </Alert>
-                            )}
+                             {trimWarning && (
+                                 <Alert
+                                     variant="light"
+                                     color="orange"
+                                     title={t('alerts.croppingTitle')}
+                                     icon={<IconInfoCircle />}
+                                     mt="sm"
+                                 >
+                                     {trimWarning}
+                                 </Alert>
+                             )}
 
-                            {!uploadedFileUrl && form.isTouched() && (
-                                <Text c="red" size="xs" mt={4}>file is required</Text>
-                            )}
-                        </Box>
+
+                         </Box>
 
                         <Group justify="flex-end" mt="md">
-                            <Button variant="default" onClick={handleClose} disabled={submitting}>Cancel</Button>
+                            <Button variant="default" onClick={handleClose} disabled={submitting}>{t('buttons.cancel')}</Button>
                             <Button type="submit" loading={submitting} disabled={!uploadedFileUrl}>
-                                Create Ad
+                                {t('buttons.createAd')}
                             </Button>
                         </Group>
                     </Stack>

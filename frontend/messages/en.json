@@ -274,5 +274,96 @@
       "cancel": "Cancel"
     }
 
+  },
+  "AddAdModal": {
+    "title": "Add New Ad",
+    "labels": {
+      "name": "Name",
+      "type": "Type",
+      "duration": "Duration (seconds)",
+      "media": "Media"
+    },
+    "placeholders": {
+      "name": "Ad Name"
+    },
+    "description": {
+      "autoDetect": "Automatically set based on uploaded file"
+    },
+    "type": {
+      "image": "Image",
+      "video": "Video"
+    },
+    "duration": {
+      "10": "10",
+      "15": "15",
+      "30": "30"
+    },
+    "buttons": {
+      "uploadFile": "Upload File",
+      "changeFile": "Change File",
+      "cancel": "Cancel",
+      "createAd": "Create Ad"
+    },
+    "status": {
+      "imageUploaded": "Image Uploaded",
+      "videoUploaded": "Video Uploaded"
+    },
+    "alerts": {
+      "croppingTitle": "Automatic Cropping",
+      "croppingMessage": "Video is {orig}s. It will be cropped to the first {keep}s."
+    },
+    "validation": {
+      "nameTooShort": "Name too short",
+      "fileRequired": "File is required"
+    }
+  },
+  "adCampaigns": {
+    "createCampaignModal": {
+      "title": "Create Campaign",
+      "labels": {
+        "name": "Name"
+      },
+      "placeholders": {
+        "name": "Campaign name"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create"
+      },
+      "validation": {
+        "nameTooShort": "Name too short"
+      }
+    },
+    "page": {
+      "title": "My Campaigns",
+      "createButton": "Create Campaign",
+        "noCampaigns": "No campaigns found. Create your first campaign!"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Error",
+        "message": "Failed to load campaigns"
+      },
+      "addAd": {
+        "success": { "title": "Success", "message": "Ad added" },
+        "error": { "title": "Error", "message": "Failed to save ad" }
+      },
+      "deleteAd": {
+        "success": { "title": "Deleted", "message": "Ad removed" },
+        "error": { "title": "Error", "message": "Failed to delete ad" }
+      },
+      "createCampaign": {
+        "success": { "title": "Success", "message": "Campaign created" },
+        "error": { "title": "Error", "message": "Failed to create campaign" }
+      }
+    },
+    "confirmations": {
+      "deleteAd": {
+        "title": "Delete Ad",
+        "message": "Are you sure you want to delete this ad? This action cannot be undone.",
+        "confirm": "Delete"
+      }
+    }
   }
+
 }

@@ -62,11 +62,15 @@ export default class CampaignsPage {
         // Get the Cloudinary iframe and interact with it
         const cloudinaryFrame = this.page.locator('[data-test="uw-iframe"]').contentFrame();
         
-        // Click "Choose File" button in the widget
+        // Set up file chooser listener before clicking "Choose File"
+        const fileChooserPromise = this.page.waitForEvent('filechooser');
+        
+        // Click "Choose File" button in the widget to trigger file chooser
         await cloudinaryFrame.getByRole('button', { name: 'Choose File' }).click();
         
-        // Upload the file
-        await cloudinaryFrame.getByRole('button', { name: 'Choose File' }).setInputFiles(filePath);
+        // Wait for file chooser and set the file
+        const fileChooser = await fileChooserPromise;
+        await fileChooser.setFiles(filePath);
         
         // Click the "Done" button in the widget
         await cloudinaryFrame.locator('div').filter({ hasText: /^Done$/ }).nth(2).click();
@@ -79,9 +83,10 @@ export default class CampaignsPage {
         await this.page.locator('div:nth-child(7) > button:nth-child(2)').click();
     }
 
-    public async assertAdCreated(adName: string) {
+    public async assertAdCreated(campaignName: string, adName: string) {
         // Wait for the ad to appear in the table
-        const adRow = this.page.locator('table tbody tr').filter({ hasText: adName });
+        await this.page.getByRole('button', { name: campaignName }).first().click();
+        const adRow = this.page.locator('table tbody tr').filter({ hasText: adName }).first();
         await expect(adRow).toBeVisible({ timeout: 10000 });
     }
 }

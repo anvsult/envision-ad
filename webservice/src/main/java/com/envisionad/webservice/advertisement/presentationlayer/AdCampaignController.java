@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/ad-campaigns")
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdCampaignController {
     private final AdCampaignService adCampaignService;
 

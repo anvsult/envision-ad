@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, TextInput, Button, Group, Box, Stack } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { CreateAdCampaignPayload } from '@/types/AdCampaignTypes';
+import { useTranslations } from 'next-intl';
 
 interface CreateCampaignModalProps {
     opened: boolean;
@@ -12,12 +13,14 @@ interface CreateCampaignModalProps {
 export function CreateCampaignModal({ opened, onClose, onSuccess }: CreateCampaignModalProps) {
     const [submitting, setSubmitting] = useState(false);
 
+    const t = useTranslations('adCampaigns.createCampaignModal');
+
     const form = useForm({
         initialValues: {
             name: '',
         },
         validate: {
-            name: (value) => (value.trim().length < 2 ? 'Name too short' : null),
+            name: (value) => (value.trim().length < 2 ? t('validation.nameTooShort') : null),
         },
     });
 
@@ -37,15 +40,15 @@ export function CreateCampaignModal({ opened, onClose, onSuccess }: CreateCampai
     };
 
     return (
-        <Modal opened={opened} onClose={handleClose} title="Create Campaign" centered closeOnClickOutside={!submitting}>
+        <Modal opened={opened} onClose={handleClose} title={t('title')} centered closeOnClickOutside={!submitting}>
             <Box>
                 <form onSubmit={form.onSubmit(handleSubmit)}>
                     <Stack>
-                        <TextInput label="Name" placeholder="Campaign name" required {...form.getInputProps('name')} />
+                        <TextInput label={t('labels.name')} placeholder={t('placeholders.name')} required {...form.getInputProps('name')} />
 
                         <Group justify="flex-end">
-                            <Button variant="default" onClick={handleClose} disabled={submitting}>Cancel</Button>
-                            <Button type="submit" loading={submitting}>Create</Button>
+                            <Button variant="default" onClick={handleClose} disabled={submitting}>{t('buttons.cancel')}</Button>
+                            <Button type="submit" loading={submitting}>{t('buttons.create')}</Button>
                         </Group>
                     </Stack>
                 </form>

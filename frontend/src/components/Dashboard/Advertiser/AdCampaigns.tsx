@@ -7,6 +7,8 @@ import { Box, Button, Drawer, Group, Paper, Stack, Title } from "@mantine/core";
 import SideBar from "@/components/SideBar/SideBar";
 import { notifications } from "@mantine/notifications";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { useTranslations } from 'next-intl';
+
 
 // Imports from our new files
 import { AdCampaign, CreateAdPayload } from "@/types/AdTypes";
@@ -20,6 +22,7 @@ import { ConfirmationModal } from "@/shared/modals/ConfirmationModal";
 export function AdCampaigns() {
     const [opened, { toggle, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const t = useTranslations('adCampaigns');
 
     // Data State
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
@@ -42,7 +45,7 @@ export function AdCampaigns() {
             const data = await getAllAdCampaigns();
             setCampaigns(data);
         } catch (e) {
-            notifications.show({ title: 'Error', message: 'Failed to load campaigns', color: 'red' });
+            notifications.show({ title: t('notifications.loadFailed.title'), message: t('notifications.loadFailed.message'), color: 'red' });
         }
     };
 
@@ -55,7 +58,7 @@ export function AdCampaigns() {
                 setCampaigns(data);
             } catch (error) {
                 console.error('Failed to load campaigns', error);
-                notifications.show({ title: 'Error', message: 'Failed to load campaigns', color: 'red' });
+                notifications.show({ title: t('notifications.loadFailed.title'), message: t('notifications.loadFailed.message'), color: 'red' });
             }
         };
 
@@ -72,12 +75,12 @@ export function AdCampaigns() {
         if (!targetCampaignId) return;
         try {
             await addAdToCampaign(targetCampaignId, payload);
-            notifications.show({ title: 'Success', message: 'Ad Added', color: 'green' });
+            notifications.show({ title: t('notifications.addAd.success.title'), message: t('notifications.addAd.success.message'), color: 'green' });
             setIsAddAdModalOpen(false);
             loadCampaigns(); // Refresh list
         } catch (error) {
             console.error('Failed to save ad', error);
-            notifications.show({ title: 'Error', message: 'Failed to save ad', color: 'red' });
+            notifications.show({ title: t('notifications.addAd.error.title'), message: t('notifications.addAd.error.message'), color: 'red' });
         }
     };
 
@@ -91,11 +94,11 @@ export function AdCampaigns() {
 
         try {
             await deleteAdFromCampaign(adToDelete.campaignId, adToDelete.adId);
-            notifications.show({ title: 'Deleted', message: 'Ad removed', color: 'green' });
+            notifications.show({ title: t('notifications.deleteAd.success.title'), message: t('notifications.deleteAd.success.message'), color: 'green' });
             loadCampaigns(); // Refresh list
         } catch (error) {
             console.error('Failed to delete ad', error);
-            notifications.show({ title: 'Error', message: 'Failed to delete ad', color: 'red' });
+            notifications.show({ title: t('notifications.deleteAd.error.title'), message: t('notifications.deleteAd.error.message'), color: 'red' });
         } finally {
             setConfirmDeleteOpen(false);
             setAdToDelete(null);
@@ -106,12 +109,12 @@ export function AdCampaigns() {
     const handleCreateCampaign = async (payload: CreateAdCampaignPayload) => {
         try {
             await createAdCampaign(payload);
-            notifications.show({ title: 'Success', message: 'Campaign created', color: 'green' });
+            notifications.show({ title: t('notifications.createCampaign.success.title'), message: t('notifications.createCampaign.success.message'), color: 'green' });
             setIsCreateCampaignOpen(false);
             loadCampaigns();
         } catch (error) {
             console.error('Failed to create campaign', error);
-            notifications.show({ title: 'Error', message: 'Failed to create campaign', color: 'red' });
+            notifications.show({ title: t('notifications.createCampaign.error.title'), message: t('notifications.createCampaign.error.message'), color: 'red' });
         }
     };
 
@@ -139,9 +142,9 @@ export function AdCampaigns() {
 
                             {/* Page Title & Top Actions */}
                             <Group justify="space-between">
-                                <Title order={2}>My Campaigns</Title>
+                                <Title order={2}>{t('page.title')}</Title>
                                 <Button onClick={() => setIsCreateCampaignOpen(true)}>
-                                    Create Campaign
+                                    {t('page.createButton')}
                                 </Button>
                             </Group>
 
@@ -165,18 +168,18 @@ export function AdCampaigns() {
 
                             <ConfirmationModal
                                 opened={confirmDeleteOpen}
-                                title="Delete Ad"
-                                message="Are you sure you want to delete this ad? This action cannot be undone."
-                                confirmLabel="Delete"
+                                title={t('confirmations.deleteAd.title')}
+                                message={t('confirmations.deleteAd.message')}
+                                confirmLabel={t('confirmations.deleteAd.confirm')}
                                 confirmColor="red"
                                 onConfirm={confirmDelete}
                                 onCancel={() => setConfirmDeleteOpen(false)}
                             />
 
                         </Stack>
-                    </div>
-                </Group>
-            </Box>
-        </>
-    );
-}
+                     </div>
+                 </Group>
+             </Box>
+         </>
+     );
+ }

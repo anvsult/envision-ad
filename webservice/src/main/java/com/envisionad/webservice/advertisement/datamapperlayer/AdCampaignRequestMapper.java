@@ -12,6 +12,7 @@ import java.util.List;
 public interface AdCampaignRequestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "campaignId", ignore = true)
+    @Mapping(target = "ads", ignore = true)
     AdCampaign requestModelToEntity(AdCampaignRequestModel adCampaign);
 
 }
