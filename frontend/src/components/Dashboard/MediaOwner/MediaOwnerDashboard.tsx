@@ -37,7 +37,6 @@ export default function MediaOwnerPage() {
                 await editMedia(editingId, formState);
                 notifications.show({
                     title: t("success.update"),
-                    message: t("success.update"),
                     color: "green",
                     icon: <IconCheck size="1.1rem" />,
                 });
@@ -45,7 +44,6 @@ export default function MediaOwnerPage() {
                 await addNewMedia(formState);
                 notifications.show({
                     title: t("success.create"),
-                    message: t("success.create"),
                     color: "green",
                     icon: <IconCheck size="1.1rem" />,
                 });
