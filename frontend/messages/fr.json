@@ -369,5 +369,22 @@
         "sunday": "Dimanche"
       }
     }
+  },
+  "profilePage": {
+    "title": "Profil",
+    "personalInfo": {
+      "title": "Informations personnelles",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel"
+    },
+    "businessInfo": {
+      "title": "Informations sur l'entreprise",
+      "companyName": "Nom de l'entreprise",
+      "companySize": "Taille de l'entreprise",
+      "address": "Adresse",
+      "role": "Rôle",
+      "noBusiness": "Aucune entreprise associée."
+    }
   }
 }

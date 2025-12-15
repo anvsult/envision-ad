@@ -368,5 +368,22 @@
         "sunday": "Sunday"
       }
     }
+  },
+  "profilePage": {
+    "title": "Profile",
+    "personalInfo": {
+      "title": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email"
+    },
+    "businessInfo": {
+      "title": "Business Information",
+      "companyName": "Company Name",
+      "companySize": "Company Size",
+      "address": "Address",
+      "role": "Role",
+      "noBusiness": "No business associated."
+    }
   }
 }
