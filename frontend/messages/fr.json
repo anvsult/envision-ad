@@ -153,8 +153,8 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filtres:",
         "price": "Prix ($)",
         "impressions": "Impressions minimum",
@@ -165,9 +165,9 @@
       "sort": {
         "actionName": "Trier:",
         "nearest": "Proximité",
-        "price" : "Prix",
-        "impressions" : "Impressions",
-        "loop" : "Durée de boucle",
+        "price": "Prix",
+        "impressions": "Impressions",
+        "loop": "Durée de boucle",
         "asc": " (Bas à Élevé)",
         "desc": " (Élevé à Bas)"
       }
@@ -380,6 +380,7 @@
   },
   "profilePage": {
     "title": "Profil",
+    "backToHome": "Retour à l'accueil",
     "personalInfo": {
       "title": "Informations personnelles",
       "firstName": "Prénom",

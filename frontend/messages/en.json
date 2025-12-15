@@ -152,8 +152,8 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filter:",
         "price": "Price ($)",
         "impressions": "Minimum impressions",
@@ -164,9 +164,9 @@
       "sort": {
         "actionName": "Sort by:",
         "nearest": "Nearest",
-        "price" : "Price",
-        "impressions" : "Impressions",
-        "loop" : "Loop duration",
+        "price": "Price",
+        "impressions": "Impressions",
+        "loop": "Loop duration",
         "asc": " (Low to High)",
         "desc": " (High to Low)"
       }
@@ -379,6 +379,7 @@
   },
   "profilePage": {
     "title": "Profile",
+    "backToHome": "Back to Home",
     "personalInfo": {
       "title": "Personal Information",
       "firstName": "First Name",
