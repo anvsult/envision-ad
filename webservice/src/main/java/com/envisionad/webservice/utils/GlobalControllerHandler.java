@@ -35,6 +35,12 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(BAD_REQUEST, ex);
     }
 
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public HttpErrorInfo handleIllegalArgumentException(IllegalArgumentException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();
 
