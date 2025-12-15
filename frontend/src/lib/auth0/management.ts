@@ -1,15 +1,22 @@
 import { UpdateUserRequest } from "@/services/UserService";
 
-// Token cache
-let cachedToken: string | null = null;
-let tokenExpiry: number = 0;
+// Token cache configuration
+const TOKEN_CACHE_BUFFER_MS = 5 * 60 * 1000; // 5 minutes buffer before expiry
+const DEFAULT_TOKEN_EXPIRY_SECONDS = 86400; // 24 hours
+
+// Simple in-memory token cache (Note: In production with multiple instances, 
+// consider using a distributed cache like Redis)
+const tokenCache = {
+    token: null as string | null,
+    expiry: 0,
+};
 
 export class Auth0ManagementService {
     private static async getAccessToken() {
-        // Check if cached token is still valid (with 5-minute buffer)
+        // Check if cached token is still valid (with buffer for safety)
         const now = Date.now();
-        if (cachedToken && tokenExpiry > now + 5 * 60 * 1000) {
-            return cachedToken;
+        if (tokenCache.token && tokenCache.expiry > now + TOKEN_CACHE_BUFFER_MS) {
+            return tokenCache.token;
         }
 
         try {
@@ -36,10 +43,10 @@ export class Auth0ManagementService {
                 throw new Error("Auth0 token response missing access_token");
             }
             
-            // Cache the token with expiry (default 24 hours, use expires_in if provided)
-            cachedToken = data.access_token;
-            const expiresInSeconds = data.expires_in || 86400; // Default to 24 hours
-            tokenExpiry = Date.now() + expiresInSeconds * 1000;
+            // Cache the token with expiry
+            tokenCache.token = data.access_token;
+            const expiresInSeconds = data.expires_in || DEFAULT_TOKEN_EXPIRY_SECONDS;
+            tokenCache.expiry = Date.now() + expiresInSeconds * 1000;
             
             return data.access_token;
         } catch (error) {

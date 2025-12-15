@@ -37,7 +37,8 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             family_name: user.family_name || "",
             nickname: user.nickname || user.name || "",
         });
-    }, [user, form]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);
