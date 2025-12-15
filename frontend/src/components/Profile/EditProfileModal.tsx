@@ -5,10 +5,18 @@ import { useEffect, useState } from "react";
 import { updateUser } from "@/services/UserService";
 import { useRouter } from "next/navigation";
 
+interface User {
+    sub: string;
+    given_name?: string;
+    family_name?: string;
+    nickname?: string;
+    name?: string;
+}
+
 interface EditProfileModalProps {
     opened: boolean;
     onClose: () => void;
-    user: any;
+    user: User;
 }
 
 export function EditProfileModal({ opened, onClose, user }: EditProfileModalProps) {
