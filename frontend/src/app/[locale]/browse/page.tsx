@@ -5,10 +5,10 @@ import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
 import BrowseActions from '@/components/BrowseActions/BrowseActions';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {  getAllFilteredActiveMedia } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
-import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/Filters/FilterPopover';
+import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
 import { GetUserGeoLocation} from '@/components/Location';
@@ -21,8 +21,7 @@ function BrowsePage() {
 
   const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState(1);
-
-  const totalPages = Math.ceil(media.length / ITEMS_PER_PAGE);
+  const [totalPages, setTotalPages] = useState(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -42,28 +41,26 @@ function BrowsePage() {
       return
     } 
     
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation)
+    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
       .then((data) => {
-        const items = (data || []).filter((m) => m.id != null);
+        const items = (data.content || []).filter((m) => m.id != null);
 
-        const mapped = items.map((m) => ({
-          id: String(m.id),
+        const mapped = items.map((m, index) => ({
+          index: String(index),
+          href: String(m.id),
           title: m.title,
           mediaOwnerName: m.mediaOwnerName,
           mediaLocation: m.mediaLocation,
           resolution: m.resolution,
           aspectRatio: m.aspectRatio,
-          loopDuration: m.loopDuration,
-          width: m.width ?? 0,
-          height: m.height ?? 0,
           price: m.price ?? 0,
           dailyImpressions: m.dailyImpressions ?? 0,
           typeOfDisplay: m.typeOfDisplay,
-          imageUrl: m.imageUrl,
+          imageUrl: m.imageUrl
         }));
         
         setMedia(mapped);
-        setActivePage(1);
+        setTotalPages(data.totalPages);
         
       })
       .catch(() => {
@@ -72,21 +69,15 @@ function BrowsePage() {
       }).finally(() => {
         setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
 
-
-  const paginatedMedia = useMemo(() => {
-    const start = (activePage - 1) * ITEMS_PER_PAGE;
-    const end = start + ITEMS_PER_PAGE;
-    return media.slice(start, end);
-  }, [media, activePage]);
 
 
   function filters(){
   return(
     <>
       <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-      <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('filters.impressions')} placeholder={t('filters.impressions')}/>
+      <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
     </>
   )
 }
@@ -118,9 +109,9 @@ function BrowsePage() {
           <BrowseActions filters={filters()} setSortBy={setSortBy}/>
           
             {/* if loading, show loader, if  */}
-          {(paginatedMedia.length > 0) ? (<MediaCardGrid medias={paginatedMedia} />):( 
+          {(media.length > 0) ? (<MediaCardGrid medias={media} />):( 
               <Stack h='20em' justify='center' align='center'>
-                {(loading) ? ( (sortBy == 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
+                {(loading) ? ( (sortBy === 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
                   <>
                     <Text size='32px'>{t('nomedia.notfound')}</Text>
                     <Text>{t('nomedia.changefilters')}</Text>

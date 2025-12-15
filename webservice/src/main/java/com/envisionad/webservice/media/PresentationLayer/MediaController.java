@@ -6,6 +6,8 @@ import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import com.envisionad.webservice.media.BusinessLayer.MediaRequestValidator;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -42,15 +44,17 @@ public class MediaController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<MediaResponseModel>> getAllFilteredActiveMedia(
+    public ResponseEntity<?> getAllFilteredActiveMedia(
+            Pageable pageable,
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions,
-            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
-            @RequestParam(required = false) Double userLng) {
-        // Input validation
+            @RequestParam(required = false) Double userLng
+
+    ) {
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
         }
@@ -63,17 +67,23 @@ public class MediaController {
         if (minDailyImpressions != null && minDailyImpressions < 0) {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
-        List<MediaResponseModel> result = responseMapper.entityListToResponseModelList(
+
+        Page<MediaResponseModel> responsePage =
                 mediaService.getAllFilteredActiveMedia(
+                        pageable,
                         title,
                         minPrice,
                         maxPrice,
                         minDailyImpressions,
-                        sortBy,
+                        specialSort,
                         userLat,
-                        userLng));
-        return ResponseEntity.ok(result);
+                        userLng
+                ).map(responseMapper::entityToResponseModel);
+
+        return ResponseEntity.ok(responsePage);
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
