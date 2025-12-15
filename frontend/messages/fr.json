@@ -399,7 +399,10 @@
       "image": "Image",
       "name":"Nom",
       "status": "Statut",
-      "price": "Prix"
+      "price": "Prix",
+      "mediaOwner": "Propriétaire de médias",
+      "location": "Site",
+      "dailyImpressions": "Impressions quotidiennes"
     }
   }
 }
