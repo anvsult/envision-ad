@@ -16,8 +16,12 @@ export default function ProfileContent({ user }: ProfileContentProps) {
     const [opened, { open, close }] = useDisclosure(false);
 
     // Helper function to ensure strings
-    const safeStr = (val: any, fallback = "") => typeof val === 'string' ? val : diffType(val, fallback);
-    const diffType = (val: any, fallback: string) => val ? String(val) : fallback;
+    const toSafeString = (val: any, fallback = "") => {
+        if (typeof val === "string") return val;
+        if (val === null || val === undefined) return fallback;
+        const str = String(val);
+        return str || fallback;
+    };
 
     const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
         <Group justify="space-between" align="center" py="xs">
