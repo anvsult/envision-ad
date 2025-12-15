@@ -1,6 +1,6 @@
 'use client'
 
-import { ActionIcon, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Autocomplete, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
 import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
@@ -11,7 +11,7 @@ import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-import { GetUserGeoLocation} from '@/components/Location';
+import { AddressDetails, GetUserGeoLocation, SearchLocations} from '@/services/LocationService';
 import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {
@@ -26,6 +26,9 @@ function BrowsePage() {
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
   const [titleFilter, setTitleFilter] = useState("");
+  const [draftLocationFilter, setDraftLocationFilter] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+  const [locationOptions, setLocationOptions] = useState<AddressDetails[]>([]);
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
@@ -41,7 +44,7 @@ function BrowsePage() {
       return
     } 
     
-    getAllFilteredActiveMedia(titleFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
+    getAllFilteredActiveMedia(titleFilter, locationFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
       .then((data) => {
         const items = (data.content || []).filter((m) => m.id != null);
 
@@ -69,18 +72,35 @@ function BrowsePage() {
       }).finally(() => {
         setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
+  }, [titleFilter, locationFilter,  minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
 
+  useEffect(() => {
+    const timeout = setTimeout(async () => {
+        if (!draftLocationFilter) {
+          
+          return;
+        }
+
+        const results: AddressDetails[] = await SearchLocations(draftLocationFilter);
+
+        const uniqueResults: AddressDetails[] = Array.from(
+          new Map(results.map((r) => [r.display_name, r])).values()
+        );
+
+        setLocationOptions(uniqueResults);
+      }, 300);
+      return () => clearTimeout(timeout);
+  }, [draftLocationFilter]);
 
 
   function filters(){
-  return(
-    <>
-      <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-      <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
-    </>
-  )
-}
+    return(
+      <>
+        <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+        <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
+      </>
+    )
+  }
 
   return (
     <>
@@ -88,24 +108,39 @@ function BrowsePage() {
 
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
-          
-          <TextInput
-            placeholder="Search title"
-            value={draftTitleFilter}
-            onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                setTitleFilter(draftTitleFilter);
+          <Group grow>
+            <TextInput
+              placeholder="Search title"
+              value={draftTitleFilter}
+              onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  setTitleFilter(draftTitleFilter);
+                }
+              }}
+              rightSection={
+                <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
+                  <IconSearch size={16} />
+                </ActionIcon>
               }
-            }}
-            rightSection={
-              <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
-                <IconSearch size={16} />
-              </ActionIcon>
-            }
-          />
-
-
+            />
+            <Autocomplete
+              placeholder="Search location"
+              data={locationOptions.map((o) => o.display_name)}
+              value={draftLocationFilter}
+              onChange={ setDraftLocationFilter }
+              onKeyDown={(event) => {
+                if (event.key === "Enter") {
+                  setLocationFilter(draftLocationFilter);
+                }
+              }}
+              rightSection={
+                <ActionIcon onClick={() => setLocationFilter(draftLocationFilter)}>
+                  <IconSearch size={16} />
+                </ActionIcon>
+              }
+            />
+          </Group>
           <BrowseActions filters={filters()} setSortBy={setSortBy}/>
           
             {/* if loading, show loader, if  */}

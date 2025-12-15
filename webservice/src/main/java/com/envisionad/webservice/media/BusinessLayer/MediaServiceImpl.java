@@ -34,6 +34,7 @@ public class MediaServiceImpl implements MediaService {
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
+            String location,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
@@ -41,10 +42,13 @@ public class MediaServiceImpl implements MediaService {
             Double userLat,
             Double userLng
             ) {
-        // PAGING
 
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
+
+        if (location != null) {
+            spec = spec.and(MediaSpecifications.locationContains(location));
+        }
 
         if (title != null) {
             spec = spec.and(MediaSpecifications.titleContains(title));
@@ -57,7 +61,6 @@ public class MediaServiceImpl implements MediaService {
         if (minDailyImpressions != null) {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
         }
-
 
         // Sort by Nearest
         if ("nearest".equals(specialSort) && userLat != null && userLng != null) {
