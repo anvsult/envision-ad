@@ -31,8 +31,12 @@
     "business": {
       "overview": "Aperçu",
       "employees": "Employés"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Médias en attente"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -376,6 +380,29 @@
         "saturday": "Samedi",
         "sunday": "Dimanche"
       }
+    }
+  },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "Aucun média en attente d’approbation.",
+      "approveMedia": "Approuver le média",
+      "denyMedia": "Refuser le média",
+      "approveMediaConfirmation": "Approuver ce média ?",
+      "denyMediaConfirmation": "Refuser ce média ?",
+      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
+      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
+      "deny": "Refuser",
+      "approve": "Approuver",
+      "reviewUnavailable": "Révision indisponible",
+      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
+      "pendingMedia": "Médias en attente d’approbation",
+      "image": "Image",
+      "name":"Nom",
+      "status": "Statut",
+      "price": "Prix",
+      "mediaOwner": "Propriétaire de médias",
+      "location": "Site",
+      "dailyImpressions": "Impressions quotidiennes"
     }
   }
 }

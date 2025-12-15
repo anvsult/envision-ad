@@ -31,8 +31,12 @@
     "business": {
       "overview": "Overview",
       "employees": "Employees"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Pending Media"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",
@@ -375,6 +379,29 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       }
+    }
+  },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "No pending media to approve.",
+      "approveMedia": "Approve Media",
+      "denyMedia": "Deny Media",
+      "approveMediaConfirmation": "Approve this media?",
+      "denyMediaConfirmation": "Deny this media?",
+      "approveMediaText": "Are you sure you want to approve this media?",
+      "denyMediaText": "Are you sure you want to deny this media?",
+      "deny": "Deny",
+      "approve": "Approve",
+      "reviewUnavailable": "Review not available",
+      "reviewDone": "This media has already been reviewed ({status}). You can’t approve/deny it again.",
+      "pendingMedia": "Pending Media Approval",
+      "image": "Image",
+      "name":"Name",
+      "status": "Status",
+      "price": "Price",
+      "mediaOwner": "Media Owner",
+      "location": "Location",
+      "dailyImpressions": "Daily Impressions"
     }
   }
 }

@@ -51,7 +51,11 @@ export const routing = defineRouting({
 
     //advertiser dashboard
 
-    //admin dashboard
+// admin dashboard
+    "/dashboard/admin/medias/pending": {
+      en: "/dashboard/admin/medias/pending",
+      fr: "/tableau-de-bord/admin/medias/en-attente",
+    },
 
     //business dashboard
     '/dashboard/business/overview': {
