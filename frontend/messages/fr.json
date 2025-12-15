@@ -155,22 +155,29 @@
   },
   "browse": {
     "browseactions":{
-      "filter": "Filtres:",
-      "sort": "Trier:",
-      "nearest": "Proximité"
-    },
-    "filters":{
-      "price": "Prix ($)",
-      "impressions": "Impressions minimum",
-      "from": "Minimum",
-      "to": "Maximum",
-      "showresults": "Ajouter le filtre"
+      "filters":{
+        "actionName": "Filtres:",
+        "price": "Prix ($)",
+        "impressions": "Impressions minimum",
+        "from": "Minimum",
+        "to": "Maximum",
+        "showresults": "Ajouter le filtre"
+      },
+      "sort": {
+        "actionName": "Trier:",
+        "nearest": "Proximité",
+        "price" : "Prix",
+        "impressions" : "Impressions",
+        "loop" : "Durée de boucle",
+        "asc": " (Bas à Élevé)",
+        "desc": " (Élevé à Bas)"
+      }
     },
     "nomedia":{
       "notfound": "Aucun média trouvé",
       "changefilters": "Veuillez changer vos filtres",
       "failedToLoad": "Erreur lors du chargement des média: ",
-      "noUserLocation": "Impossible de joindre les médias les plus proches. Veuillez autoriser l'accès à votre emplacement.",
+      "noUserLocation": "Impossible de trouver les médias les plus proches. Veuillez autoriser l'accès à votre emplacement.",
       "noSupport": "La géolocalisation n'est pas prise en charge par votre navigateur."
     }
   },

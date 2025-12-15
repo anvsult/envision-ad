@@ -22,12 +22,12 @@ export default function BrowseActions({filters,  setSortBy}: BrowseActionsProps)
                     data={
                         [
                             { value: "nearest", label: t('sort.nearest') },
-                            { value: "price,asc", label: t('sort.priceAsc') },
-                            { value: "price,desc", label: t('sort.priceDesc') },
-                            { value: "dailyImpressions,asc", label: t('sort.impressionsAsc') },
-                            { value: "dailyImpressions,desc", label: t('sort.impressionsDesc') },
-                            { value: "loopDuration,asc", label: t('sort.loopAsc') },
-                            { value: "loopDuration,desc", label: t('sort.loopDesc') },
+                            { value: "price,asc", label: (t('sort.price') + t('sort.asc')) },
+                            { value: "price,desc", label: (t('sort.price') + t('sort.desc')) },
+                            { value: "dailyImpressions,asc", label: (t('sort.impressions') + t('sort.asc')) },
+                            { value: "dailyImpressions,desc", label: (t('sort.impressions') + t('sort.desc')) },
+                            { value: "loopDuration,asc", label: (t('sort.loop') + t('sort.asc')) },
+                            { value: "loopDuration,desc", label: (t('sort.loop') + t('sort.desc')) },
                         ]
                     }
                     defaultValue="nearest"

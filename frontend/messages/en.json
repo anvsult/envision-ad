@@ -166,12 +166,11 @@
       "sort": {
         "actionName": "Sort by:",
         "nearest": "Nearest",
-        "priceAsc" : "Price (Low to High)",
-        "priceDesc" : "Price (High to Low)",
-        "impressionsAsc" : "Impressions (Low to High)",
-        "impressionsDesc" : "Impressions (High to Low)",
-        "loopAsc" : "Loop duration (Low to High)",
-        "loopDesc" : "Loop duration (High to Low)"
+        "price" : "Price",
+        "impressions" : "Impressions",
+        "loop" : "Loop duration",
+        "asc": " (Low to High)",
+        "desc": " (High to Low)"
       }
     },
     "nomedia":{
