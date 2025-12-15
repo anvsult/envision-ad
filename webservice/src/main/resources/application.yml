@@ -21,10 +21,10 @@ spring:
       mode: always
       schema-locations: classpath:schema.sql
   mail:
-    host: ${SPRING_EMAIL_SMTP}
-    port: ${SPRING_EMAIL_PORT}
-    username: ${SPRING_EMAIL_USERNAME}
-    password: ${SPRING_EMAIL_PASSWORD}
+    host: ${SPRING_EMAIL_SMTP:${EMAIL_SMTP:localhost}}
+    port: ${SPRING_EMAIL_PORT:${EMAIL_PORT:25}}
+    username: ${SPRING_EMAIL_USERNAME:${EMAIL_USER:}}
+    password: ${SPRING_EMAIL_PASSWORD:${EMAIL_PASSWORD:}}
     properties:
       mail:
         smtp:

@@ -50,6 +50,19 @@ export const routing = defineRouting({
     },
 
     //advertiser dashboard
+    '/dashboard/advertiser/overview': {
+      'en': '/dashboard/advertiser/overview',
+      'fr': '/tableau-de-bord/annonceur/apercu'
+    },
+    '/dashboard/advertiser/campaigns': {
+        'en': '/dashboard/advertiser/campaigns',
+        'fr': '/tableau-de-bord/annonceur/campagnes'
+    },
+    '/dashboard/advertiser/ad-requests': {
+        'en': '/dashboard/advertiser/ad-requests',
+        'fr': '/tableau-de-bord/annonceur/demandes-annonces'
+    },
+    //admin dashboard
 
 // admin dashboard
     "/dashboard/admin/medias/pending": {

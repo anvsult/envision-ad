@@ -16,6 +16,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -49,6 +50,9 @@ class BusinessControllerIntegrationTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @BeforeEach
     void setUp() {

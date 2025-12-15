@@ -32,11 +32,17 @@
       "overview": "Aperçu",
       "employees": "Employés"
     },
+    "advertiserTitle": "Annonceur",
+    "advertiser": {
+      "overview": "Aperçu",
+      "adRequests": "Demandes d'annonce",
+      "myAds": "Mes Campagnes"
+    },
     "adminTitle": "Admin",
     "admin": {
       "pendingMedia": "Médias en attente"
     }
-},
+  },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -396,6 +402,102 @@
       }
     }
   },
+  "AddAdModal": {
+    "title": "Ajouter une nouvelle annonce",
+    "labels": {
+      "name": "Nom",
+      "type": "Type",
+      "duration": "Durée (secondes)",
+      "media": "Média"
+    },
+    "placeholders": {
+      "name": "Nom de l'annonce"
+    },
+    "description": {
+      "autoDetect": "Détecté automatiquement selon le fichier téléchargé"
+    },
+    "type": {
+      "image": "Image",
+      "video": "Vidéo"
+    },
+    "duration": {
+      "10": "10",
+      "15": "15",
+      "30": "30"
+    },
+    "buttons": {
+      "uploadFile": "Téléverser le fichier",
+      "changeFile": "Changer le fichier",
+      "cancel": "Annuler",
+      "createAd": "Créer l'annonce"
+    },
+    "status": {
+      "imageUploaded": "Image téléversée",
+      "videoUploaded": "Vidéo téléversée"
+    },
+    "alerts": {
+      "croppingTitle": "Rogning automatique",
+      "croppingMessage": "La vidéo fait {orig}s. Elle sera rognée aux {keep}s initiaux."
+    },
+    "validation": {
+      "nameTooShort": "Nom trop court",
+      "fileRequired": "Le fichier est requis"
+    }
+  },
+  "adCampaigns": {
+    "page": {
+        "title": "Mes campagnes",
+        "createButton": "Créer une campagne",
+        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+    },
+    "createCampaignModal": {
+      "title": "Créer une campagne",
+      "labels": {
+        "name": "Nom"
+      },
+      "placeholders": {
+        "name": "Nom de la campagne"
+      },
+      "buttons": {
+        "cancel": "Annuler",
+        "create": "Créer"
+      },
+      "validation": {
+        "nameTooShort": "Nom trop court"
+      }
+    }
+  },
+  "reserveModal": {
+    "title": "Réserver : {title}",
+    "selectCampaign": "Sélectionner une campagne",
+    "chooseCampaign": "Choisissez une de vos campagnes",
+    "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
+    "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
+    "errors": {
+      "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
+      "selectDate": "Veuillez sélectionner une date de début et de fin valides"
+    },
+    "mediaIdMissing": "L'identifiant du média est manquant.",
+    "successTitle": "Réservation réussie !",
+    "successMessage": "Réservation confirmée !",
+    "successMessageLong": "Votre créneau publicitaire a été réservé avec succès. Vous pouvez le consulter dans votre calendrier.",
+    "duplicateTitle": "Doublon",
+    "duplicateMessage": "Réservé déjà pour ces dates.",
+    "failedReserve": "Échec de la réservation.",
+    "networkError": "Erreur réseau.",
+    "doneButton": "Terminé",
+    "cancelButton": "Annuler",
+    "backButton": "Retour",
+    "nextStepButton": "Étape suivante",
+    "confirmPayButton": "Confirmer & Payer",
+    "reviewTitle": "Vérifier la réservation",
+    "labels": {
+      "media": "Média",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total"
+    }
+  },
   "admin": {
     "adminActions": {
       "noMediaPending": "Aucun média en attente d’approbation.",
@@ -419,4 +521,7 @@
       "dailyImpressions": "Impressions quotidiennes"
     }
   }
+
 }
+
+

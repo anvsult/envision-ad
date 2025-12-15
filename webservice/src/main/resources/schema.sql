@@ -1,14 +1,18 @@
-CREATE
-EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS invitation CASCADE;
+DROP TABLE IF EXISTS reservations CASCADE;
+-- Drop tables that have foreign keys to `media` first, then `media` itself.
+DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS address;
-DROP TABLE IF EXISTS media CASCADE;
-DROP TABLE IF EXISTS media_location CASCADE;
+DROP TABLE IF EXISTS address CASCADE;
+DROP TABLE IF EXISTS ad_campaigns CASCADE;
+DROP TABLE IF EXISTS ads CASCADE;
+DROP TABLE IF EXISTS invitation CASCADE;
 
 
 -- 2. Create Address Table (Must be first because Business links to it)
@@ -98,8 +102,51 @@ CREATE TABLE media (
     status VARCHAR(50) NOT NULL,
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data BYTEA
+    image_data         bytea
 );
 
+-- 5. Create Ad Campaigns Table
+CREATE TABLE ad_campaigns
+(
+    id SERIAL PRIMARY KEY,
+    campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
 
+-- 5. Create Ad Campaigns Table
+CREATE TABLE ad_campaigns
+(
+    id SERIAL PRIMARY KEY,
+    campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL
+);
+-- 6. Create Ads Table
+CREATE TABLE ads
+(
+    id SERIAL PRIMARY KEY,
+    ad_id VARCHAR(36) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    ad_url VARCHAR(512) NOT NULL,
+    ad_duration_seconds INTEGER NOT NULL,
+    ad_type VARCHAR(50) NOT NULL,
 
+    ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE
+);
+
+CREATE TABLE reservations
+(
+    id SERIAL PRIMARY KEY,
+    reservation_id VARCHAR(36) UNIQUE NOT NULL,
+
+    start_date TIMESTAMP,
+    end_date TIMESTAMP,
+
+    status VARCHAR(50) NOT NULL,
+    total_price DECIMAL(10, 2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    advertiser_id VARCHAR(36),
+    campaign_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE SET NULL,
+    media_id UUID REFERENCES media(media_id) ON DELETE CASCADE
+
+);
