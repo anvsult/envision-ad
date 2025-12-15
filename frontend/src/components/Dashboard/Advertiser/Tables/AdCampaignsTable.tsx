@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, ActionIcon, Button, Group, ScrollArea, Table, Text, Badge, Image, Box } from "@mantine/core";
+import { Accordion, ActionIcon, Button, Group, ScrollArea, Table, Text, Badge, Image, Box, Flex } from "@mantine/core";
 import { IconTrash, IconPlus, IconPhoto, IconMovie } from "@tabler/icons-react";
 import { AdCampaign } from "@/types/AdTypes";
 
@@ -17,24 +17,29 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
         <Accordion variant="separated" multiple>
             {campaigns.map((campaign) => (
                 <Accordion.Item key={campaign.campaignId} value={campaign.campaignId}>
-                    <Accordion.Control>
-                        <Group justify="space-between" pr="md">
+                    {/* FLEX container handles layout: Text/Control on left, Button on right */}
+                    <Flex align="center" justify="space-between">
+                        
+                        {/* 1. The Accordion Trigger (Takes up remaining space) */}
+                        <Accordion.Control style={{ flex: 1 }}>
                             <Text fw={500}>{campaign.name}</Text>
+                        </Accordion.Control>
+
+                        {/* 2. The Create Button (Rendered OUTSIDE the control) */}
+                        <Box pr="md"> 
                             <Button
-                                component="span"
                                 size="xs"
                                 variant="light"
                                 leftSection={<IconPlus size={14} />}
-                                onClick={(e) => { e.stopPropagation(); onOpenAddAd(campaign.campaignId); }}
+                                onClick={() => onOpenAddAd(campaign.campaignId)}
                             >
-                                Add Ad
+                                Create Ad
                             </Button>
-                        </Group>
-                    </Accordion.Control>
+                        </Box>
+                    </Flex>
 
                     <Accordion.Panel>
                         <ScrollArea>
-                            {/* increased verticalSpacing ensures rows accommodate the taller images */}
                             <Table striped highlightOnHover verticalSpacing="sm">
                                 <Table.Thead>
                                     <Table.Tr>
@@ -42,13 +47,12 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                         <Table.Th>Name</Table.Th>
                                         <Table.Th>Type</Table.Th>
                                         <Table.Th>Duration</Table.Th>
-                                        <Table.Th style={{textAlign: "right"}}>Actions</Table.Th>
+                                        <Table.Th style={{ textAlign: "right" }}>Actions</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
                                     {campaign.ads.map((ad) => (
                                         <Table.Tr key={ad.adId}>
-                                            {/* --- PREVIEW COLUMN --- */}
                                             <Table.Td width={150}>
                                                 <Box
                                                     w={120}
@@ -66,8 +70,6 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                             muted
                                                             playsInline
-                                                            // Optional: onMouseOver={(e) => e.currentTarget.play()}
-                                                            // Optional: onMouseOut={(e) => e.currentTarget.pause()}
                                                         />
                                                     ) : (
                                                         <Image
@@ -81,21 +83,17 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                                     )}
                                                 </Box>
                                             </Table.Td>
-
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
                                                 <Text fw={500} size="sm">{ad.name}</Text>
                                             </Table.Td>
-
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
                                                 <Badge leftSection={getIcon(ad.adType)} color={ad.adType === "VIDEO" ? "blue" : "green"} variant="light">
                                                     {ad.adType}
                                                 </Badge>
                                             </Table.Td>
-
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
                                                 {ad.adDurationSeconds}s
                                             </Table.Td>
-
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
                                                 <Group justify="flex-end">
                                                     <ActionIcon color="red" variant="subtle" onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}>

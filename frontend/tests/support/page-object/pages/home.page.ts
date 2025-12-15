@@ -17,14 +17,14 @@ export default class HomePage {
     signupLink = () => this.page.getByRole('button', { name: 'Register' });
     languageButton = () => this.page.getByRole('button', { name: 'Switch language' });
     homeLink = () => this.page.getByRole('link', { name: 'Home' });
-    dashboardLink = () => this.page.getByRole('link', { name: 'Dashboard' });
     browseLink = () => this.page.getByRole('link', { name: 'Browse' });
-
+    
     usernameTextbox = () => this.page.getByRole('textbox', { name: 'Username or Email address' });
     passwordTextbox = () => this.page.getByRole('textbox', { name: 'Password' });
     loginButton = () => this.page.getByRole('button', { name: 'Continue', exact: true });
-
+    
     //Locators - authenticated user
+    dashboardLink = () => this.page.getByRole('link', { name: 'Dashboard' });
     userDropdown = (username: string) => this.page.getByRole('button', { name: username })
     profileLink = () => this.page.getByRole('link', { name: 'Profile', exact: true });
     logoutLink = () => this.page.getByRole('button', { name: 'Logout' });
@@ -45,6 +45,15 @@ export default class HomePage {
         await this.logoutLink().click();
     }
 
+    public async clickDashboardLink() {
+        const mobile = await isMobileView(this.page);
+
+        if (mobile) {
+            await this.hamburgerMenuButton().click();
+        }
+        await this.dashboardLink().click();
+    }
+
     public async assertUserLoggedIn(username: string) {
         const mobile = await isMobileView(this.page);
 
@@ -58,4 +67,10 @@ export default class HomePage {
         await this.userDropdown(username).click();
         await this.profileLink().click();
     }
-}
+
+    public async login(username: string, pass: string) {
+        await this.clickLoginLink();
+        await this.usernameTextbox().fill(username);
+        await this.passwordTextbox().fill(pass);
+        await this.loginButton().click();
+    }}

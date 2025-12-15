@@ -143,7 +143,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                         />
 
                         <Select
-                            label="Duration in Seconds"
+                            label="Duration (seconds)"
                             data={['10', '15', '30']}
                             required
                             allowDeselect={false}
