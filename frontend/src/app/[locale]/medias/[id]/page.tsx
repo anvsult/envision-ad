@@ -22,6 +22,7 @@ import { useEffect, useState } from "react";
 import { getMediaById } from "@/services/MediaService";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, MediaDTO } from "@/types/MediaTypes";
+import { ReserveMediaModal } from "@/components/Media/Modals/ReserveMediaModal";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -57,6 +58,7 @@ export default function MediaPage() {
   const [media, setMedia] = useState<MediaDTO | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [reserveModalOpen, setReserveModalOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -289,8 +291,7 @@ export default function MediaPage() {
                 <Text fw={600} size="xl" td="underline">
                   {priceLabel}
                 </Text>
-                {/* TODO: Implement reservation functionality */}
-                <Button radius="xl" fullWidth disabled>
+                <Button radius="xl" fullWidth onClick={() => setReserveModalOpen(true)}>
                   {t("reserveButton")}
                 </Button>
                 <Text size="xs" c="dimmed">
@@ -301,6 +302,13 @@ export default function MediaPage() {
           </Stack>
         </Group>
       </Container>
+      {media && (
+        <ReserveMediaModal
+          opened={reserveModalOpen}
+          onClose={() => setReserveModalOpen(false)}
+          media={media}
+        />
+      )}
     </>
   );
 }

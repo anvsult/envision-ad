@@ -26,3 +26,15 @@ spring:
       mode: always
       schema-locations: classpath:schema-h2.sql
       data-locations: classpath:data-h2.sql
+
+  mail:
+    host: ${EMAIL_SMTP:localhost}
+    port: ${EMAIL_PORT:25}
+    username: ${EMAIL_USER:}
+    password: ${EMAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

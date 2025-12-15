@@ -42,7 +42,7 @@
     "admin": {
       "pendingMedia": "Médias en attente"
     }
-},
+  },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -444,9 +444,9 @@
   },
   "adCampaigns": {
     "page": {
-      "title": "Mes campagnes",
-      "createButton": "Créer une campagne",
-      "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+        "title": "Mes campagnes",
+        "createButton": "Créer une campagne",
+        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
     },
     "createCampaignModal": {
       "title": "Créer une campagne",
@@ -463,6 +463,37 @@
       "validation": {
         "nameTooShort": "Nom trop court"
       }
+    }
+  },
+  "reserveModal": {
+    "title": "Réserver : {title}",
+    "selectCampaign": "Sélectionner une campagne",
+    "chooseCampaign": "Choisissez une de vos campagnes",
+    "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
+    "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
+    "errors": {
+      "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
+      "selectDate": "Veuillez sélectionner une date de début et de fin valides"
+    },
+    "mediaIdMissing": "L'identifiant du média est manquant.",
+    "successTitle": "Réservation réussie !",
+    "successMessage": "Réservation confirmée !",
+    "successMessageLong": "Votre créneau publicitaire a été réservé avec succès. Vous pouvez le consulter dans votre calendrier.",
+    "duplicateTitle": "Doublon",
+    "duplicateMessage": "Réservé déjà pour ces dates.",
+    "failedReserve": "Échec de la réservation.",
+    "networkError": "Erreur réseau.",
+    "doneButton": "Terminé",
+    "cancelButton": "Annuler",
+    "backButton": "Retour",
+    "nextStepButton": "Étape suivante",
+    "confirmPayButton": "Confirmer & Payer",
+    "reviewTitle": "Vérifier la réservation",
+    "labels": {
+      "media": "Média",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total"
     }
   },
   "admin": {
@@ -488,6 +519,5 @@
       "dailyImpressions": "Impressions quotidiennes"
     }
   }
+
 }
-
-
