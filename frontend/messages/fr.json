@@ -390,7 +390,7 @@
       "pendingMedia": "Médias en attente d’approbation",
       "image": "Image",
       "name":"Nom",
-      "status": "Statu",
+      "status": "Statut",
       "price": "Prix"
     }
   }
