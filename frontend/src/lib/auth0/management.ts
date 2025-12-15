@@ -1,18 +1,33 @@
 export class Auth0ManagementService {
     private static async getAccessToken() {
-        const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                client_id: process.env.AUTH0_MGMT_CLIENT_ID,
-                client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
-                grant_type: 'client_credentials',
-            }),
-        });
+        try {
+            const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    client_id: process.env.AUTH0_MGMT_CLIENT_ID,
+                    client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
+                    audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
+                    grant_type: 'client_credentials',
+                }),
+            });
 
-        const data = await tokenRes.json();
-        return data.access_token;
+            if (!tokenRes.ok) {
+                const errorText = await tokenRes.text();
+                console.error(`Failed to get Auth0 access token: ${tokenRes.status} ${tokenRes.statusText} - ${errorText}`);
+                throw new Error(`Failed to get Auth0 access token: ${tokenRes.statusText}`);
+            }
+
+            const data = await tokenRes.json();
+            if (!data.access_token) {
+                console.error("Auth0 token response missing access_token:", data);
+                throw new Error("Auth0 token response missing access_token");
+            }
+            return data.access_token;
+        } catch (error) {
+            console.error("Error in Auth0ManagementService.getAccessToken:", error);
+            throw error;
+        }
     }
 
     static async getUser(userId: string) {
