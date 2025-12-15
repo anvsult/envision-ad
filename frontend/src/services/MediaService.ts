@@ -28,7 +28,7 @@ function escapeLike(input: string): string {
     .replace(/_/g, "\\_");
 }
 
-enum SpecialSort {
+export enum SpecialSort {
     nearest = "nearest",
 }
 
@@ -62,7 +62,7 @@ export async function getAllFilteredActiveMedia(
     }
 
     if (sort){
-        if (Object.values(SpecialSort).includes(sort)) {
+        if (Object.values(SpecialSort).includes(sort as SpecialSort)) {
             params.append("specialSort", sort.toString());
         } else {
             params.append("sort", sort.toString());

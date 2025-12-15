@@ -1,3 +1,4 @@
+import { SpecialSort } from "@/services/MediaService";
 import { Group, Select, Text } from "@mantine/core";
 import { useTranslations } from "next-intl";
 
@@ -20,7 +21,7 @@ export default function BrowseActions({filters,  setSortBy}: BrowseActionsProps)
                 <Select
                     data={
                         [
-                            { value: "nearest", label: t('sort.nearest') },
+                            { value: SpecialSort.nearest, label: t('sort.nearest') },
                             { value: "price,asc", label: (t('sort.price') + t('sort.asc')) },
                             { value: "price,desc", label: (t('sort.price') + t('sort.desc')) },
                             { value: "dailyImpressions,asc", label: (t('sort.impressions') + t('sort.asc')) },
