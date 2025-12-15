@@ -42,7 +42,7 @@
     "admin": {
       "pendingMedia": "Médias en attente"
     }
-},
+  },
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -430,6 +430,7 @@
       "save": "Enregistrer"
     },
     "editButton": "Modifier le profil"
+  },
   "AddAdModal": {
     "title": "Ajouter une nouvelle annonce",
     "labels": {
@@ -510,7 +511,7 @@
       "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
       "pendingMedia": "Médias en attente d’approbation",
       "image": "Image",
-      "name":"Nom",
+      "name": "Nom",
       "status": "Statut",
       "price": "Prix",
       "mediaOwner": "Propriétaire de médias",
