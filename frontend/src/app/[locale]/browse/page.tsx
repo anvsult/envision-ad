@@ -69,7 +69,7 @@ function BrowsePage() {
       }).finally(() => {
         setLoading(false);
       });
-}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, t, activePage]);
+}, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
 
 
 
@@ -111,7 +111,7 @@ function BrowsePage() {
             {/* if loading, show loader, if  */}
           {(media.length > 0) ? (<MediaCardGrid medias={media} />):( 
               <Stack h='20em' justify='center' align='center'>
-                {(loading) ? ( (sortBy == 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
+                {(loading) ? ( (sortBy === 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
                   <>
                     <Text size='32px'>{t('nomedia.notfound')}</Text>
                     <Text>{t('nomedia.changefilters')}</Text>

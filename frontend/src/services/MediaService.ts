@@ -29,7 +29,7 @@ function escapeLike(input: string): string {
 }
 
 enum SpecialSort {
-    "nearest",
+    nearest = "nearest",
 }
 
 export async function getAllFilteredActiveMedia(

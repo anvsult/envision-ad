@@ -80,6 +80,9 @@ public class MediaServiceImpl implements MediaService {
             int pageStart = (int) pageable.getOffset();
             int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
 
+            if (pageStart >= list.size()) {
+                return Page.empty(pageable);
+            }
             List<Media> paged = list.subList(pageStart, pageEnd);
 
             return new PageImpl<>(paged, pageable, list.size());

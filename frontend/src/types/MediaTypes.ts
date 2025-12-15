@@ -64,7 +64,9 @@ export interface MediaResponse {
     totalPages: number;
     number: number,
     size: number,
-    hasNext: boolean
+    last: boolean;
+    first: boolean;
+    empty: boolean;
 }
 
 

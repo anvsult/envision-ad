@@ -62,9 +62,4 @@ public class MediaResponseMapper {
                 .toList();
     }
 
-    public List<MediaResponseModel> entityListToResponseModelList(Page<Media> page) {
-        return page.stream()
-                .map(this::entityToResponseModel)
-                .toList();
-    }
 }

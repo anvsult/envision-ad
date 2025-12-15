@@ -45,7 +45,7 @@ export default class BrowsePage {
     searchTitleBar = () => this.page.getByRole('textbox', { name: 'Search title' })
     searchTitleEnter = () => this.page.getByRole('button').nth(3)
     mediaCard = (index: string) => this.page.locator('#MediaCard' + index)
-    noLocation = () => this.page.getByText('Could not get nearest media.')
+    noLocation = () => this.page.getByText('Could not find nearest media.')
     noMediaFound = () => this.page.getByText('No media found')
     //Filter Locators
     filterPrice = () => this.page.getByRole('button', { name: 'Price ($)' })
