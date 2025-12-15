@@ -152,17 +152,24 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions": {
-      "filter": "Filter:",
-      "sort": "Sort by:",
-      "nearest": "Nearest"
-    },
-    "filters": {
-      "price": "Price ($)",
-      "impressions": "Minimum impressions",
-      "from": "From",
-      "to": "To",
-      "showresults": "Add filter"
+    "browseactions":{
+      "filters":{
+        "actionName": "Filter:",
+        "price": "Price ($)",
+        "impressions": "Minimum impressions",
+        "from": "From",
+        "to": "To",
+        "showresults": "Add filter"
+      },
+      "sort": {
+        "actionName": "Sort by:",
+        "nearest": "Nearest",
+        "price" : "Price",
+        "impressions" : "Impressions",
+        "loop" : "Loop duration",
+        "asc": " (Low to High)",
+        "desc": " (High to Low)"
+      }
     },
     "nomedia": {
       "notfound": "No media found",
@@ -267,8 +274,9 @@
       "cancel": "Cancel"
     },
     "success": {
-      "create": "Media created successfully",
-      "update": "Media updated successfully"
+      "title": "Success!",
+      "create": "Media created",
+      "update": "Media updated"
     }
   },
   "mediaModal": {

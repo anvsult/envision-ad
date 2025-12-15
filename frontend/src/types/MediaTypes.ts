@@ -24,6 +24,7 @@ export interface MediaDTO {
     imageUrl?: string | null;
 }
 
+
 export interface MediaLocationDTO {
     id: string | null;
     name: string;
@@ -58,21 +59,14 @@ export interface MediaRequest {
 }
 
 export interface MediaResponse {
-    id: string;
-    title: string;
-    mediaOwnerName: string;
-    mediaLocation: MediaLocationDTO | null;
-    typeOfDisplay: string;
-    loopDuration: number;
-    resolution: string;
-    aspectRatio: string;
-    width: number;
-    height: number;
-    price: number;
-    dailyImpressions: number;
-    schedule: ScheduleModel | null;
-    status: string;
-    imageUrl: string;
+    content: MediaDTO[];
+    totalElements: number;
+    totalPages: number;
+    number: number,
+    size: number,
+    last: boolean;
+    first: boolean;
+    empty: boolean;
 }
 
 

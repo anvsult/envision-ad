@@ -6,7 +6,8 @@ import { getJoinedAddress, MediaLocationDTO } from "@/types/MediaTypes";
 // import { MediaAdStatuses } from "@/types/MediaAdStatus";
 
 export interface MediaCardProps {
-    id?: string;
+    index: string;
+    href?: string;
     title: string;
     mediaOwnerName: string;
     mediaLocation: MediaLocationDTO;
@@ -19,61 +20,60 @@ export interface MediaCardProps {
     // TODO: Add `dateAdded: Date` property if/when date tracking is required.
 }
 
-function MediaCard({id, imageUrl, title, mediaOwnerName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
+const ratio = 1/1
+
+function MediaCard({index, href, imageUrl, title, mediaOwnerName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
     const t = useTranslations("mediacard");
     
     return (
-        <Anchor href={"/medias/" + id} color="black" underline="never">
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never">
             <Paper 
                 shadow="sm"
                 radius="md"
                 mih="310px"
                 className={styles.paper}
             >   
-                
-                <AspectRatio ratio={16/9}>
+                <AspectRatio ratio={ratio}>
                     <Paper className={styles.imagecontainer} radius="md" shadow="xs">
                         {/* <StatusBadge status={MediaAdStatuses.DISPLAYING}/> */}
-                        <AspectRatio ratio={16/9}>
+                        <AspectRatio ratio={ratio}>
                             <Image src={imageUrl} alt="Media"  className={styles.image}/>
                         </AspectRatio>
                     </Paper>
                 </AspectRatio>
                 <Stack gap="5px" p="10px" >
                     <Stack gap="2px">
-                        <Text size="md" lineClamp={3}>
+                        <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} >
                             {title}
                         </Text>
-                        <Text size="sm" color="gray" lineClamp={1}>
+                        <Text id={"MediaCardOwnerName" + index} size="sm" color="gray" lineClamp={1}>
                             {mediaOwnerName}
                         </Text>
                         
                         
                     </Stack>
-                    <Text size="lg" lineClamp={1}>
+                    <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1}>
                                 {t('perWeek', {price: price})}
                         </Text>
                     <Stack gap="3px">
-                        <Text size="xs" lineClamp={1}>
+                        <Text id={"MediaCardAddress" + index} size="xs" lineClamp={1}>
                             {getJoinedAddress([mediaLocation.city, mediaLocation.province])}
                         </Text>
-                        <Text size="xs" lineClamp={1} >
+                        <Text id={"MediaCardImpressions" + index} size="xs" lineClamp={1} >
                             {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
                         </Text>
                         <Group gap="auto">
-                            <Text size="xs" truncate>
+                            <Text id={"MediaCardAspectRatio" + index} size="xs" truncate>
                                 {aspectRatio}
                             </Text>
                             <Space w="lg" />
-                            <Text size="xs" truncate>
+                            <Text id={"MediaCardResolution" + index} size="xs" truncate>
                                 {resolution} 
                             </Text>
                             <Space w="lg" />
-                            <Text size="xs" truncate>
+                            <Text id={"MediaCardType" + index} size="xs" truncate>
                                 {typeOfDisplay}
                             </Text>
-                            
-                            
                         </Group>
                     </Stack>
                 </Stack>
