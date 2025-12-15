@@ -127,11 +127,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
-
         String userId = extractUserId(jwt);
-        if (employees.stream().noneMatch(e -> e.getUserId().equals(userId)))
-            throw new AccessDeniedException("Access Denied");
+        validateUserIsEmployeeOfBusiness(userId, businessId);
 
         Invitation invitation = invitationRepository.findByInvitationId_InvitationId(invitationId);
 

@@ -7,6 +7,8 @@ DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
+DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS media_location CASCADE;
 
 
 -- 2. Create Address Table (Must be first because Business links to it)

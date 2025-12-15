@@ -1,5 +1,5 @@
-import { test } from "../../fixtures/basePages";
-import { expect } from '@playwright/test';
+import { test, expect } from "../../fixtures/basePages";
+
 
 test('View Success', async ({ homePage, dashboardPage }) => {
     await homePage.goto();
