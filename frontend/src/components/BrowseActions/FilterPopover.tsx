@@ -41,7 +41,7 @@ interface FilterPopoverProps {
 }
 
 function FilterPopover({buttonName, applyActions, children}: FilterPopoverProps){
-    const t = useTranslations('browse.filters');
+    const t = useTranslations('browse.browseactions.filters');
     const [opened, setOpened] = useState(false);
     
     const handleApply = useCallback(() => {
@@ -92,7 +92,7 @@ export interface FilterPricePopoverProps{
 }
 
 export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice}: FilterPricePopoverProps) {
-    const t = useTranslations('browse.filters');
+    const t = useTranslations('browse.browseactions.filters');
     const [draftMin, setDraftMin] = useState<number | null>(minPrice ?? null);
     const [draftMax, setDraftMax] = useState<number | null>(maxPrice ?? null);
     
