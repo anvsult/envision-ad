@@ -34,8 +34,22 @@ export async function PATCH(
             }),
         });
 
-        const { access_token } = await tokenRes.json();
+        if (!tokenRes.ok) {
+            let errorMsg = 'Failed to obtain Auth0 Management API token';
+            try {
+                const errorBody = await tokenRes.json();
+                errorMsg = errorBody.error_description || errorBody.error || errorMsg;
+            } catch (_) {
+                // ignore JSON parse errors
+            }
+            return NextResponse.json({ error: errorMsg }, { status: tokenRes.status });
+        }
 
+        const tokenJson = await tokenRes.json();
+        const { access_token } = tokenJson;
+        if (!access_token) {
+            return NextResponse.json({ error: 'No access token returned from Auth0' }, { status: 500 });
+        }
         // Update User in Auth0
         const updateRes = await fetch(
             `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${id}`,
