@@ -9,6 +9,8 @@ const DEFAULT_TOKEN_EXPIRY_SECONDS = 86400; // 24 hours
 const tokenCache = {
     token: null as string | null,
     expiry: 0,
+    refreshing: false as boolean,
+    refreshPromise: null as Promise<string> | null,
 };
 
 export class Auth0ManagementService {
@@ -19,6 +21,25 @@ export class Auth0ManagementService {
             return tokenCache.token;
         }
 
+        // If token refresh is already in progress, wait for it
+        if (tokenCache.refreshing && tokenCache.refreshPromise) {
+            return tokenCache.refreshPromise;
+        }
+
+        // Start token refresh
+        tokenCache.refreshing = true;
+        tokenCache.refreshPromise = this.fetchNewToken();
+
+        try {
+            const token = await tokenCache.refreshPromise;
+            return token;
+        } finally {
+            tokenCache.refreshing = false;
+            tokenCache.refreshPromise = null;
+        }
+    }
+
+    private static async fetchNewToken(): Promise<string> {
         try {
             const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
                 method: 'POST',
@@ -50,7 +71,7 @@ export class Auth0ManagementService {
             
             return data.access_token;
         } catch (error) {
-            console.error("Error in Auth0ManagementService.getAccessToken:", error);
+            console.error("Error in Auth0ManagementService.fetchNewToken:", error);
             throw error;
         }
     }

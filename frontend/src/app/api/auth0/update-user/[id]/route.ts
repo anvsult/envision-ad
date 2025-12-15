@@ -29,7 +29,16 @@ export async function PATCH(
         for (const field of allowedFields) {
             if (field in body && typeof body[field] === 'string') {
                 // Basic sanitization: trim whitespace
-                sanitizedBody[field] = body[field].trim();
+                const trimmedValue = body[field].trim();
+                
+                // Validate field length (Auth0 limits)
+                if (trimmedValue.length > 255) {
+                    return NextResponse.json({ error: `Field '${field}' is too long (max 255 characters)` }, { status: 400 });
+                }
+                
+                if (trimmedValue.length > 0) {
+                    sanitizedBody[field] = trimmedValue;
+                }
             }
         }
 

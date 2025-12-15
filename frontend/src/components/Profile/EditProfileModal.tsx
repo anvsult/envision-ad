@@ -37,6 +37,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             family_name: user.family_name || "",
             nickname: user.nickname || user.name || "",
         });
+        // form is intentionally excluded from deps - setValues is stable per Mantine's useForm
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
