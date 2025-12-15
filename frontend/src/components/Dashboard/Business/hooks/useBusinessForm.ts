@@ -4,7 +4,6 @@ import {BusinessRequest, CompanySize} from "@/types/BusinessTypes";
 export function useBusinessForm() {
     const initialState: BusinessRequest = {
         name: "",
-        owner: "",
         companySize: CompanySize.SMALL,
 
         address: {

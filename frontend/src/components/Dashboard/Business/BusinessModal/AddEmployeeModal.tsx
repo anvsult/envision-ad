@@ -3,7 +3,7 @@
 import React, {useState} from "react";
 import {Button, Group, Modal, Stack, TextInput} from "@mantine/core";
 import {useTranslations} from "next-intl";
-import {inviteEmployeeToBusiness} from "@/services/BusinessService";
+import {createInviteEmployeeToBusiness} from "@/services/BusinessService";
 
 interface BusinessModalProps {
     opened: boolean;
@@ -25,10 +25,25 @@ export function AddEmployeeModal({
     const t = useTranslations("business.employees.form");
     const [saving, setSaving] = useState(false);
 
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
     const handleSave = async () => {
+        if (!email || email.trim() === '') {
+            alert(t("emailRequired"));
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            alert(t("invalidEmailFormat"));
+            return;
+        }
+
         setSaving(true);
         try {
-            await inviteEmployeeToBusiness(businessId, email);
+            await createInviteEmployeeToBusiness(businessId, { email });
             onSuccess();
             onClose();
         } catch (error) {

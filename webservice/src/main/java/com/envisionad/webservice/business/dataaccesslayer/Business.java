@@ -1,12 +1,11 @@
 package com.envisionad.webservice.business.dataaccesslayer;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Data
@@ -34,14 +33,6 @@ public class Business {
 
     @Embedded
     private Roles roles;
-
-    @ElementCollection
-    @CollectionTable(
-            name = "business_employees",
-            joinColumns = @JoinColumn(name = "business_id")
-    )
-    @Column(name = "employee_id")
-    private Set<String> employeeIds = new HashSet<>();
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

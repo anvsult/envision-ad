@@ -235,15 +235,27 @@
       "pending": "Invitations en attente",
       "active": "Employés actifs",
       "addButton": "Inviter un employé",
+      "invites": "Invitations en attente",
       "name": "Nom",
       "email": "Courriel",
+      "expire": "Expire dans",
       "actions": "Actions",
+      "invitationNotFound": "Aucune invitation en attente trouvée",
+      "employeeNotFound": "Aucun employé actif trouvé",
       "form": {
         "title": "Ajouter un employé",
         "submit": "Inviter un employé",
         "cancel": "Annuler",
         "email": "Courriel",
         "placeholder": "email@email.com"
+      },
+      "modal": {
+        "employeeTitle": "Supprimer un employé",
+        "invitationTitle": "Annuler l’invitation",
+        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre entreprise?",
+        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre entreprise?",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
       }
     }
   },
