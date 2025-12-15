@@ -373,5 +373,25 @@
         "sunday": "Dimanche"
       }
     }
+  },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "Aucun média en attente d’approbation.",
+      "approveMedia": "Approuver le média",
+      "denyMedia": "Refuser le média",
+      "approveMediaConfirmation": "Approuver ce média ?",
+      "denyMediaConfirmation": "Refuser ce média ?",
+      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
+      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
+      "deny": "Refuser",
+      "approve": "Approuver",
+      "reviewUnavailable": "Révision indisponible",
+      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
+      "pendingMedia": "Médias en attente d’approbation",
+      "image": "Image",
+      "name":"Nom",
+      "status": "Statu",
+      "price": "Prix"
+    }
   }
 }

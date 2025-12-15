@@ -2,12 +2,15 @@
 
 import { Paper, ScrollArea, Table, Text } from "@mantine/core";
 import { ApproveMediaRow, ApproveMediaRowData } from "./ApproveMediaRow";
+import { useTranslations } from "next-intl";
 
 interface ApproveMediaTableProps {
     rows: ApproveMediaRowData[];
 }
 
 export function ApproveMediaTable({ rows }: ApproveMediaTableProps) {
+const t = useTranslations('admin.adminActions');
+
     return (
         <Paper shadow="sm" radius="md" withBorder>
             <ScrollArea>
@@ -22,10 +25,10 @@ export function ApproveMediaTable({ rows }: ApproveMediaTableProps) {
                 >
                     <Table.Thead>
                         <Table.Tr>
-                            <Table.Th w={80} miw={60}>Image</Table.Th>
-                            <Table.Th miw={160}>Name</Table.Th>
-                            <Table.Th miw={140}>Status</Table.Th>
-                            <Table.Th w={100} miw={90}>Price</Table.Th>
+                            <Table.Th w={80} miw={60}>{t('image')}</Table.Th>
+                            <Table.Th miw={160}>{t('name')}</Table.Th>
+                            <Table.Th miw={140}>{t('status')}</Table.Th>
+                            <Table.Th w={100} miw={90}>{t('price')}</Table.Th>
                         </Table.Tr>
                     </Table.Thead>
 
@@ -36,7 +39,7 @@ export function ApproveMediaTable({ rows }: ApproveMediaTableProps) {
                             <Table.Tr>
                                 <Table.Td colSpan={4}>
                                     <Text ta="center" c="dimmed" py="xl">
-                                        No pending media to approve.
+                                        {t('noMediaPending')}
                                     </Text>
                                 </Table.Td>
                             </Table.Tr>
