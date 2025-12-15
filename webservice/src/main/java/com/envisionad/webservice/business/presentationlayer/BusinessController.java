@@ -1,8 +1,7 @@
 package com.envisionad.webservice.business.presentationlayer;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.presentationlayer.models.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,20 +45,45 @@ public class BusinessController {
         return ResponseEntity.ok(businessService.updateBusinessById(jwt, businessId, requestModel));
     }
 
-    //Will be replace with another endpoint for adding employees by email
-    @PutMapping("/{businessId}/employees/{employeeId}")
-    public ResponseEntity<BusinessResponseModel> addEmployeeToBusiness(@PathVariable String businessId, @PathVariable String employeeId) {
-        return ResponseEntity.ok(businessService.addBusinessEmployeeById(businessId, employeeId));
+    @GetMapping("/{businessId}/invites")
+    @PreAuthorize("hasAuthority('read:employee')")
+    public ResponseEntity<List<InvitationResponseModel>> getAllBusinessInvitations(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId) {
+        return ResponseEntity.ok(businessService.getAllInvitationsByBusinessId(jwt, businessId));
+    }
+
+    @PostMapping("/{businessId}/invites")
+    @PreAuthorize("hasAuthority('create:employee')")
+    public ResponseEntity<InvitationResponseModel> createInvitation(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @RequestBody InvitationRequestModel invitation) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(businessService.createInvitation(jwt, businessId, invitation));
+    }
+
+    @DeleteMapping("/{businessId}/invites/{invitationId}")
+    @PreAuthorize("hasAuthority('create:employee')")
+    public ResponseEntity<Void> cancelInvitation(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @PathVariable String invitationId) {
+        businessService.cancelInvitation(jwt, businessId, invitationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{businessId}/employees")
+    @PreAuthorize("hasAuthority('read:employee')")
+    public ResponseEntity<List<EmployeeResponseModel>> GetAllBusinessEmployees(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId) {
+        return ResponseEntity.ok(businessService.getAllEmployeesByBusinessId(jwt, businessId));
+    }
+
+    @PostMapping("/{businessId}/employees")
+    public ResponseEntity<EmployeeResponseModel> addEmployeeToBusiness(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @RequestParam String token) {
+        return ResponseEntity.ok(businessService.addBusinessEmployee(jwt, businessId, token));
     }
 
     @DeleteMapping("/{businessId}/employees/{employeeId}")
     @PreAuthorize("hasAuthority('delete:employee')")
-    public ResponseEntity<BusinessResponseModel> removeEmployeeToBusiness(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @PathVariable String employeeId) {
-        return ResponseEntity.ok(businessService.removeBusinessEmployeeById(jwt, businessId, employeeId));
+    public ResponseEntity<Void> removeEmployeeFromBusiness(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @PathVariable String employeeId) {
+        businessService.removeBusinessEmployeeById(jwt, businessId, employeeId);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/employee/{employeeId}")
-    public ResponseEntity<BusinessResponseModel> getBusinessByEmployeeId(@AuthenticationPrincipal Jwt jwt, @PathVariable String employeeId) {
-        return ResponseEntity.ok(businessService.getBusinessByEmployeeId(jwt, employeeId));
+    @GetMapping("/employee/{userId}")
+    public ResponseEntity<BusinessResponseModel> getBusinessByUserId(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
+        return ResponseEntity.ok(businessService.getBusinessByUserId(jwt, userId));
     }
 }

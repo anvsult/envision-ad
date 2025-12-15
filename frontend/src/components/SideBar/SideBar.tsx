@@ -5,7 +5,8 @@ import {
     IconDeviceTv,
     IconFileDescription,
     IconLayoutDashboard,
-    IconUsers
+    IconUsers,
+    IconShieldCheck,
 } from "@tabler/icons-react";
 import React from "react";
 import {useTranslations} from "next-intl";
@@ -19,7 +20,8 @@ export default function SideBar() {
         <Accordion
             multiple
             variant="separated"
-            defaultValue={["business", "media-owner", "advertiser"]}
+
+            defaultValue={["business", "media-owner", "advertiser", "admin"]}
         >
             <Accordion.Item value="media-owner">
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
@@ -95,7 +97,7 @@ export default function SideBar() {
                 <Accordion.Panel>
                     <Stack gap="xs">
                         {/*<NavLink*/}
-                        {/*    component={Link}*/}
+                        {/*    component={Link}* /}
                         {/*    href="/dashboard/advertiser/overview"*/}
                         {/*    label={t("business.overview")}*/}
                         {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
@@ -112,6 +114,28 @@ export default function SideBar() {
                     </Stack>
                 </Accordion.Panel>
             </Accordion.Item>
+            <Accordion.Item value="admin">
+                        <Accordion.Control>{t("adminTitle")}</Accordion.Control>
+                    <Accordion.Panel>
+                        <Stack gap="xs">
+                            <NavLink
+                                component={Link}
+                                href="/dashboard/admin/medias/pending"
+                                label={t("admin.pendingMedia")}
+                                leftSection={<IconShieldCheck size={20} stroke={1.5} />}
+                                active={pathname?.includes("/dashboard/admin/medias/pending")}
+                            />
+                        </Stack>
+                    </Accordion.Panel>
+            </Accordion.Item>
+            {/*<NavLink*/}
+            {/*    component={Link}*/}
+            {/*    href="/dashboard/transactions"*/}
+            {/*    label={t("sidebar.transactions")}*/}
+            {/*    leftSection={<IconCurrencyDollar size={20} stroke={1.5} />}*/}
+            {/*    active={pathname?.includes("/transactions")}*/}
+            {/*    onClick={isMobile ? close : undefined}*/}
+            {/*/>*/}
         </Accordion>
-    )
+)
 }

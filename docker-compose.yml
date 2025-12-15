@@ -60,6 +60,10 @@ services:
       SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
       SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
       SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
+      SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
+      SPRING_EMAIL_PORT: "${EMAIL_PORT}"
+      SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
+      SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
     depends_on:
       postgres:
         condition: service_healthy

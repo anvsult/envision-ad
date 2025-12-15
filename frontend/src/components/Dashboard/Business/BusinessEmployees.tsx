@@ -3,28 +3,41 @@
 import React, {useEffect, useState} from "react";
 import {Header} from "@/components/Header/Header";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {Box, Button, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
+import {Accordion, Box, Button, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {AddEmployeeModal} from "@/components/Dashboard/Business/BusinessModal/AddEmployeeModal";
 import {useUser} from "@auth0/nextjs-auth0";
-import {getEmployeeBusiness, removeEmployeeFromBusiness} from "@/services/BusinessService";
+import {
+    cancelInviteEmployeeToBusiness,
+    getAllBusinessEmployees,
+    getAllBusinessInvitations,
+    getEmployeeBusiness,
+    removeEmployeeFromBusiness
+} from "@/services/BusinessService";
 import {EmployeeTable} from "@/components/Dashboard/Business/BusinessTable/EmployeesTable";
 import SideBar from "@/components/SideBar/SideBar";
 import {ConfirmationModal} from "@/shared/modals/ConfirmationModal";
 import type {UserType} from "@/types/UserType";
+import {InvitationResponse} from "@/types/InvitationType";
+import {InvitationTable} from "@/components/Dashboard/Business/BusinessTable/InvitationsTable";
+import {ConfirmRemoveInviteModal} from "@/components/Dashboard/Business/BusinessModal/ConfirmRemoveInviteModal";
+import {ConfirmRemoveEmployeeModal} from "@/components/Dashboard/Business/BusinessModal/ConfirmRemoveEmployeeModal";
 
 export function BusinessEmployees() {
     const [opened, {toggle, close}] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
     const [owner, setOwner] = useState<string | null>(null);
     const [employees, setEmployees] = useState<UserType[]>([]);
+    const [invitations, setInvitations] = useState<InvitationResponse[]>([])
     const [businessId, setBusinessId] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [employeeEmail, setEmployeeEmail] = useState("");
 
-    const [confirmOpen, setConfirmOpen] = useState(false);
-    const [employeeToRemove, setEmployeeToRemove] = useState<string | null>(null);
+    const [confirmEmployeeOpen, setConfirmEmployeeOpen] = useState(false);
+    const [confirmInviteOpen, setConfirmInviteOpen] = useState(false);
+    const [employeeToRemove, setEmployeeToRemove] = useState<UserType | null>(null);
+    const [invitationToRemove, setInvitationToRemove] = useState<InvitationResponse | null>(null);
 
     const t = useTranslations("business.employees");
     const {user} = useUser();
@@ -33,26 +46,47 @@ export function BusinessEmployees() {
         setIsModalOpen(false);
     };
 
-    const handleSuccess = () => {
+    const handleSuccess = async () => {
         setIsModalOpen(false);
+
+        if (businessId)
+            setInvitations(await getAllBusinessInvitations(businessId));
     };
 
-    const handleDeleteEmployee = (employee: string) => {
+    const handleDeleteEmployee = (employee: UserType) => {
         setEmployeeToRemove(employee);
-        setConfirmOpen(true);
+        setConfirmEmployeeOpen(true);
     };
 
-    const confirmRemove = async () => {
+    const handleDeleteInvitation = (invitation: InvitationResponse) => {
+        setInvitationToRemove(invitation);
+        setConfirmInviteOpen(true);
+    };
+
+    const confirmEmployeeRemove = async () => {
         if (!employeeToRemove || !businessId) return;
 
-        await removeEmployeeFromBusiness(businessId, employeeToRemove)
+        await removeEmployeeFromBusiness(businessId, employeeToRemove.employee_id)
 
         setEmployees((prev) =>
-            prev.filter((e) => e.user_id !== employeeToRemove)
+            prev.filter((e) => e.employee_id !== employeeToRemove.employee_id)
         );
 
-        setConfirmOpen(false);
+        setConfirmEmployeeOpen(false);
         setEmployeeToRemove(null);
+    };
+
+    const confirmInviteRemove = async () => {
+        if (!invitationToRemove || !businessId) return;
+
+        await cancelInviteEmployeeToBusiness(businessId, invitationToRemove.invitationId)
+
+        setInvitations((prev) =>
+            prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
+        );
+
+        setConfirmInviteOpen(false);
+        setInvitationToRemove(null);
     };
 
     useEffect(() => {
@@ -60,12 +94,20 @@ export function BusinessEmployees() {
 
         const loadBusiness = async () => {
             const business = await getEmployeeBusiness(user.sub);
-            setOwner(business.owner);
+            setOwner(business.ownerId);
             setBusinessId(business.businessId);
+
+            setInvitations(await getAllBusinessInvitations(business.businessId))
+
+            const ep = await getAllBusinessEmployees(business.businessId)
             const employeeData: UserType[] = await Promise.all(
-                business.employees.map(async (employeeId) => {
-                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employeeId)}`);
-                    return await res.json() as Promise<UserType>;
+                ep.map(async (employee) => {
+                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.userId)}`);
+                    const user = await res.json() as Promise<UserType>;
+                    return {
+                        ...user,
+                        employee_id: employee.employeeId,
+                    }
                 })
             );
             setEmployees(employeeData);
@@ -130,12 +172,19 @@ export function BusinessEmployees() {
                             />
 
                             {user?.sub && owner && (
-                                <EmployeeTable
-                                    employees={employees}
-                                    onDelete={handleDeleteEmployee}
-                                    currentUserId={user.sub}
-                                    ownerId={owner}
-                                />
+                                <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
+                                        <InvitationTable
+                                            invitations={invitations}
+                                            onDelete={handleDeleteInvitation}
+                                        />
+
+                                        <EmployeeTable
+                                            employees={employees}
+                                            onDelete={handleDeleteEmployee}
+                                            currentUserId={user.sub}
+                                            ownerId={owner}
+                                        />
+                                </Accordion>
                             )}
 
                             <ConfirmationModal
@@ -150,6 +199,12 @@ export function BusinessEmployees() {
                                 confirmColor="red"
                                 onCancel={() => setConfirmOpen(false)}
                                 onConfirm={confirmRemove}
+
+                            <ConfirmRemoveInviteModal
+                                opened={confirmInviteOpen}
+                                email={invitationToRemove?.email || ""}
+                                onCancel={() => setConfirmInviteOpen(false)}
+                                onConfirm={confirmInviteRemove}
                             />
                         </Stack>
                     </div>

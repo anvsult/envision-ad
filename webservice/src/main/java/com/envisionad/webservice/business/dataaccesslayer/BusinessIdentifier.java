@@ -1,6 +1,5 @@
 package com.envisionad.webservice.business.dataaccesslayer;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +8,6 @@ import lombok.Getter;
 @Embeddable
 @AllArgsConstructor
 public class BusinessIdentifier {
-    @Column(name = "business_id")
     private String businessId;
 
     public BusinessIdentifier() {

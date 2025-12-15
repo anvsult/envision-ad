@@ -26,6 +26,12 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(InvitationNotFoundException.class)
+    public HttpErrorInfo InvitationNotFoundException(InvitationNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(DuplicateBusinessNameException.class)
     public HttpErrorInfo handleDuplicateBusinessNameException(DuplicateBusinessNameException ex) {

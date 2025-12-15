@@ -3,7 +3,8 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
        ('789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
        ('404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
-       ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada') ON CONFLICT (id) DO NOTHING;
+       ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
+    ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
@@ -12,11 +13,17 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-        NOW()) ON CONFLICT (id) DO NOTHING;
+        NOW())
+ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO business_employees (business_id, employee_id)
-VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
-       (1, 'auth0|693746439e8a7ab9e8b910b2') ON CONFLICT (business_id, employee_id) DO NOTHING;
+INSERT INTO employee (employee_id, user_id, business_id)
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
+       ('202fc843-77a7-409e-8547-e013763ded4f', 'auth0|693746439e8a7ab9e8b910b2', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11')
+ON CONFLICT (employee_id) DO NOTHING;
+
+INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
+VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', NOW(), NOW() + INTERVAL '1 hour')
+ON CONFLICT (invitation_id) DO NOTHING;
 
 INSERT INTO media_location (media_location_id, name, description, country, province, city, street, postal_code, latitude, longitude)
 VALUES

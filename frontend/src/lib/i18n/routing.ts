@@ -64,6 +64,12 @@ export const routing = defineRouting({
     },
     //admin dashboard
 
+// admin dashboard
+    "/dashboard/admin/medias/pending": {
+      en: "/dashboard/admin/medias/pending",
+      fr: "/tableau-de-bord/admin/medias/en-attente",
+    },
+
     //business dashboard
     '/dashboard/business/overview': {
       'en': '/dashboard/business/overview',

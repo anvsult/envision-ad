@@ -6,10 +6,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BusinessRepository extends JpaRepository<Business, String> {
     Business findByBusinessId_BusinessId(String businessId);
-
-    Business findByEmployeeIdsContains(String employeeId);
-
     boolean existsByName(String name);
-
-    boolean existsByEmployeeIdsContains(String employeeId);
+    boolean existsByBusinessId_BusinessId(String businessId);
 }

@@ -37,8 +37,12 @@
       "overview": "Aperçu",
       "adRequests": "Demandes d'annonce",
       "myAds": "Mes Campagnes"
+    },
+    "adminTitle": "Admin",
+    "admin": {
+      "pendingMedia": "Médias en attente"
     }
-  },
+},
   "homepage": {
     "heroTitlePart1": "Des publicités abordables.",
     "heroTitlePart2": "Un impact inoubliable.",
@@ -237,15 +241,27 @@
       "pending": "Invitations en attente",
       "active": "Employés actifs",
       "addButton": "Inviter un employé",
+      "invites": "Invitations en attente",
       "name": "Nom",
       "email": "Courriel",
+      "expire": "Expire dans",
       "actions": "Actions",
+      "invitationNotFound": "Aucune invitation en attente trouvée",
+      "employeeNotFound": "Aucun employé actif trouvé",
       "form": {
         "title": "Ajouter un employé",
         "submit": "Inviter un employé",
         "cancel": "Annuler",
         "email": "Courriel",
         "placeholder": "email@email.com"
+      },
+      "modal": {
+        "employeeTitle": "Supprimer un employé",
+        "invitationTitle": "Annuler l’invitation",
+        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre entreprise?",
+        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre entreprise?",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
       }
     }
   },
@@ -446,8 +462,30 @@
       },
       "validation": {
         "nameTooShort": "Nom trop court"
-      }
+      },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "Aucun média en attente d’approbation.",
+      "approveMedia": "Approuver le média",
+      "denyMedia": "Refuser le média",
+      "approveMediaConfirmation": "Approuver ce média ?",
+      "denyMediaConfirmation": "Refuser ce média ?",
+      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
+      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
+      "deny": "Refuser",
+      "approve": "Approuver",
+      "reviewUnavailable": "Révision indisponible",
+      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
+      "pendingMedia": "Médias en attente d’approbation",
+      "image": "Image",
+      "name":"Nom",
+      "status": "Statut",
+      "price": "Prix",
+      "mediaOwner": "Propriétaire de médias",
+      "location": "Site",
+      "dailyImpressions": "Impressions quotidiennes"
     }
   }
-
+  }
+}
 }

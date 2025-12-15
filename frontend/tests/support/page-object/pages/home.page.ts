@@ -25,6 +25,7 @@ export default class HomePage {
     
     //Locators - authenticated user
     dashboardLink = () => this.page.getByRole('link', { name: 'Dashboard' });
+    loginErrorMessage = () => this.page.getByText('Incorrect email address, username, or password');
     userDropdown = (username: string) => this.page.getByRole('button', { name: username })
     profileLink = () => this.page.getByRole('link', { name: 'Profile', exact: true });
     logoutLink = () => this.page.getByRole('button', { name: 'Logout' });
@@ -52,6 +53,13 @@ export default class HomePage {
             await this.hamburgerMenuButton().click();
         }
         await this.dashboardLink().click();
+    }
+
+    public async login(username: string, password: string) {
+        await this.clickLoginLink();
+        await this.usernameTextbox().fill(username);
+        await this.passwordTextbox().fill(password);
+        await this.loginButton().click();
     }
 
     public async assertUserLoggedIn(username: string) {
