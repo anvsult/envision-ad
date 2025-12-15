@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 
 import { isMobileView } from '../../utils/viewUtils';
 
@@ -46,6 +46,7 @@ export default class MediaDashboardPage {
 
     async openMediaActions(name: string) {
         const item = this.mediaItem(name);
+        await item.scrollIntoViewIfNeeded();
         await item.waitFor();
 
         const tagName = await item.evaluate((el: Element) => el.tagName);
@@ -53,7 +54,13 @@ export default class MediaDashboardPage {
             await item.hover();
         }
 
-        await item.getByLabel('Open media actions').click();
+        const actionBtn = item.getByLabel('Open media actions');
+        await actionBtn.waitFor({ state: 'visible' });
+
+        await expect(async () => {
+            await actionBtn.click({ force: true });
+            await expect(this.page.getByRole('menuitem').first()).toBeVisible({ timeout: 2000 });
+        }).toPass({ timeout: 10000 });
     }
 
     editMenuItem = () => this.page.getByRole('menuitem', { name: 'Edit' });
