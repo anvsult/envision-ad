@@ -45,7 +45,6 @@ export function BusinessDashboard() {
             // Map BusinessResponse to BusinessRequest format
             setFormState({
                 name: business!.name ?? "",
-                owner: business!.owner,
                 companySize:
                     (typeof business!.companySize === "string"
                         ? CompanySize[business!.companySize as keyof typeof CompanySize]

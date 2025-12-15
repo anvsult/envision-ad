@@ -16,9 +16,12 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
         CURRENT_TIMESTAMP);
 
-INSERT INTO business_employees (business_id, employee_id)
-VALUES (1, 'auth0|6934e8515479d2b6d3cf7575'),
-       (1, 'auth0|693746439e8a7ab9e8b910b2');
+INSERT INTO employee (employee_id, user_id, business_id)
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
+       ('202fc843-77a7-409e-8547-e013763ded4f', 'auth0|693746439e8a7ab9e8b910b2', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11');
+
+INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
+VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', CURRENT_TIMESTAMP, DATEADD('HOUR', 1, CURRENT_TIMESTAMP));
 
 INSERT INTO media (media_id, title, media_owner_name, address,
                    type_of_display, loop_duration, resolution, aspect_ratio,

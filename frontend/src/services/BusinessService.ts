@@ -1,5 +1,7 @@
 import { BusinessRequest, BusinessResponse } from "@/types/BusinessTypes";
 import {getAccessToken} from "@auth0/nextjs-auth0";
+import {EmployeeType} from "@/types/EmployeeType";
+import {InvitationRequest, InvitationResponse} from "@/types/InvitationType";
 
 const API_BASE_URL = "http://localhost:8080/api/v1/businesses";
 
@@ -98,6 +100,24 @@ export const getEmployeeBusiness = async (id: string): Promise<BusinessResponse>
     return res.json();
 }
 
+export const getAllBusinessEmployees = async (businessId: string): Promise<EmployeeType[]> => {
+    const token = await getAccessToken();
+    const res = await fetch(`${API_BASE_URL}/${businessId}/employees`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization : `Bearer ${token}`
+        },
+        cache: "no-store",
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to remove employee from business: ${res.statusText}`);
+    }
+
+    return res.json();
+}
+
 export const removeEmployeeFromBusiness = async (businessId : string, employeeId : string) : Promise<void> => {
     const token = await getAccessToken();
     const res = await fetch(`${API_BASE_URL}/${businessId}/employees/${encodeURI(employeeId)}`, {
@@ -113,14 +133,15 @@ export const removeEmployeeFromBusiness = async (businessId : string, employeeId
     }
 }
 
-export const inviteEmployeeToBusiness = async (id : string, email : string) : Promise<void> => {
+export const createInviteEmployeeToBusiness = async (businessId : string, invitation : InvitationRequest) : Promise<void> => {
     const token = await getAccessToken();
-    const res = await fetch(`${API_BASE_URL}/${id}/invite?email=${encodeURIComponent(email)}`, {
+    const res = await fetch(`${API_BASE_URL}/${businessId}/invites`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization : `Bearer ${token}`
         },
+        body: JSON.stringify(invitation)
     });
 
     if (!res.ok) {
@@ -128,4 +149,52 @@ export const inviteEmployeeToBusiness = async (id : string, email : string) : Pr
     }
 
     return res.json();
+}
+
+export const cancelInviteEmployeeToBusiness = async (businessId : string, invitationId : string) : Promise<void> => {
+    const token = await getAccessToken();
+    const res = await fetch(`${API_BASE_URL}/${businessId}/invites/${invitationId}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization : `Bearer ${token}`
+        }
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to invite to business: ${res.statusText}`);
+    }
+}
+
+export const getAllBusinessInvitations = async (businessId : string) : Promise<InvitationResponse[]> => {
+    const token = await getAccessToken();
+    const res = await fetch(`${API_BASE_URL}/${businessId}/invites`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization : `Bearer ${token}`
+        },
+        cache: "no-store",
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to get business invitations: ${res.statusText}`);
+    }
+
+    return res.json();
+}
+
+export const addEmployeeToBusiness = async (businessId : string, token: string) : Promise<void> => {
+    const authToken = await getAccessToken();
+    const res = await fetch(`${API_BASE_URL}/${businessId}/employees?token=${token}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization : `Bearer ${authToken}`
+        },
+    });
+
+    if (!res.ok) {
+        throw new Error(`Failed to join business: ${res.statusText}`);
+    }
 }

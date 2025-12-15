@@ -5,6 +5,7 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
+import com.envisionad.webservice.utils.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -36,6 +38,9 @@ class MediaControllerIntegrationTest {
     @MockitoBean
     private JwtDecoder jwtDecoder;
 
+    @MockitoBean
+    private EmailService emailService;
+
     @Autowired
     private MediaRepository mediaRepository;
 
@@ -45,6 +50,14 @@ class MediaControllerIntegrationTest {
                 .header("alg", "none")
                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
                 .claim("scope", "read write")
+                .claim("permissions", List.of(
+                        "create:employee",
+                        "create:media",
+                        "delete:employee",
+                        "read:employee",
+                        "update:business",
+                        "update:media"
+                ))
                 .build();
 
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);

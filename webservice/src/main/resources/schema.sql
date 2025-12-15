@@ -2,7 +2,8 @@ CREATE
 EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS business_employees CASCADE;
+DROP TABLE IF EXISTS invitation CASCADE;
+DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address;
@@ -38,13 +39,27 @@ CREATE TABLE business
             ON DELETE CASCADE
 );
 
-CREATE TABLE business_employees
+CREATE TABLE employee
 (
-    business_id INTEGER            NOT NULL,
+    id          SERIAL PRIMARY KEY,
     employee_id VARCHAR(36) UNIQUE NOT NULL,
+    user_id     VARCHAR(36) UNIQUE NOT NULL,
+    business_id VARCHAR(36)  NOT NULL,
 
-    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (id) ON DELETE CASCADE,
-    PRIMARY KEY (business_id, employee_id)
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
+);
+
+CREATE TABLE invitation
+(
+    id            SERIAL PRIMARY KEY,
+    invitation_id VARCHAR(36)  UNIQUE NOT NULL,
+    business_id   VARCHAR(36)  NOT NULL,
+    email         VARCHAR(255) NOT NULL,
+    token         VARCHAR(100) NOT NULL,
+    time_created  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    time_expires   TIMESTAMP,
+
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
 
 -- 4. Create Media Table (Your new table)

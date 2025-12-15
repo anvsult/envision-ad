@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 @Embeddable
 @AllArgsConstructor
-public class BusinessIdentifier {
-    private String businessId;
+public class EmployeeIdentifier {
+    private String employeeId;
 
-    public BusinessIdentifier() {
-        this.businessId = java.util.UUID.randomUUID().toString();
+    public EmployeeIdentifier() {
+        this.employeeId = java.util.UUID.randomUUID().toString();
     }
 }

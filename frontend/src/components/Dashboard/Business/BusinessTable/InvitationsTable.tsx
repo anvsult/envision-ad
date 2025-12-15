@@ -2,61 +2,80 @@ import React from "react";
 import {Accordion, ActionIcon, Group, ScrollArea, Table, Tooltip} from "@mantine/core";
 import {IconTrash} from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
-import type {UserType} from "@/types/UserType";
+import type {InvitationResponse} from "@/types/InvitationType";
 
-interface EmployeeTableProps {
-    employees: UserType[];
-    onDelete?: (employee: UserType) => void;
-    currentUserId: string;
-    ownerId: string;
+interface InvitationTableProps {
+    invitations: InvitationResponse[];
+    onDelete?: (employee: InvitationResponse) => void;
 }
 
-export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: EmployeeTableProps) {
+export function InvitationTable({invitations, onDelete,}: InvitationTableProps) {
     const t = useTranslations("business.employees");
 
+    const getTimeLeft = (expiryDate: string) => {
+        const now = new Date();
+        const expires = new Date(expiryDate);
+        const diffMs = expires.getTime() - now.getTime();
+
+        // If already expired
+        if (diffMs <= 0) {
+            return "Expired";
+        }
+
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 0) {
+            return `${diffDays}d`;
+        } else if (diffHours > 0) {
+            return `${diffHours}h`;
+        } else {
+            return `${diffMinutes}m`;
+        }
+    };
+
     return (
-        <Accordion.Item value="active">
-            <Accordion.Control>{t("active")}</Accordion.Control>
+        <Accordion.Item value="invites">
+            <Accordion.Control>{t("invites")}</Accordion.Control>
 
             <Accordion.Panel>
                 <ScrollArea>
                     <Table striped highlightOnHover>
                         <Table.Thead>
                             <Table.Tr>
-                                <Table.Th style={{ width: "40%" }}>{t("name")}</Table.Th>
                                 <Table.Th style={{ width: "40%" }}>{t("email")}</Table.Th>
+                                <Table.Th style={{ width: "40%" }}>{t("expire")}</Table.Th>
                                 <Table.Th style={{ width: "20%", textAlign: "right"}}>{t("actions")}</Table.Th>
                             </Table.Tr>
                         </Table.Thead>
 
                         <Table.Tbody>
-                            {employees.map((emp) => (
-                                <Table.Tr key={emp.employee_id}>
-                                    <Table.Td>{emp.name}</Table.Td>
-                                    <Table.Td>{emp.email}</Table.Td>
+                            {invitations.map((inv) => (
+                                <Table.Tr key={inv.invitationId}>
+                                    <Table.Td>{inv.email}</Table.Td>
+                                    <Table.Td>{getTimeLeft(inv.timeExpires)}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                            {currentUserId !== emp.user_id && ownerId === currentUserId &&
                                                 <Tooltip label="Delete employee">
                                                     <ActionIcon
                                                         variant="light"
                                                         color="red"
                                                         size="md"
-                                                        onClick={() => onDelete?.(emp)}
+                                                        onClick={() => onDelete?.(inv)}
                                                     >
                                                         <IconTrash size={16}/>
                                                     </ActionIcon>
                                                 </Tooltip>
-                                            }
                                         </Group>
                                     </Table.Td>
                                 </Table.Tr>
                             ))}
 
-                            {employees.length === 0 && (
+                            {invitations.length === 0 && (
                                 <Table.Tr>
                                     <Table.Td colSpan={3} style={{textAlign: "center"}}>
-                                        {t("employeeNotFound")}
+                                        {t("invitationNotFound")}
                                     </Table.Td>
                                 </Table.Tr>
                             )}

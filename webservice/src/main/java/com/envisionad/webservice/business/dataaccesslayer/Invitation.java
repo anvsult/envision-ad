@@ -1,6 +1,8 @@
 package com.envisionad.webservice.business.dataaccesslayer;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -10,28 +12,25 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @NoArgsConstructor
-public class Business {
+public class Invitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Embedded
+    private InvitationIdentifier invitationId;
+
     private BusinessIdentifier businessId;
 
-    private String name;
+    @Email
+    @NotNull
+    private String email;
 
-    private String ownerId;
-
-    @Enumerated(EnumType.STRING)
-    private CompanySize companySize;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", referencedColumnName = "id")
-    private Address address;
-
-    @Embedded
-    private Roles roles;
+    private String token;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime dateCreated;
+    private LocalDateTime timeCreated;
+
+    private LocalDateTime timeExpires;
 }

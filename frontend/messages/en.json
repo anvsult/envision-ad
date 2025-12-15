@@ -220,15 +220,27 @@
       "pending": "Pending Invitations",
       "active": "Active Employees",
       "addButton": "Invite Employee",
+      "invites": "Pending invitations",
       "name": "Name",
       "email": "Email",
+      "expire": "Expires in",
       "actions": "Actions",
+      "invitationNotFound": "No pending invitations found",
+      "employeeNotFound": "No active employees found",
       "form": {
         "title": "Add Employee",
         "submit": "Invite Employee",
         "cancel": "Cancel",
         "email": "Email",
         "placeholder": "email@email.com"
+      },
+      "modal": {
+        "employeeTitle": "Remove Employee",
+        "invitationTitle": "Cancel Invitation",
+        "employeeMessage": "Are you sure you want to remove <bold>{name}</bold> from your business?",
+        "invitationMessage": "Are you sure you want to cancel the invitation for <bold>{email}</bold> to join your business?",
+        "confirm": "Confirm",
+        "cancel": "Cancel"
       }
     }
   },
