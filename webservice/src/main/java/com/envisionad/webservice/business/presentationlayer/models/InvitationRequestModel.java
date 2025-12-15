@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RoleRequestModel {
-    private boolean isMediaOwner;
-    private boolean isAdvertiser;
+public class InvitationRequestModel {
+    private String email;
 }

@@ -1,9 +1,9 @@
 package com.envisionad.webservice.business.utils;
 
+import com.envisionad.webservice.business.dataaccesslayer.Address;
+import com.envisionad.webservice.business.dataaccesslayer.Roles;
 import com.envisionad.webservice.business.exceptions.InvalidBusinessException;
-import com.envisionad.webservice.business.presentationlayer.models.AddressRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.RoleRequestModel;
 
 public class Validator {
     public static void validateBusiness(BusinessRequestModel requestModel) {
@@ -16,7 +16,7 @@ public class Validator {
     }
 
     private static boolean validateRoles(BusinessRequestModel requestModel) {
-        RoleRequestModel roles = requestModel.getRoles();
+        Roles roles = requestModel.getRoles();
         if (roles == null) {
             return false;
         }
@@ -29,7 +29,7 @@ public class Validator {
     }
 
     private static boolean validateAddress(BusinessRequestModel requestModel) {
-        AddressRequestModel address = requestModel.getAddress();
+        Address address = requestModel.getAddress();
         if (address == null) {
             return false;
         }

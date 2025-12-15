@@ -5,9 +5,7 @@ import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
-import com.envisionad.webservice.business.mappinglayer.BusinessModelMapper;
-import com.envisionad.webservice.business.presentationlayer.models.AddressRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.AddressResponseModel;
+import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +18,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -37,7 +34,7 @@ class BusinessControllerUnitTest {
     private BusinessService businessService;
 
     @MockitoBean
-    private BusinessModelMapper businessModelMapper;
+    private BusinessMapper businessMapper;
 
     @Autowired
     private BusinessController businessController;
@@ -65,31 +62,17 @@ class BusinessControllerUnitTest {
         business.setAddress(address);
         business.setDateCreated(LocalDateTime.now());
 
-        AddressResponseModel addressResponse = new AddressResponseModel();
-        addressResponse.setStreet(address.getStreet());
-        addressResponse.setCity(address.getCity());
-        addressResponse.setState(address.getState());
-        addressResponse.setZipCode(address.getZipCode());
-        addressResponse.setCountry(address.getCountry());
-
         responseModel = new BusinessResponseModel();
         responseModel.setBusinessId(businessId);
         responseModel.setName("Test Business");
         responseModel.setCompanySize(CompanySize.SMALL);
-        responseModel.setAddress(addressResponse);
+        responseModel.setAddress(address);
         responseModel.setDateCreated(business.getDateCreated());
-
-        AddressRequestModel  addressRequest = new AddressRequestModel();
-        addressRequest.setStreet("123 Street");
-        addressRequest.setCity("City");
-        addressRequest.setState("State");
-        addressRequest.setZipCode("12345");
-        addressRequest.setCountry("Country");
 
         requestModel = new BusinessRequestModel();
         requestModel.setName("Test Business");
         requestModel.setCompanySize(CompanySize.SMALL);
-        requestModel.setAddress(addressRequest);
+        requestModel.setAddress(address);
     }
 
     @Test

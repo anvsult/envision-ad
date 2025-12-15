@@ -1,14 +1,13 @@
 package com.envisionad.webservice.business.dataaccesslayer;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Address {
+public class Address { //prob should not be its own table
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

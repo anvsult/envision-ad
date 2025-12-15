@@ -1,6 +1,7 @@
 "use client";
 
 import {Button, Group, Modal, Text} from "@mantine/core";
+import {useTranslations} from "next-intl";
 
 interface ConfirmRemoveEmployeeModalProps {
     opened: boolean;
@@ -15,24 +16,29 @@ export function ConfirmRemoveEmployeeModal({
                                                onConfirm,
                                                onCancel
                                            }: ConfirmRemoveEmployeeModalProps) {
+    const t = useTranslations("business.employees.modal");
+
     return (
         <Modal
             opened={opened}
             onClose={onCancel}
-            title="Confirm Removal"
+            title={t("employeeTitle")}
             centered
         >
-            <Text size="sm">
-                Are you sure you want to remove <strong>{employeeName}</strong> from your business?
+            <Text size="sm" component="div">
+                {t.rich("employeeMessage", {
+                    name: employeeName,
+                    bold: (chunks) => <strong>{chunks}</strong>
+                })}
             </Text>
 
             <Group justify="flex-end" mt="lg">
                 <Button variant="default" onClick={onCancel}>
-                    Cancel
+                    {t("cancel")}
                 </Button>
 
                 <Button color="red" onClick={onConfirm}>
-                    Remove
+                    {t("confirm")}
                 </Button>
             </Group>
         </Modal>

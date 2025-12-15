@@ -1,7 +1,6 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
-import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.presentationlayer.models.*;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
@@ -15,9 +14,17 @@ public interface BusinessService {
 
     BusinessResponseModel updateBusinessById(Jwt jwt, String id, BusinessRequestModel business);
 
-    BusinessResponseModel addBusinessEmployeeById(String businessId, String employeeId);
+    List<InvitationResponseModel> getAllInvitationsByBusinessId(Jwt jwt, String businessId);
 
-    BusinessResponseModel removeBusinessEmployeeById(Jwt jwt, String id, String employeeId);
+    InvitationResponseModel createInvitation(Jwt jwt, String businessId, InvitationRequestModel invitation);
 
-    BusinessResponseModel getBusinessByEmployeeId(Jwt jwt, String employeeId);
+    void cancelInvitation(Jwt jwt, String businessId, String invitationId);
+
+    List<EmployeeResponseModel> getAllEmployeesByBusinessId(Jwt jwt, String businessId);
+
+    EmployeeResponseModel addBusinessEmployee(Jwt jwt, String businessId, String token);
+
+    void removeBusinessEmployeeById(Jwt jwt, String id, String employeeId);
+
+    BusinessResponseModel getBusinessByUserId(Jwt jwt, String employeeId);
 }

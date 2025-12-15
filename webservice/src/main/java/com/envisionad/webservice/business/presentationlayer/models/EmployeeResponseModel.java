@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class RoleResponseModel {
-    private boolean isMediaOwner;
-    private boolean isAdvertiser;
+public class EmployeeResponseModel {
+    private String employeeId;
+    private String userId;
 }
