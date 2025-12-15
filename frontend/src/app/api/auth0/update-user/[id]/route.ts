@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/lib/auth0/auth0";
 
-// Force rebuild
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -64,8 +63,15 @@ export async function PATCH(
         );
 
         if (!updateRes.ok) {
+            let errorMsg = updateRes.statusText || 'Failed to update user';
+            try {
+                const errorBody = await updateRes.json();
+                errorMsg = errorBody.message || errorBody.error_description || errorBody.error || errorMsg;
+            } catch (_) {
+                // ignore JSON parse errors
+            }
             return NextResponse.json(
-                { error: updateRes.statusText },
+                { error: errorMsg },
                 { status: updateRes.status }
             );
         }
