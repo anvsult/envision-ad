@@ -18,7 +18,6 @@ export default function BrowseActions({filters,  setSortBy}: BrowseActionsProps)
             <Group>
                 <Text>{t('sort.actionName')}</Text>
                 <Select
-                    placeholder={t('nearest')}
                     data={
                         [
                             { value: "nearest", label: t('sort.nearest') },

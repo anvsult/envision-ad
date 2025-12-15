@@ -62,7 +62,7 @@ export async function getAllFilteredActiveMedia(
     }
 
     if (sort){
-        if (sort in SpecialSort) {
+        if (Object.values(SpecialSort).includes(sort)) {
             params.append("specialSort", sort.toString());
         } else {
             params.append("sort", sort.toString());
