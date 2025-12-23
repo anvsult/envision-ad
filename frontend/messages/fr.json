@@ -163,8 +163,8 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filtres:",
         "price": "Prix ($)",
         "impressions": "Impressions minimum",
@@ -175,9 +175,9 @@
       "sort": {
         "actionName": "Trier:",
         "nearest": "Proximité",
-        "price" : "Prix",
-        "impressions" : "Impressions",
-        "loop" : "Durée de boucle",
+        "price": "Prix",
+        "impressions": "Impressions",
+        "loop": "Durée de boucle",
         "asc": " (Bas à Élevé)",
         "desc": " (Élevé à Bas)"
       }
@@ -400,6 +400,46 @@
       }
     }
   },
+  "profilePage": {
+    "title": "Profil",
+    "backToHome": "Retour à l'accueil",
+    "personalInfo": {
+      "title": "Informations personnelles",
+      "username": "Nom d'utilisateur",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel",
+      "bio": "Bio",
+      "emailVerified": "Vérifié"
+    },
+    "businessInfo": {
+      "title": "Informations sur l'entreprise",
+      "companyName": "Nom de l'entreprise",
+      "companySize": "Taille de l'entreprise",
+      "address": "Adresse",
+      "role": "Rôle",
+      "noBusiness": "Aucune entreprise associée."
+    },
+    "editModal": {
+      "title": "Modifier le profil",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Entrez votre nom",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "bio": "Bio",
+      "bioPlaceholder": "Parlez-nous de vous...",
+      "required": "Ce champ est requis",
+      "error": "Échec de la mise à jour du profil",
+      "successTitle": "Succès!",
+      "successMessage": "Profil mis à jour avec succès",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
+    },
+    "editButton": "Modifier le profil",
+    "memberStatus": "Membre d'EnvisionAd"
+  },
   "AddAdModal": {
     "title": "Ajouter une nouvelle annonce",
     "labels": {
@@ -444,9 +484,9 @@
   },
   "adCampaigns": {
     "page": {
-        "title": "Mes campagnes",
-        "createButton": "Créer une campagne",
-        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+      "title": "Mes campagnes",
+      "createButton": "Créer une campagne",
+      "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
     },
     "createCampaignModal": {
       "title": "Créer une campagne",
@@ -511,7 +551,7 @@
       "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
       "pendingMedia": "Médias en attente d’approbation",
       "image": "Image",
-      "name":"Nom",
+      "name": "Nom",
       "status": "Statut",
       "price": "Prix",
       "mediaOwner": "Propriétaire de médias",
@@ -519,7 +559,4 @@
       "dailyImpressions": "Impressions quotidiennes"
     }
   }
-
 }
-
-

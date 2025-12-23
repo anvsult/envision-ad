@@ -4,30 +4,35 @@ import CampaignsPage from "../support/page-object/pages/advertiser/campaigns.pag
 import DashboardPage from '../support/page-object/pages/dashboard.page';
 import BrowsePage from '../support/page-object/pages/browse.page';
 import MediaDashboardPage from '../support/page-object/pages/mediaDashboard.page';
+import ProfilePage from '../support/page-object/pages/profile.page';
 
 type MyFixtures = {
     homePage: HomePage;
     dashboardPage: DashboardPage;
     browsePage: BrowsePage;
     mediaDashboardPage: MediaDashboardPage;
-    campaignsPage: CampaignsPage
+    campaignsPage: CampaignsPage;
+    profilePage: ProfilePage;
 };
 
 export const test = base.extend<MyFixtures>({
     homePage: async ({ page }, run) => {
         await run(new HomePage(page));
     },
-    campaignsPage: async ({page}, run) => {
-        await run (new CampaignsPage(page));
+    campaignsPage: async ({ page }, run) => {
+        await run(new CampaignsPage(page));
     },
-    dashboardPage: async ({page}, run) => {
-        await run (new DashboardPage(page));    
+    dashboardPage: async ({ page }, run) => {
+        await run(new DashboardPage(page));
     },
     mediaDashboardPage: async ({ page }, run) => {
         await run(new MediaDashboardPage(page));
     },
-    browsePage: async({page}, run) => {
-        await run (new BrowsePage(page));
+    browsePage: async ({ page }, run) => {
+        await run(new BrowsePage(page));
+    },
+    profilePage: async ({ page }, run) => {
+        await run(new ProfilePage(page));
     }
 });
 
