@@ -49,7 +49,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             nickname: user.nickname || user.name || "",
             bio: user.user_metadata?.bio || "",
         });
-    }, [user]);
+    }, [user, form]);
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);
