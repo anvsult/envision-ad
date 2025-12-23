@@ -1,4 +1,4 @@
-import { SpecialSort } from "@/services/MediaService";
+import { SpecialSort } from "@/features/media-management/api";
 import { Group, Select, Text } from "@mantine/core";
 import { useTranslations } from "next-intl";
 

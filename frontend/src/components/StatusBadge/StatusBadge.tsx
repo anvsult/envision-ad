@@ -1,4 +1,4 @@
-import { MediaAdStatuses,MediaAdStatusMap } from "@/types/MediaAdStatus";
+import { MediaAdStatuses,MediaAdStatusMap } from "@/entities/media/";
 import { Badge } from "@mantine/core";
 
 interface MediaStatusProps {

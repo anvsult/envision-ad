@@ -111,7 +111,7 @@ class BusinessControllerIntegrationTest {
         // Arrange
         BusinessRequestModel requestModel = new BusinessRequestModel();
         requestModel.setName("Integration Business");
-        requestModel.setCompanySize(CompanySize.MEDIUM);
+        requestModel.setOrganizationSize(OrganizationSize.MEDIUM);
 
         Address address = new Address();
         address.setStreet("Integration St");
@@ -138,7 +138,7 @@ class BusinessControllerIntegrationTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Integration Business")
-                .jsonPath("$.companySize").isEqualTo("MEDIUM")
+                .jsonPath("$.organizationSize").isEqualTo("MEDIUM")
                 .jsonPath("$.businessId").isNotEmpty()
                 .jsonPath("$.address.street").isEqualTo("Integration St")
                 .jsonPath("$.address.city").isEqualTo("Integration City");
@@ -160,7 +160,7 @@ class BusinessControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.businessId").isEqualTo(businessId)
                 .jsonPath("$.name").isEqualTo("Mom & Pop Bakery")
-                .jsonPath("$.companySize").isEqualTo("SMALL");
+                .jsonPath("$.organizationSize").isEqualTo("SMALL");
     }
 
     @Test
@@ -182,7 +182,7 @@ class BusinessControllerIntegrationTest {
         // Arrange
         BusinessRequestModel requestModel = new BusinessRequestModel();
         requestModel.setName("Integration Business");
-        requestModel.setCompanySize(CompanySize.LARGE);
+        requestModel.setOrganizationSize(OrganizationSize.LARGE);
 
         Address address = new Address();
         address.setStreet("Integration St");
@@ -222,7 +222,7 @@ class BusinessControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.businessId").isEqualTo(businessId)
                 .jsonPath("$.name").isEqualTo("Integration Business")
-                .jsonPath("$.companySize").isEqualTo("LARGE")
+                .jsonPath("$.organizationSize").isEqualTo("LARGE")
                 .jsonPath("$.address.street").isEqualTo("Integration St")
                 .jsonPath("$.address.city").isEqualTo("Integration City")
                 .jsonPath("$.address.state").isEqualTo("State");

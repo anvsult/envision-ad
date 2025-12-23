@@ -19,10 +19,10 @@ import {
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
 import { IconCheck, IconCalendar, IconCreditCard } from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
-import { MediaDTO } from "@/types/MediaTypes";
-import { getAllAdCampaigns } from "@/services/AdCampaignService";
-import { createReservation } from "@/services/ReservationService";
-import { AdCampaign } from "@/types/AdTypes";
+import { Media } from "@/entities/media";
+import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
+import { createReservation } from "@/features/reservation-management/api";
+import { AdCampaign } from "@/entities/ad-campaign";
 import dayjs from 'dayjs';
 import '@mantine/dates/styles.css';
 import { useTranslations } from "next-intl";
@@ -30,7 +30,7 @@ import { useTranslations } from "next-intl";
 interface ReserveMediaModalProps {
     opened: boolean;
     onClose: () => void;
-    media: MediaDTO;
+    media: Media;
 }
 
 export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalProps) {

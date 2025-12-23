@@ -1,0 +1,1 @@
+export { AdminMediaReviewPage as default } from "@/pages/dashboard/ui/admin"

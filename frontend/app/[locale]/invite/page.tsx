@@ -1,0 +1,1 @@
+export { OrganizationInvitationPage } from "@/pages/organization-invitation"

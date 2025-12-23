@@ -39,7 +39,7 @@ rectangle "Developer's Laptop \n[Deployment Node: Windows 11 and Linux Fedora 39
 
     node "Docker Container - Database \n[Deployment Node : Docker]" as db {
         node "MySQL Server \n[Deployment Node : MySQL Server/5.7.44]" as sql{
-            Container(mysql, "MySQL Database", "Container: MySQL Schema.","Stores all the data of the company related to media, advertising, moderation, reporting, and transaction", $sprite="mysql", $tags="My SQL Database")
+            Container(mysql, "MySQL Database", "Container: MySQL Schema.","Stores all the data of the organization related to media, advertising, moderation, reporting, and transaction", $sprite="mysql", $tags="My SQL Database")
         }
     }
 

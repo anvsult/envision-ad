@@ -1,0 +1,1 @@
+export { BusinessEmployees as default } from "@/pages/dashboard/ui/organization"

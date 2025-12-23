@@ -1,7 +1,7 @@
 import { Paper, Text, Image, Space, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
-import { getJoinedAddress, MediaLocationDTO } from "@/types/MediaTypes";
+import { getJoinedAddress, MediaLocation } from "@/entities/media";
 // import StatusBadge from "../StatusBadge/StatusBadge";
 // import { MediaAdStatuses } from "@/types/MediaAdStatus";
 
@@ -10,7 +10,7 @@ export interface MediaCardProps {
     href?: string;
     title: string;
     mediaOwnerName: string;
-    mediaLocation: MediaLocationDTO;
+    mediaLocation: MediaLocation;
     resolution: string;
     aspectRatio: string;
     price: number ;

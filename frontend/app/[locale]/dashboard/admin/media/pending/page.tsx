@@ -1,0 +1,1 @@
+export { ApprovingMediaDashboard as default } from "@/pages/dashboard/ui/admin"

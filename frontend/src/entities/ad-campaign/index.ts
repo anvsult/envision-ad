@@ -1,0 +1,1 @@
+export type { AdCampaign, AdCampaignRequestDTO } from './model/adCampaign';

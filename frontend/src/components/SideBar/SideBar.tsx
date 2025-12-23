@@ -1,5 +1,5 @@
 import {NavLink, Stack, Accordion} from "@mantine/core";
-import {Link, usePathname} from "@/lib/i18n/navigation";
+import {Link, usePathname} from "@/shared/lib/i18n/navigation";
 import {
     IconAd,
     IconDeviceTv,
@@ -21,7 +21,7 @@ export default function SideBar() {
             multiple
             variant="separated"
 
-            defaultValue={["business", "media-owner", "advertiser", "admin"]}
+            defaultValue={["organization", "media-owner", "advertiser", "admin"]}
         >
             <Accordion.Item value="media-owner">
                 <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
@@ -62,24 +62,24 @@ export default function SideBar() {
                 </Accordion.Panel>
             </Accordion.Item>
 
-            <Accordion.Item value="business">
-                <Accordion.Control>{t("businessTitle")}</Accordion.Control>
+            <Accordion.Item value="organization">
+                <Accordion.Control>{t("organizationTitle")}</Accordion.Control>
                 <Accordion.Panel>
                     <Stack gap="xs">
                         <NavLink
                             component={Link}
-                            href="/dashboard/business/overview"
-                            label={t("business.overview")}
+                            href="/dashboard/organization/overview"
+                            label={t("organization.overview")}
                             leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/business/overview")}
+                            active={pathname?.endsWith("/organization/overview")}
                         />
 
                         <NavLink
                             component={Link}
-                            href="/dashboard/business/employees"
-                            label={t("business.employees")}
+                            href="/dashboard/organization/employees"
+                            label={t("organization.employees")}
                             leftSection={<IconUsers size={20} stroke={1.5} />}
-                            active={pathname?.endsWith("/business/employees")}
+                            active={pathname?.endsWith("/organization/employees")}
                         />
                     </Stack>
                 </Accordion.Panel>
@@ -99,9 +99,9 @@ export default function SideBar() {
                         {/*<NavLink*/}
                         {/*    component={Link}* /}
                         {/*    href="/dashboard/advertiser/overview"*/}
-                        {/*    label={t("business.overview")}*/}
+                        {/*    label={t("organization.overview")}*/}
                         {/*    leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}*/}
-                        {/*    active={pathname?.endsWith("/business/overview")}*/}
+                        {/*    active={pathname?.endsWith("/organization/overview")}*/}
                         {/*/>*/}
 
                         <NavLink
@@ -120,10 +120,10 @@ export default function SideBar() {
                         <Stack gap="xs">
                             <NavLink
                                 component={Link}
-                                href="/dashboard/admin/medias/pending"
+                                href="/dashboard/admin/media/pending"
                                 label={t("admin.pendingMedia")}
                                 leftSection={<IconShieldCheck size={20} stroke={1.5} />}
-                                active={pathname?.includes("/dashboard/admin/medias/pending")}
+                                active={pathname?.includes("/dashboard/admin/media/pending")}
                             />
                         </Stack>
                     </Accordion.Panel>

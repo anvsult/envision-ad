@@ -1,0 +1,1 @@
+export type { Ad, AdRequestDTO } from './model/ad';

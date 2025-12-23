@@ -1,0 +1,1 @@
+export { AdCampaigns as default } from "@/pages/dashboard/ui/advertiser"

@@ -1,0 +1,1 @@
+export { MediaDetailsPage as default } from "@/pages/media-detail"

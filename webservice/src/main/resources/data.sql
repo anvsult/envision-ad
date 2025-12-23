@@ -6,7 +6,7 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
+INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
         true, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
