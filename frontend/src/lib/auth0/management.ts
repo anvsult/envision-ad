@@ -1,4 +1,13 @@
+/**
+ * Service for interacting with the Auth0 Management API.
+ * Uses Client Credentials Grant to obtain an access token.
+ */
 export class Auth0ManagementService {
+    /**
+     * Retrieves an access token for the Auth0 Management API.
+     * @returns {Promise<string>} The access token.
+     * @throws {Error} If token retrieval fails.
+     */
     private static async getAccessToken() {
         try {
             const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
@@ -30,6 +39,11 @@ export class Auth0ManagementService {
         }
     }
 
+    /**
+     * Retrieves a user's details from Auth0.
+     * @param {string} userId - The unique identifier of the user (e.g., "auth0|123456").
+     * @returns {Promise<any | null>} The user object if found, or null if not found or an error occurs.
+     */
     static async getUser(userId: string) {
         try {
             const token = await this.getAccessToken();
@@ -55,6 +69,13 @@ export class Auth0ManagementService {
         }
     }
 
+    /**
+     * Updates a user's details in Auth0.
+     * @param {string} userId - The unique identifier of the user.
+     * @param {any} data - The partial user object containing fields to update.
+     * @returns {Promise<any>} The updated user object.
+     * @throws {Error} If the update fails.
+     */
     static async updateUser(userId: string, data: any) {
         const token = await this.getAccessToken();
         const res = await fetch(

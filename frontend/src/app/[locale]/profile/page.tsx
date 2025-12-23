@@ -14,7 +14,6 @@ export default async function ProfilePage() {
         redirect("/api/auth/login");
     }
 
-
     const auth0User = await Auth0ManagementService.getUser(session.user.sub);
     const user = auth0User ? { ...auth0User, sub: auth0User.user_id } : session.user;
 

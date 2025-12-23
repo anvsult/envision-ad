@@ -512,6 +512,7 @@
     "backToHome": "Back to Home",
     "personalInfo": {
       "title": "Personal Information",
+      "username": "Username",
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
@@ -536,6 +537,9 @@
       "bio": "Bio",
       "bioPlaceholder": "Tell us about yourself...",
       "required": "This field is required",
+      "error": "Failed to update profile",
+      "successTitle": "Success!",
+      "successMessage": "Profile updated successfully",
       "cancel": "Cancel",
       "save": "Save"
     },

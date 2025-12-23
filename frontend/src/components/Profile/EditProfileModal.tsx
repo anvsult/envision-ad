@@ -2,19 +2,9 @@ import { Modal, TextInput, Button, Group, Stack, Textarea } from "@mantine/core"
 import { useForm } from "@mantine/form";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { updateUser } from "@/services/UserService";
+import { updateUser, User } from "@/services/UserService";
 import { useRouter } from "next/navigation";
-
-interface User {
-    sub: string;
-    given_name?: string;
-    family_name?: string;
-    nickname?: string;
-    name?: string;
-    user_metadata?: {
-        bio?: string;
-    };
-}
+import { notifications } from "@mantine/notifications";
 
 interface EditProfileModalProps {
     opened: boolean;
@@ -41,37 +31,59 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
         },
     });
 
-    // Reset form when user changes
+    // Track previous open state to detect when modal opens
+    const [prevOpened, setPrevOpened] = useState(false);
+
+    // Reset form when modal opens
     useEffect(() => {
-        form.setValues({
-            given_name: user.given_name || "",
-            family_name: user.family_name || "",
-            nickname: user.nickname || user.name || "",
-            bio: user.user_metadata?.bio || "",
-        });
-    }, [user, form]);
+        // Only run when opened changes from false to true
+        if (opened && !prevOpened) {
+            form.setValues({
+                given_name: user.given_name || "",
+                family_name: user.family_name || "",
+                nickname: user.nickname || user.name || "",
+                bio: user.user_metadata?.bio || "",
+            });
+        }
+        setPrevOpened(opened);
+    }, [opened, user, prevOpened, form]); // form is stable enough for this triggering logic, or we accept the risk as it's guarded by state
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);
         try {
+            // Trim values to avoid whitespace issues
+            const trimmedGivenName = values.given_name.trim();
+            const trimmedFamilyName = values.family_name.trim();
+            const trimmedNickname = values.nickname.trim();
+            const trimmedBio = values.bio.trim();
+
             // Also update the full name to keep it consistent
-            const name = `${values.given_name} ${values.family_name}`.trim();
+            const name = `${trimmedGivenName} ${trimmedFamilyName}`.trim();
             const updateData = {
-                given_name: values.given_name,
-                family_name: values.family_name,
-                nickname: values.nickname,
-                name: name || values.nickname,
+                given_name: trimmedGivenName,
+                family_name: trimmedFamilyName,
+                nickname: trimmedNickname,
+                name: name || trimmedNickname,
                 user_metadata: {
-                    bio: values.bio
+                    bio: trimmedBio
                 }
             };
 
-            await updateUser(user.sub, updateData);
+            await updateUser(user.sub || user.user_id, updateData);
+            notifications.show({
+                title: t("successTitle"),
+                message: t("successMessage"),
+                color: "green",
+            });
             router.refresh();
             onClose();
         } catch (error) {
             console.error("Failed to update profile", error);
-            alert("Failed to update profile");
+            notifications.show({
+                title: "Error",
+                message: t("error") || "Failed to update profile",
+                color: "red",
+            });
         } finally {
             setLoading(false);
         }

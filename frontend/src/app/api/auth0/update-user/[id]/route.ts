@@ -14,12 +14,36 @@ export async function PATCH(
     }
 
     // Verify the user is updating themselves (basic security check)
-    if (session.user.sub !== decodeURIComponent(id)) {
+    // Decode ID to handle any URL encoded characters (e.g. pipes in auth0|123)
+    const decodedId = decodeURIComponent(id);
+
+    // Validate ID format (basic protection against injection)
+    // Auth0 IDs typically look like "provider|id", avoiding special characters that could be malicious in other contexts
+    const idRegex = /^[a-zA-Z0-9-]+\|[a-zA-Z0-9-_\.]+$/;
+    if (!idRegex.test(decodedId)) {
+        return NextResponse.json({ error: 'Invalid User ID format' }, { status: 400 });
+    }
+
+    if (session.user.sub !== decodedId) {
         return NextResponse.json({ error: 'Forbidden: You can only update your own profile' }, { status: 403 });
     }
 
     try {
         const body = await request.json();
+
+        // Validate and sanitize the input
+        const allowedFields = ['given_name', 'family_name', 'nickname', 'name', 'user_metadata'];
+        const sanitizedBody: any = {};
+
+        for (const key of allowedFields) {
+            if (body[key] !== undefined) {
+                sanitizedBody[key] = body[key];
+            }
+        }
+
+        if (body.user_metadata) {
+            sanitizedBody.user_metadata = { bio: body.user_metadata.bio };
+        }
 
         // Get Management API Token
         const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
@@ -58,7 +82,7 @@ export async function PATCH(
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify(body),
+                body: JSON.stringify(sanitizedBody),
             }
         );
 

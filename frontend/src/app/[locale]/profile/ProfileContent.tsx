@@ -7,6 +7,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProfileModal } from "@/components/Profile/EditProfileModal";
 import React from "react";
+import { User } from "@/services/UserService";
 
 // Helper for safe string display
 const safeStr = (val: any, fallback = "-") => {
@@ -25,7 +26,7 @@ const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) =>
 );
 
 interface ProfileContentProps {
-    user: any;
+    user: User;
 }
 
 export default function ProfileContent({ user }: ProfileContentProps) {
@@ -65,7 +66,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                             />
                             <Box pb="xs">
                                 <Title order={2}>{safeStr(user.name)}</Title>
-                                <Text c="dimmed" size="sm"> EnvisionAd Member</Text>
+                                <Text c="dimmed" size="sm">EnvisionAd Member</Text>
                             </Box>
                         </Group>
                         <Button variant="light" leftSection={<IconPencil size={16} />} onClick={open}>
@@ -79,12 +80,12 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                             <Title order={4} mb="xs" size="h5" tt="uppercase" c="dimmed">{t("personalInfo.title")}</Title>
                             <Stack gap="xs">
                                 <InfoRow
-                                    label="USERNAME"
+                                    label={t("personalInfo.username")}
                                     value={safeStr(user.nickname || user.name)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
-                                    label="EMAIL"
+                                    label={t("personalInfo.email")}
                                     value={
                                         <Group gap="xs">
                                             {safeStr(user.email)}
@@ -105,7 +106,11 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.bio").toUpperCase()}
-                                    value={safeStr(user.user_metadata?.bio)}
+                                    value={
+                                        <div style={{ whiteSpace: "pre-wrap" }}>
+                                            {safeStr(user.user_metadata?.bio)}
+                                        </div>
+                                    }
                                 />
                             </Stack>
                         </Box>

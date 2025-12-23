@@ -12,6 +12,7 @@ export interface UpdateUserRequest {
 // Minimal User interface, extend as needed to match your backend response
 export interface User {
     user_id: string;
+    sub?: string;
     email: string;
     given_name?: string;
     family_name?: string;
