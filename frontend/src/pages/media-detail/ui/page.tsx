@@ -15,7 +15,6 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import Image from "next/image";
-import { Header } from "@/components/Header/Header";
 import { BackButton } from "@/components/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -84,7 +83,6 @@ export default function MediaDetailsPage() {
   if (loading) {
     return (
       <>
-        <Header />
         <Container size="lg" py="xl">
           <Center>
             <Loader />
@@ -97,7 +95,6 @@ export default function MediaDetailsPage() {
   if (error || !media) {
     return (
       <>
-        <Header />
         <Container size="lg" py="xl">
           <Stack align="center" gap="sm">
             <Text fw={600}>{t("errorTitle")}</Text>
@@ -140,7 +137,6 @@ export default function MediaDetailsPage() {
 
   return (
     <>
-      <Header />
       <Container size="lg" py="xl">
         <Group align="flex-start" justify="space-between" wrap="wrap">
           {/* Left Column */}
