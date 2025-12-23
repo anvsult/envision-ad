@@ -4,7 +4,7 @@ import { Button, Modal, ScrollArea } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { MediaDetailsForm } from "./MediaDetailsForm";
 import { ScheduleSelector } from "./ScheduleSelector";
-import type { MediaFormState } from "@/pages/dashboard/ui/media-owner/hooks/useMediaForm";
+import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { useTranslations } from "next-intl";
 
 // Why do we need this?

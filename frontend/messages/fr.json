@@ -6,7 +6,7 @@
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
-    "business": "Organization",
+    "organization": "Organization",
     "browse": "Parcourir",
     "register": "S'inscrire",
     "signIn": "Se connecter",
@@ -27,8 +27,8 @@
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce"
     },
-    "businessTitle": "Organization",
-    "business": {
+    "organizationTitle": "Organization",
+    "organization": {
       "overview": "Aperçu",
       "employees": "Employés"
     },
@@ -190,7 +190,7 @@
       "noSupport": "La géolocalisation n'est pas prise en charge par votre navigateur."
     }
   },
-  "business": {
+  "organization": {
     "title": "Organization",
     "createButton": "Créer une organization",
     "roles": {
@@ -202,7 +202,7 @@
       "organizationSize": "Taille",
       "address": "Adresse",
       "dateCreated": "Date de création",
-      "roles": "rôles",
+      "roles": "Rôles",
       "actions": "Actions",
       "edit": "Modifier"
     },

@@ -1,7 +1,6 @@
 import { Container, Stack, Title, Text, Button, Box } from "@mantine/core";
 import Link from "next/link";
-import { Header } from "@/components/Header/Header";
-import { Partners } from "@/components/Partners/Partners";
+import { Partners } from "@/widgets/Partners/Partners";
 import classes from "@/app/page.module.css";
 import Image from "next/image";
 import { useTranslations } from "next-intl";

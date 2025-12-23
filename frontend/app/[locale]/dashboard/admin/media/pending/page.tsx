@@ -1,1 +1,1 @@
-export { ApprovingMediaDashboard as default } from "@/pages/dashboard/ui/admin"
+export { ApprovingMediaDashboard as default } from "@/pages/dashboard/admin"

@@ -1,1 +1,1 @@
-export { BusinessEmployees as default } from "@/pages/dashboard/ui/organization"
+export { BusinessEmployees as default } from "@/pages/dashboard/organization"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import SideBar from "@/components/SideBar/SideBar";
+import SideBar from "@/widgets/SideBar/SideBar";
 import {
   Box,
   Drawer,
@@ -16,9 +16,9 @@ import {
 } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { useTranslations } from "next-intl";
-import { ApproveMediaTable } from "@/pages/dashboard/ui/admin/ApproveMediaTable/ApproveMediaTable";
-import type { ApproveMediaRowData } from "@/pages/dashboard/ui/admin/ApproveMediaTable/ApproveMediaRow";
-import { useAdminPendingMedia } from "@/pages/dashboard/ui/admin/hooks/useAdminPendingMedia";
+import { ApproveMediaTable } from "@/pages/dashboard/admin/ApproveMediaTable/ApproveMediaTable";
+import type { ApproveMediaRowData } from "@/pages/dashboard/admin/ApproveMediaTable/ApproveMediaRow";
+import { useAdminPendingMedia } from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
 
 const ITEMS_PER_PAGE = 20;
 

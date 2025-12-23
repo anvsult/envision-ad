@@ -15,13 +15,13 @@ import {
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import Image from "next/image";
-import { BackButton } from "@/components/BackButton";
+import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
-import { ReserveMediaModal } from "@/components/Media/Modals/ReserveMediaModal";
+import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
 
 const monthDefs = [
   { id: "January", key: "january" },

@@ -3,14 +3,14 @@
 import React, {useEffect, useState} from "react";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {Box, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
-import {OrganizationDetail} from "@/pages/dashboard/ui/organization/ui/tables/OrganizationTable";
-import {OrganizationModal} from "@/pages/dashboard/ui/organization/ui/modals/OrganizationModal";
+import {OrganizationDetail} from "@/pages/dashboard/organization/ui/tables/OrganizationTable";
+import {OrganizationModal} from "@/pages/dashboard/organization/ui/modals/OrganizationModal";
 import {useTranslations} from "next-intl";
-import {useOrganizationForm} from "@/pages/dashboard/ui/organization/hooks/useOrganizationForm";
+import {useOrganizationForm} from "@/pages/dashboard/organization/hooks/useOrganizationForm";
 import {OrganizationResponseDTO, OrganizationSize} from "@/entities/organization";
 import {useUser} from "@auth0/nextjs-auth0";
 import {getEmployeeOrganization} from "@/features/organization-management/api";
-import SideBar from "@/components/SideBar/SideBar";
+import SideBar from "@/widgets/SideBar/SideBar";
 
 export default function OrganizationDashboard() {
     const [opened, {toggle, close}] = useDisclosure(false);

@@ -15,10 +15,15 @@ export default function OrganizationInvitationPage() {
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("");
 
-    const token = searchParams.get("token");
-    const organizationId = searchParams.get("organizationId");
+    const token = searchParams?.get("token");
+    const organizationId = searchParams?.get("organizationId");
 
     useEffect(() => {
+        // Wait for searchParams to be available
+        if (!searchParams) {
+            return;
+        }
+
         const acceptInvitation = async () => {
             try {
                 await addEmployeeToOrganization(organizationId!, token!)
@@ -45,7 +50,19 @@ export default function OrganizationInvitationPage() {
         if (user && token && organizationId) {
             acceptInvitation();
         }
-    }, [user, isLoading, token, organizationId, router]);
+    }, [user, isLoading, token, organizationId, router, searchParams]);
+
+    // Show loading while searchParams is being initialized
+    if (!searchParams) {
+        return (
+            <Center style={{ minHeight: "100vh" }}>
+                <Stack align="center">
+                    <Loader size="xl" />
+                    <Text>Loading...</Text>
+                </Stack>
+            </Center>
+        );
+    }
 
     if (!token || !organizationId) {
         return (

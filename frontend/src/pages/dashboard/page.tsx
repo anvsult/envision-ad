@@ -1,8 +1,7 @@
 'use client'
 
-import {Header} from "@/components/Header/Header";
 import {Box, Drawer, Group, Paper, } from "@mantine/core";
-import SideBar from "@/components/SideBar/SideBar";
+import SideBar from "@/widgets/SideBar/SideBar";
 import React from "react";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {withPageAuthRequired} from "@auth0/nextjs-auth0";
@@ -13,11 +12,6 @@ export default withPageAuthRequired(function DashboardPage() {
 
     return (
         <>
-            <Header
-                dashboardMode={true}
-                sidebarOpened={opened}
-                onToggleSidebar={toggle}
-            />
             <Box>
                 <Drawer
                     opened={opened}

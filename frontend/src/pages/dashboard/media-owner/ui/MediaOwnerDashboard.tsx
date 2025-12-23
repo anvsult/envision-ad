@@ -1,18 +1,17 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Header } from "@/components/Header/Header";
-import { MediaModal } from "@/pages/dashboard/ui/media-owner/ui/modals/MediaModal";
-import { MediaTable } from "@/pages/dashboard/ui/advertiser/ui/tables/MediaTable";
-import { useMediaList } from "@/pages/dashboard/ui/media-owner/hooks/useMediaList";
-import { useMediaForm } from "@/pages/dashboard/ui/media-owner/hooks/useMediaForm";
+import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
+import { MediaTable } from "@/pages/dashboard/advertiser/ui/tables/MediaTable";
+import { useMediaList } from "@/pages/dashboard/media-owner/hooks/useMediaList";
+import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { useTranslations } from "next-intl";
 import { Box, Button, Drawer, Group, Pagination, Paper, Stack, } from "@mantine/core";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { usePathname } from "@/shared/lib/i18n/navigation";
-import SideBar from "@/components/SideBar/SideBar";
+import SideBar from "@/widgets/SideBar/SideBar";
 import { WeeklyScheduleModel } from "@/entities/media";
 import { IconCheck } from "@tabler/icons-react";
 

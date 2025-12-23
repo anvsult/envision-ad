@@ -1,17 +1,16 @@
 'use client'
 
 import { ActionIcon, Container, Group, Loader, Pagination, Stack, Text, TextInput } from '@mantine/core';
-import { Header } from "@/components/Header/Header";
 import '@mantine/carousel/styles.css';
-import { MediaCardGrid } from '@/components/Grid/CardGrid';
-import BrowseActions from '@/components/BrowseActions/BrowseActions';
+import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
+import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useEffect, useState } from 'react';
 import {  getAllFilteredActiveMedia } from "@/features/media-management/api";
-import { MediaCardProps } from '@/components/Cards/MediaCard';
-import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/FilterPopover';
+import { MediaCardProps } from '@/widgets/Cards/MediaCard';
+import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-import { GetUserGeoLocation} from '@/components/Location';
+import { GetUserGeoLocation} from '@/widgets/Location';
 import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {

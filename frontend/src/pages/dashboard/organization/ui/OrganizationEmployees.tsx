@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {useDisclosure, useMediaQuery} from "@mantine/hooks";
 import {Accordion, Box, Button, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
-import {AddEmployeeModal} from "@/pages/dashboard/ui/organization/ui/modals/AddEmployeeModal";
+import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
 import {useUser} from "@auth0/nextjs-auth0";
 import {
     cancelInviteEmployeeToOrganization,
@@ -13,13 +13,13 @@ import {
     getEmployeeOrganization,
     removeEmployeeFromOrganization
 } from "@/features/organization-management/api";
-import {EmployeeTable} from "@/pages/dashboard/ui/organization/ui/tables/EmployeesTable";
-import SideBar from "@/components/SideBar/SideBar";
+import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
+import SideBar from "@/widgets/SideBar/SideBar";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
 import type {Employee} from "@/entities/organization";
 import {InvitationResponse} from "@/entities/organization";
-import {InvitationTable} from "@/pages/dashboard/ui/organization/ui/tables/InvitationsTable";
-import {ConfirmRemoveInviteModal} from "@/pages/dashboard/ui/organization/ui/modals/ConfirmRemoveInviteModal";
+import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
+import {ConfirmRemoveInviteModal} from "@/pages/dashboard/organization/ui/modals/ConfirmRemoveInviteModal";
 
 export default function OrganizationEmployees() {
     const [opened, {toggle, close}] = useDisclosure(false);

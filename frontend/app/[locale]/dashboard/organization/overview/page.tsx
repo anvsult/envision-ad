@@ -1,1 +1,1 @@
-export { BusinessDashboard as default } from "@/pages/dashboard/ui/organization"
+export { BusinessDashboard as default } from "@/pages/dashboard/organization"

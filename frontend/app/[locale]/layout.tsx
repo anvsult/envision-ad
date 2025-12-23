@@ -9,11 +9,11 @@ import {
 } from "@mantine/core";
 import { josefinSans, lato, theme } from "@/app/theme";
 import type { ReactNode } from "react";
-import Footer from "@/components/Footer/Footer";
+import Footer from "@/widgets/Footer/Footer";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Notifications } from "@mantine/notifications";
-import {Header} from "@/components/Header/Header";
+import {Header} from "@/widgets/Header/Header";
 
 export async function generateMetadata({
   params,

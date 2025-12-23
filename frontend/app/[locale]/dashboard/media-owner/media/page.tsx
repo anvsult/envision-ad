@@ -1,1 +1,1 @@
-export { MediaOwnerDashboard as default } from "@/pages/dashboard/ui/media-owner"
+export { MediaOwnerDashboard as default } from "@/pages/dashboard/media-owner"

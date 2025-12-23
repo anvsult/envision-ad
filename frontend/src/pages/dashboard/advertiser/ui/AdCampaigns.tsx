@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 import { Box, Button, Drawer, Group, Paper, Stack, Title } from "@mantine/core";
-import SideBar from "@/components/SideBar/SideBar";
+import SideBar from "@/widgets/SideBar/SideBar";
 import { notifications } from "@mantine/notifications";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useTranslations } from 'next-intl';
@@ -14,9 +14,9 @@ import { AdRequestDTO } from "@/entities/ad";
 import { AdCampaign } from "@/entities/ad-campaign";
 import { getAllAdCampaigns, addAdToCampaign, deleteAdFromCampaign, createAdCampaign } from "@/features/ad-campaign-management/api";
 import { AdCampaignRequestDTO } from "@/entities/ad-campaign";
-import { AdCampaignsTable } from "@/pages/dashboard/ui/advertiser/ui/tables/AdCampaignsTable";
-import { AddAdModal } from "@/pages/dashboard/ui/advertiser/ui/modals/AddAdModal";
-import { CreateCampaignModal } from "@/pages/dashboard/ui/advertiser/ui/modals/CreateCampaignModal";
+import { AdCampaignsTable } from "@/pages/dashboard/advertiser/ui/tables/AdCampaignsTable";
+import { AddAdModal } from "@/pages/dashboard/advertiser/ui/modals/AddAdModal";
+import { CreateCampaignModal } from "@/pages/dashboard/advertiser/ui/modals/CreateCampaignModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
 
 export default function AdCampaigns() {

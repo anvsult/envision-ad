@@ -16,3 +16,5 @@ src/shared/
 │   └── index.ts          # Public API for UI components
 └── types/                # Project-wide global types
 └── index.ts          # Generic interfaces (e.g., Pagination, API responses)
+
+We are using this project structure linter to check adherence with FSD: https://github.com/feature-sliced/steiger

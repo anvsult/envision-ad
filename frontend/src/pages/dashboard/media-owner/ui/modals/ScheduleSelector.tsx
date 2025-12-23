@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Checkbox, TextInput } from "@mantine/core";
-import type { MediaFormState } from "@/pages/dashboard/ui/media-owner/hooks/useMediaForm";
+import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 
 import { useTranslations } from "next-intl";
 
