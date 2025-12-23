@@ -3,6 +3,10 @@ export interface UpdateUserRequest {
     family_name?: string;
     nickname?: string;
     name?: string;
+    user_metadata?: {
+        bio?: string;
+        [key: string]: any;
+    };
 }
 
 // Minimal User interface, extend as needed to match your backend response
@@ -13,6 +17,10 @@ export interface User {
     family_name?: string;
     nickname?: string;
     name?: string;
+    user_metadata?: {
+        bio?: string;
+        [key: string]: any;
+    };
     [key: string]: any; // Allow extra fields if present
 }
 

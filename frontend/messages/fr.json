@@ -407,7 +407,8 @@
       "title": "Informations personnelles",
       "firstName": "Prénom",
       "lastName": "Nom",
-      "email": "Courriel"
+      "email": "Courriel",
+      "bio": "Bio"
     },
     "businessInfo": {
       "title": "Informations sur l'entreprise",
@@ -425,6 +426,8 @@
       "lastNamePlaceholder": "Entrez votre nom",
       "username": "Nom d'utilisateur",
       "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "bio": "Bio",
+      "bioPlaceholder": "Parlez-nous de vous...",
       "required": "Ce champ est requis",
       "cancel": "Annuler",
       "save": "Enregistrer"
@@ -475,9 +478,9 @@
   },
   "adCampaigns": {
     "page": {
-        "title": "Mes campagnes",
-        "createButton": "Créer une campagne",
-        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+      "title": "Mes campagnes",
+      "createButton": "Créer une campagne",
+      "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
     },
     "createCampaignModal": {
       "title": "Créer une campagne",
@@ -550,7 +553,4 @@
       "dailyImpressions": "Impressions quotidiennes"
     }
   }
-
 }
-
-

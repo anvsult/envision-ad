@@ -514,7 +514,8 @@
       "title": "Personal Information",
       "firstName": "First Name",
       "lastName": "Last Name",
-      "email": "Email"
+      "email": "Email",
+      "bio": "Bio"
     },
     "businessInfo": {
       "title": "Business Information",
@@ -532,6 +533,8 @@
       "lastNamePlaceholder": "Enter your last name",
       "username": "Username",
       "usernamePlaceholder": "Enter your username",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
       "required": "This field is required",
       "cancel": "Cancel",
       "save": "Save"

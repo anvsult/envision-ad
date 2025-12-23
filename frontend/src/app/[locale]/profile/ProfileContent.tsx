@@ -101,6 +101,11 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                     label={t("personalInfo.lastName").toUpperCase()}
                                     value={safeStr(user.family_name, "-")}
                                 />
+                                <Divider variant="dashed" />
+                                <InfoRow
+                                    label={t("personalInfo.bio").toUpperCase()}
+                                    value={safeStr(user.user_metadata?.bio, "-")}
+                                />
                             </Stack>
                         </Box>
                     </Paper>
