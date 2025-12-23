@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProfileModal } from "@/components/Profile/EditProfileModal";
+import { InfoRow } from "@/components/Shared/InfoRow";
 import React from "react";
 import { User } from "@/services/UserService";
 
@@ -15,15 +16,7 @@ const safeStr = (val: any, fallback = "-") => {
     return val || fallback;
 };
 
-// Reusable InfoRow component
-const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-    <Group justify="space-between" align="center" py="xs">
-        <Stack gap={2}>
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed">{label}</Text>
-            <Text size="sm" fw={500} component="div">{value}</Text>
-        </Stack>
-    </Group>
-);
+
 
 interface ProfileContentProps {
     user: User;
@@ -66,7 +59,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                             />
                             <Box pb="xs">
                                 <Title order={2}>{safeStr(user.name)}</Title>
-                                <Text c="dimmed" size="sm">EnvisionAd Member</Text>
+                                <Text c="dimmed" size="sm">{t("memberStatus")}</Text>
                             </Box>
                         </Group>
                         <Button variant="light" leftSection={<IconPencil size={16} />} onClick={open}>
@@ -89,7 +82,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                     value={
                                         <Group gap="xs">
                                             {safeStr(user.email)}
-                                            {user.email_verified && <Badge size="xs" color="green" variant="light">Verified</Badge>}
+                                            {user.email_verified && <Badge size="xs" color="green" variant="light">{t("personalInfo.emailVerified")}</Badge>}
                                         </Group>
                                     }
                                 />

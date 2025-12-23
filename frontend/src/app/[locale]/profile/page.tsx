@@ -14,8 +14,20 @@ export default async function ProfilePage() {
         redirect("/api/auth/login");
     }
 
-    const auth0User = await Auth0ManagementService.getUser(session.user.sub);
-    const user = auth0User ? { ...auth0User, sub: auth0User.user_id } : session.user;
+    let user: any = {
+        ...session.user,
+        user_id: session.user.sub,
+        user_metadata: (session.user as any).user_metadata || {}
+    };
+    try {
+        const auth0User = await Auth0ManagementService.getUser(session.user.sub);
+        if (auth0User) {
+            user = { ...auth0User, sub: auth0User.user_id };
+        }
+    } catch (e) {
+        // Fallback to session user if Auth0 API fails
+        console.error("Failed to fetch latest user data from Auth0, using session data.", e);
+    }
 
     const t = await getTranslations("profilePage");
 

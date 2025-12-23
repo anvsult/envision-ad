@@ -31,6 +31,7 @@ export const updateUser = async (id: string, data: UpdateUserRequest): Promise<U
         headers: {
             "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(data),
     });
 

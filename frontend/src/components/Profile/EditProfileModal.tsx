@@ -46,7 +46,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             });
         }
         setPrevOpened(opened);
-    }, [opened, user, prevOpened, form]); // form is stable enough for this triggering logic, or we accept the risk as it's guarded by state
+    }, [opened, user, prevOpened]);
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);

@@ -516,7 +516,8 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
-      "bio": "Bio"
+      "bio": "Bio",
+      "emailVerified": "Verified"
     },
     "businessInfo": {
       "title": "Business Information",
@@ -543,7 +544,8 @@
       "cancel": "Cancel",
       "save": "Save"
     },
-    "editButton": "Edit Profile"
+    "editButton": "Edit Profile",
+    "memberStatus": "EnvisionAd Member"
   },
   "admin": {
     "adminActions": {

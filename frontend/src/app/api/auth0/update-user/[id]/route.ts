@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/lib/auth0/auth0";
+import { Auth0ManagementService } from "@/lib/auth0/management";
 
 export async function PATCH(
     request: NextRequest,
@@ -18,8 +19,8 @@ export async function PATCH(
     const decodedId = decodeURIComponent(id);
 
     // Validate ID format (basic protection against injection)
-    // Auth0 IDs typically look like "provider|id", avoiding special characters that could be malicious in other contexts
-    const idRegex = /^[a-zA-Z0-9-]+\|[a-zA-Z0-9-_\.]+$/;
+    // Auth0 IDs typically look like "provider|id"; allow any non-whitespace characters while disallowing extra pipes in the provider part
+    const idRegex = /^[^\s]+\|[^\s]+$/;
     if (!idRegex.test(decodedId)) {
         return NextResponse.json({ error: 'Invalid User ID format' }, { status: 400 });
     }
@@ -31,79 +32,80 @@ export async function PATCH(
     try {
         const body = await request.json();
 
+        // Simple HTML-escaping sanitization to mitigate XSS when these values are rendered in HTML contexts.
+        const sanitizeString = (value: string): string =>
+            value
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;')
+                .replace(/\//g, '&#x2F;');
+
+        // Validate that a field is a non-empty string, enforce a max length, and sanitize it.
+        const validateAndSanitizeTextField = (value: unknown, maxLength: number): string | undefined => {
+            if (typeof value !== 'string') {
+                return undefined;
+            }
+            const trimmed = value.trim();
+            if (!trimmed) {
+                return undefined;
+            }
+            if (trimmed.length > maxLength) {
+                return undefined;
+            }
+            return sanitizeString(trimmed);
+        };
+
         // Validate and sanitize the input
         const allowedFields = ['given_name', 'family_name', 'nickname', 'name', 'user_metadata'];
         const sanitizedBody: any = {};
 
+        // Validations for specific fields
         for (const key of allowedFields) {
-            if (body[key] !== undefined) {
-                sanitizedBody[key] = body[key];
+            if (body[key] === undefined) {
+                continue;
+            }
+
+            if (key === 'given_name' || key === 'family_name' || key === 'nickname') {
+                const sanitized = validateAndSanitizeTextField(body[key], 100);
+                if (sanitized !== undefined) {
+                    sanitizedBody[key] = sanitized;
+                }
+                continue;
+            }
+
+            if (key === 'name') {
+                const sanitized = validateAndSanitizeTextField(body[key], 200);
+                if (sanitized !== undefined) {
+                    sanitizedBody[key] = sanitized;
+                }
+                continue;
+            }
+
+            if (key === 'user_metadata' && body.user_metadata && typeof body.user_metadata === 'object') {
+                const metadata: any = {};
+                // Note: Only the 'bio' field from user_metadata is supported and forwarded to Auth0.
+                if ('bio' in body.user_metadata) {
+                    const sanitizedBio = validateAndSanitizeTextField(
+                        (body.user_metadata as any).bio,
+                        1000
+                    );
+                    if (sanitizedBio !== undefined) {
+                        metadata.bio = sanitizedBio;
+                    }
+                }
+                if (Object.keys(metadata).length > 0) {
+                    sanitizedBody.user_metadata = metadata;
+                }
             }
         }
 
-        if (body.user_metadata) {
-            sanitizedBody.user_metadata = { bio: body.user_metadata.bio };
-        }
-
-        // Get Management API Token
-        const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                client_id: process.env.AUTH0_MGMT_CLIENT_ID,
-                client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
-                grant_type: 'client_credentials',
-            }),
-        });
-
-        if (!tokenRes.ok) {
-            let errorMsg = 'Failed to obtain Auth0 Management API token';
-            try {
-                const errorBody = await tokenRes.json();
-                errorMsg = errorBody.error_description || errorBody.error || errorMsg;
-            } catch (_) {
-                // ignore JSON parse errors
-            }
-            return NextResponse.json({ error: errorMsg }, { status: tokenRes.status });
-        }
-
-        const tokenJson = await tokenRes.json();
-        const { access_token } = tokenJson;
-        if (!access_token) {
-            return NextResponse.json({ error: 'No access token returned from Auth0' }, { status: 500 });
-        }
-        // Update User in Auth0
-        const updateRes = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${id}`,
-            {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${access_token}`,
-                },
-                body: JSON.stringify(sanitizedBody),
-            }
-        );
-
-        if (!updateRes.ok) {
-            let errorMsg = updateRes.statusText || 'Failed to update user';
-            try {
-                const errorBody = await updateRes.json();
-                errorMsg = errorBody.message || errorBody.error_description || errorBody.error || errorMsg;
-            } catch (_) {
-                // ignore JSON parse errors
-            }
-            return NextResponse.json(
-                { error: errorMsg },
-                { status: updateRes.status }
-            );
-        }
-
-        const updatedUser = await updateRes.json();
+        // Update User in Auth0 via Management Service (handles token caching)
+        const updatedUser = await Auth0ManagementService.updateUser(decodedId, sanitizedBody);
         return NextResponse.json(updatedUser);
-    } catch (err) {
+    } catch (err: any) {
         console.error("Error updating user:", err);
-        return NextResponse.json({ error: 'Server error' }, { status: 500 });
+        return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
     }
 }

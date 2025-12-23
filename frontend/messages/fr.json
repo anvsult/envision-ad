@@ -409,7 +409,8 @@
       "firstName": "Prénom",
       "lastName": "Nom",
       "email": "Courriel",
-      "bio": "Bio"
+      "bio": "Bio",
+      "emailVerified": "Vérifié"
     },
     "businessInfo": {
       "title": "Informations sur l'entreprise",
@@ -436,7 +437,8 @@
       "cancel": "Annuler",
       "save": "Enregistrer"
     },
-    "editButton": "Modifier le profil"
+    "editButton": "Modifier le profil",
+    "memberStatus": "Membre d'EnvisionAd"
   },
   "AddAdModal": {
     "title": "Ajouter une nouvelle annonce",
