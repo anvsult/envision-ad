@@ -16,7 +16,7 @@ export default function ProfileContent({ user }: ProfileContentProps) {
     const [opened, { open, close }] = useDisclosure(false);
 
     // Helper function to ensure strings
-    const toSafeString = (val: any, fallback = "") => {
+    const safeStr = (val: any, fallback = "") => {
         if (typeof val === "string") return val;
         if (val === null || val === undefined) return fallback;
         const str = String(val);
