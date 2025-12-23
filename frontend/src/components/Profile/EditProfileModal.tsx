@@ -90,7 +90,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title={t("title")}>
+        <Modal opened={opened} onClose={onClose} title={t("title")} size="xl">
             <form onSubmit={form.onSubmit(handleSubmit)}>
                 <Stack gap="md">
                     <TextInput
