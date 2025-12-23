@@ -1,11 +1,28 @@
 "use client";
 
-import { Card, Text, Group, Avatar, Stack, Badge, ThemeIcon, Title, Box, Divider, Paper, ActionIcon, Button } from "@mantine/core";
-import { IconUser, IconBuildingStore, IconMail, IconMapPin, IconBriefcase, IconPencil, IconPhone, IconArrowLeft } from "@tabler/icons-react";
+import { Text, Group, Avatar, Stack, Badge, Title, Box, Divider, Paper, Button } from "@mantine/core";
+import { IconPencil, IconArrowLeft } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/lib/i18n/navigation";
 import { useDisclosure } from "@mantine/hooks";
 import { EditProfileModal } from "@/components/Profile/EditProfileModal";
+import React from "react";
+
+// Helper for safe string display
+const safeStr = (val: any, fallback = "-") => {
+    if (typeof val === "string" && val.trim() !== "") return val;
+    return val || fallback;
+};
+
+// Reusable InfoRow component
+const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
+    <Group justify="space-between" align="center" py="xs">
+        <Stack gap={2}>
+            <Text size="xs" fw={700} tt="uppercase" c="dimmed">{label}</Text>
+            <Text size="sm" fw={500} component="div">{value}</Text>
+        </Stack>
+    </Group>
+);
 
 interface ProfileContentProps {
     user: any;
@@ -14,23 +31,6 @@ interface ProfileContentProps {
 export default function ProfileContent({ user }: ProfileContentProps) {
     const t = useTranslations("profilePage");
     const [opened, { open, close }] = useDisclosure(false);
-
-    // Helper function to ensure strings
-    const safeStr = (val: any, fallback = "") => {
-        if (typeof val === "string") return val;
-        if (val === null || val === undefined) return fallback;
-        const str = String(val);
-        return str || fallback;
-    };
-
-    const InfoRow = ({ label, value }: { label: string; value: React.ReactNode }) => (
-        <Group justify="space-between" align="center" py="xs">
-            <Stack gap={2}>
-                <Text size="xs" fw={700} tt="uppercase" c="dimmed">{label}</Text>
-                <Text size="sm" fw={500} component="div">{value}</Text>
-            </Stack>
-        </Group>
-    );
 
     return (
         <Stack gap="lg">
@@ -45,10 +45,12 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                     {t("backToHome")}
                 </Button>
             </Group>
+
             <Title order={1}>{t("title")}</Title>
+
             <Paper radius="md" withBorder shadow="sm" pos="relative" style={{ overflow: "hidden" }}>
                 {/* Banner Section */}
-                <Box h={140} bg="var(--mantine-color-blue-filled)" style={{ width: '100%' }} />
+                <Box h={140} bg="var(--mantine-color-blue-filled)" w="100%" />
 
                 <Stack px="xl" pb="xl">
                     {/* Header with Avatar and Main Info - Overlapping Banner */}
@@ -73,7 +75,6 @@ export default function ProfileContent({ user }: ProfileContentProps) {
 
                     {/* Main Content Sections */}
                     <Paper withBorder p="md" radius="md" bg="var(--mantine-color-gray-0)">
-                        {/* Personal Information Section */}
                         <Box>
                             <Title order={4} mb="xs" size="h5" tt="uppercase" c="dimmed">{t("personalInfo.title")}</Title>
                             <Stack gap="xs">
@@ -94,17 +95,17 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.firstName").toUpperCase()}
-                                    value={safeStr(user.given_name, "-")}
+                                    value={safeStr(user.given_name)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.lastName").toUpperCase()}
-                                    value={safeStr(user.family_name, "-")}
+                                    value={safeStr(user.family_name)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.bio").toUpperCase()}
-                                    value={safeStr(user.user_metadata?.bio, "-")}
+                                    value={safeStr(user.user_metadata?.bio)}
                                 />
                             </Stack>
                         </Box>
