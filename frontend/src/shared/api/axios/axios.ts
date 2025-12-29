@@ -1,15 +1,52 @@
-import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig} from 'axios';
-import { getAccessToken} from "@auth0/nextjs-auth0";
+// axios.ts
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// Extend AxiosRequestConfig to include custom properties if needed
 declare module 'axios' {
     export interface AxiosRequestConfig {
         handleLocally?: boolean;
     }
 }
 
-const createAxiosInstance = (): AxiosInstance => {
+// Token cache to minimize API calls
+let tokenCache: {
+    accessToken: string | null;
+    expiresAt: number;
+} = {
+    accessToken: null,
+    expiresAt: 0,
+};
 
+async function getAccessToken(): Promise<string | null> {
+    const now = Date.now();
+
+    // Return cached token if still valid
+    if (tokenCache.accessToken && tokenCache.expiresAt > now) {
+        return tokenCache.accessToken;
+    }
+
+    try {
+        // Fetch from your token API route
+        const response = await fetch('/api/auth0/token');
+
+        if (!response.ok) {
+            console.warn('Failed to fetch access token:', response.status);
+            return null;
+        }
+
+        const { accessToken } = await response.json();
+
+        // Cache token for 1 minute
+        tokenCache.accessToken = accessToken;
+        tokenCache.expiresAt = now + 60 * 1000;
+
+        return accessToken;
+    } catch (error) {
+        console.error('Error fetching access token:', error);
+        return null;
+    }
+}
+
+const createAxiosInstance = (): AxiosInstance => {
     const axiosInstance = axios.create({
         baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
         headers: {
@@ -18,33 +55,24 @@ const createAxiosInstance = (): AxiosInstance => {
     });
 
     // Request Interceptor
-    axiosInstance.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-            // // For client-side requests
-            // if (typeof window !== 'undefined') {
-            //     const accessToken = localStorage.getItem('access_token');
-            //     if (accessToken) {
-            //         config.headers.Authorization = `Bearer ${accessToken}`;
-            //     }
-            // }
-            // // For server-side requests
-            // else {
-                try {
-                    // Destructure accessToken from the result object
-                    const accessToken = await getAccessToken();
+    axiosInstance.interceptors.request.use(
+        async (config: InternalAxiosRequestConfig) => {
+            try {
+                const accessToken = await getAccessToken();
 
-                    if (accessToken) {
-                        config.headers.Authorization = `Bearer ${accessToken}`;
-                    }
-                } catch (error) {
-                    // This catch is important: getAccessToken throws if the user is not logged in.
-                    // We log it and let the request proceed; the 401 response interceptor will catch it.
-                    console.warn("Auth0: No active session found.");
+                if (accessToken) {
+                    config.headers.Authorization = `Bearer ${accessToken}`;
                 }
-            // }
-        return config;
-    }, (error) => {
-        return Promise.reject(error);
-    });
+            } catch (error) {
+                console.warn('Auth0: Could not get access token', error);
+            }
+
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
+    );
 
     // Response Interceptor (Global Error Handling)
     axiosInstance.interceptors.response.use(
@@ -53,27 +81,27 @@ const createAxiosInstance = (): AxiosInstance => {
             const statusCode = error.response?.status;
             const config = error.config;
 
-            // If 'handleLocally' is true, skip global logic and throw error to the component
+            // If 'handleLocally' is true, skip global logic
             if (config?.handleLocally) {
                 return Promise.reject(error);
             }
 
             // Global Handling Logic
             if (statusCode === 401) {
-                // Logic: Redirect to login or refresh token
+                // Clear token cache on 401
+                tokenCache = { accessToken: null, expiresAt: 0 };
+                // Redirect to login or handle unauthorized
+                console.error('Unauthorized - redirecting to login');
             } else if (statusCode && statusCode >= 500) {
-                // Logic: Trigger a global "Server Error" toast
-                console.error("Server Error:", error.message);
+                console.error('Server Error:', error.message);
             }
 
             return Promise.reject(error);
         }
     );
 
-
-
     return axiosInstance;
-}
+};
 
 const axiosInstance = createAxiosInstance();
 export default axiosInstance;

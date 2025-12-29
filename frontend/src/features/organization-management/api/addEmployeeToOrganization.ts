@@ -1,3 +1,13 @@
+// import {axiosInstance} from "@/shared/api";
+//
+// export const addEmployeeToOrganization = async (
+//     organizationId: string,
+//     token: string
+// ): Promise<void> => {
+//     const response = await axiosInstance.post(`/businesses/${organizationId}/employees?token=${token}`);
+//     return response.data;
+// }
+
 import { getAccessToken } from "@auth0/nextjs-auth0";
 
 const API_BASE_URL = "http://localhost:8080/api/v1/businesses";
