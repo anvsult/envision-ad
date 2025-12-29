@@ -122,7 +122,6 @@ export function Header({
             <Box
                 component="header"
                 style={{
-                    position: "sticky",
                     top: 0,
                     zIndex: 1000,
                     width: "100%",

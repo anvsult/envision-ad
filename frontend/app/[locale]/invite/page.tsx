@@ -1,1 +1,1 @@
-export { OrganizationInvitationPage } from "@/pages/organization-invitation"
+export { OrganizationInvitationPage as default } from "@/pages/organization-invitation"

@@ -57,6 +57,7 @@ export function OrganizationModal({
             onClose={onClose}
             title={editingId ? "Edit Business" : t("title")}
             size="lg"
+            centered
         >
             <Stack gap="md">
                 <OrganizationDetailsForm

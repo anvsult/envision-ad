@@ -31,12 +31,12 @@ export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: Emp
 
                         <Table.Tbody>
                             {employees.map((emp) => (
-                                <Table.Tr key={emp.employee_id}>
+                                <Table.Tr key={emp.employeeId}>
                                     <Table.Td>{emp.name}</Table.Td>
                                     <Table.Td>{emp.email}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                            {currentUserId !== emp.user_id && ownerId === currentUserId &&
+                                            {currentUserId !== emp.userId && ownerId === currentUserId &&
                                                 <Tooltip label="Delete employee">
                                                     <ActionIcon
                                                         variant="light"

@@ -59,6 +59,7 @@ export function AddEmployeeModal({
             opened={opened}
             onClose={onClose}
             title={t("title")}
+            centered
             size="lg"
         >
             <Stack gap="md">

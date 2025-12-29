@@ -1,6 +1,5 @@
 
-import { getJoinedAddress, MediaLocationDTO } from '@/shared/types/MediaTypes';
-import { LatLngLiteral } from 'leaflet'; 
+import { LatLngLiteral } from 'leaflet';
 
 interface LatLngSession {
   lat: number;

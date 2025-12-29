@@ -27,7 +27,7 @@ export function OrganizationDetail({organization, onEdit}: OrganizationDetailPro
                                 variant="light"
                                 color="blue"
                                 size="xs"
-                                onClick={() => onEdit(organization.organizationId)}
+                                onClick={() => onEdit(organization.businessId)}
                             >
                                 {t("table.edit")}
                             </Button>

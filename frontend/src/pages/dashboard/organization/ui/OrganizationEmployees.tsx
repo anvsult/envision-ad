@@ -182,9 +182,13 @@ export default function OrganizationEmployees() {
 
                             <ConfirmationModal
                                 opened={confirmEmployeeOpen}
-                                title="Confirm Removal"
-                                message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
-                                confirmLabel="Remove"
+                                title={t("modal.employeeTitle")}
+                                message={t.rich("modal.employeeMessage", {
+                                    name: employeeToRemove?.name || "",
+                                    bold: (chunks) => <strong>{chunks}</strong>
+                                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
+                                cancelLabel={t("modal.cancel")}
+                                confirmLabel={t("modal.confirm")}
                                 confirmColor="red"
                                 onCancel={() => setConfirmEmployeeOpen(false)}
                                 onConfirm={confirmEmployeeRemove}
