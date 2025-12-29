@@ -118,7 +118,7 @@ export default function OrganizationDashboard() {
                                         formState={formState}
                                         onFieldChange={updateField}
                                         resetForm={resetForm}
-                                        editingId={organization.organizationId}
+                                        editingId={organization.businessId}
                                     />
                                 </>
                             )}

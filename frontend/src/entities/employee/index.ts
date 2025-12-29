@@ -1,1 +1,0 @@
-export type { Employee } from './model/employee';

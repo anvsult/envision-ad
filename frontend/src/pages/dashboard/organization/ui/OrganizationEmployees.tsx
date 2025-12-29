@@ -64,10 +64,10 @@ export default function OrganizationEmployees() {
     const confirmEmployeeRemove = async () => {
         if (!employeeToRemove || !organizationId) return;
 
-        await removeEmployeeFromOrganization(organizationId, employeeToRemove.employee_id)
+        await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId)
 
         setEmployees((prev) =>
-            prev.filter((e) => e.employee_id !== employeeToRemove.employee_id)
+            prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
         );
 
         setConfirmEmployeeOpen(false);
@@ -93,18 +93,18 @@ export default function OrganizationEmployees() {
         const loadOrganization = async () => {
             const organization = await getEmployeeOrganization(user.sub);
             setOwner(organization.ownerId);
-            setOrganizationId(organization.organizationId);
+            setOrganizationId(organization.businessId);
 
-            setInvitations(await getAllOrganizationInvitations(organization.organizationId))
+            setInvitations(await getAllOrganizationInvitations(organization.businessId))
 
-            const ep = await getAllOrganizationEmployees(organization.organizationId)
+            const ep = await getAllOrganizationEmployees(organization.businessId)
             const employeeData: Employee[] = await Promise.all(
                 ep.map(async (employee) => {
-                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.employee_id)}`);
+                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.userId)}`);
                     const user = await res.json() as Promise<Employee>;
                     return {
                         ...user,
-                        employee_id: employee.employee_id,
+                        employee_id: employee.employeeId,
                     }
                 })
             );

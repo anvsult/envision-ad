@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'https://api.example.com';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 export async function deleteMedia(id: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/media/${id}`, {

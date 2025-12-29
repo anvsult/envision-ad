@@ -13,11 +13,11 @@ interface BusinessDetailsFormProps {
     ) => void;
 }
 
-export function BusinessDetailsForm({
+export function OrganizationDetailsForm({
                                         formState,
                                         onFieldChange,
                                     }: BusinessDetailsFormProps) {
-    const t = useTranslations("business");
+    const t = useTranslations("organization");
 
     const organizationSizeOptions = Object.values(OrganizationSize).map((size) => ({
         value: size,

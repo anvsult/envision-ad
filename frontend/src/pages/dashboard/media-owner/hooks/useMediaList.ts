@@ -6,7 +6,7 @@ import {
   updateMedia,
   deleteMedia,
 } from "@/features/media-management/api";
-import type { MediaRowData } from "@/pages/dashboard/advertiser/ui/tables/MediaRow";
+import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequestDTO } from "@/entities/media";
 

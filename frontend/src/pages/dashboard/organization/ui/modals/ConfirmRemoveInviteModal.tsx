@@ -16,7 +16,7 @@ export function ConfirmRemoveInviteModal({
                                                onConfirm,
                                                onCancel
                                            }: ConfirmRemoveInviteModalProps) {
-    const t = useTranslations("business.employees.modal");
+    const t = useTranslations("organization.employees.modal");
 
     return (
         <Modal

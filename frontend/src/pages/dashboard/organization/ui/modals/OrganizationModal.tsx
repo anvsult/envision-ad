@@ -3,11 +3,11 @@
 import React, {useState} from "react";
 import {Button, Group, Modal, Stack} from "@mantine/core";
 import {useTranslations} from "next-intl";
-import {BusinessDetailsForm} from "./BusinessDetailsForm";
+import {OrganizationDetailsForm} from "./OrganizationDetailsForm";
 import {OrganizationRequestDTO} from "@/entities/organization";
 import {createOrganization, updateOrganization} from "@/features/organization-management/api";
 
-interface BusinessModalProps {
+interface OrganizationModalProps {
     opened: boolean;
     onClose: () => void;
     onSuccess: () => void;
@@ -28,8 +28,8 @@ export function OrganizationModal({
                                   onFieldChange,
                                   resetForm,
                                   editingId,
-                              }: BusinessModalProps) {
-    const t = useTranslations("business.form");
+                              }: OrganizationModalProps) {
+    const t = useTranslations("organization.form");
     const [saving, setSaving] = useState(false);
 
     const handleSave = async () => {
@@ -44,7 +44,7 @@ export function OrganizationModal({
             onClose();
             resetForm();
         } catch (error) {
-            console.error("Failed to save business", error);
+            console.error("Failed to save organization", error);
             alert(t("saveError"));
         } finally {
             setSaving(false);
@@ -59,7 +59,7 @@ export function OrganizationModal({
             size="lg"
         >
             <Stack gap="md">
-                <BusinessDetailsForm
+                <OrganizationDetailsForm
                     formState={formState}
                     onFieldChange={onFieldChange}
                 />

@@ -1,2 +1,2 @@
 export { default as BusinessDashboard } from "./ui/OrganizationDashboard"
-export { default as BusinessEmployees } from "./ui/OrganizationEmployees"
+export { default as OrganizationEmployees } from "./ui/OrganizationEmployees"

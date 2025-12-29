@@ -1,7 +1,7 @@
 import React from "react";
 import { Accordion, ActionIcon, Button, Group, ScrollArea, Table, Text, Badge, Image, Box, Flex } from "@mantine/core";
 import { IconTrash, IconPlus, IconPhoto, IconMovie } from "@tabler/icons-react";
-import { AdCampaign } from "@/shared/types/AdTypes";
+import { AdCampaign } from "@/entities/ad-campaign";
 
 interface AdCampaignsTableProps {
     campaigns: AdCampaign[];

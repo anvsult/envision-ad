@@ -13,7 +13,7 @@ export interface OrganizationRequestDTO {
 }
 
 export interface OrganizationResponseDTO {
-    organizationId: string;
+    businessId: string;
     name: string;
     ownerId: string;
     organizationSize: OrganizationSize | string; // Handle potential string response from backend if enum serialization varies

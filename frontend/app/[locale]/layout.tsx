@@ -14,6 +14,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations } from "next-intl/server";
 import { Notifications } from "@mantine/notifications";
 import {Header} from "@/widgets/Header/Header";
+import { ModalsProvider } from "@mantine/modals";
 
 export async function generateMetadata({
   params,
@@ -53,12 +54,17 @@ export default async function RootLayout({
             content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
           />
         </head>
-        <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+        <body
+            // Setting the minHeight to 100vh ensures the footer stays at the bottom
+            style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
           <MantineProvider theme={theme}>
-            <Notifications />
-            <Header/>
-            {children}
-            <Footer />
+            {/*The ModalProvider is to show the modals overlay over the page*/}
+            <ModalsProvider>
+              <Notifications />
+              <Header/>
+              {children}
+              <Footer />
+            </ModalsProvider>
           </MantineProvider>
         </body>
       </html>

@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Modal, TextInput, Select, Button, Group, Box, Text, Stack, ThemeIcon, Alert, Badge } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { IconUpload, IconCheck, IconInfoCircle } from '@tabler/icons-react';
-import { CreateAdPayload } from "@/shared/types/AdTypes";
+import { AdRequestDTO } from "@/entities/ad";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary';
 import { useTranslations } from 'next-intl'
 
 interface AddAdModalProps {
     opened: boolean;
     onClose: () => void;
-    onSuccess: (payload: CreateAdPayload) => Promise<void>;
+    onSuccess: (payload: AdRequestDTO) => Promise<void>;
 }
 
 export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {

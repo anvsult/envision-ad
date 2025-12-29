@@ -91,18 +91,14 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
         >
           <Table.Thead>
             <Table.Tr>
-              <Table.Th w={80} miw={60}>
-                Image
-              </Table.Th>
+              <Table.Th w={80} miw={60}>Image</Table.Th>
               <Table.Th miw={120}>Name</Table.Th>
               <Table.Th miw={100}>Ads displayed</Table.Th>
               <Table.Th miw={90}>Ads pending</Table.Th>
               <Table.Th miw={140}>Status</Table.Th>
               <Table.Th miw={100}>Next update</Table.Th>
-              <Table.Th w={100} miw={90}>
-                Price
-              </Table.Th>
-              <Table.Th w={60} miw={50}></Table.Th> {/*Actions column*/}
+              <Table.Th w={100} miw={90}>Price</Table.Th>
+              <Table.Th w={60} miw={50}></Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>

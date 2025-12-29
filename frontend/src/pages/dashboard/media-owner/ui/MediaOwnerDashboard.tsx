@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
-import { MediaTable } from "@/pages/dashboard/advertiser/ui/tables/MediaTable";
+import { MediaTable } from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
 import { useMediaList } from "@/pages/dashboard/media-owner/hooks/useMediaList";
 import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { useTranslations } from "next-intl";
