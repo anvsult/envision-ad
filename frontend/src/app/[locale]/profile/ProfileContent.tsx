@@ -82,26 +82,26 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                     value={
                                         <Group gap="xs">
                                             {safeStr(user.email)}
-                                            {user.email_verified && <Badge size="xs" color="green" variant="light">{t("personalInfo.emailVerified")}</Badge>}
+                                            {user.emailVerified && <Badge size="xs" color="green" variant="light">{t("personalInfo.emailVerified")}</Badge>}
                                         </Group>
                                     }
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.firstName").toUpperCase()}
-                                    value={safeStr(user.given_name)}
+                                    value={safeStr(user.givenName)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.lastName").toUpperCase()}
-                                    value={safeStr(user.family_name)}
+                                    value={safeStr(user.familyName)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.bio").toUpperCase()}
                                     value={
                                         <div style={{ whiteSpace: "pre-wrap" }}>
-                                            {safeStr(user.user_metadata?.bio)}
+                                            {safeStr(user.userMetadata?.bio)}
                                         </div>
                                     }
                                 />

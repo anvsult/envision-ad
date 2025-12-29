@@ -19,15 +19,15 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
 
     const form = useForm({
         initialValues: {
-            given_name: user.given_name || "",
-            family_name: user.family_name || "",
+            givenName: user.givenName || "",
+            familyName: user.familyName || "",
             nickname: user.nickname || user.name || "",
-            bio: user.user_metadata?.bio || "",
+            bio: user.userMetadata?.bio || "",
         },
         validate: {
             nickname: (value) => (value.trim().length < 1 ? t("required") : null),
-            given_name: (value) => (value.trim().length < 1 ? t("required") : null),
-            family_name: (value) => (value.trim().length < 1 ? t("required") : null),
+            givenName: (value) => (value.trim().length < 1 ? t("required") : null),
+            familyName: (value) => (value.trim().length < 1 ? t("required") : null),
         },
     });
 
@@ -39,10 +39,10 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
         // Only run when opened changes from false to true
         if (opened && !prevOpened) {
             form.setValues({
-                given_name: user.given_name || "",
-                family_name: user.family_name || "",
+                givenName: user.givenName || "",
+                familyName: user.familyName || "",
                 nickname: user.nickname || user.name || "",
-                bio: user.user_metadata?.bio || "",
+                bio: user.userMetadata?.bio || "",
             });
         }
         setPrevOpened(opened);
@@ -52,24 +52,24 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
         setLoading(true);
         try {
             // Trim values to avoid whitespace issues
-            const trimmedGivenName = values.given_name.trim();
-            const trimmedFamilyName = values.family_name.trim();
+            const trimmedGivenName = values.givenName.trim();
+            const trimmedFamilyName = values.familyName.trim();
             const trimmedNickname = values.nickname.trim();
             const trimmedBio = values.bio.trim();
 
             // Also update the full name to keep it consistent
             const name = `${trimmedGivenName} ${trimmedFamilyName}`.trim();
             const updateData = {
-                given_name: trimmedGivenName,
-                family_name: trimmedFamilyName,
+                givenName: trimmedGivenName,
+                familyName: trimmedFamilyName,
                 nickname: trimmedNickname,
                 name: name || trimmedNickname,
-                user_metadata: {
+                userMetadata: {
                     bio: trimmedBio
                 }
             };
 
-            await updateUser(user.sub || user.user_id, updateData);
+            await updateUser(user.sub || user.userId, updateData);
             notifications.show({
                 title: t("successTitle"),
                 message: t("successMessage"),
@@ -101,12 +101,12 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
                     <TextInput
                         label={t("firstName")}
                         placeholder={t("firstNamePlaceholder")}
-                        {...form.getInputProps("given_name")}
+                        {...form.getInputProps("givenName")}
                     />
                     <TextInput
                         label={t("lastName")}
                         placeholder={t("lastNamePlaceholder")}
-                        {...form.getInputProps("family_name")}
+                        {...form.getInputProps("familyName")}
                     />
                     <Textarea
                         label={t("bio")}

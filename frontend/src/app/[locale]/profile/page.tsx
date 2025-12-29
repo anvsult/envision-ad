@@ -6,6 +6,7 @@ import { Header } from "@/components/Header/Header";
 import { redirect } from "next/navigation";
 import React from "react";
 import ProfileContent from "./ProfileContent";
+import { mapAuth0UserToUser } from "@/services/UserService";
 
 export default async function ProfilePage() {
     const session = await auth0.getSession();
@@ -29,13 +30,15 @@ export default async function ProfilePage() {
         console.error("Failed to fetch latest user data from Auth0, using session data.", e);
     }
 
+    const camelCaseUser = mapAuth0UserToUser(user);
+
     const t = await getTranslations("profilePage");
 
     return (
         <>
             <Header />
             <Container size="lg" py="xl">
-                <ProfileContent user={user} />
+                <ProfileContent user={camelCaseUser} />
             </Container>
         </>
     );
