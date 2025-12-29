@@ -66,6 +66,10 @@ public class ReservationServiceImpl implements ReservationService {
         Double totalPrice = (media.getPrice() != null ? media.getPrice().doubleValue() : 0.0) * weeks;
 
         Reservation reservation = reservationRequestMapper.requestModelToEntity(request);
+
+        // Ensure media_id is stored as a UUID (use the Media entity's UUID)
+        reservation.setMediaId(media.getId());
+
         reservation.setReservationId(java.util.UUID.randomUUID().toString());
         reservation.setTotalPrice(totalPrice);
         reservation.setStatus(ReservationStatus.PENDING);
@@ -73,5 +77,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         return reservationResponseMapper.entityToResponseModel(reservationRepository.save(reservation));
     }
+
 
 }

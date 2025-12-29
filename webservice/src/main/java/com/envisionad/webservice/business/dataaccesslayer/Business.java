@@ -22,7 +22,7 @@ public class Business {
     private String ownerId;
 
     @Enumerated(EnumType.STRING)
-    private CompanySize companySize;
+    private OrganizationSize organizationSize;
 
     // TODO - Remove Address Class from business subdomain, and convert it into just a String.
     //  Separate fields for country, province, city, etc. will still be entered separately in the front-end,

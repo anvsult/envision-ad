@@ -1,0 +1,1 @@
+export { default as MediaDetailsPage } from "./ui/page"

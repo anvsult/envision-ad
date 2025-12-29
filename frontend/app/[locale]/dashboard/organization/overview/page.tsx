@@ -1,0 +1,1 @@
+export { BusinessDashboard as default } from "@/pages/dashboard/organization"
