@@ -8,7 +8,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { EditProfileModal } from "@/components/Profile/EditProfileModal";
 import { InfoRow } from "@/components/Shared/InfoRow";
 import React from "react";
-import { User } from "@/services/UserService";
+import { UserType } from "@/types/UserType";
 
 // Helper for safe string display
 const safeStr = (val: any, fallback = "-") => {
@@ -19,7 +19,7 @@ const safeStr = (val: any, fallback = "-") => {
 
 
 interface ProfileContentProps {
-    user: User;
+    user: UserType;
 }
 
 export default function ProfileContent({ user }: ProfileContentProps) {
@@ -82,26 +82,26 @@ export default function ProfileContent({ user }: ProfileContentProps) {
                                     value={
                                         <Group gap="xs">
                                             {safeStr(user.email)}
-                                            {user.emailVerified && <Badge size="xs" color="green" variant="light">{t("personalInfo.emailVerified")}</Badge>}
+                                            {user.email_verified && <Badge size="xs" color="green" variant="light">{t("personalInfo.emailVerified")}</Badge>}
                                         </Group>
                                     }
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.firstName").toUpperCase()}
-                                    value={safeStr(user.givenName)}
+                                    value={safeStr(user.given_name)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.lastName").toUpperCase()}
-                                    value={safeStr(user.familyName)}
+                                    value={safeStr(user.family_name)}
                                 />
                                 <Divider variant="dashed" />
                                 <InfoRow
                                     label={t("personalInfo.bio").toUpperCase()}
                                     value={
                                         <div style={{ whiteSpace: "pre-wrap" }}>
-                                            {safeStr(user.userMetadata?.bio)}
+                                            {safeStr(user.user_metadata?.bio)}
                                         </div>
                                     }
                                 />

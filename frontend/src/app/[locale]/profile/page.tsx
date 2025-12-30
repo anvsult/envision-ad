@@ -1,36 +1,32 @@
 import { auth0 } from "@/lib/auth0/auth0";
 import { Auth0ManagementService } from "@/lib/auth0/management";
-import { getTranslations } from "next-intl/server";
-import { Container } from "@mantine/core";
-import { Header } from "@/components/Header/Header";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+import { Stack, Title, Text, Container } from "@mantine/core";
 import React from "react";
 import ProfileContent from "./ProfileContent";
-import { mapAuth0UserToUser } from "@/services/UserService";
+import { Header } from "@/components/Header/Header";
+import { UserType } from "@/types/UserType";
 
 export default async function ProfilePage() {
     const session = await auth0.getSession();
 
-    if (!session) {
+    if (!session || !session.user) {
         redirect("/api/auth/login");
     }
 
-    let user: any = {
-        ...session.user,
-        user_id: session.user.sub,
-        user_metadata: (session.user as any).user_metadata || {}
-    };
+    let user = session.user as UserType;
+
     try {
+        // Fetch fresh user data from Auth0 to reflect recent updates immediately
         const auth0User = await Auth0ManagementService.getUser(session.user.sub);
         if (auth0User) {
-            user = { ...auth0User, sub: auth0User.user_id };
+            user = auth0User as UserType;
         }
     } catch (e) {
         // Fallback to session user if Auth0 API fails
-        console.error("Failed to fetch latest user data from Auth0, using session data.", e);
+        console.error("Failed to fetch fresh user data from Auth0, using session data.", e);
     }
-
-    const camelCaseUser = mapAuth0UserToUser(user);
 
     const t = await getTranslations("profilePage");
 
@@ -38,7 +34,7 @@ export default async function ProfilePage() {
         <>
             <Header />
             <Container size="lg" py="xl">
-                <ProfileContent user={camelCaseUser} />
+                <ProfileContent user={user} />
             </Container>
         </>
     );

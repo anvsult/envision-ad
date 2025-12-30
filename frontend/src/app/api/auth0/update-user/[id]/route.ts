@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/lib/auth0/auth0";
 import { Auth0ManagementService } from "@/lib/auth0/management";
-import { mapAuth0UserToUser } from "@/services/UserService";
+
 
 export async function PATCH(
     request: NextRequest,
@@ -58,67 +58,50 @@ export async function PATCH(
             return sanitizeString(trimmed);
         };
 
-        // Validate and sanitize the input
-        // Map camelCase input to snake_case for Auth0
-        const inputMapping: Record<string, string> = {
-            givenName: 'given_name',
-            familyName: 'family_name',
-            nickname: 'nickname',
-            name: 'name',
-            userMetadata: 'user_metadata'
-        };
-
-        const allowedFields = Object.keys(inputMapping);
         const sanitizedBody: any = {};
 
-        // Validations for specific fields
-        for (const inputKey of allowedFields) {
-            if (body[inputKey] === undefined) {
-                continue;
+        // Validations for specific fields (snake_case)
+        if (body.given_name !== undefined) {
+            const sanitized = validateAndSanitizeTextField(body.given_name, 100);
+            if (sanitized !== undefined) sanitizedBody.given_name = sanitized;
+        }
+
+        if (body.family_name !== undefined) {
+            const sanitized = validateAndSanitizeTextField(body.family_name, 100);
+            if (sanitized !== undefined) sanitizedBody.family_name = sanitized;
+        }
+
+        if (body.nickname !== undefined) {
+            const sanitized = validateAndSanitizeTextField(body.nickname, 100);
+            if (sanitized !== undefined) sanitizedBody.nickname = sanitized;
+        }
+
+        if (body.name !== undefined) {
+            const sanitized = validateAndSanitizeTextField(body.name, 200);
+            if (sanitized !== undefined) sanitizedBody.name = sanitized;
+        }
+
+        if (body.user_metadata && typeof body.user_metadata === 'object') {
+            const metadata: any = {};
+            // Note: Only the 'bio' field from user_metadata is supported and forwarded to Auth0.
+            if ('bio' in body.user_metadata) {
+                const sanitizedBio = validateAndSanitizeTextField(
+                    (body.user_metadata as any).bio,
+                    1000
+                );
+                if (sanitizedBio !== undefined) {
+                    metadata.bio = sanitizedBio;
+                }
             }
-
-            const auth0Key = inputMapping[inputKey];
-
-            if (inputKey === 'givenName' || inputKey === 'familyName' || inputKey === 'nickname') {
-                const sanitized = validateAndSanitizeTextField(body[inputKey], 100);
-                if (sanitized !== undefined) {
-                    sanitizedBody[auth0Key] = sanitized;
-                }
-                continue;
-            }
-
-            if (inputKey === 'name') {
-                const sanitized = validateAndSanitizeTextField(body[inputKey], 200);
-                if (sanitized !== undefined) {
-                    sanitizedBody[auth0Key] = sanitized;
-                }
-                continue;
-            }
-
-            if (inputKey === 'userMetadata' && body.userMetadata && typeof body.userMetadata === 'object') {
-                const metadata: any = {};
-                // Note: Only the 'bio' field from user_metadata is supported and forwarded to Auth0.
-                if ('bio' in body.userMetadata) {
-                    const sanitizedBio = validateAndSanitizeTextField(
-                        (body.userMetadata as any).bio,
-                        1000
-                    );
-                    if (sanitizedBio !== undefined) {
-                        metadata.bio = sanitizedBio;
-                    }
-                }
-                if (Object.keys(metadata).length > 0) {
-                    sanitizedBody[auth0Key] = metadata;
-                }
+            if (Object.keys(metadata).length > 0) {
+                sanitizedBody.user_metadata = metadata;
             }
         }
 
         // Update User in Auth0 via Management Service (handles token caching)
         const updatedUserRaw = await Auth0ManagementService.updateUser(decodedId, sanitizedBody);
 
-        const updatedUser = mapAuth0UserToUser(updatedUserRaw);
-
-        return NextResponse.json(updatedUser);
+        return NextResponse.json(updatedUserRaw);
     } catch (err: any) {
         console.error("Error updating user:", err);
         return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
