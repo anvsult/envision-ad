@@ -39,37 +39,37 @@ export function Header({
     useDisclosure(false);
 
   const items = (
-      <>
+    <>
+      <Link
+        key={t("home")}
+        href={"/"}
+        className={classes.link}
+        data-active={pathname === "/" || undefined}
+        onClick={closeDrawer}
+      >
+        {t("home")}
+      </Link>
+      {user &&
         <Link
-            key={t("home")}
-            href={"/"}
-            className={classes.link}
-            data-active={pathname === "/" || undefined}
-            onClick={closeDrawer}
+          key={t("dashboard")}
+          href={"/dashboard"}
+          className={classes.link}
+          data-active={pathname.includes("/dashboard") || undefined}
+          onClick={closeDrawer}
         >
-          {t("home")}
+          {t("dashboard")}
         </Link>
-        { user &&
-            <Link
-                key={t("dashboard")}
-                href={"/dashboard"}
-                className={classes.link}
-                data-active={pathname.includes("/dashboard") || undefined}
-                onClick={closeDrawer}
-            >
-              {t("dashboard")}
-            </Link>
-        }
-        <Link
-            key={t("browse")}
-            href={"/browse"}
-            className={classes.link}
-            data-active={pathname === "/browse" || undefined}
-            onClick={closeDrawer}
-        >
-          {t("browse")}
-        </Link>
-      </>
+      }
+      <Link
+        key={t("browse")}
+        href={"/browse"}
+        className={classes.link}
+        data-active={pathname === "/browse" || undefined}
+        onClick={closeDrawer}
+      >
+        {t("browse")}
+      </Link>
+    </>
   )
 
   const authButtons = (
@@ -80,7 +80,7 @@ export function Header({
           {t("register")}
         </Button>
       </a>
-      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}  
+      {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
       <a href="/auth/login" className={classes.navLink}>
         <Button variant="filled" color="blue.8" radius="xl">
           {t("signIn")}
@@ -98,7 +98,7 @@ export function Header({
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item component="a" href="/profile">
+        <Menu.Item component={Link} href="/profile">
           {t("profile")}
         </Menu.Item>
         <Menu.Item component="a" href="/auth/logout" color="red">
@@ -166,20 +166,20 @@ export function Header({
           <ScrollArea h="calc(100vh - 80px)" mx="-md">
             <Divider my="sm" />
 
-              <Box hiddenFrom="sm">
-                {items}
-                  <Divider my="sm" />
-              </Box>
+            <Box hiddenFrom="sm">
+              {items}
+              <Divider my="sm" />
+            </Box>
 
-              <Group justify="center" pb="md" px="md">
-                  <LanguagePicker />
-              </Group>
+            <Group justify="center" pb="md" px="md">
+              <LanguagePicker />
+            </Group>
 
-              <Group justify="center" grow pb="xl" px="md">
-                  {user ? userMenu : authButtons}
-              </Group>
-            </ScrollArea>
-          </Drawer>
+            <Group justify="center" grow pb="xl" px="md">
+              {user ? userMenu : authButtons}
+            </Group>
+          </ScrollArea>
+        </Drawer>
       )}
     </Box>
   );
