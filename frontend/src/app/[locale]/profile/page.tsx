@@ -24,8 +24,6 @@ export default async function ProfilePage() {
             user = auth0User as UserType;
         }
     } catch (e) {
-        // Fallback to session user if Auth0 API fails
-        console.error("Failed to fetch fresh user data from Auth0, using session data.", e);
     }
 
     const t = await getTranslations("profilePage");
