@@ -280,11 +280,11 @@ class MediaControllerUnitTest {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Media> emptyPage = Page.empty();
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null, null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null, null))
                 .thenReturn(emptyPage);
 
         ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null, null, null, null, null);
+                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null, null);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         Page<?> body = (Page<?>) response.getBody();

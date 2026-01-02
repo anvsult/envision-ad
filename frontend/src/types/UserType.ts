@@ -1,5 +1,5 @@
 export interface UserType {
-    employee_id?: string;
+    employee_id: string;
     user_id: string; // This usually maps to 'sub' or 'user_id' from Auth0
     name: string;
     nickname: string;
