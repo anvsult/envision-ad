@@ -182,7 +182,7 @@ class MediaControllerUnitTest {
         Page<Media> mediaPage = new PageImpl<>(List.of(media));
         Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, null, null,null, null, null, null, null, null))
+        when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null))
                 .thenReturn(mediaPage);
         when(responseMapper.entityToResponseModel(media))
                 .thenReturn(responseModel);

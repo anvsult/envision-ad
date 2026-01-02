@@ -68,7 +68,6 @@ public class MediaSpecifications {
                     .toList();
 
             List<Predicate> tokenPredicates = new ArrayList<>();
-            Expression<Integer> rank = cb.literal(0);
 
             for (String token : tokens) {
                 String like = "%" + token + "%";
