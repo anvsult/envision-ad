@@ -1,5 +1,4 @@
 
-import { getJoinedAddress, MediaLocationDTO } from '@/types/MediaTypes';
 import { LatLngLiteral } from 'leaflet'; 
 
 interface LatLngSession {
@@ -28,6 +27,57 @@ function storeLatLngSession(latlng: LatLngLiteral) {
     };
     sessionStorage.setItem(userLocationKey, JSON.stringify(item));
 }
+
+export interface AddressDetails {
+  display_name: string,
+  address?: {
+    road?: string,
+    house_number?: string,
+    city?: string,
+    state?: string,
+    country?: string
+  }
+}
+
+// locationService.ts
+export async function SearchLocations(query: string) {
+  if (!query || query.length < 3) return [];
+
+  const res = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`,
+    {
+      headers: {
+        "User-Agent": "visual-impact"
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  return data.map((item: AddressDetails) => ({
+    display_name: item.display_name
+  }));
+}
+
+export async function GetAddressDetails(query: string) {
+  if (!query || query.length < 3) return [];
+
+  const res = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`,
+    {
+      headers: {
+        "User-Agent": "Visual Impact"
+      }
+    }
+  );
+
+  const data = await res.json();
+
+  return data.map((item: AddressDetails) => ({
+    address: item.address
+  }));
+}
+
 
 // Get the user's latitude and longitude
 export function GetUserGeoLocation(

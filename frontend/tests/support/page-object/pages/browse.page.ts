@@ -42,8 +42,12 @@ export default class BrowsePage {
     }
 
     //Locators 
-    searchTitleBar = () => this.page.getByRole('textbox', { name: 'Search title' })
+    searchTitleBar = () => this.page.getByRole('textbox', { name: 'Title' })
     searchTitleEnter = () => this.page.getByRole('button').nth(3)
+    searchAddressBar = () => this.page.getByRole('textbox', { name: 'Address' })
+    searchAddressEnter = () => this.page.getByRole('button').nth(4)
+
+
     mediaCard = (index: string) => this.page.locator('#MediaCard' + index)
     noLocation = () => this.page.getByText('Could not get nearest media.')
     noMediaFound = () => this.page.getByText('No media found')
@@ -82,6 +86,11 @@ export default class BrowsePage {
     public async searchTitle(title: string) {
         await this.searchTitleBar().fill(title);
         await this.searchTitleEnter().click();
+    }
+
+    public async searchAddress(address: string) {
+        await this.searchAddressBar().fill(address);
+        await this.searchAddressEnter().click();
     }
 
     // Assert

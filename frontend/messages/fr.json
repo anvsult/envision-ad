@@ -163,11 +163,13 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions": {
-      "filters": {
+    "searchTitle": "Titre",
+    "searchAddress": "Adresse",
+    "browseactions":{
+      "filters":{
         "actionName": "Filtres:",
         "price": "Prix ($)",
-        "impressions": "Impressions minimum",
+"impressions": "Impressions minimum",
         "from": "Minimum",
         "to": "Maximum",
         "showresults": "Ajouter le filtre"
