@@ -1,0 +1,23 @@
+import { redirect } from "next/navigation";
+import { Container } from "@mantine/core";
+import React from "react";
+import {getUser} from "@/features/auth";
+import ProfileContent from "@/pages/profile/ui/ProfileContent";
+
+export default async function ProfilePage() {
+    const user = await getUser();
+
+    if (!user) {
+        redirect("/auth/login");
+    }
+
+    return (
+        <>
+            <Container size="lg" py="xl">
+                {/* Pass the server-fetched user data down to the client component*/}
+                <ProfileContent user={user} />
+            </Container>
+        </>
+    );
+
+}

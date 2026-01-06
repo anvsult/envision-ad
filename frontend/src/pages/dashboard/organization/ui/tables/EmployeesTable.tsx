@@ -31,7 +31,7 @@ export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: Emp
 
                         <Table.Tbody>
                             {employees.map((emp) => (
-                                <Table.Tr key={emp.employeeId}>
+                                <Table.Tr key={emp.employee_id}>
                                     <Table.Td>{emp.name}</Table.Td>
                                     <Table.Td>{emp.email}</Table.Td>
                                     <Table.Td>

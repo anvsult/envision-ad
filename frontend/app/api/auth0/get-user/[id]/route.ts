@@ -1,45 +1,36 @@
 import {NextRequest, NextResponse} from 'next/server';
+import { auth0 } from "@/shared/api/auth0/auth0";
+import { Auth0ManagementService } from "@/shared/api/auth0/management"; // [cite: 151]
 
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
+    const session = await auth0.getSession();
+
+    // 1. Security Guard: Ensure the requester is logged in [cite: 65, 66]
+    if (!session || !session.user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // 2. Security Guard: Ensure users can only fetch their own data
+    const decodedId = decodeURIComponent(id);
+    if (session.user.sub !== decodedId) {
+        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     try {
-        const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify({
-                client_id: process.env.AUTH0_MGMT_CLIENT_ID,
-                client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
-                grant_type: 'client_credentials',
-            }),
-        });
+        // 3. Use the centralized service (handles token caching automatically) [cite: 159, 181]
+        const user = await Auth0ManagementService.getUser(decodedId);
 
-        const { access_token } = await tokenRes.json()
-
-        const userRes = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${id}`,
-            {
-                headers: {
-                    Authorization: `Bearer ${access_token}`,
-                },
-            }
-        );
-
-        if (!userRes.ok) {
-            return NextResponse.json(
-                { error: userRes.statusText },
-                { status: userRes.status }
-            );
+        if (!user) {
+            return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
-        const user = await userRes.json();
         return NextResponse.json(user);
-    } catch (err) {
-        console.error(err);
+    } catch (err: any) {
+        console.error("Error fetching user:", err);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }
 }

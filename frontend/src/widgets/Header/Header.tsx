@@ -48,7 +48,7 @@ export function Header({
     const filteredLinks = links.filter((link) => {
         if (link.authRequired && !user) return false;
         return true;
-    })
+    });
 
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
         useDisclosure(false);
