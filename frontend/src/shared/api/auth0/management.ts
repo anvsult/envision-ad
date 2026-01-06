@@ -85,7 +85,7 @@ export class Auth0ManagementService {
 
             return res.json();
         } catch (error) {
-            console.error("Error in Auth0ManagementService.getUser:", error);
+            console.error("Error in Auth0ManagementService.getUserClient:", error);
             return null;
         }
     }

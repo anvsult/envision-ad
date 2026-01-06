@@ -30,9 +30,7 @@ export default function HomePage() {
         <Container
           // This adjusts the size of the text on the hero page to be responsive
           size="lg"
-          ml={{ base: 20, sm: 20, md: 60, lg: 80 }}
-          py={{ base: 40, sm: 60, md: 80 }}
-          pr={{ base: 30, sm: 700, md: 600 }}
+          className={classes.heroContainer}
           style={{ position: "relative", zIndex: 1 }}
         >
           <Stack gap="xl">

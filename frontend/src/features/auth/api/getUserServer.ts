@@ -1,8 +1,8 @@
-import {auth0} from "@/shared/api";
+import {auth0} from "@/shared/api/auth0/auth0";
 import {Employee} from "@/entities/organization";
 import {Auth0ManagementService} from "@/shared/api/auth0/management";
 
-export async function getUser(): Promise<Employee | null> {
+export async function getUserServer(): Promise<Employee | null> {
     const session = await auth0.getSession();
 
     if (!session || !session.user) {

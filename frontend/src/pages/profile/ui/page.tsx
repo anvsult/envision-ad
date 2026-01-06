@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { Container } from "@mantine/core";
 import React from "react";
-import {getUser} from "@/features/auth";
+import { getUserServer } from "@/features/auth/server";
 import ProfileContent from "@/pages/profile/ui/ProfileContent";
 
 export default async function ProfilePage() {
-    const user = await getUser();
+    const user = await getUserServer();
 
     if (!user) {
         redirect("/auth/login");

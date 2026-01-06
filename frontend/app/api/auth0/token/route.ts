@@ -11,10 +11,8 @@ export async function GET() {
             );
         }
         return NextResponse.json({ accessToken: token });
-    } catch (e: any) {
-        return NextResponse.json(
-            { error: e?.message || "Unauthorized" },
-            { status: 401 },
-        );
+    } catch (error) {
+        console.error('Error getting access token:', error);
+        return NextResponse.json({ accessToken: null }, { status: 500 });
     }
 }
