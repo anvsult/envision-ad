@@ -1,18 +1,8 @@
 import { Media } from "@/entities/media";
-
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+import axiosInstance from "@/shared/api/axios/axios";
 
 export async function getMediaById(id: string): Promise<Media> {
-    const response = await fetch(`${API_BASE_URL}/media/${id}`, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
+    const response = await axiosInstance(`/media/${id}`);
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch media: ${response.statusText}`);
-    }
-
-    return response.json();
+    return response.data;
 }

@@ -1,7 +1,7 @@
 import { MediaListResponseDTO } from "@/entities/media";
 import { LatLngLiteral } from "leaflet";
+import axiosInstance from "@/shared/api/axios/axios";
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 export enum SpecialSort {
     nearest = "nearest",
@@ -65,15 +65,8 @@ export async function getAllFilteredActiveMedia(
         params.append("size", size.toString());
     }
 
-    const url = `${API_BASE_URL}/media/active?${params.toString()}`;
 
-    const response = await fetch(url, {
-        method: "GET",
-    });
+    const response = await axiosInstance.get(`/media/active?${params.toString()}`);
 
-    if (!response.ok) {
-        throw new Error(`Failed to fetch media: ${response.statusText}`);
-    }
-
-    return response.json();
+    return response.data;
 }
