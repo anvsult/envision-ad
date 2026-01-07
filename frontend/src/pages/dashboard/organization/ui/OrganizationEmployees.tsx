@@ -26,7 +26,7 @@ export default function OrganizationEmployees() {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const [owner, setOwner] = useState<string | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
-    const [invitations, setInvitations] = useState<InvitationResponse[]>([])
+    const [invitations, setInvitations] = useState<InvitationResponse[]>([]);
     const [organizationId, setOrganizationId] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);

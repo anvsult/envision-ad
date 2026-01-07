@@ -26,7 +26,6 @@ export default function ProfileContent({ user }: ProfileContentProps) {
     const t = useTranslations("profilePage");
     const [opened, { open, close }] = useDisclosure(false);
 
-    console.log(user);
     if (!user) {
         redirect("/auth/login");
     }

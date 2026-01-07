@@ -1,58 +1,46 @@
 import { v2 as cloudinary } from 'cloudinary';
+import { NextResponse } from 'next/server';
+import { auth0 } from "@/shared/api/auth0/auth0";
+
+// Allowed keys for a standard upload to prevent signing unauthorized params
+const ALLOWED_CLOUDINARY_KEYS = ['timestamp', 'source', 'upload_preset', 'public_id', 'folder'];
 
 export async function POST(request: Request) {
-    const body = (await request.json()) as { paramsToSign: Record<string, string> };
-    const { paramsToSign } = body;
-
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-    if (!apiSecret || apiSecret.trim() === "") {
-        // You may choose to throw, or return a 500 error response
-        throw new Error("CLOUDINARY_API_SECRET environment variable is not set or is empty.");
+    // 1. Authorization Guard: Ensure the user is logged in
+    const session = await auth0.getSession();
+    if (!session || !session.user) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const signature = cloudinary.utils.api_sign_request(paramsToSign, apiSecret);
 
-    return Response.json({ signature });
+    try {
+        const body = await request.json();
+        const { paramsToSign } = body as { paramsToSign: Record<string, string> };
+
+        if (!paramsToSign || typeof paramsToSign !== 'object') {
+            return NextResponse.json({ error: 'Invalid paramsToSign' }, { status: 400 });
+        }
+
+        // 2. Input Validation: Filter out any keys not in our whitelist
+        const filteredParams: Record<string, string> = {};
+        for (const key of ALLOWED_CLOUDINARY_KEYS) {
+            if (paramsToSign[key] !== undefined) {
+                // Sanitize: Ensure the value is a string and not an object/array
+                filteredParams[key] = String(paramsToSign[key]);
+            }
+        }
+
+        const apiSecret = process.env.CLOUDINARY_API_SECRET;
+        if (!apiSecret) {
+            console.error("CLOUDINARY_API_SECRET is missing");
+            return NextResponse.json({ error: "Server configuration error" }, { status: 500 });
+        }
+
+        // 3. Signing: Only sign the validated/filtered parameters
+        const signature = cloudinary.utils.api_sign_request(filteredParams, apiSecret);
+
+        return NextResponse.json({ signature });
+    } catch (err) {
+        console.error("Signature error:", err);
+        return NextResponse.json({ error: 'Failed to generate signature' }, { status: 500 });
+    }
 }
-    // // Define allowed keys for Cloudinary signature
-    // const ALLOWED_KEYS = [
-    //     "timestamp",
-    //     "public_id",
-    //     "folder",
-    //     "tags",
-    //     "context",
-    //     "transformation",
-    //     "eager",
-    //     "callback",
-    //     // Add other allowed keys as needed
-    // ];
-    // // Validate paramsToSign is an object
-    // if (
-    //     typeof paramsToSign !== "object" ||
-    //     paramsToSign === null ||
-    //     Array.isArray(paramsToSign)
-    // ) {
-    //     return new Response(
-    //         JSON.stringify({ error: "Invalid paramsToSign: must be an object." }),
-    //         { status: 400, headers: { "Content-Type": "application/json" } }
-    //     );
-    // }
-    // // Filter and validate keys/values
-    // const filteredParams: Record<string, string> = {};
-    // for (const key of Object.keys(paramsToSign)) {
-    //     if (ALLOWED_KEYS.includes(key) && typeof paramsToSign[key] === "string") {
-    //         filteredParams[key] = paramsToSign[key];
-    //     }
-    // }
-    // if (Object.keys(filteredParams).length === 0) {
-    //     return new Response(
-    //         JSON.stringify({ error: "No valid params to sign." }),
-    //         { status: 400, headers: { "Content-Type": "application/json" } }
-    //     );
-    // }
-    // const signature = cloudinary.utils.api_sign_request(
-    //     filteredParams,
-    //     process.env.CLOUDINARY_API_SECRET as string
-    // );
-    //
-    // return Response.json({ signature });
-    // }
