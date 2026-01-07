@@ -1,12 +1,11 @@
 package com.envisionad.webservice.reservation.presentationlayer.models;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 public class ReservationRequestModel {
