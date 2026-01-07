@@ -34,6 +34,11 @@ dependencies {
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.5'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.mapstruct:mapstruct:1.6.3'
+    // Bean Validation API
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+
+    // Bean Validation Implementation (e.g., Hibernate Validator)
+    implementation 'org.hibernate.validator:hibernate-validator:6.0.10.Final'
     testImplementation 'org.springframework.security:spring-security-test'
     compileOnly 'org.projectlombok:lombok'
 

@@ -42,7 +42,7 @@
     "admin": {
       "pendingMedia": "Pending Media"
     }
-},
+  },
   "homepage": {
     "heroTitlePart1": "Affordable ads.",
     "heroTitlePart2": "Unforgettable impact.",
@@ -162,8 +162,8 @@
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filter:",
         "price": "Price ($)",
         "impressions": "Minimum impressions",
@@ -174,9 +174,9 @@
       "sort": {
         "actionName": "Sort by:",
         "nearest": "Nearest",
-        "price" : "Price",
-        "impressions" : "Impressions",
-        "loop" : "Loop duration",
+        "price": "Price",
+        "impressions": "Impressions",
+        "loop": "Loop duration",
         "asc": " (Low to High)",
         "desc": " (High to Low)"
       }
@@ -398,7 +398,6 @@
         "sunday": "Sunday"
       }
     }
-
   },
   "AddAdModal": {
     "title": "Add New Ad",
@@ -508,6 +507,46 @@
       }
     }
   },
+  "profilePage": {
+    "title": "Profile",
+    "backToHome": "Back to Home",
+    "personalInfo": {
+      "title": "Personal Information",
+      "username": "Username",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "bio": "Bio",
+      "emailVerified": "Verified"
+    },
+    "businessInfo": {
+      "title": "Business Information",
+      "companyName": "Company Name",
+      "companySize": "Company Size",
+      "address": "Address",
+      "role": "Role",
+      "noBusiness": "No business associated."
+    },
+    "editModal": {
+      "title": "Edit Profile",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell us about yourself...",
+      "required": "This field is required",
+      "error": "Failed to update profile",
+      "successTitle": "Success!",
+      "successMessage": "Profile updated successfully",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "editButton": "Edit Profile",
+    "memberStatus": "EnvisionAd Member"
+  },
   "admin": {
     "adminActions": {
       "noMediaPending": "No pending media to approve.",
@@ -523,7 +562,7 @@
       "reviewDone": "This media has already been reviewed ({status}). You can’t approve/deny it again.",
       "pendingMedia": "Pending Media Approval",
       "image": "Image",
-      "name":"Name",
+      "name": "Name",
       "status": "Status",
       "price": "Price",
       "mediaOwner": "Media Owner",
