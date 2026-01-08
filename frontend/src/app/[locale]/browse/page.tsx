@@ -63,6 +63,11 @@ function BrowsePage() {
           }
         } else {
           const address = await GetAddressDetails(addressSearch, searchLanguage);
+
+          if (!address){
+            throw new Error();
+          }
+
           if (!cancelled) {
             setUserLocation({ lat: address.lat, lng: address.lng });
             setLocationStatus('success');
@@ -99,7 +104,6 @@ function BrowsePage() {
       try {
         const data = await getAllFilteredActiveMedia(
           titleFilter,
-          null,
           minPrice,
           maxPrice,
           minImpressions,

@@ -99,7 +99,7 @@ export async function SearchLocations(query: string, language: string) {
  * @returns A promise that resolves to an {@link AddressDetails} object including display name,
  *          structured address fields, and latitude/longitude coordinates.
  */
-export async function GetAddressDetails(query: string, language: string): Promise<AddressDetails> {
+export async function GetAddressDetails(query: string, language: string): Promise<AddressDetails | null> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?` +
       `format=json&addressdetails=1&limit=1` +
@@ -114,7 +114,10 @@ export async function GetAddressDetails(query: string, language: string): Promis
 
   const data = await res.json();
 
-  console.log(data[0]);
+  if (data.size === 0){
+    return null;
+  }
+
   const addressDetails:AddressDetails = {
     display_name: data[0].display_name,
     address: data[0].address,
@@ -122,7 +125,6 @@ export async function GetAddressDetails(query: string, language: string): Promis
     lng: data[0].lon
   };
 
-  console.log(addressDetails);
   return addressDetails;
 }
 
