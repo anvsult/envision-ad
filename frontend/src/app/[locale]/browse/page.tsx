@@ -17,7 +17,7 @@ import { LatLngLiteral } from 'leaflet';
 function BrowsePage() {
   const t = useTranslations('browse');
   const sortNearest = t('browseactions.sort.nearest');
-  const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}}`
+  const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 

@@ -1,7 +1,6 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
-import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

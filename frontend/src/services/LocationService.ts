@@ -44,31 +44,61 @@ export interface AddressDetails {
 }
 
 
-//
+/**
+ * Searches for locations using the OpenStreetMap Nominatim API and returns a list
+ * of matching entries with their display names.
+ *
+ * If the search query is empty or shorter than three characters, no request is
+ * sent to the API and the function immediately resolves to an empty array.
+ *
+ * @param {string} query - The text to search for (e.g. address or place name).
+ * @param {string} language - The preferred language code for localized results.
+ * @returns {Promise<Array<{ display_name: string }>>} A promise that resolves to
+ * an array of simplified search results, each containing only a display_name.
+ */
 export async function SearchLocations(query: string, language: string) {
   if (!query || query.length < 3) return [];
 
-  const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?` +
-      `format=json&addressdetails=1&limit=5` +
-      `&q=${encodeURIComponent(query)}` +
-      `&accept-language=${encodeURIComponent(language)}`,
-    {
-      headers: {
-        "User-Agent": "Visual-Impact"
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?` +
+        `format=json&addressdetails=1&limit=5` +
+        `&q=${encodeURIComponent(query)}` +
+        `&accept-language=${encodeURIComponent(language)}`,
+      {
+        headers: {
+          "User-Agent": "Visual-Impact"
+        }
       }
+    );
+
+    if (!res.ok) {
+      console.error(
+        `SearchLocations request failed with status ${res.status} ${res.statusText}`
+      );
+      return [];
     }
-  );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  console.log(data);
-  return data.map((item: AddressDetails) => ({
-    display_name: item.display_name
-  }));
+    console.log(data);
+    return data.map((item: AddressDetails) => ({
+      display_name: item.display_name
+    }));
+  } catch (error) {
+    console.error("SearchLocations request error:", error);
+    return [];
+  }
 }
 
-// Returns an address object, including Lat and Lng
+/**
+ * Fetches detailed address information for a given search query from the Nominatim API.
+ *
+ * @param query - The free-text search query used to look up an address.
+ * @param language - The preferred language code (e.g. "en", "de") for the result.
+ * @returns A promise that resolves to an {@link AddressDetails} object including display name,
+ *          structured address fields, and latitude/longitude coordinates.
+ */
 export async function GetAddressDetails(query: string, language: string): Promise<AddressDetails> {
   const res = await fetch(
     `https://nominatim.openstreetmap.org/search?` +
@@ -97,6 +127,20 @@ export async function GetAddressDetails(query: string, language: string): Promis
 }
 
 // Get the user's latitude and longitude
+/**
+ * Retrieves the user's current geographic location, using session storage to cache
+ * a previously obtained position for a limited time to avoid repeated lookups.
+ *
+ * The promise resolves with a {@link LatLngLiteral} containing the current
+ * latitude and longitude.
+ *
+ * The promise rejects in the following cases:
+ * - When the Geolocation API is not supported by the browser, it rejects with
+ *   an object of the form: `{ code: 'UNSUPPORTED' }`.
+ * - When the Geolocation API is supported but `getCurrentPosition` fails
+ *   (for example, if the user denies permission or another geolocation error
+ *   occurs), it rejects with the error object provided by `getCurrentPosition`.
+ */
 export function GetUserGeoLocation(): Promise<LatLngLiteral> {
   return new Promise((resolve, reject) => {
     const storedLocation = sessionStorage.getItem("userLocation");
