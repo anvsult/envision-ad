@@ -81,7 +81,6 @@ export async function SearchLocations(query: string, language: string) {
 
     const data = await res.json();
 
-    console.log(data);
     return data.map((item: AddressDetails) => ({
       display_name: item.display_name
     }));
