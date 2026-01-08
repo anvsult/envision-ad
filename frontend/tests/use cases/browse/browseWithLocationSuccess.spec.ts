@@ -15,7 +15,7 @@ test('Browse Search Title LED', async ({ browsePage }) => {
 test('Browse Search Address Toronto Canada', async ({ browsePage }) => {
     await browsePage.goto();
     await browsePage.searchAddress('Toronto, Canada');
-    await browsePage.assertMediaCardElementToContainText('Title0', 'Downtown Digital Board');
+    await browsePage.assertMediaCardElementToContainText('Title0', 'Eaton Centre LED Wall');
 });
 
 test('Browse Filter Price Min 220 Max 250', async ({ browsePage }) => {

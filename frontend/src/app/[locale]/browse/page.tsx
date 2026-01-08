@@ -6,16 +6,18 @@ import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/components/Grid/CardGrid';
 import BrowseActions from '@/components/BrowseActions/BrowseActions';
 import { useEffect, useState } from 'react';
-import {  getAllFilteredActiveMedia } from "@/services/MediaService";
+import {  getAllFilteredActiveMedia, SpecialSort } from "@/services/MediaService";
 import { MediaCardProps } from '@/components/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/components/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
-import { AddressDetails, GetUserGeoLocation, SearchLocations} from '@/services/LocationService';
+import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/services/LocationService';
 import { LatLngLiteral } from 'leaflet';
 
 function BrowsePage() {
   const t = useTranslations('browse');
+  const sortNearest = t('browseactions.sort.nearest');
+  const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}}`
   // Lists
   const [media, setMedia] = useState<MediaCardProps[]>([]);
 
@@ -26,71 +28,144 @@ function BrowsePage() {
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
   const [titleFilter, setTitleFilter] = useState("");
-  const [draftLocationFilter, setDraftLocationFilter] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
-  const [locationOptions, setLocationOptions] = useState<AddressDetails[]>([]);
+  const [draftAddressSearch, setDraftAddressSearch] = useState("");
+  const [addressSearch, setAddressSearch] = useState("");
+  const [locationOptions, setLocationOptions] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [userLocation, setUserLocation] = useState<LatLngLiteral | null>(null);
-  const [message, setMessage] = useState<string>();
-  const [loading, setLoading] = useState<boolean>(true);
-  const [sortBy, setSortBy] = useState<string>("nearest");
+  const [sortBy, setSortBy] = useState<string>(SpecialSort.nearest);
+  
+  type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
+  const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
 
-  useEffect(() => GetUserGeoLocation(setUserLocation, setMessage), []);
+  type LocationStatus = 'idle' | 'loading' | 'success' | 'denied' | 'error';
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
 
+
+  
   useEffect(() => {
-    if (sortBy === "nearest" && !userLocation){
-      return
-    } 
-    
-    getAllFilteredActiveMedia(titleFilter, locationFilter, minPrice, maxPrice, minImpressions, sortBy, userLocation, activePage - 1, ITEMS_PER_PAGE)
-      .then((data) => {
-        const items = (data.content || []).filter((m) => m.id != null);
+    let cancelled = false;
 
-        const mapped = items.map((m, index) => ({
-          index: String(index),
-          href: String(m.id),
-          title: m.title,
-          mediaOwnerName: m.mediaOwnerName,
-          mediaLocation: m.mediaLocation,
-          resolution: m.resolution,
-          aspectRatio: m.aspectRatio,
-          price: m.price ?? 0,
-          dailyImpressions: m.dailyImpressions ?? 0,
-          typeOfDisplay: m.typeOfDisplay,
-          imageUrl: m.imageUrl
-        }));
-        
-        setMedia(mapped);
+    async function resolveLocation() {
+      setLocationStatus('loading');
+
+      try {
+        if (
+          sortBy === SpecialSort.nearest &&
+          (!addressSearch || addressSearch === sortNearest)
+        ) {
+          const coords = await GetUserGeoLocation();
+          if (!cancelled) {
+            setUserLocation(coords);
+            setLocationStatus('success');
+          }
+        } else {
+          const address = await GetAddressDetails(addressSearch, searchLanguage);
+          if (!cancelled) {
+            setUserLocation({ lat: address.lat, lng: address.lng });
+            setLocationStatus('success');
+          }
+        }
+      } catch (err: unknown) {
+        if (cancelled) return;
+
+        if (err instanceof GeolocationPositionError && err.code === 1) {
+          setLocationStatus('denied');
+        } else {
+          setLocationStatus('error');
+        }
+      }
+    }
+    resolveLocation();
+    return () => { cancelled = true };
+  }, [addressSearch, searchLanguage, sortBy, sortNearest]);
+
+
+
+  // Update Media List
+  useEffect(() => {
+    if (sortBy === SpecialSort.nearest && locationStatus === 'loading') {
+      return;
+    }
+
+
+    let cancelled = false;
+
+    async function loadMedia() {
+      setMediaStatus('loading');
+
+      try {
+        const data = await getAllFilteredActiveMedia(
+          titleFilter,
+          null,
+          minPrice,
+          maxPrice,
+          minImpressions,
+          sortBy,
+          userLocation,
+          activePage - 1,
+          ITEMS_PER_PAGE
+        );
+
+        if (cancelled) return;
+
+        const items = (data.content || [])
+          .filter((m) => m.id != null)
+          .map((m, index) => ({
+            index: String(index),
+            href: String(m.id),
+            title: m.title,
+            mediaOwnerName: m.mediaOwnerName,
+            mediaLocation: m.mediaLocation,
+            resolution: m.resolution,
+            aspectRatio: m.aspectRatio,
+            price: m.price ?? 0,
+            dailyImpressions: m.dailyImpressions ?? 0,
+            typeOfDisplay: m.typeOfDisplay,
+            imageUrl: m.imageUrl
+          }));
+
+        setMedia(items);
         setTotalPages(data.totalPages);
-        
-      })
-      .catch(() => {
-        setMessage('failedToLoad');
-        setLoading(false);
-      }).finally(() => {
-        setLoading(false);
-      });
-  }, [titleFilter, locationFilter,  minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage]);
+
+        setMediaStatus(items.length === 0 ? 'empty' : 'success');
+      } catch {
+        if (!cancelled) {
+          setMediaStatus('error');
+        }
+      }
+    }
+
+    loadMedia();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage, locationStatus]);
+
+  
+  
 
   useEffect(() => {
     const timeout = setTimeout(async () => {
-        if (!draftLocationFilter) {
+        if (!draftAddressSearch) {
           
           return;
         }
 
-        const results: AddressDetails[] = await SearchLocations(draftLocationFilter);
+        const results: AddressDetails[] = await SearchLocations(draftAddressSearch, searchLanguage);
 
-        const uniqueResults: AddressDetails[] = Array.from(
-          new Map(results.map((r) => [r.display_name, r])).values()
-        );
+        const uniqueResults: string[] = results.map((r) => r.display_name);
+        
+        const nearest: string = sortNearest;
+        const newResults = [...new Set([nearest].concat(uniqueResults))];
 
-        setLocationOptions(uniqueResults);
+        setLocationOptions(newResults);
       }, 300);
       return () => clearTimeout(timeout);
-  }, [draftLocationFilter]);
+  }, [draftAddressSearch, searchLanguage, sortNearest]);
 
 
   function filters(){
@@ -126,34 +201,44 @@ function BrowsePage() {
             />
             <Autocomplete
               placeholder={t('searchAddress')}
-              data={locationOptions.map((o) => o.display_name)}
-              value={draftLocationFilter}
-              onChange={ setDraftLocationFilter }
+              data={locationOptions.map((o) => o)}
+              value={draftAddressSearch}
+              onChange={ setDraftAddressSearch }
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
-                  setLocationFilter(draftLocationFilter);
+                  setAddressSearch(draftAddressSearch);
                 }
               }}
               rightSection={
-                <ActionIcon onClick={() => setLocationFilter(draftLocationFilter)}>
+                <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
                   <IconSearch size={16} />
                 </ActionIcon>
               }
             />
           </Group>
-          <BrowseActions filters={filters()} setSortBy={setSortBy}/>
-          
-            {/* if loading, show loader, if  */}
-          {(media.length > 0) ? (<MediaCardGrid medias={media} />):( 
-              <Stack h='20em' justify='center' align='center'>
-                {(loading) ? ( (sortBy === 'nearest' && message) ? <Text>{t(message)}</Text> :<Loader/>):
-                  <>
-                    <Text size='32px'>{t('nomedia.notfound')}</Text>
-                    <Text>{t('nomedia.changefilters')}</Text>
-                  </>
-                }
-              </Stack>
+          <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
+
+          {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
+            <Stack h="20em" justify="center" align="center">
+              <Loader />
+            </Stack>
+          ) : locationStatus === 'denied' ? (
+            <Stack h="20em" justify="center" align="center">
+              <Text>{t('nomedia.locationDenied')}</Text>
+            </Stack>
+          ) : mediaStatus === 'error' ? (
+            <Stack h="20em" justify="center" align="center">
+              <Text>{t('nomedia.failedToLoad')}</Text>
+            </Stack>
+          ) : mediaStatus === 'empty' ? (
+            <Stack h="20em" justify="center" align="center">
+              <Text size="32px">{t('nomedia.notfound')}</Text>
+              <Text>{t('nomedia.changefilters')}</Text>
+            </Stack>
+          ) : (
+            <MediaCardGrid medias={media} />
           )}
+
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination

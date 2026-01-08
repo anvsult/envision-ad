@@ -8,6 +8,7 @@ interface LatLngSession {
 }
 
 
+
 // Stores the user location in the session storage for a set amount of time. 
 // After that time is up, it will check the user's location again.
 // That way you don't need to check the user's exact position every time you open the website.
@@ -30,88 +31,107 @@ function storeLatLngSession(latlng: LatLngLiteral) {
 
 export interface AddressDetails {
   display_name: string,
+  lat: number,
+  lng: number,
   address?: {
     road?: string,
     house_number?: string,
     city?: string,
     state?: string,
     country?: string
-  }
+  },
+  
 }
 
-// locationService.ts
-export async function SearchLocations(query: string) {
+
+//
+export async function SearchLocations(query: string, language: string) {
   if (!query || query.length < 3) return [];
 
   const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`,
+    `https://nominatim.openstreetmap.org/search?` +
+      `format=json&addressdetails=1&limit=5` +
+      `&q=${encodeURIComponent(query)}` +
+      `&accept-language=${encodeURIComponent(language)}`,
     {
       headers: {
-        "User-Agent": "visual-impact"
+        "User-Agent": "Visual-Impact"
       }
     }
   );
 
   const data = await res.json();
 
+  console.log(data);
   return data.map((item: AddressDetails) => ({
     display_name: item.display_name
   }));
 }
 
-export async function GetAddressDetails(query: string) {
-  if (!query || query.length < 3) return [];
-
+// Returns an address object, including Lat and Lng
+export async function GetAddressDetails(query: string, language: string): Promise<AddressDetails> {
   const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&limit=5&q=${encodeURIComponent(query)}`,
+    `https://nominatim.openstreetmap.org/search?` +
+      `format=json&addressdetails=1&limit=1` +
+      `&q=${encodeURIComponent(query)}` +
+      `&accept-language=${encodeURIComponent(language)}`,
     {
       headers: {
-        "User-Agent": "Visual Impact"
+        "User-Agent": "Visual-Impact"
       }
     }
   );
 
   const data = await res.json();
 
-  return data.map((item: AddressDetails) => ({
-    address: item.address
-  }));
-}
+  console.log(data[0]);
+  const addressDetails:AddressDetails = {
+    display_name: data[0].display_name,
+    address: data[0].address,
+    lat: data[0].lat,
+    lng: data[0].lon
+  };
 
+  console.log(addressDetails);
+  return addressDetails;
+}
 
 // Get the user's latitude and longitude
-export function GetUserGeoLocation(
-  setUserLocation: React.Dispatch<React.SetStateAction<LatLngLiteral | null>>,
-  setError: React.Dispatch<React.SetStateAction<string | undefined>>
-) {
+export function GetUserGeoLocation(): Promise<LatLngLiteral> {
+  return new Promise((resolve, reject) => {
+    const storedLocation = sessionStorage.getItem("userLocation");
 
-  setUserLocation(null);
-  const storedLocation = sessionStorage.getItem("userLocation");
-  if (storedLocation) {
+    if (storedLocation) {
       const location: LatLngSession = JSON.parse(storedLocation);
-      
-      if (new Date().getTime() > location.expiryTime){
-        sessionStorage.removeItem(userLocationKey);
-      } else {
-        const sessionLatLng: LatLngLiteral = {lat: location.lat, lng: location.lng};
-        setUserLocation(sessionLatLng);
-        return
-      }
-  } 
 
-  if ("geolocation" in navigator) {
+      if (new Date().getTime() <= location.expiryTime) {
+        resolve({ lat: location.lat, lng: location.lng });
+        return;
+      }
+
+      sessionStorage.removeItem(userLocationKey);
+    }
+
+    if (!("geolocation" in navigator)) {
+      reject({ code: 'UNSUPPORTED' });
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const newMapCoords:LatLngLiteral = {lat: position.coords.latitude, lng: position.coords.longitude};
-        setUserLocation(newMapCoords);
-        storeLatLngSession(newMapCoords);
+        const coords: LatLngLiteral = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        };
+
+        storeLatLngSession(coords);
+        resolve(coords);
       },
-      () => {
-        setError('nomedia.noUserLocation');
-      },
+      (error) => {
+        reject(error);
+      }
     );
-  } else {
-    setError('nomedia.noSupport');
-  }
+  });
 }
+
 

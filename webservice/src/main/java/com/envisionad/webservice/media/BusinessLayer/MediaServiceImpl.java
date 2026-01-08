@@ -34,7 +34,7 @@ public class MediaServiceImpl implements MediaService {
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
-            String location,
+//            String location,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
@@ -46,9 +46,9 @@ public class MediaServiceImpl implements MediaService {
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
 
-        if (location != null) {
-            spec = spec.and(MediaSpecifications.locationContains(location));
-        }
+//        if (location != null) {
+//            spec = spec.and(MediaSpecifications.locationContains(location));
+//        }
 
         if (title != null) {
             spec = spec.and(MediaSpecifications.titleContains(title));

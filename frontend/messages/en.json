@@ -164,6 +164,10 @@
   "browse": {
     "searchTitle": "Title",
     "searchAddress": "Address",
+    "languages": {
+      "primary": "en",
+      "fallback": "fr-CA" 
+    },
     "browseactions":{
       "filters":{
         "actionName": "Filter:",
@@ -186,9 +190,10 @@
     "nomedia": {
       "notfound": "No media found",
       "changefilters": "Please change your filters",
-      "failedToLoad": "Failed to load media: ",
-      "noUserLocation": "Could not get nearest media. Please allow access to your location.",
-      "noSupport": "Geolocation is not supported by your browser."
+      "locationDenied": "Could not get nearest media. Please allow access to your location or choose another sorting method.",
+      "noSupport": "Geolocation is not supported by your browser.",
+      "failedToLoad": "Failed to load media."
+
     }
   },
   "business": {

@@ -16,7 +16,7 @@ public interface MediaService {
     Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
-            String location,
+//            String location,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
