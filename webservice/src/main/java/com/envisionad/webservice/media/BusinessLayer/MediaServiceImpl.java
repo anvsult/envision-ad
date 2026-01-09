@@ -41,7 +41,6 @@ public class MediaServiceImpl implements MediaService {
             Double userLat,
             Double userLng
             ) {
-        // PAGING
 
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
@@ -57,7 +56,6 @@ public class MediaServiceImpl implements MediaService {
         if (minDailyImpressions != null) {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
         }
-
 
         // Sort by Nearest
         if ("nearest".equals(specialSort) && userLat != null && userLng != null) {

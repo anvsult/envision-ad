@@ -163,8 +163,14 @@
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
-    "browseactions": {
-      "filters": {
+    "searchTitle": "Titre",
+    "searchAddress": "Adresse",
+    "languages": {
+      "primary": "fr-CA",
+      "fallback": "en" 
+    },
+    "browseactions":{
+      "filters":{
         "actionName": "Filtres:",
         "price": "Prix ($)",
         "impressions": "Impressions minimum",
@@ -185,9 +191,10 @@
     "nomedia": {
       "notfound": "Aucun média trouvé",
       "changefilters": "Veuillez changer vos filtres",
-      "failedToLoad": "Erreur lors du chargement des média: ",
-      "noUserLocation": "Impossible de trouver les médias les plus proches. Veuillez autoriser l'accès à votre emplacement.",
-      "noSupport": "La géolocalisation n'est pas prise en charge par votre navigateur."
+      "locationDenied": "Impossible de trouver les médias les plus proches. Veuillez autoriser l'accès à votre emplacement ou choisir un autre triage.",
+      "noSupport": "La géolocalisation n'est pas prise en charge par votre navigateur.",
+      "failedToLoad": "Erreur lors du chargement des média."
+
     }
   },
   "organization": {

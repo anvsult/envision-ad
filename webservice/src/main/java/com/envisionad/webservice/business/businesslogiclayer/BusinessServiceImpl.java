@@ -186,7 +186,7 @@ public class BusinessServiceImpl implements BusinessService {
             throw new AccessDeniedException("User is already an employee");
 
         Employee employee = new Employee();
-        employee.setBusinessId(new  BusinessIdentifier(businessId));
+        employee.setBusinessId(new BusinessIdentifier(businessId));
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setUserId(userId);
 
