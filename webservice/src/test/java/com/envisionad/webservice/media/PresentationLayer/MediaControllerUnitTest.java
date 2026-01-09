@@ -276,7 +276,7 @@ class MediaControllerUnitTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             mediaController.getAllFilteredActiveMedia(
                 null,
-                null,
+                    null,
                 BigDecimal.valueOf(-1),
                 null,
                 null,
@@ -333,7 +333,7 @@ class MediaControllerUnitTest {
                 null,
                 null,
                 null,
-                null,
+                        null,
                 -10,
                 null,
                 null,
