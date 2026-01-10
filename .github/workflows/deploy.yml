@@ -32,7 +32,7 @@ jobs:
             cd envision-ad
 #            git pull origin main
             git fetch origin
-            git checkout ${{github.ref_name}}
+            git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
                     
             # --- 1. Create Root .env (Backend & Docker) ---
