@@ -1,0 +1,41 @@
+name: Deploy Envision Ad (Canada)
+
+on:
+  push:
+    branches:
+       - main
+       - feat/deployment_on_aws
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Navigate to home directory
+            cd ~
+
+            # SMART CHECK: Clone if directory doesn't exist, Pull if it does
+            if [ ! -d "envision-ad" ]; then
+              echo "Directory not found. Cloning for the first time..."
+              git clone git@github.com:${{ github.repository }}.git envision-ad
+            fi
+            
+            cd envision-ad
+            git pull origin main
+
+            # Create the .env file from GitHub Secrets
+            echo "SPRING_DATASOURCE_URL=${{ secrets.DB_URL }}" > .env
+            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}" >> .env
+            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+            
+            # Start/Update Docker containers
+            docker compose up -d --build --force-recreate
