@@ -1,0 +1,41 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: "production"
+      NEXT_TELEMETRY_DISABLED: "1"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - webservice
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  webservice:
+    build:
+      context: ./webservice
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
+      # Point this directly to the variables injected by GitHub Actions
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+      SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
+      SPRING_EMAIL_PORT: "${EMAIL_PORT}"
+      SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
+      SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+    restart: unless-stopped
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
