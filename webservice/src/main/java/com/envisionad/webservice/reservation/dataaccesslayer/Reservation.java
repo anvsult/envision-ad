@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "reservations")
@@ -39,5 +40,5 @@ public class Reservation {
     private String campaignId;
 
     @Column(name = "media_id")
-    private String mediaId;
+    private UUID mediaId;
 }

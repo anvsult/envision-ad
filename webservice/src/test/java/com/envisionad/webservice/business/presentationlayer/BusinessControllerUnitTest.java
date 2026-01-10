@@ -4,7 +4,7 @@ import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
-import com.envisionad.webservice.business.dataaccesslayer.CompanySize;
+import com.envisionad.webservice.business.dataaccesslayer.OrganizationSize;
 import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
@@ -58,20 +58,20 @@ class BusinessControllerUnitTest {
         business = new Business();
         business.setBusinessId(new BusinessIdentifier(businessId));
         business.setName("Test Business");
-        business.setCompanySize(CompanySize.SMALL);
+        business.setOrganizationSize(OrganizationSize.SMALL);
         business.setAddress(address);
         business.setDateCreated(LocalDateTime.now());
 
         responseModel = new BusinessResponseModel();
         responseModel.setBusinessId(businessId);
         responseModel.setName("Test Business");
-        responseModel.setCompanySize(CompanySize.SMALL);
+        responseModel.setOrganizationSize(OrganizationSize.SMALL);
         responseModel.setAddress(address);
         responseModel.setDateCreated(business.getDateCreated());
 
         requestModel = new BusinessRequestModel();
         requestModel.setName("Test Business");
-        requestModel.setCompanySize(CompanySize.SMALL);
+        requestModel.setOrganizationSize(OrganizationSize.SMALL);
         requestModel.setAddress(address);
     }
 

@@ -1,0 +1,1 @@
+export { MediaOwnerDashboard as default } from "@/pages/dashboard/media-owner"

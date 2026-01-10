@@ -1,0 +1,1 @@
+export { OrganizationEmployees as default } from "@/pages/dashboard/organization"

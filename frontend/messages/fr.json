@@ -1,12 +1,12 @@
 {
   "metadata": {
     "title": "Envision AD - Publicités Abordables, Impact Inoubliable",
-    "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre entreprise."
+    "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre organization."
   },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
-    "business": "Entreprise",
+    "organization": "Organization",
     "browse": "Parcourir",
     "register": "S'inscrire",
     "signIn": "Se connecter",
@@ -27,8 +27,8 @@
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce"
     },
-    "businessTitle": "Entreprise",
-    "business": {
+    "organizationTitle": "Organization",
+    "organization": {
       "overview": "Aperçu",
       "employees": "Employés"
     },
@@ -197,30 +197,30 @@
 
     }
   },
-  "business": {
-    "title": "Entreprise",
-    "createButton": "Créer une entreprise",
+  "organization": {
+    "title": "Organization",
+    "createButton": "Créer une organization",
     "roles": {
       "mediaOwner": "Propriétaire de médias",
       "advertiser": "Annonceur"
     },
     "table": {
       "name": "Nom",
-      "companySize": "Taille",
+      "organizationSize": "Taille",
       "address": "Adresse",
       "dateCreated": "Date de création",
-      "roles": "rôles",
+      "roles": "Rôles",
       "actions": "Actions",
       "edit": "Modifier"
     },
     "errors": {
-      "loadFailed": "Échec du chargement de l'entreprise pour modification"
+      "loadFailed": "Échec du chargement de l'organization pour modification"
     },
     "form": {
-      "title": "Détails de l'entreprise",
-      "nameLabel": "Nom de l'entreprise",
+      "title": "Détails de l'organization",
+      "nameLabel": "Nom de l'organization",
       "namePlaceholder": "Ex. Tech Corp",
-      "sizeLabel": "Taille de l'entreprise",
+      "sizeLabel": "Taille de l'organization",
       "sizePlaceholder": "Sélectionner la taille",
       "addressLabel": "Détails de l'adresse",
       "streetLabel": "Rue",
@@ -233,15 +233,15 @@
       "zipPlaceholder": "H1A 1A1",
       "countryLabel": "Pays",
       "countryPlaceholder": "Canada",
-      "roleLabel": "Rôles de l'entreprise",
-      "submit": "Créer l'entreprise",
+      "roleLabel": "Rôles de l'organization",
+      "submit": "Créer l'organization",
       "cancel": "Annuler"
     },
     "sizes": {
       "SMALL": "Petite (1-50)",
       "MEDIUM": "Moyenne (51-150)",
       "LARGE": "Grande (151-500)",
-      "ENTERPRISE": "Entreprise (500+)"
+      "ENTERPRISE": "Organization (500+)"
     },
     "employees": {
       "title": "Employés",
@@ -265,8 +265,8 @@
       "modal": {
         "employeeTitle": "Supprimer un employé",
         "invitationTitle": "Annuler l’invitation",
-        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre entreprise?",
-        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre entreprise?",
+        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre organization?",
+        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre organization?",
         "confirm": "Confirmer",
         "cancel": "Annuler"
       }

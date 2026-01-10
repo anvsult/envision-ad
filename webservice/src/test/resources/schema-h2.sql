@@ -19,7 +19,7 @@ CREATE TABLE business
     id           INT AUTO_INCREMENT PRIMARY KEY,
     business_id  VARCHAR(36) UNIQUE NOT NULL,
     name         VARCHAR(255)       NOT NULL,
-    company_size VARCHAR(50)        NOT NULL,
+    organization_size VARCHAR(50)        NOT NULL,
     date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     address_id   INT,
     owner_id     VARCHAR(36),

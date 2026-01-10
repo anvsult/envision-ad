@@ -1,12 +1,12 @@
 {
   "metadata": {
     "title": "Envision AD - Affordable Ads, Unforgettable Impact",
-    "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your business."
+    "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your organization."
   },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
-    "business": "Business",
+    "organization": "Organization",
     "browse": "Browse",
     "register": "Register",
     "signIn": "Sign In",
@@ -27,8 +27,8 @@
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests"
     },
-    "businessTitle": "Business",
-    "business": {
+    "organizationTitle": "Organization",
+    "organization": {
       "overview": "Overview",
       "employees": "Employees"
     },
@@ -196,16 +196,16 @@
 
     }
   },
-  "business": {
-    "title": "Business",
-    "createButton": "Create Business",
+  "organization": {
+    "title": "Organization",
+    "createButton": "Create Organization",
     "roles": {
       "mediaOwner": "Media Owner",
       "advertiser": "Advertiser"
     },
     "table": {
       "name": "Name",
-      "companySize": "Size",
+      "organizationSize": "Size",
       "address": "Address",
       "dateCreated": "Date Created",
       "roles": "Roles",
@@ -213,13 +213,13 @@
       "edit": "Edit"
     },
     "errors": {
-      "loadFailed": "Failed to load business for editing"
+      "loadFailed": "Failed to load organization for editing"
     },
     "form": {
-      "title": "Business Details",
-      "nameLabel": "Business Name",
+      "title": "Organization Details",
+      "nameLabel": "Organization Name",
       "namePlaceholder": "Ex. Tech Corp",
-      "sizeLabel": "Company Size",
+      "sizeLabel": "Organization Size",
       "sizePlaceholder": "Select size",
       "addressLabel": "Address Details",
       "streetLabel": "Street",
@@ -232,8 +232,8 @@
       "zipPlaceholder": "10001",
       "countryLabel": "Country",
       "countryPlaceholder": "USA",
-      "roleLabel": "Business Roles",
-      "submit": "Create Business",
+      "roleLabel": "Organization Roles",
+      "submit": "Create Organization",
       "cancel": "Cancel"
     },
     "sizes": {
@@ -264,8 +264,8 @@
       "modal": {
         "employeeTitle": "Remove Employee",
         "invitationTitle": "Cancel Invitation",
-        "employeeMessage": "Are you sure you want to remove <bold>{name}</bold> from your business?",
-        "invitationMessage": "Are you sure you want to cancel the invitation for <bold>{email}</bold> to join your business?",
+        "employeeMessage": "Are you sure you want to remove <bold>{name}</bold> from your organization?",
+        "invitationMessage": "Are you sure you want to cancel the invitation for <bold>{email}</bold> to join your organization?",
         "confirm": "Confirm",
         "cancel": "Cancel"
       }
@@ -587,7 +587,7 @@
       "selectCampaign": "Please select a campaign to proceed",
       "selectDate": "Please select a valid start and end date"
     },
-    "mediaIdMissing": "Media id is missing.",
+    "errorTitle": "Error",
     "successTitle": "Reservation Successful!",
     "successMessage": "Reservation Confirmed!",
     "successMessageLong": "Your ad slot has been successfully booked. You can view it in your dashboard schedule.",

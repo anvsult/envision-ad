@@ -1,0 +1,9 @@
+import axiosInstance from "@/shared/api/axios/axios";
+
+export const removeEmployeeFromOrganization = async (
+    organizationId: string,
+    employeeId: string
+): Promise<void> => {
+    const response = await axiosInstance.delete(`/businesses/${organizationId}/employees/${encodeURI(employeeId)}`);
+    return response.data;
+};

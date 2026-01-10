@@ -7,7 +7,7 @@ import com.envisionad.webservice.business.presentationlayer.models.BusinessReque
 
 public class Validator {
     public static void validateBusiness(BusinessRequestModel requestModel) {
-        if (requestModel == null || !validateRoles(requestModel) || !validateName(requestModel) || !validateCompanySize(requestModel) || !validateAddress(requestModel))
+        if (requestModel == null || !validateRoles(requestModel) || !validateName(requestModel) || !validateOrganizationSize(requestModel) || !validateAddress(requestModel))
             throw new InvalidBusinessException();
     }
 
@@ -24,8 +24,8 @@ public class Validator {
         return roles.isMediaOwner() || roles.isAdvertiser();
     }
 
-    private static boolean validateCompanySize(BusinessRequestModel requestModel) {
-        return requestModel.getCompanySize() != null;
+    private static boolean validateOrganizationSize(BusinessRequestModel requestModel) {
+        return requestModel.getOrganizationSize() != null;
     }
 
     private static boolean validateAddress(BusinessRequestModel requestModel) {

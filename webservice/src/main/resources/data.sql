@@ -6,7 +6,7 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO business (business_id, name, owner_id, company_size, address_id, media_owner, advertiser, date_created)
+INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, date_created)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
         true, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
@@ -17,8 +17,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO employee (employee_id, user_id, business_id)
-VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
-       ('202fc843-77a7-409e-8547-e013763ded4f', 'auth0|693746439e8a7ab9e8b910b2', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11')
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11')
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
@@ -480,8 +479,7 @@ VALUES
 -- Ads for Campaign 1 (Summer Sale)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
-    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1),
-    ('22222222-3333-4444-5555-666666666666', 'Summer Video Promo', 'https://cdn.envisionad.com/summer-video.mp4', 30, 'VIDEO', 1);
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
 
 -- Ads for Campaign 2 (Black Friday)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
@@ -490,8 +488,4 @@ VALUES
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
     ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2);
 
--- Ads for Campaign 3 (New Year)
-INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
-VALUES
-    ('66666666-7777-8888-9999-000000000000', 'New Year Fireworks', 'https://cdn.envisionad.com/ny-fireworks.mp4', 15, 'VIDEO', 3);
 

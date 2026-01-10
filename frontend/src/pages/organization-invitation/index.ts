@@ -1,0 +1,1 @@
+export { default as OrganizationInvitationPage } from "./ui/page"
