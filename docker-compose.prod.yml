@@ -4,24 +4,30 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
     env_file:
       - ./frontend/.env
     depends_on:
-      - webservice
+      webservice:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - appnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   webservice:
     build:
       context: ./webservice
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
       # Point this directly to the variables injected by GitHub Actions
@@ -35,6 +41,17 @@ services:
     restart: unless-stopped
     networks:
       - appnet
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/api/v1/media" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
 
 networks:
   appnet:

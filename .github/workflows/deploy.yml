@@ -33,46 +33,45 @@ jobs:
             git fetch origin
             git checkout ${{ github.ref_name }}
             git pull origin ${{ github.ref_name }}
-                    
-            # --- 1. Create Root .env (Backend & Docker) ---
+            
+            # ============================= ROOT ENV =================================
             # Using '>' for the first line to ensure we overwrite any old stale file
-            echo "SPRING_DATASOURCE_URL='${{ secrets.DB_URL }}'" > .env
-            echo "SPRING_DATASOURCE_USERNAME='${{ secrets.DB_USER }}'" >> .env
-            echo "SPRING_DATASOURCE_PASSWORD='${{ secrets.DB_PASSWORD }}'" >> .env
+            echo "SPRING_DATASOURCE_URL=${{ secrets.DB_URL }}" > .env
+            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.DB_USER }}" >> .env
+            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
             
             # Email secrets
-            echo "EMAIL_SMTP='${{ secrets.EMAIL_SMTP }}'" >> .env
-            echo "EMAIL_PORT='${{ secrets.EMAIL_PORT }}'" >> .env
-            echo "EMAIL_USER='${{ secrets.EMAIL_USER }}'" >> .env
-            echo "EMAIL_PASSWORD='${{ secrets.EMAIL_PASSWORD }}'" >> .env
+            echo "EMAIL_SMTP=${{ secrets.EMAIL_SMTP }}" >> .env
+            echo "EMAIL_PORT=${{ secrets.EMAIL_PORT }}" >> .env
+            echo "EMAIL_USER=${{ secrets.EMAIL_USER }}" >> .env
+            echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> .env
             
             # Auth0 Root secrets 
-            echo "AUTH0_DOMAIN='${{ secrets.AUTH0_DOMAIN }}'" >> .env
-            echo "AUTH0_CLIENT_ID='${{ secrets.AUTH0_CLIENT_ID }}'" >> .env
-            echo "AUTH0_CLIENT_SECRET='${{ secrets.AUTH0_CLIENT_SECRET }}'" >> .env
-            echo "AUTH0_SECRET='${{ secrets.AUTH0_SECRET }}'" >> .env
+            echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> .env
+            echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> .env
+            echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> .env
+            echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> .env
             echo "APP_BASE_URL=https://envision-ad.ca" >> .env
             
+            # ============================= FRONTEND ENV =================================
             # --- 2. Create Frontend .env (Next.js) ---
-            # Ensure the directory exists
-            mkdir -p frontend
-            echo "NEXT_PUBLIC_API_URL=https://envision-ad.ca/api/v1" > frontend/.env
-            echo "AUTH0_DOMAIN='${{ secrets.AUTH0_DOMAIN }}'" >> frontend/.env
-            echo "AUTH0_CLIENT_ID='${{ secrets.AUTH0_CLIENT_ID }}'" >> frontend/.env
-            echo "AUTH0_CLIENT_SECRET='${{ secrets.AUTH0_CLIENT_SECRET }}'" >> frontend/.env
-            echo "AUTH0_SECRET='${{ secrets.AUTH0_SECRET }}'" >> frontend/.env
-            echo "AUTH0_AUDIENCE=https://api.envision-ad.ca" >> frontend/.env
+            echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" > frontend/.env
+            echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> frontend/.env
+            echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> frontend/.env
+            echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> frontend/.env
+            echo "AUTH0_SECRET=${{ secrets.AUTH0_SECRET }}" >> frontend/.env
+            echo "AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}" >> frontend/.env
             
             # Management API secrets
-            echo "AUTH0_MGMT_AUDIENCE='${{ secrets.AUTH0_MGMT_AUDIENCE }}'" >> frontend/.env
-            echo "AUTH0_MGMT_CLIENT_ID='${{ secrets.AUTH0_MGMT_CLIENT_ID }}'" >> frontend/.env
-            echo "AUTH0_MGMT_CLIENT_SECRET='${{ secrets.AUTH0_MGMT_CLIENT_SECRET }}'" >> frontend/.env
+            echo "AUTH0_MGMT_AUDIENCE=${{ secrets.AUTH0_MGMT_AUDIENCE }}" >> frontend/.env
+            echo "AUTH0_MGMT_CLIENT_ID=${{ secrets.AUTH0_MGMT_CLIENT_ID }}" >> frontend/.env
+            echo "AUTH0_MGMT_CLIENT_SECRET=${{ secrets.AUTH0_MGMT_CLIENT_SECRET }}" >> frontend/.env
             
             # Cloudinary secrets (Fixed syntax)
-            echo "CLOUDINARY_URL='${{ secrets.CLOUDINARY_URL }}'" >> frontend/.env
-            echo "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME='${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}'" >> frontend/.env
-            echo "NEXT_PUBLIC_CLOUDINARY_API_KEY='${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY }}'" >> frontend/.env
-            echo "CLOUDINARY_API_SECRET='${{ secrets.CLOUDINARY_API_SECRET }}'" >> frontend/.env
+            echo "CLOUDINARY_URL=${{ secrets.CLOUDINARY_URL }}" >> frontend/.env
+            echo "NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ secrets.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}" >> frontend/.env
+            echo "NEXT_PUBLIC_CLOUDINARY_API_KEY=${{ secrets.NEXT_PUBLIC_CLOUDINARY_API_KEY }}" >> frontend/.env
+            echo "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}" >> frontend/.env
 
             # Set secure permissions so only the owner can read these files
             chmod 600 .env frontend/.env
