@@ -1,7 +1,6 @@
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
-
 import {ColorSchemeScript, mantineHtmlProps, MantineProvider} from "@mantine/core";
 import {josefinSans, lato, theme} from "@/app/theme";
 import type {ReactNode} from "react";
