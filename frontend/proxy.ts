@@ -15,24 +15,21 @@ export default async function proxy(request: NextRequest) {
     return await auth0.middleware(request)
   }
 
+  let preferredLang: string | undefined = undefined;
   const session = await auth0.getSession(request);
 
   if (session?.user) {
-    let preferredLang = request.cookies.get('user_preferred_language')?.value;
+    preferredLang = request.cookies.get('user_preferred_language')?.value;
 
     if (!preferredLang) {
       try {
         preferredLang = await Auth0ManagementService.getUserLanguage(session.user.sub);
-
-        if (preferredLang && isValidLocale(preferredLang)) {
-          const response = intlMiddleware(request);
-          response.cookies.set('user_preferred_language', preferredLang, {
-            maxAge: 60 * 60 * 24 * 365,
-            path: '/',
-          });
+        if (!preferredLang || !isValidLocale(preferredLang)) {
+          preferredLang = routing.defaultLocale;
         }
       } catch (error) {
         console.error('Failed to fetch user preferred language:', error);
+        preferredLang = routing.defaultLocale;
       }
     }
 
@@ -46,30 +43,23 @@ export default async function proxy(request: NextRequest) {
           new RegExp(`^/${currentLocale}(/|$)`),
           `/${preferredLang}$1`
       );
-
       const url = new URL(newPathname, request.url);
       url.search = request.nextUrl.search;
-
       return NextResponse.redirect(url);
     }
   }
 
-  // const session = await auth0.getSession(request);
+  const intlResponse = intlMiddleware(request);
 
-  // if (
-  //   new RegExp(`^/(${routing.locales.join('|')})/dashboard(/.*)?$`).test(request.nextUrl.pathname)
-  //   && !session
-  // ) {
-  //   const localeMatch = request.nextUrl.pathname.match(new RegExp(`^/(${routing.locales.join('|')})/?`));
-  //   const locale = localeMatch ? localeMatch[1] : routing.defaultLocale;
-  //   return NextResponse.redirect(
-  //     new URL(`/auth/login?returnTo=/${locale}/dashboard&ui_locales=${locale}`, request.nextUrl.origin)
-  //   );
-  // }
-
-  const intlResponse = intlMiddleware(request)
+  if (preferredLang) {
+    intlResponse.cookies.set('user_preferred_language', preferredLang, {
+      maxAge: 60 * 60 * 24 * 365,
+      path: '/',
+    });
+  }
 
   const authResponse = await auth0.middleware(request);
+
   for (const [key, value] of authResponse.headers) {
     if (key.toLowerCase() === 'x-middleware-next') {
       if (intlResponse.status >= 300) {
@@ -78,7 +68,8 @@ export default async function proxy(request: NextRequest) {
     }
     intlResponse.headers.set(key, value);
   }
-  return intlResponse
+
+  return intlResponse;
 }
 
 export const config = {

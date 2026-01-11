@@ -143,7 +143,7 @@ export class Auth0ManagementService {
     /**
      * Retrieves a user's preferred language from their metadata.
      * @param {string} userId - The unique identifier of the user.
-     * @returns {Promise<string | undefined>} The preferred language code, or undefined  if not set.
+     * @returns {Promise<string | undefined>} The preferred language code, or undefined if not set.
      */
     static async getUserLanguage(userId: string): Promise<string | undefined> {
         const user = await this.getUser(userId);

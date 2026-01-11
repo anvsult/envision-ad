@@ -22,13 +22,17 @@ export function LanguagePicker() {
 
     if (user) {
       try {
-        await fetch(`/api/auth0/update-user-language/${encodeURIComponent(user.sub)}`, {
+        const response = await fetch(`/api/auth0/update-user-language/${encodeURIComponent(user.sub)}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ locale: nextLocale }),
         });
-      } catch (error) {
-        console.error('Failed to save language preference:', error);
+
+        if (!response.ok) {
+          console.error('Failed to save language preference', response.status);
+        }
+      } catch {
+        console.error('Failed to save language preference');
       }
     }
 

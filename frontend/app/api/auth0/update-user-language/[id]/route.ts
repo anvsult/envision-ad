@@ -1,6 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
 import { Auth0ManagementService } from "@/shared/api/auth0/management";
 import { auth0 } from "@/shared/api/auth0/auth0";
+import { routing } from "@/shared/lib/i18n/routing";
 
 export async function PATCH(
     request: NextRequest,
@@ -20,9 +21,7 @@ export async function PATCH(
 
         const { locale } = await request.json();
 
-        console.log(locale)
-
-        if (!['en', 'fr'].includes(locale)) {
+        if (!routing.locales.includes(locale)) {
             return NextResponse.json({ error: 'Invalid locale' }, { status: 400 });
         }
 
