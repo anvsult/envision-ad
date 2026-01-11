@@ -64,6 +64,7 @@ jobs:
             echo "AUTH0_AUDIENCE=https://api.envision-ad.ca" >> frontend/.env
             
             # Management API secrets
+            echo "AUTH0_MGMT_AUDIENCE='${{ secrets.AUTH0_MGMT_AUDIENCE }}'" >> frontend/.env
             echo "AUTH0_MGMT_CLIENT_ID='${{ secrets.AUTH0_MGMT_CLIENT_ID }}'" >> frontend/.env
             echo "AUTH0_MGMT_CLIENT_SECRET='${{ secrets.AUTH0_MGMT_CLIENT_SECRET }}'" >> frontend/.env
             
