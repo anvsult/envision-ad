@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feat/deployment_on_aws
 
 jobs:
   deploy:
@@ -30,9 +29,7 @@ jobs:
             fi
             
             cd envision-ad
-            git fetch origin
-            git checkout ${{ github.ref_name }}
-            git pull origin ${{ github.ref_name }}
+            git pull origin main
                     
             # --- 1. Create Root .env (Backend & Docker) ---
             # Using '>' for the first line to ensure we overwrite any old stale file
