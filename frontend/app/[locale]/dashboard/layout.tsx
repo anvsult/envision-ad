@@ -10,7 +10,7 @@ export default function DashboardLayout({
                                         }: {
     children: React.ReactNode;
 }) {
-    const [opened, {toggle, close}] = useDisclosure(false);
+    const [opened, {close}] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (

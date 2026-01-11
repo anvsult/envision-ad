@@ -236,6 +236,7 @@
       "roleLabel": "Rôles de l'organization",
       "submit": "Créer l'organization",
       "cancel": "Annuler",
+      "noOrganization": "Aucune organisation trouvée.",
       "errors": {
         "error": "Erreur",
         "validationError": "Informations manquantes ou invalides.",
@@ -294,6 +295,7 @@
   },
   "media": {
     "errors": {
+      "error": "Erreur",
       "loadFailed": "Échec du chargement du média pour modification.",
       "saveFailed": "Échec de l’enregistrement du média.",
       "deleteFailed": "Échec de la suppression du média.",

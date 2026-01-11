@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {Accordion, Button, Group, Stack, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
-import {useUser} from "@auth0/nextjs-auth0";
+import {useUser} from "@auth0/nextjs-auth0/client";
 import {
     cancelInviteEmployeeToOrganization,
     getAllOrganizationEmployees,

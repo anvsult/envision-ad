@@ -235,6 +235,7 @@
       "roleLabel": "Organization Roles",
       "submit": "Create Organization",
       "cancel": "Cancel",
+      "noOrganization": "No organization found.",
       "errors": {
         "error": "Error",
         "validationError": "Missing or Invalid information.",
@@ -293,6 +294,7 @@
   },
   "media": {
     "errors": {
+      "error": "Error",
       "loadFailed": "Failed to load media for editing.",
       "saveFailed": "Failed to save media.",
       "deleteFailed": "Failed to delete media.",

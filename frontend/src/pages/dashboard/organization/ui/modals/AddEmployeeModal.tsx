@@ -63,7 +63,6 @@ export function AddEmployeeModal({
                 message: t("errors.saveFailed"),
                 color: "red",
             });
-            onClose();
         } finally {
             setSaving(false);
         }

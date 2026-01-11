@@ -49,7 +49,7 @@ export default function MediaOwnerPage() {
         } catch (error) {
             console.error("Failed to save media", error);
             notifications.show({
-                title: "Error",
+                title: t("errors.error"),
                 message: t("errors.saveFailed"),
                 color: "red",
             });
@@ -149,9 +149,9 @@ export default function MediaOwnerPage() {
             setEditingId(String(id));
             setIsModalOpen(true);
         } catch (error) {
-            console.error("Failed to save media", error);
+            console.error("Failed to load media", error);
             notifications.show({
-                title: "Error",
+                title: t("errors.error"),
                 message: t("errors.loadFailed"),
                 color: "red",
             });
@@ -187,9 +187,9 @@ export default function MediaOwnerPage() {
         try {
             await toggleMediaStatus(id);
         } catch (error) {
-            console.error("Failed to toggle media", error);
+            console.error("Failed to toggle media status", error);
             notifications.show({
-                title: "Error",
+                title: t("errors.error"),
                 message: t("errors.toggleFailed"),
                 color: "red",
             });

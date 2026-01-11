@@ -14,7 +14,7 @@ export default function OrganizationDashboard() {
     const {formState, updateField, resetForm, setFormState} = useOrganizationForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
-    const [loadingOrg, setLoadingOrg] = useState(true); // Track organization loading
+    const [loadingOrg, setLoadingOrg] = useState(true);
     const {user} = useUser();
 
     const t = useTranslations("organization");
@@ -35,7 +35,7 @@ export default function OrganizationDashboard() {
         };
 
         void loadOrganization();
-    }, [user]);
+    }, [user?.sub]);
 
     const refreshOrganization = async () => {
         try {
@@ -101,7 +101,7 @@ export default function OrganizationDashboard() {
                         editingId={organization.businessId}
                     />
                 </>
-            ) : (
+            ) : ( //temporary because this page will become inaccessible by a user with no organization
                 <Center py="xl">
                     <Title order={4}>{t("noOrganization")}</Title>
                 </Center>
