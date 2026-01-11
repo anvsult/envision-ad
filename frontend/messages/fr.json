@@ -279,7 +279,7 @@
           "error": "Erreur",
           "validationError": "Informations manquantes ou invalides.",
           "emailRequired": "Une adresse courriel est requise.",
-          "emailInvalid": "l'adresse courriel fournie est invalide.",
+          "emailInvalid": "L'adresse courriel fournie est invalide.",
           "saveFailed": "Échec de l’invitation de l’employé."
         }
       },
