@@ -1,8 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {Accordion, Box, Button, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
+import {Accordion, Button, Group, Stack, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
 import {useUser} from "@auth0/nextjs-auth0";
@@ -14,7 +13,6 @@ import {
     removeEmployeeFromOrganization
 } from "@/features/organization-management/api";
 import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
-import SideBar from "@/widgets/SideBar/SideBar";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
 import type {Employee} from "@/entities/organization";
 import {InvitationResponse} from "@/entities/organization";
@@ -22,8 +20,6 @@ import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/Invitati
 import {ConfirmRemoveInviteModal} from "@/pages/dashboard/organization/ui/modals/ConfirmRemoveInviteModal";
 
 export default function OrganizationEmployees() {
-    const [opened, {toggle, close}] = useDisclosure(false);
-    const isMobile = useMediaQuery("(max-width: 768px)");
     const [owner, setOwner] = useState<string | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [invitations, setInvitations] = useState<InvitationResponse[]>([]);
@@ -115,94 +111,64 @@ export default function OrganizationEmployees() {
     }, [user?.sub]);
 
     return (
-        <>
-            <Box>
-                <Drawer
-                    opened={opened}
-                    onClose={close}
-                    size="xs"
-                    padding="md"
-                    hiddenFrom="md"
-                    zIndex={1000}
-                >
-                    <SideBar></SideBar>
-                </Drawer>
+        <Stack gap="md" p="md">
+            <Group justify="space-between">
+                <Title order={2}>{t("title")}</Title>
+                {user?.sub === owner &&
+                    <Button
+                        onClick={() => {
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        {t("addButton")}
+                    </Button>
+                }
+            </Group>
 
-                <Group align="flex-start" gap={0} wrap="nowrap">
-                    {!isMobile && (
-                        <Paper
-                            w={250}
-                            p="md"
-                            style={{minHeight: "calc(100vh - 80px)", borderRadius: 0}}
-                            withBorder
-                        >
-                            <SideBar></SideBar>
-                        </Paper>
-                    )}
+            <AddEmployeeModal
+                opened={isModalOpen}
+                onClose={handleCloseModal}
+                onSuccess={handleSuccess}
+                email={employeeEmail}
+                setEmail={setEmployeeEmail}
+                organizationId={organizationId!}
+            />
 
-                    <div style={{flex: 1, minWidth: 0}}>
-                        <Stack gap="md" p="md">
-                            <Group justify="space-between">
-                                <Title order={2}>{t("title")}</Title>
-                                {user?.sub === owner &&
-                                    <Button
-                                        onClick={() => {
-                                            setIsModalOpen(true);
-                                        }}
-                                    >
-                                        {t("addButton")}
-                                    </Button>
-                                }
-                            </Group>
+            {user?.sub && owner && (
+                <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
+                    <InvitationTable
+                        invitations={invitations}
+                        onDelete={handleDeleteInvitation}
+                    />
 
-                            <AddEmployeeModal
-                                opened={isModalOpen}
-                                onClose={handleCloseModal}
-                                onSuccess={handleSuccess}
-                                email={employeeEmail}
-                                setEmail={setEmployeeEmail}
-                                organizationId={organizationId!}
-                            />
+                    <EmployeeTable
+                        employees={employees}
+                        onDelete={handleDeleteEmployee}
+                        currentUserId={user.sub}
+                        ownerId={owner}
+                    />
+                </Accordion>
+            )}
 
-                            {user?.sub && owner && (
-                                <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
-                                        <InvitationTable
-                                            invitations={invitations}
-                                            onDelete={handleDeleteInvitation}
-                                        />
-
-                                        <EmployeeTable
-                                            employees={employees}
-                                            onDelete={handleDeleteEmployee}
-                                            currentUserId={user.sub}
-                                            ownerId={owner}
-                                        />
-                                </Accordion>
-                            )}
-
-                            <ConfirmationModal
-                                opened={confirmEmployeeOpen}
-                                title={t("modal.employeeTitle")}
-                                message={t.rich("modal.employeeMessage", {
-                                    name: employeeToRemove?.name || "",
-                                    bold: (chunks) => <strong>{chunks}</strong>
-                                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
-                                cancelLabel={t("modal.cancel")}
-                                confirmLabel={t("modal.confirm")}
-                                confirmColor="red"
-                                onCancel={() => setConfirmEmployeeOpen(false)}
-                                onConfirm={confirmEmployeeRemove}
-                            />
-                            <ConfirmRemoveInviteModal
-                                opened={confirmInviteOpen}
-                                email={invitationToRemove?.email || ""}
-                                onCancel={() => setConfirmInviteOpen(false)}
-                                onConfirm={confirmInviteRemove}
-                            />
-                        </Stack>
-                    </div>
-                </Group>
-            </Box>
-        </>
+            <ConfirmationModal
+                opened={confirmEmployeeOpen}
+                title={t("modal.employeeTitle")}
+                message={t.rich("modal.employeeMessage", {
+                    name: employeeToRemove?.name || "",
+                    bold: (chunks) => <strong>{chunks}</strong>
+                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
+                cancelLabel={t("modal.cancel")}
+                confirmLabel={t("modal.confirm")}
+                confirmColor="red"
+                onCancel={() => setConfirmEmployeeOpen(false)}
+                onConfirm={confirmEmployeeRemove}
+            />
+            <ConfirmRemoveInviteModal
+                opened={confirmInviteOpen}
+                email={invitationToRemove?.email || ""}
+                onCancel={() => setConfirmInviteOpen(false)}
+                onConfirm={confirmInviteRemove}
+            />
+        </Stack>
     );
 }

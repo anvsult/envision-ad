@@ -1,11 +1,13 @@
 "use client";
 
-import React, {useState} from "react";
-import {Button, Group, Modal, Stack} from "@mantine/core";
+import React, {useState, useEffect} from "react";
+import {Alert, Button, Group, Modal, Stack} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {OrganizationDetailsForm} from "./OrganizationDetailsForm";
 import {OrganizationRequestDTO} from "@/entities/organization";
 import {createOrganization, updateOrganization} from "@/features/organization-management/api";
+import {notifications} from "@mantine/notifications";
+import {IconInfoCircle} from "@tabler/icons-react";
 
 interface OrganizationModalProps {
     opened: boolean;
@@ -21,18 +23,75 @@ interface OrganizationModalProps {
 }
 
 export function OrganizationModal({
-                                  opened,
-                                  onClose,
-                                  onSuccess,
-                                  formState,
-                                  onFieldChange,
-                                  resetForm,
-                                  editingId,
-                              }: OrganizationModalProps) {
+                                      opened,
+                                      onClose,
+                                      onSuccess,
+                                      formState,
+                                      onFieldChange,
+                                      resetForm,
+                                      editingId,
+                                  }: OrganizationModalProps) {
     const t = useTranslations("organization.form");
     const [saving, setSaving] = useState(false);
+    const [validationError, setValidationError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (opened) {
+            setValidationError(null);
+        }
+    }, [opened]);
+
+    const validateForm = (): boolean => {
+        if (!formState.name || formState.name.trim() === '') {
+            setValidationError(t("errors.nameRequired"));
+            return false;
+        }
+
+        if (!formState.organizationSize) {
+            setValidationError(t("errors.sizeRequired"));
+            return false;
+        }
+
+        if (!formState.address.street || formState.address.street.trim() === '') {
+            setValidationError(t("errors.streetRequired"));
+            return false;
+        }
+
+        if (!formState.address.city || formState.address.city.trim() === '') {
+            setValidationError(t("errors.cityRequired"));
+            return false;
+        }
+
+        if (!formState.address.state || formState.address.state.trim() === '') {
+            setValidationError(t("errors.stateRequired"));
+            return false;
+        }
+
+        if (!formState.address.zipCode || formState.address.zipCode.trim() === '') {
+            setValidationError(t("errors.zipRequired"));
+            return false;
+        }
+
+        if (!formState.address.country || formState.address.country.trim() === '') {
+            setValidationError(t("errors.countryRequired"));
+            return false;
+        }
+
+        if (!formState.roles.advertiser && !formState.roles.mediaOwner) {
+            setValidationError(t("errors.roleRequired"));
+            return false;
+        }
+
+        return true;
+    };
 
     const handleSave = async () => {
+        setValidationError(null);
+
+        if (!validateForm()) {
+            return;
+        }
+
         setSaving(true);
         try {
             if (editingId) {
@@ -45,7 +104,11 @@ export function OrganizationModal({
             resetForm();
         } catch (error) {
             console.error("Failed to save organization", error);
-            alert(t("saveError"));
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.saveFailed"),
+                color: "red",
+            });
         } finally {
             setSaving(false);
         }
@@ -60,6 +123,17 @@ export function OrganizationModal({
             centered
         >
             <Stack gap="md">
+                {validationError && (
+                    <Alert
+                        variant="light"
+                        color="red"
+                        title={t("errors.validationError")}
+                        icon={<IconInfoCircle />}
+                    >
+                        {validationError}
+                    </Alert>
+                )}
+
                 <OrganizationDetailsForm
                     formState={formState}
                     onFieldChange={onFieldChange}

@@ -234,7 +234,20 @@
       "countryPlaceholder": "USA",
       "roleLabel": "Organization Roles",
       "submit": "Create Organization",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "errors": {
+        "error": "Error",
+        "validationError": "Missing or Invalid information.",
+        "nameRequired": "Organization name is required.",
+        "sizeRequired": "Organization size is required.",
+        "streetRequired": "Organization street is required.",
+        "cityRequired": "Organization city is required.",
+        "stateRequired": "Organization state/Province is required.",
+        "zipRequired": "Organization zip/postal code is required.",
+        "countryRequired": "Organization country is required.",
+        "roleRequired": "At least one role is required.",
+        "saveFailed": "Failed to save organization details."
+      }
     },
     "sizes": {
       "SMALL": "Small (1-50)",
@@ -259,7 +272,14 @@
         "submit": "Invite Employee",
         "cancel": "Cancel",
         "email": "Email",
-        "placeholder": "email@email.com"
+        "placeholder": "email@email.com",
+        "errors": {
+          "error": "Error",
+          "validationError": "Missing or Invalid information.",
+          "emailRequired": "Email is required.",
+          "emailInvalid": "Invalid email address.",
+          "saveFailed": "Failed to invite employee."
+        }
       },
       "modal": {
         "employeeTitle": "Remove Employee",
@@ -273,9 +293,10 @@
   },
   "media": {
     "errors": {
-      "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media",
-      "statusToggleFailed": "Failed to change media status."
+      "loadFailed": "Failed to load media for editing.",
+      "saveFailed": "Failed to save media.",
+      "deleteFailed": "Failed to delete media.",
+      "toggleFailed": "Failed to change media status."
     },
     "deleteConfirm": {
       "title": "Delete Media",

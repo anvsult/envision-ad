@@ -235,7 +235,20 @@
       "countryPlaceholder": "Canada",
       "roleLabel": "Rôles de l'organization",
       "submit": "Créer l'organization",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "errors": {
+        "error": "Erreur",
+        "validationError": "Informations manquantes ou invalides.",
+        "nameRequired": "Le nom de l’organisation est requis.",
+        "sizeRequired": "La taille de l’organisation est requise.",
+        "streetRequired": "L’adresse de l’organisation est requise.",
+        "cityRequired": "La ville de l’organisation est requise.",
+        "stateRequired": "La province ou l’État de l’organisation est requis.",
+        "zipRequired": "Le code postal de l’organisation est requis.",
+        "countryRequired": "Le pays de l’organisation est requis.",
+        "roleRequired": "Au moins un rôle est requis.",
+        "saveFailed": "Échec de l’enregistrement des informations de l’organisation."
+      }
     },
     "sizes": {
       "SMALL": "Petite (1-50)",
@@ -260,7 +273,14 @@
         "submit": "Inviter un employé",
         "cancel": "Annuler",
         "email": "Courriel",
-        "placeholder": "email@email.com"
+        "placeholder": "email@email.com",
+        "errors": {
+          "error": "Erreur",
+          "validationError": "Informations manquantes ou invalides.",
+          "emailRequired": "Une adresse courriel est requise.",
+          "emailInvalid": "l'adresse courriel fournie est invalide.",
+          "saveFailed": "Échec de l’invitation de l’employé."
+        }
       },
       "modal": {
         "employeeTitle": "Supprimer un employé",
@@ -274,9 +294,10 @@
   },
   "media": {
     "errors": {
-      "loadFailed": "Échec du chargement du média pour modification",
-      "deleteFailed": "Échec de la suppression du média",
-      "statusToggleFailed": "Échec de la modification du statut du média."
+      "loadFailed": "Échec du chargement du média pour modification.",
+      "saveFailed": "Échec de l’enregistrement du média.",
+      "deleteFailed": "Échec de la suppression du média.",
+      "toggleFailed": "Échec de la modification du statut du média."
     },
     "deleteConfirm": {
       "title": "Supprimer le média",

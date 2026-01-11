@@ -1,9 +1,11 @@
 "use client";
 
-import React, {useState} from "react";
-import {Button, Group, Modal, Stack, TextInput} from "@mantine/core";
+import React, {useEffect, useState} from "react";
+import {Alert, Button, Group, Modal, Stack, TextInput} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {createInviteEmployeeToOrganization} from "@/features/organization-management/api";
+import {IconInfoCircle} from "@tabler/icons-react";
+import {notifications} from "@mantine/notifications";
 
 interface BusinessModalProps {
     opened: boolean;
@@ -24,6 +26,13 @@ export function AddEmployeeModal({
                                  }: BusinessModalProps) {
     const t = useTranslations("organization.employees.form");
     const [saving, setSaving] = useState(false);
+    const [invalidInputWarning, setInvalidInputWarning] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (opened) {
+            setInvalidInputWarning(null);
+        }
+    }, [opened]);
 
     const validateEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -32,23 +41,29 @@ export function AddEmployeeModal({
 
     const handleSave = async () => {
         if (!email || email.trim() === '') {
-            alert(t("emailRequired"));
+            setInvalidInputWarning(t("errors.emailRequired"));
             return;
         }
 
         if (!validateEmail(email)) {
-            alert(t("invalidEmailFormat"));
+            setInvalidInputWarning(t("errors.emailInvalid"));
             return;
         }
 
         setSaving(true);
         try {
             await createInviteEmployeeToOrganization(organizationId, { email });
+            setEmail('');
             onSuccess();
             onClose();
         } catch (error) {
-            console.error("Failed to save organization", error);
-            alert(t("saveError"));
+            console.error("Failed to add employee to organization", error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.saveFailed"),
+                color: "red",
+            });
+            onClose();
         } finally {
             setSaving(false);
         }
@@ -63,6 +78,17 @@ export function AddEmployeeModal({
             size="lg"
         >
             <Stack gap="md">
+                {invalidInputWarning && (
+                    <Alert
+                        variant="light"
+                        color="red"
+                        title={t('errors.validationError')}
+                        icon={<IconInfoCircle />}
+                        mt="sm"
+                    >
+                        {invalidInputWarning}
+                    </Alert>
+                )}
                 <TextInput
                     label={t("email")}
                     placeholder={t("placeholder")}
