@@ -34,5 +34,5 @@ spring:
 
 okta:
   oauth2:
-    issuer: ${AUTH0_ISSUER}
-    audience: ${AUTH0_AUDIENCE}
+    issuer: https://dev-frns5opcuy7k1288.us.auth0.com/
+    audience: https://api.envision-ad.ca
