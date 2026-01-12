@@ -58,6 +58,7 @@ jobs:
             # ============================= FRONTEND ENV =================================
             # --- 2. Create Frontend .env (Next.js) ---
             echo "NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}" > frontend/.env
+            echo "APP_BASE_URL=https://envision-ad.ca" >> .env
             echo "AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}" >> frontend/.env
             echo "AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }}" >> frontend/.env
             echo "AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }}" >> frontend/.env
