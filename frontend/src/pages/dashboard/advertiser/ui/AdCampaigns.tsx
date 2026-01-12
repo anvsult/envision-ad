@@ -184,6 +184,7 @@ export default function AdCampaigns() {
                 title={t('confirmations.deleteAd.title')}
                 message={t('confirmations.deleteAd.message')}
                 confirmLabel={t('confirmations.deleteAd.confirm')}
+                cancelLabel={t('confirmations.deleteAd.cancel')}
                 confirmColor="red"
                 onConfirm={confirmDelete}
                 onCancel={() => setConfirmDeleteOpen(false)}

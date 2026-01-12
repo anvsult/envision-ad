@@ -56,6 +56,11 @@ export function AddEmployeeModal({
             setEmail('');
             onSuccess();
             onClose();
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.invite"),
+                color: "green",
+            });
         } catch (error) {
             console.error("Failed to add employee to organization", error);
             notifications.show({

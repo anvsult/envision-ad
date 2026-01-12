@@ -102,11 +102,16 @@ export function OrganizationModal({
             onSuccess();
             onClose();
             resetForm();
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.update"),
+                color: "green",
+            });
         } catch (error) {
-            console.error("Failed to save organization", error);
+            console.error("Failed to update organization", error);
             notifications.show({
                 title: t("errors.error"),
-                message: t("errors.saveFailed"),
+                message: t("errors.updateFailed"),
                 color: "red",
             });
         } finally {

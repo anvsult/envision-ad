@@ -171,6 +171,11 @@ export default function MediaOwnerPage() {
             onConfirm: async () => {
                 try {
                     await deleteMediaById(id);
+                    notifications.show({
+                        title: t("success.title"),
+                        message: t("success.delete"),
+                        color: "green",
+                    });
                 } catch (error) {
                     console.error("Failed to delete media", error);
                     notifications.show({
@@ -185,7 +190,15 @@ export default function MediaOwnerPage() {
 
     const handleToggleStatus = async (id: string | number) => {
         try {
-            await toggleMediaStatus(id);
+            const newStatus = await toggleMediaStatus(id);
+
+            if (newStatus) {
+                notifications.show({
+                    title: t("success.title"),
+                    message: newStatus === "ACTIVE" ? t("success.active") : t("success.inactive"),
+                    color: "green",
+                });
+            }
         } catch (error) {
             console.error("Failed to toggle media status", error);
             notifications.show({
@@ -214,7 +227,7 @@ export default function MediaOwnerPage() {
                         setIsModalOpen(true);
                     }}
                 >
-                    Add new media
+                    {t('newMedia')}
                 </Button>
             </Group>
             <MediaModal

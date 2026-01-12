@@ -156,7 +156,17 @@
       "sunday": "Dimanche",
       "closed": "Fermé"
     },
-    "hoursPattern": "7:30 - 18:30"
+    "hoursPattern": "7:30 - 18:30",
+    "success": {
+      "title": "Succès",
+      "approve": "Le média a été approuvé",
+      "deny": "Le média a été refusé"
+    },
+    "errors": {
+      "error": "Erreur",
+      "approveFailed": "L’approbation du média a échoué",
+      "denyFailed": "Le refus du média a échoué"
+    }
   },
   "mediacard": {
     "perWeek": "${price} par semaine",
@@ -200,6 +210,7 @@
   "organization": {
     "title": "Organization",
     "createButton": "Créer une organization",
+    "noOrganization": "Aucune organisation trouvée.",
     "roles": {
       "mediaOwner": "Propriétaire de médias",
       "advertiser": "Annonceur"
@@ -236,7 +247,6 @@
       "roleLabel": "Rôles de l'organization",
       "submit": "Créer l'organization",
       "cancel": "Annuler",
-      "noOrganization": "Aucune organisation trouvée.",
       "errors": {
         "error": "Erreur",
         "validationError": "Informations manquantes ou invalides.",
@@ -248,7 +258,11 @@
         "zipRequired": "Le code postal de l’organisation est requis.",
         "countryRequired": "Le pays de l’organisation est requis.",
         "roleRequired": "Au moins un rôle est requis.",
-        "saveFailed": "Échec de l’enregistrement des informations de l’organisation."
+        "updateFailed": "Échec de la mise à jour des informations de l’organisation."
+      },
+      "success": {
+        "title": "Succès",
+        "update": "Les informations de l’organisation ont été mises à jour"
       }
     },
     "sizes": {
@@ -280,7 +294,15 @@
           "validationError": "Informations manquantes ou invalides.",
           "emailRequired": "Une adresse courriel est requise.",
           "emailInvalid": "L'adresse courriel fournie est invalide.",
-          "saveFailed": "Échec de l’invitation de l’employé."
+          "saveFailed": "Échec de l’invitation de l’employé.",
+          "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
+          "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
+        },
+        "success": {
+          "title": "Succès",
+          "invitation": "L’invitation a été envoyée",
+          "deleteEmployee": "L’employé a été supprimé",
+          "deleteInvitation": "L’invitation a été annulée"
         }
       },
       "modal": {
@@ -294,6 +316,23 @@
     }
   },
   "media": {
+    "newMedia": "Ajouter un nouveau média",
+    "table": {
+      "noMedia": "Aucun média trouvé. Ajoutez votre premier média pour commencer.",
+      "image": "Image",
+      "name": "Nom",
+      "displayed": "Annonces affichées",
+      "pending": "Annonces en attente",
+      "status": "Statut",
+      "update": "Prochaine mise à jour",
+      "price": "Prix"
+    },
+    "status": {
+      "active": "Actif",
+      "pending": "En attente",
+      "rejected": "Rejeté",
+      "inactive": "Désactivé"
+    },
     "errors": {
       "error": "Erreur",
       "loadFailed": "Échec du chargement du média pour modification.",
@@ -329,7 +368,10 @@
     "success": {
       "title": "Succès!",
       "create": "Média créé",
-      "update": "Média mis à jour"
+      "update": "Média mis à jour",
+      "delete": "Média supprimé",
+      "active": "Média activé",
+      "inactive": "Média désactivé"
     }
   },
   "mediaModal": {
@@ -533,10 +575,94 @@
       "validation": {
         "nameTooShort": "Nom trop court"
       }
+    },
+    "table": {
+      "newAd": "Créer une annonce",
+      "preview": "Aperçu",
+      "name": "Nom",
+      "type": "Type",
+      "duration": "Durée",
+      "actions": "Actions",
+      "noAd": "Aucune annonce trouvée dans cette campagne",
+      "types": {
+        "video": "Vidéo",
+        "image": "Image"
+      }
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Échec du chargement des campagnes"
+      },
+      "addAd": {
+        "success": {
+          "title": "Succès",
+          "message": "Annonce ajoutée"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de l’enregistrement de l’annonce"
+        }
+      },
+      "deleteAd": {
+        "success": {
+          "title": "Supprimée",
+          "message": "Annonce supprimée"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la suppression de l’annonce"
+        }
+      },
+      "createCampaign": {
+        "success": {
+          "title": "Succès",
+          "message": "Campagne créée"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création de la campagne"
+        }
+      }
+    },
+    "confirmations": {
+      "deleteAd": {
+        "title": "Supprimer l’annonce",
+        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "admin": {
+    "adminActions": {
+      "noMediaPending": "Aucun média en attente d’approbation.",
+      "approveMedia": "Approuver le média",
+      "denyMedia": "Refuser le média",
+      "approveMediaConfirmation": "Approuver ce média ?",
+      "denyMediaConfirmation": "Refuser ce média ?",
+      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
+      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
+      "deny": "Refuser",
+      "approve": "Approuver",
+      "reviewUnavailable": "Révision indisponible",
+      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
+      "pendingMedia": "Médias en attente d’approbation",
+      "image": "Image",
+      "name": "Nom",
+      "status": "Statut",
+      "price": "Prix",
+      "mediaOwner": "Propriétaire de médias",
+      "location": "Site",
+      "dailyImpressions": "Impressions quotidiennes"
     }
   },
   "reserveModal": {
     "title": "Réserver : {title}",
+    "reservation": "Réservation",
+    "dates": "Sélectionner des dates",
+    "checkout": "Vérification",
+    "payment": "Paiement",
     "selectCampaign": "Sélectionner une campagne",
     "chooseCampaign": "Choisissez une de vos campagnes",
     "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
@@ -564,29 +690,6 @@
       "campaign": "Campagne",
       "dates": "Dates",
       "totalCost": "Coût total"
-    }
-  },
-  "admin": {
-    "adminActions": {
-      "noMediaPending": "Aucun média en attente d’approbation.",
-      "approveMedia": "Approuver le média",
-      "denyMedia": "Refuser le média",
-      "approveMediaConfirmation": "Approuver ce média ?",
-      "denyMediaConfirmation": "Refuser ce média ?",
-      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
-      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
-      "deny": "Refuser",
-      "approve": "Approuver",
-      "reviewUnavailable": "Révision indisponible",
-      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
-      "pendingMedia": "Médias en attente d’approbation",
-      "image": "Image",
-      "name": "Nom",
-      "status": "Statut",
-      "price": "Prix",
-      "mediaOwner": "Propriétaire de médias",
-      "location": "Site",
-      "dailyImpressions": "Impressions quotidiennes"
     }
   }
 }

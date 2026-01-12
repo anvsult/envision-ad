@@ -17,7 +17,7 @@ import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
 import type {Employee} from "@/entities/organization";
 import {InvitationResponse} from "@/entities/organization";
 import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
-import {ConfirmRemoveInviteModal} from "@/pages/dashboard/organization/ui/modals/ConfirmRemoveInviteModal";
+import {notifications} from "@mantine/notifications";
 
 export default function OrganizationEmployees() {
     const [owner, setOwner] = useState<string | null>(null);
@@ -45,6 +45,12 @@ export default function OrganizationEmployees() {
 
         if (organizationId)
             setInvitations(await getAllOrganizationInvitations(organizationId));
+
+        notifications.show({
+            title: t("success.title"),
+            message: t("success.inviteEmployee"),
+            color: "green",
+        });
     };
 
     const handleDeleteEmployee = (employee: Employee) => {
@@ -60,27 +66,59 @@ export default function OrganizationEmployees() {
     const confirmEmployeeRemove = async () => {
         if (!employeeToRemove || !organizationId) return;
 
-        await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId)
+        try {
+            await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId);
 
-        setEmployees((prev) =>
-            prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
-        );
+            setEmployees((prev) =>
+                prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
+            );
 
-        setConfirmEmployeeOpen(false);
-        setEmployeeToRemove(null);
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.deleteEmployee"),
+                color: "green",
+            });
+        } catch (error) {
+            console.error('Failed to remove employee', error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.deleteEmployeeFailed"),
+                color: "red",
+            });
+
+        } finally {
+            setConfirmEmployeeOpen(false);
+            setEmployeeToRemove(null);
+        }
     };
 
     const confirmInviteRemove = async () => {
         if (!invitationToRemove || !organizationId) return;
 
-        await cancelInviteEmployeeToOrganization(organizationId, invitationToRemove.invitationId)
+        try {
+            await cancelInviteEmployeeToOrganization(organizationId, invitationToRemove.invitationId)
 
-        setInvitations((prev) =>
-            prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
-        );
+            setInvitations((prev) =>
+                prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
+            );
 
-        setConfirmInviteOpen(false);
-        setInvitationToRemove(null);
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.deleteInvitation"),
+                color: "green",
+            });
+        } catch (error) {
+            console.error('Failed to remove employee', error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.deleteInvitationFailed"),
+                color: "red",
+            });
+
+        } finally {
+            setConfirmInviteOpen(false);
+            setInvitationToRemove(null);
+        }
     };
 
     useEffect(() => {
@@ -163,9 +201,17 @@ export default function OrganizationEmployees() {
                 onCancel={() => setConfirmEmployeeOpen(false)}
                 onConfirm={confirmEmployeeRemove}
             />
-            <ConfirmRemoveInviteModal
+
+            <ConfirmationModal
                 opened={confirmInviteOpen}
-                email={invitationToRemove?.email || ""}
+                title={t("modal.invitationTitle")}
+                message={t.rich("modal.invitationMessage", {
+                    email: invitationToRemove?.email || "",
+                    bold: (chunks) => <strong>{chunks}</strong>
+                })}
+                cancelLabel={t("modal.cancel")}
+                confirmLabel={t("modal.confirm")}
+                confirmColor="red"
                 onCancel={() => setConfirmInviteOpen(false)}
                 onConfirm={confirmInviteRemove}
             />
