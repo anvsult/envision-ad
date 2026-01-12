@@ -13,7 +13,7 @@ import {
     Menu,
 } from "@mantine/core";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
 import { Link, usePathname } from "@/shared/lib/i18n/navigation";
@@ -27,6 +27,7 @@ interface HeaderProps {
 }
 
 export function Header({}: HeaderProps) {
+    const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
     const { user } = useUser();
@@ -71,14 +72,12 @@ export function Header({}: HeaderProps) {
 
     const authButtons = (
         <Group gap="sm">
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/auth/login?screen_hint=signup" style={{ textDecoration: "none" }}>
+            <a href={`/auth/login?ui_locales=${locale}&screen_hint=signup`} style={{ textDecoration: "none" }}>
                 <Button variant="outline" color="blue.6" radius="xl">
                     {t("register")}
                 </Button>
             </a>
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/auth/login" style={{ textDecoration: "none" }}>
+            <a href={`/auth/login?ui_locales=${locale}`} style={{ textDecoration: "none" }}>
                 <Button variant="filled" color="blue.8" radius="xl">
                     {t("signIn")}
                 </Button>
