@@ -36,7 +36,7 @@ export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: Emp
                                     <Table.Td>{emp.email}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                            {currentUserId !== emp.userId && ownerId === currentUserId &&
+                                            {currentUserId !== emp.user_id && ownerId === currentUserId &&
                                                 <Tooltip label="Delete employee">
                                                     <ActionIcon
                                                         variant="light"

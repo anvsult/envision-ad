@@ -34,6 +34,7 @@ export function MediaRow({
     PENDING: "yellow",
     REJECTED: "red",
   };
+  const t = useTranslations("media");
   function getStatusColor(status: string) {
     return statusColorMap[status] ?? "gray";
   }
@@ -69,7 +70,7 @@ export function MediaRow({
           size="md"
           radius="sm"
         >
-          {row.status}
+          {t("status." + row.status.toLowerCase())}
         </Badge>
       </Table.Td>
       <Table.Td>
