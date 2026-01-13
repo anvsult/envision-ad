@@ -38,6 +38,7 @@ CREATE TABLE business
     owner_id     VARCHAR(36),
     media_owner  BOOLEAN,
     advertiser   BOOLEAN,
+    verified     BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_address
         FOREIGN KEY (address_id)
@@ -112,6 +113,7 @@ CREATE TABLE ad_campaigns
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL
 );
+
 -- 6. Create Ads Table
 CREATE TABLE ads
 (
@@ -122,7 +124,7 @@ CREATE TABLE ads
     ad_duration_seconds INTEGER NOT NULL,
     ad_type VARCHAR(50) NOT NULL,
 
-    ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE
+    ad_campaign_ref_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE CASCADE
 );
 
 CREATE TABLE reservations
@@ -140,5 +142,4 @@ CREATE TABLE reservations
     advertiser_id VARCHAR(36),
     campaign_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE SET NULL,
     media_id UUID REFERENCES media(media_id) ON DELETE CASCADE
-
 );

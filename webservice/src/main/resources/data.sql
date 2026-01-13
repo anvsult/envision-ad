@@ -6,14 +6,12 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('88 Parliament Hill', 'Ottawa', 'ON', 'K1A 0A6', 'Canada')
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
-        true, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,
-        NOW())
+INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, verified)
+VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,true, true),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, false)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO employee (employee_id, user_id, business_id)
@@ -474,18 +472,9 @@ VALUES
     ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch');
 
 -- 2. Insert Dummy Ads
--- Note: We use integers (1, 2, 3) for ad_campaign_ref_id based on the order of insertion above.
-
--- Ads for Campaign 1 (Summer Sale)
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
-    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
-
--- Ads for Campaign 2 (Black Friday)
-INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
-VALUES
-    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2);
-
-
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d'),
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e'),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e'),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e');

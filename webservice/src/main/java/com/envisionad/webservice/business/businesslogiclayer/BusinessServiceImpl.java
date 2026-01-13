@@ -101,6 +101,17 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
+    public BusinessResponseModel verifyBusinessById(String businessId){
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business == null)
+            throw new BusinessNotFoundException();
+
+        business.setVerified(true);
+
+        return businessMapper.toResponse(businessRepository.save(business));
+    }
+
+    @Override
     public InvitationResponseModel createInvitation(Jwt jwt, String businessId, InvitationRequestModel invitationRequest) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)

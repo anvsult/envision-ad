@@ -45,6 +45,11 @@ public class BusinessController {
         return ResponseEntity.ok(businessService.updateBusinessById(jwt, businessId, requestModel));
     }
 
+    @PatchMapping("/{businessId}/verify")
+    public ResponseEntity<BusinessResponseModel> verifyBusinessById(@PathVariable String businessId){
+        return ResponseEntity.ok(businessService.verifyBusinessById(businessId));
+    }
+
     @GetMapping("/{businessId}/invites")
     @PreAuthorize("hasAuthority('read:employee')")
     public ResponseEntity<List<InvitationResponseModel>> getAllBusinessInvitations(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId) {

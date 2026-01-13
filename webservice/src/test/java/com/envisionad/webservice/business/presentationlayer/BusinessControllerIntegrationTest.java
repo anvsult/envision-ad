@@ -217,6 +217,33 @@ class BusinessControllerIntegrationTest {
     }
 
     @Test
+    void verifyBusinessById_ShouldReturnVerifiedBusiness() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+
+        // Act & Assert
+        webTestClient.patch()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}/verify", businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.businessId").isEqualTo(businessId)
+                .jsonPath("$.name").isEqualTo("TechGiant Solutions")
+                .jsonPath("$.organizationSize").isEqualTo("ENTERPRISE")
+                .jsonPath("$.address.street").isEqualTo("500 Tech Blvd")
+                .jsonPath("$.address.city").isEqualTo("Toronto")
+                .jsonPath("$.address.state").isEqualTo("ON")
+                .jsonPath("$.address.zipCode").isEqualTo("M5V 2T6")
+                .jsonPath("$.address.country").isEqualTo("Canada")
+                .jsonPath("$.verified").isEqualTo("true");
+
+        assertEquals(5, businessRepository.count());
+    }
+
+    @Test
     void getAllBusinessInvitations_ShouldReturnAllInvitations() {
         String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
         long initialInvitationCount = invitationRepository.findAllByBusinessId_BusinessId(businessId).size();

@@ -17,5 +17,6 @@ public class BusinessResponseModel {
     private OrganizationSize organizationSize;
     private Address address;
     private Roles roles;
+    private boolean verified;
     private LocalDateTime dateCreated;
 }

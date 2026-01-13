@@ -25,6 +25,7 @@ CREATE TABLE business
     owner_id     VARCHAR(36),
     media_owner  BOOLEAN,
     advertiser   BOOLEAN,
+    verified     BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_address
         FOREIGN KEY (address_id)

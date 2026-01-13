@@ -14,6 +14,8 @@ public interface BusinessService {
 
     BusinessResponseModel updateBusinessById(Jwt jwt, String id, BusinessRequestModel business);
 
+    BusinessResponseModel verifyBusinessById(String businessId);
+
     List<InvitationResponseModel> getAllInvitationsByBusinessId(Jwt jwt, String businessId);
 
     InvitationResponseModel createInvitation(Jwt jwt, String businessId, InvitationRequestModel invitation);
