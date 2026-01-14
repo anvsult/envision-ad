@@ -38,15 +38,34 @@ const monthDefs = [
   { id: "December", key: "december" },
 ];
 
-const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
-  { dayId: "Monday", dayKey: "monday", closed: false },
-  { dayId: "Tuesday", dayKey: "tuesday", closed: false },
-  { dayId: "Wednesday", dayKey: "wednesday", closed: false },
-  { dayId: "Thursday", dayKey: "thursday", closed: false },
-  { dayId: "Friday", dayKey: "friday", closed: false },
-  { dayId: "Saturday", dayKey: "saturday", closed: true },
-  { dayId: "Sunday", dayKey: "sunday", closed: true },
-];
+// const buildScheduleFromMedia = (formState: Media) => {
+//     const selectedMonths = Object.keys(formState.activeMonths).filter(
+//         (m) => !!formState.activeMonths[m]
+//     );
+
+//     const weeklySchedule = [
+//         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+//     ].map(day => ({
+//         dayOfWeek: day.toLowerCase(),
+//         isActive: !!formState.activeDaysOfWeek[day],
+//         startTime: formState.dailyOperatingHours[day]?.start ?? null,
+//         endTime: formState.dailyOperatingHours[day]?.end ?? null
+//     }));
+
+//     return {
+//         selectedMonths,
+//         weeklySchedule,
+//     };
+// };
+// const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
+//   { dayId: "Monday", dayKey: "monday", closed: false },
+//   { dayId: "Tuesday", dayKey: "tuesday", closed: false },
+//   { dayId: "Wednesday", dayKey: "wednesday", closed: false },
+//   { dayId: "Thursday", dayKey: "thursday", closed: false },
+//   { dayId: "Friday", dayKey: "friday", closed: false },
+//   { dayId: "Saturday", dayKey: "saturday", closed: true },
+//   { dayId: "Sunday", dayKey: "sunday", closed: true },
+// ];
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
@@ -146,6 +165,7 @@ export default function MediaDetailsPage() {
               <Title order={2}>{media.title}</Title>
             </Group>
 
+            {/* Media Image */}
             <Card p={0} withBorder radius="lg">
               <div style={{ position: "relative", width: "100%", height: 300 }}>
                 <Image
@@ -157,6 +177,7 @@ export default function MediaDetailsPage() {
               </div>
             </Card>
 
+            {/* Address */}
             <Stack gap={4}>
               <Text fw={600} size="lg">
                 {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
@@ -169,6 +190,7 @@ export default function MediaDetailsPage() {
 
             <Divider my="md" />
 
+            {/* Media Details */}
             <Stack gap="md">
               <Text fw={600}>{t("detailsTitle")}</Text>
 
@@ -261,16 +283,16 @@ export default function MediaDetailsPage() {
                     {t("hoursTitle")}
                   </Text>
 
-                  {hourDefs.map((h) => {
-                    const closed = h.closed;
-                    const hoursText = closed
-                      ? t("days.closed")
-                      : t("hoursPattern");
+                  {media.schedule.weeklySchedule.map((day) => {
+                    const isActive = day.isActive;
+                    const hoursText = 
+                      !isActive ? t("days.closed")
+                      : ((day.startTime ?? "00:00") + " - " + (day.endTime ?? "00:00"));
 
                     return (
-                      <Group key={h.dayId} justify="space-between">
+                      <Group key={day.dayOfWeek} justify="space-between">
                         <Text size="sm" c={closed ? "dimmed" : "dark"}>
-                          {t(`days.${h.dayKey}`)}:
+                          {t(`days.${day.dayOfWeek}`)}:
                         </Text>
                         <Text size="sm" c={closed ? "dimmed" : "dark"}>
                           {hoursText}

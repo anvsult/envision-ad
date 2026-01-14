@@ -10,15 +10,7 @@ export interface Media {
     height: number | null;
     price: number | null;
     dailyImpressions: number | null;
-    schedule: {
-        selectedMonths: string[];
-        weeklySchedule: {
-            dayOfWeek: string;
-            isActive: boolean;
-            startTime: string | null;
-            endTime: string | null;
-        }[];
-    };
+    schedule: MonthlyScheduleModel;
     status: string | null;
     typeOfDisplay: string;
     imageUrl?: string | null;
