@@ -8,8 +8,6 @@ services:
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
-    env_file:
-      - ./frontend/.env
     depends_on:
       webservice:
         condition: service_healthy
@@ -34,8 +32,6 @@ services:
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
-    env_file:
-      - .env
     restart: unless-stopped
     networks:
       - appnet
