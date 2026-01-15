@@ -74,4 +74,7 @@ public class Media {
     @JdbcTypeCode(Types.BINARY)
     @Column(name = "image_data")
     private byte[] imageData;
+
+    @Column(name = "image_url")
+    private String imageUrl;
 }

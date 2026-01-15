@@ -146,6 +146,7 @@ export default function MediaOwnerPage() {
                 dailyOperatingHours,
                 activeMonths,
                 errors: {},
+                imageUrl: backend.imageUrl ?? null
             });
 
             setEditingId(String(id));

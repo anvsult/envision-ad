@@ -25,4 +25,5 @@ public class MediaRequestModel {
     private Integer dailyImpressions;
     private ScheduleModel schedule;
     private Status status;
+    private String imageUrl;
 }

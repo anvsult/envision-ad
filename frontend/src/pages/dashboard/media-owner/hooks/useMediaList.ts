@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import {
-  addMedia,
-  getAllMedia,
-  getMediaById,
-  updateMedia,
-  deleteMedia,
+    addMedia,
+    getAllMedia,
+    getMediaById,
+    updateMedia,
+    deleteMedia,
 } from "@/features/media-management/api";
 import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
@@ -77,7 +77,8 @@ export function useMediaList() {
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
-            status: 'PENDING'
+            status: 'PENDING',
+            imageUrl: formState.imageUrl
         };
 
         try {
@@ -120,6 +121,7 @@ export function useMediaList() {
             schedule: schedule,
             status: 'PENDING',
             typeOfDisplay: formState.displayType,
+            imageUrl: formState.imageUrl,
         };
 
         try {

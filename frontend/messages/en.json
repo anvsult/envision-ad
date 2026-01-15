@@ -166,10 +166,10 @@
     "searchAddress": "Address",
     "languages": {
       "primary": "en",
-      "fallback": "fr-CA" 
+      "fallback": "fr-CA"
     },
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filter:",
         "price": "Price ($)",
         "impressions": "Minimum impressions",
@@ -193,7 +193,6 @@
       "locationDenied": "Could not get nearest media. Please allow access to your location or choose another sorting method.",
       "noSupport": "Geolocation is not supported by your browser.",
       "failedToLoad": "Failed to load media."
-
     }
   },
   "organization": {
@@ -322,6 +321,7 @@
     },
     "labels": {
       "mediaName": "Media Name",
+      "mediaImage": "Media Image",
       "typeOfDisplay": "Type of display",
       "loopDuration": "Loop duration (sec)",
       "resolution": "Resolution (px)",
@@ -378,7 +378,9 @@
     },
     "buttons": {
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "uploadFile": "Upload File",
+      "changeFile": "Change File"
     },
     "calendar": {
       "months": {

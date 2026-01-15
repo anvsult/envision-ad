@@ -36,6 +36,7 @@ export function useAdminMedia() {
 
             schedule: m.schedule,
             status,
+            imageUrl: m.imageUrl ?? null
         };
 
         return updateMedia(id, payload as MediaRequestDTO);

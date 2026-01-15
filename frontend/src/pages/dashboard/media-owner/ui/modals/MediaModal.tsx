@@ -1,6 +1,8 @@
 "use client";
 
-import { Button, Modal, ScrollArea } from "@mantine/core";
+import { Button, Modal, ScrollArea, Grid, Text } from "@mantine/core";
+import { IconUpload } from "@tabler/icons-react";
+import { CldUploadWidget } from "next-cloudinary";
 import { notifications } from "@mantine/notifications";
 import { MediaDetailsForm } from "./MediaDetailsForm";
 import { ScheduleSelector } from "./ScheduleSelector";
@@ -32,21 +34,107 @@ export function MediaModal({
 }: MediaModalProps) {
     const t = useTranslations("mediaModal");
 
+    // Cloudinary Widget Options
+    const widgetOptions = {
+        sources: ['local', 'url'] as ('local' | 'url')[],
+        resourceType: 'image',
+        multiple: false,
+        maxFileSize: 10000000,
+    };
+
+    const handleUploadSuccess = (results: any) => {
+        if (typeof results.info === 'object' && results.info.secure_url) {
+            onFieldChange("imageUrl", results.info.secure_url);
+        }
+    };
+
     return (
         <Modal
             opened={opened}
             onClose={onClose}
             title={isEditing ? t("title.update") : t("title.create")}
-            size="lg"
+            size="xl"
             centered
             overlayProps={{ opacity: 0.55 }}
         >
-            <ScrollArea style={{ height: 420 }}>
+            <ScrollArea style={{ height: 600 }}>
                 <div style={{ paddingRight: 8 }}>
-                    <MediaDetailsForm
-                        formState={formState}
-                        onFieldChange={onFieldChange}
-                    />
+                    <Grid gutter="xl">
+                        {/* LEFT COLUMN: FORM */}
+                        <Grid.Col span={6}>
+                            <MediaDetailsForm
+                                formState={formState}
+                                onFieldChange={onFieldChange}
+                            />
+                        </Grid.Col>
+
+                        {/* RIGHT COLUMN: UPLOAD */}
+                        <Grid.Col span={6}>
+                            <Text size="sm" fw={500} mb={4}>
+                                {t("labels.mediaImage")}
+                            </Text>
+
+                            <CldUploadWidget
+                                signatureEndpoint="/api/cloudinary/sign-upload"
+                                onSuccess={handleUploadSuccess}
+                                options={widgetOptions}
+                            >
+                                {({ open }) => (
+                                    <div
+                                        style={{
+                                            border: '2px dashed var(--mantine-color-gray-4)',
+                                            borderRadius: '8px',
+                                            height: '300px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            cursor: 'pointer',
+                                            backgroundColor: formState.imageUrl ? 'transparent' : 'var(--mantine-color-gray-0)',
+                                            position: 'relative',
+                                            overflow: 'hidden'
+                                        }}
+                                        onClick={() => open()}
+                                    >
+                                        {formState.imageUrl ? (
+                                            <img
+                                                src={formState.imageUrl}
+                                                alt="Uploaded media"
+                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <>
+                                                <IconUpload size={40} color="var(--mantine-color-gray-5)" />
+                                                <Text size="sm" c="dimmed" mt="sm">
+                                                    {t("buttons.uploadFile")}
+                                                </Text>
+                                            </>
+                                        )}
+
+                                        {formState.imageUrl && (
+                                            <div style={{
+                                                position: 'absolute',
+                                                bottom: 10,
+                                                right: 10,
+                                                backgroundColor: 'rgba(255,255,255,0.8)',
+                                                padding: '4px 8px',
+                                                borderRadius: '4px'
+                                            }}>
+                                                <Button size="xs" variant="default" onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    open();
+                                                }}>
+                                                    {t("buttons.changeFile")}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </CldUploadWidget>
+                        </Grid.Col>
+                    </Grid>
+
+                    <div style={{ height: 24 }} />
 
                     <ScheduleSelector
                         formState={formState}

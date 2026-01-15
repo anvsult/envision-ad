@@ -28,12 +28,15 @@ public class MediaResponseMapper {
         response.setPrice(media.getPrice());
         response.setDailyImpressions(media.getDailyImpressions());
 
-        if (media.getImageData() != null) {
+        if (media.getImageUrl() != null) {
+            response.setImageUrl(media.getImageUrl());
+        } else if (media.getImageData() != null) {
             response.setImageUrl("/api/v1/media/" + media.getId() + "/image");
         }
 
         if (media.getMediaLocation() != null) {
-            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(media);
+            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(
+                    media);
 
             response.setMediaLocation(mediaLocationResponseModel);
         }

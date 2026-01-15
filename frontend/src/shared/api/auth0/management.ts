@@ -60,12 +60,21 @@ export class Auth0ManagementService {
         }
     }
 
+    private static userCache: Record<string, { data: any; expires: number }> = {};
+    private static CACHE_DURATION = 300000; // 5 minutes in ms
+
     /**
      * Retrieves a user's details from Auth0.
      * @param {string} userId - The unique identifier of the user (e.g., "auth0|123456").
      * @returns {Promise<any | null>} The user object if found, or null if not found or an error occurs.
      */
     static async getUser(userId: string) {
+        // Return cached user if valid
+        const cached = this.userCache[userId];
+        if (cached && Date.now() < cached.expires) {
+            return cached.data;
+        }
+
         try {
             const token = await this.getAccessToken();
             const res = await fetch(
@@ -74,18 +83,35 @@ export class Auth0ManagementService {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                    cache: 'no-store' // Ensure we always get fresh data
+                    // cache: 'no-store' removed to allow implementation of manual caching
                 }
             );
 
             if (!res.ok) {
+                // If 429, try to return stale cache if available
+                if (res.status === 429 && cached) {
+                    console.warn(`Rate limited for user ${userId}, returning stale cache`);
+                    return cached.data;
+                }
                 console.error(`Failed to fetch user ${userId}: ${res.statusText}`);
                 throw new Error(`Failed to fetch user ${userId}: ${res.statusText}`);
             }
 
-            return res.json();
+            const data = await res.json();
+
+            // Update cache
+            this.userCache[userId] = {
+                data,
+                expires: Date.now() + this.CACHE_DURATION
+            };
+
+            return data;
         } catch (error) {
             console.error("Error in Auth0ManagementService.getUserClient:", error);
+            // Fallback to stale cache on error if possible
+            if (this.userCache[userId]) {
+                return this.userCache[userId].data;
+            }
             return null;
         }
     }
@@ -122,7 +148,15 @@ export class Auth0ManagementService {
             throw new Error(errorMsg);
         }
 
-        return res.json();
+        const updatedData = await res.json();
+
+        // Update cache with new data
+        this.userCache[userId] = {
+            data: updatedData,
+            expires: Date.now() + this.CACHE_DURATION
+        };
+
+        return updatedData;
     }
 
     /**

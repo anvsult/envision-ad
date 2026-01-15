@@ -32,12 +32,12 @@ public class MediaRequestMapper {
         media.setHeight(request.getHeight());
         media.setPrice(request.getPrice());
         media.setDailyImpressions(request.getDailyImpressions());
+        media.setImageUrl(request.getImageUrl());
 
         if (request.getMediaLocationId() != null) {
             media.setMediaLocation(
-                mediaLocationRepo.findById(UUID.fromString(request.getMediaLocationId()))
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId"))
-            );
+                    mediaLocationRepo.findById(UUID.fromString(request.getMediaLocationId()))
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid mediaLocationId")));
         }
 
         return media;
