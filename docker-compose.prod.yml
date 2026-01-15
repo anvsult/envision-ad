@@ -2,12 +2,39 @@ services:
   frontend:
     build:
       context: ./frontend
+#      Since Next.js has a client and a server side, it needs some secrets at
+#      runtime and others at build time
+#      Here by listing the NEXT_PUBLIC variables in the args section,
+#      We are injecting the secrets at runtime (into the javascript files)
+#      Those are the variables that CAN be seen by other people
+      args:
+        - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
+        - NEXT_PUBLIC_CLOUDINARY_API_KEY=${NEXT_PUBLIC_CLOUDINARY_API_KEY}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - APP_BASE_URL=${APP_BASE_URL}
       dockerfile: Dockerfile
     ports:
       - "127.0.0.1:3000:3000"
+    #   Here, I am listing the variables that Next.js will potentially need
+    #   while it's running (runtime).
+    #   These are the secrets that CANNOT be seen by others
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
+      APP_BASE_URL: "${APP_BASE_URL}"
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
+      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
+      AUTH0_SECRET: "${AUTH0_SECRET}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+      AUTH0_MGMT_AUDIENCE: "${AUTH0_MGMT_AUDIENCE}"
+      AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
+      AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+      CLOUDINARY_URL: "${CLOUDINARY_URL}"
+      CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
+      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+      NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
+      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
     depends_on:
       webservice:
         condition: service_healthy
@@ -32,6 +59,10 @@ services:
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+      EMAIL_PORT: "${EMAIL_PORT}"
+      EMAIL_SMTP: "${EMAIL_SMTP}"
+      EMAIL_USER: "${EMAIL_USER}"
+      EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
     restart: unless-stopped
     networks:
       - appnet

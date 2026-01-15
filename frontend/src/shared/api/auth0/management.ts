@@ -2,6 +2,9 @@
  * Service for interacting with the Auth0 Management API.
  * Uses Client Credentials Grant to obtain an access token.
  */
+
+// For any management query, use the AUTH0_MGMT_DOMAIN
+// See here: https://auth0.com/docs/customize/custom-domains#custom-domains-and-authentication
 export class Auth0ManagementService {
     /**
      * Retrieves an access token for the Auth0 Management API.
@@ -24,13 +27,13 @@ export class Auth0ManagementService {
         }
 
         try {
-            const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
+            const tokenRes = await fetch(`https://${process.env.AUTH0_MGMT_DOMAIN}/oauth/token`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({
                     client_id: process.env.AUTH0_MGMT_CLIENT_ID,
                     client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                    audience: `https://${process.env.AUTH0_DOMAIN}/api/v2/`,
+                    audience: `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/`,
                     grant_type: 'client_credentials',
                 }),
             });
@@ -69,7 +72,7 @@ export class Auth0ManagementService {
         try {
             const token = await this.getAccessToken();
             const res = await fetch(
-                `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+                `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -100,7 +103,7 @@ export class Auth0ManagementService {
     static async updateUser(userId: string, data: any) {
         const token = await this.getAccessToken();
         const res = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+            `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
             {
                 method: 'PATCH',
                 headers: {
