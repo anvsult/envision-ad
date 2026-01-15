@@ -193,6 +193,8 @@ export function useMediaList() {
                         : m
                 )
             );
+
+            return updated.status ?? nextStatus;
         } catch (err) {
             console.error("Failed to toggle media status:", err);
 

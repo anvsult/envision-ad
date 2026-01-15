@@ -24,6 +24,7 @@ import { getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { useAdminMedia } from "@/pages/dashboard/admin/hooks/useAdminMedia";
+import {notifications} from "@mantine/notifications";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -93,9 +94,19 @@ export default function AdminMediaReviewPage() {
       }
 
       closeConfirm();
+      notifications.show({
+        title: t("success.title"),
+        message: t("success." + confirmAction),
+        color: "green",
+      });
       router.push("/dashboard/admin/media/pending");
     } catch (e) {
       console.error(e);
+      notifications.show({
+        title: t("errors.error"),
+        message: t("errors." + confirmAction + "Failed"),
+        color: "red",
+      });
     } finally {
       setSubmitting(false);
     }

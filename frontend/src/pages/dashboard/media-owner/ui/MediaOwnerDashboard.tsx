@@ -1,33 +1,27 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
-import { MediaTable } from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
-import { useMediaList } from "@/pages/dashboard/media-owner/hooks/useMediaList";
-import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
-import { useTranslations } from "next-intl";
-import { Box, Button, Drawer, Group, Pagination, Paper, Stack, } from "@mantine/core";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { modals } from "@mantine/modals";
-import { notifications } from "@mantine/notifications";
-import { usePathname } from "@/shared/lib/i18n/navigation";
-import SideBar from "@/widgets/SideBar/SideBar";
-import { WeeklyScheduleModel } from "@/entities/media";
-import { IconCheck } from "@tabler/icons-react";
+import React, {useMemo, useState} from "react";
+import {MediaModal} from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
+import {MediaTable} from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
+import {useMediaList} from "@/pages/dashboard/media-owner/hooks/useMediaList";
+import {useMediaForm} from "@/pages/dashboard/media-owner/hooks/useMediaForm";
+import {useTranslations} from "next-intl";
+import {Button, Group, Pagination, Stack,} from "@mantine/core";
+import {modals} from "@mantine/modals";
+import {notifications} from "@mantine/notifications";
+import {WeeklyScheduleModel} from "@/entities/media";
+import {IconCheck} from "@tabler/icons-react";
 
 const ITEMS_PER_PAGE = 20;
 
 export default function MediaOwnerPage() {
-    const { media, addNewMedia, editMedia, deleteMediaById, fetchMediaById, toggleMediaStatus } =
+    const {media, addNewMedia, editMedia, deleteMediaById, fetchMediaById, toggleMediaStatus} =
         useMediaList();
-    const { formState, updateField, updateDayTime, resetForm, setFormState } =
+    const {formState, updateField, updateDayTime, resetForm, setFormState} =
         useMediaForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [activePage, setActivePage] = useState(1);
-    const [opened, { toggle, close }] = useDisclosure(false);
-    const pathname = usePathname();
-    const isMobile = useMediaQuery("(max-width: 768px)");
     const t = useTranslations("media");
 
     const handleSave = async () => {
@@ -38,7 +32,7 @@ export default function MediaOwnerPage() {
                     title: t("success.title"),
                     message: t("success.update"),
                     color: "green",
-                    icon: <IconCheck size="1.1rem" />,
+                    icon: <IconCheck size="1.1rem"/>,
                 });
             } else {
                 await addNewMedia(formState);
@@ -46,15 +40,19 @@ export default function MediaOwnerPage() {
                     title: t("success.title"),
                     message: t("success.create"),
                     color: "green",
-                    icon: <IconCheck size="1.1rem" />,
+                    icon: <IconCheck size="1.1rem"/>,
                 });
             }
             setIsModalOpen(false);
             resetForm();
             setEditingId(null);
-        } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : String(err);
-            alert(message);
+        } catch (error) {
+            console.error("Failed to save media", error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.saveFailed"),
+                color: "red",
+            });
         }
     };
 
@@ -81,13 +79,13 @@ export default function MediaOwnerPage() {
                 string,
                 { start: string; end: string }
             > = {
-                Monday: { start: "00:00", end: "00:00" },
-                Tuesday: { start: "00:00", end: "00:00" },
-                Wednesday: { start: "00:00", end: "00:00" },
-                Thursday: { start: "00:00", end: "00:00" },
-                Friday: { start: "00:00", end: "00:00" },
-                Saturday: { start: "00:00", end: "00:00" },
-                Sunday: { start: "00:00", end: "00:00" },
+                Monday: {start: "00:00", end: "00:00"},
+                Tuesday: {start: "00:00", end: "00:00"},
+                Wednesday: {start: "00:00", end: "00:00"},
+                Thursday: {start: "00:00", end: "00:00"},
+                Friday: {start: "00:00", end: "00:00"},
+                Saturday: {start: "00:00", end: "00:00"},
+                Sunday: {start: "00:00", end: "00:00"},
             };
 
             if (schedule.weeklySchedule) {
@@ -150,9 +148,13 @@ export default function MediaOwnerPage() {
 
             setEditingId(String(id));
             setIsModalOpen(true);
-        } catch (err) {
-            console.error("Failed to fetch media for edit:", err);
-            alert(t("errors.loadFailed"));
+        } catch (error) {
+            console.error("Failed to load media", error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.loadFailed"),
+                color: "red",
+            });
         }
     };
 
@@ -165,13 +167,22 @@ export default function MediaOwnerPage() {
                 confirm: t("deleteConfirm.confirm"),
                 cancel: t("deleteConfirm.cancel"),
             },
-            confirmProps: { color: "red" },
+            confirmProps: {color: "red"},
             onConfirm: async () => {
                 try {
                     await deleteMediaById(id);
-                } catch (err) {
-                    console.error("Failed to delete media:", err);
-                    alert(t("errors.deleteFailed"));
+                    notifications.show({
+                        title: t("success.title"),
+                        message: t("success.delete"),
+                        color: "green",
+                    });
+                } catch (error) {
+                    console.error("Failed to delete media", error);
+                    notifications.show({
+                        title: "Error",
+                        message: t("errors.deleteFailed"),
+                        color: "red",
+                    });
                 }
             },
         });
@@ -179,10 +190,22 @@ export default function MediaOwnerPage() {
 
     const handleToggleStatus = async (id: string | number) => {
         try {
-            await toggleMediaStatus(id);
-        } catch (err) {
-            console.error("Failed to toggle media status:", err);
-            alert(t("errors.statusToggleFailed") || "Failed to change media status.");
+            const newStatus = await toggleMediaStatus(id);
+
+            if (newStatus) {
+                notifications.show({
+                    title: t("success.title"),
+                    message: newStatus === "ACTIVE" ? t("success.active") : t("success.inactive"),
+                    color: "green",
+                });
+            }
+        } catch (error) {
+            console.error("Failed to toggle media status", error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.toggleFailed"),
+                color: "red",
+            });
         }
     };
 
@@ -195,77 +218,49 @@ export default function MediaOwnerPage() {
     }, [media, activePage]);
 
     return (
-        <>
-            <Box>
-                <Drawer
-                    opened={opened}
-                    onClose={close}
-                    size="xs"
-                    padding="md"
-                    hiddenFrom="md"
-                    zIndex={1000}
+        <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
+            <Group justify="flex-start">
+                <Button
+                    onClick={() => {
+                        setEditingId(null);
+                        resetForm();
+                        setIsModalOpen(true);
+                    }}
                 >
-                    <SideBar></SideBar>
-                </Drawer>
+                    {t('newMedia')}
+                </Button>
+            </Group>
+            <MediaModal
+                opened={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingId(null);
+                    resetForm();
+                }}
+                onSave={handleSave}
+                isEditing={!!editingId}
+                formState={formState}
+                onFieldChange={updateField}
+                onDayTimeChange={updateDayTime}
+            />
 
-                <Group align="flex-start" gap={0} wrap="nowrap">
-                    {!isMobile && (
-                        <Paper
-                            w={250}
-                            p="md"
-                            style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
-                            withBorder
-                        >
-                            <SideBar></SideBar>
-                        </Paper>
-                    )}
-
-                    <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
-                        <Group justify="flex-start">
-                            <Button
-                                onClick={() => {
-                                    setEditingId(null);
-                                    resetForm();
-                                    setIsModalOpen(true);
-                                }}
-                            >
-                                Add new media
-                            </Button>
-                        </Group>
-                        <MediaModal
-                            opened={isModalOpen}
-                            onClose={() => {
-                                setIsModalOpen(false);
-                                setEditingId(null);
-                                resetForm();
-                            }}
-                            onSave={handleSave}
-                            isEditing={!!editingId}
-                            formState={formState}
-                            onFieldChange={updateField}
-                            onDayTimeChange={updateDayTime}
-                        />
-
-                        <MediaTable
-                            rows={paginatedMedia}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onToggleStatus={handleToggleStatus}
-                        />
-                        {totalPages > 1 && (
-                            <Group justify="center" mt="md">
-                                <Pagination
-                                    total={totalPages}
-                                    value={activePage}
-                                    onChange={setActivePage}
-                                    size="md"
-                                />
-                            </Group>
-                        )}
-                    </Stack>
+            <MediaTable
+                rows={paginatedMedia}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onToggleStatus={handleToggleStatus}
+            />
+            {totalPages > 1 && (
+                <Group justify="center" mt="md">
+                    <Pagination
+                        total={totalPages}
+                        value={activePage}
+                        onChange={setActivePage}
+                        size="md"
+                    />
                 </Group>
-            </Box>
-        </>
+            )}
+        </Stack>
     );
 }
 

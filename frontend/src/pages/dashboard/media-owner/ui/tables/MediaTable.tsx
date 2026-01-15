@@ -4,6 +4,7 @@ import { MediaRow, MediaRowData } from "./MediaRow";
 import { Paper, ScrollArea, Table, Text, Card, Group, Avatar, Badge, Stack } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { MediaActions } from "./MediaActions";
+import {useTranslations} from "next-intl";
 
 interface MediaTableProps {
   rows: MediaRowData[];
@@ -14,6 +15,7 @@ interface MediaTableProps {
 
 export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTableProps) {
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const t = useTranslations("media.table");
 
   const statusColorMap: Record<string, string> = {
     ACTIVE: "green",
@@ -70,7 +72,7 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
           ))
         ) : (
           <Text ta="center" c="dimmed" py="xl">
-            No media found. Add your first media to get started.
+            {t("noMedia")}
           </Text>
         )}
       </Stack>
@@ -91,14 +93,13 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
         >
           <Table.Thead>
             <Table.Tr>
-              <Table.Th w={80} miw={60}>Image</Table.Th>
-              <Table.Th miw={120}>Name</Table.Th>
-              <Table.Th miw={100}>Ads displayed</Table.Th>
-              <Table.Th miw={90}>Ads pending</Table.Th>
-              <Table.Th miw={140}>Status</Table.Th>
-              <Table.Th miw={100}>Next update</Table.Th>
-              <Table.Th w={100} miw={90}>Price</Table.Th>
-              <Table.Th w={60} miw={50}></Table.Th>
+              <Table.Th w={80} miw={60}>{t("image")}</Table.Th>
+              <Table.Th miw={120}>{t("name")}</Table.Th>
+              <Table.Th miw={100}>{t("displayed")}</Table.Th>
+              <Table.Th miw={90}>{t("pending")}</Table.Th>
+              <Table.Th miw={140}>{t("status")}</Table.Th>
+              <Table.Th miw={100}>{t("update")}</Table.Th>
+              <Table.Th w={100} miw={90}>{t("price")}</Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
@@ -116,7 +117,7 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
               <Table.Tr>
                 <Table.Td colSpan={8}>
                   <Text ta="center" c="dimmed" py="xl">
-                    No media found. Add your first media to get started.
+                    {t("noMedia")}
                   </Text>
                 </Table.Td>
               </Table.Tr>

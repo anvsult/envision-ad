@@ -25,7 +25,8 @@ import { createReservation } from "@/features/reservation-management/api";
 import { AdCampaign } from "@/entities/ad-campaign";
 import dayjs from 'dayjs';
 import '@mantine/dates/styles.css';
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
+import 'dayjs/locale/fr';
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -43,6 +44,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [dateRange, setDateRange] = useState<DatesRangeValue<string>>([null, null]);
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
+    const locale = useLocale();
 
     useEffect(() => {
         if (opened) {
@@ -195,9 +197,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             <Stack gap="xl" p="md">
 
                 <Stepper active={activeStep} onStepClick={setActiveStep} allowNextStepsSelect={false}>
-                    <Stepper.Step label="Reservation" description="Select dates" icon={<IconCalendar size={18} />} />
+                    <Stepper.Step label={t("reservation")} description={t("dates")} icon={<IconCalendar size={18} />} />
                     {/*<Stepper.Step label="Preview" description="How it will look" icon={<IconAd size={18} />} />*/}
-                    <Stepper.Step label="Checkout" description="Payment" icon={<IconCreditCard size={18} />} />
+                    <Stepper.Step label={t("checkout")} description={t("payment")} icon={<IconCreditCard size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -266,6 +268,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                                 onChange={handleDateChange}
                                                 getDayProps={getDayProps}
                                                 numberOfColumns={isSmallScreen ? 1 : 2}
+                                                locale={locale}
                                             />
                                         </Paper>
                                         {errors.date && (

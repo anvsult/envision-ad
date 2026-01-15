@@ -2,6 +2,7 @@ import React from "react";
 import { Accordion, ActionIcon, Button, Group, ScrollArea, Table, Text, Badge, Image, Box, Flex } from "@mantine/core";
 import { IconTrash, IconPlus, IconPhoto, IconMovie } from "@tabler/icons-react";
 import { AdCampaign } from "@/entities/ad-campaign";
+import {useTranslations} from "next-intl";
 
 interface AdCampaignsTableProps {
     campaigns: AdCampaign[];
@@ -10,7 +11,7 @@ interface AdCampaignsTableProps {
 }
 
 export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampaignsTableProps) {
-
+    const t = useTranslations("adCampaigns.table");
     const getIcon = (type: string) => type === "VIDEO" ? <IconMovie size={16} /> : <IconPhoto size={16} />;
 
     return (
@@ -33,7 +34,7 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                 leftSection={<IconPlus size={14} />}
                                 onClick={() => onOpenAddAd(campaign.campaignId)}
                             >
-                                Create Ad
+                                {t('newAd')}
                             </Button>
                         </Box>
                     </Flex>
@@ -43,11 +44,11 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                             <Table striped highlightOnHover verticalSpacing="sm">
                                 <Table.Thead>
                                     <Table.Tr>
-                                        <Table.Th>Preview</Table.Th>
-                                        <Table.Th>Name</Table.Th>
-                                        <Table.Th>Type</Table.Th>
-                                        <Table.Th>Duration</Table.Th>
-                                        <Table.Th style={{ textAlign: "right" }}>Actions</Table.Th>
+                                        <Table.Th>{t('preview')}</Table.Th>
+                                        <Table.Th>{t('name')}</Table.Th>
+                                        <Table.Th>{t('type')}</Table.Th>
+                                        <Table.Th>{t('duration')}</Table.Th>
+                                        <Table.Th style={{ textAlign: "right" }}>{t('actions')}</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
@@ -88,7 +89,7 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                             </Table.Td>
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
                                                 <Badge leftSection={getIcon(ad.adType)} color={ad.adType === "VIDEO" ? "blue" : "green"} variant="light">
-                                                    {ad.adType}
+                                                    {t("types." + ad.adType.toLowerCase())}
                                                 </Badge>
                                             </Table.Td>
                                             <Table.Td style={{ verticalAlign: 'middle' }}>
@@ -106,7 +107,7 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                     {campaign.ads.length === 0 && (
                                         <Table.Tr>
                                             <Table.Td colSpan={5} align="center">
-                                                <Text c="dimmed" size="sm" py="md">No ads found in this campaign</Text>
+                                                <Text c="dimmed" size="sm" py="md">{t('noAd')}No ads found in this campaign</Text>
                                             </Table.Td>
                                         </Table.Tr>
                                     )}

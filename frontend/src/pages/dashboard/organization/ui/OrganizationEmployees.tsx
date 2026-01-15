@@ -1,11 +1,10 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {Accordion, Box, Button, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
+import {Accordion, Button, Group, Stack, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
-import {useUser} from "@auth0/nextjs-auth0";
+import {useUser} from "@auth0/nextjs-auth0/client";
 import {
     cancelInviteEmployeeToOrganization,
     getAllOrganizationEmployees,
@@ -14,16 +13,13 @@ import {
     removeEmployeeFromOrganization
 } from "@/features/organization-management/api";
 import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
-import SideBar from "@/widgets/SideBar/SideBar";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
 import type {Employee} from "@/entities/organization";
 import {InvitationResponse} from "@/entities/organization";
 import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
-import {ConfirmRemoveInviteModal} from "@/pages/dashboard/organization/ui/modals/ConfirmRemoveInviteModal";
+import {notifications} from "@mantine/notifications";
 
 export default function OrganizationEmployees() {
-    const [opened, {toggle, close}] = useDisclosure(false);
-    const isMobile = useMediaQuery("(max-width: 768px)");
     const [owner, setOwner] = useState<string | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [invitations, setInvitations] = useState<InvitationResponse[]>([]);
@@ -49,6 +45,12 @@ export default function OrganizationEmployees() {
 
         if (organizationId)
             setInvitations(await getAllOrganizationInvitations(organizationId));
+
+        notifications.show({
+            title: t("success.title"),
+            message: t("success.inviteEmployee"),
+            color: "green",
+        });
     };
 
     const handleDeleteEmployee = (employee: Employee) => {
@@ -64,27 +66,59 @@ export default function OrganizationEmployees() {
     const confirmEmployeeRemove = async () => {
         if (!employeeToRemove || !organizationId) return;
 
-        await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId)
+        try {
+            await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId);
 
-        setEmployees((prev) =>
-            prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
-        );
+            setEmployees((prev) =>
+                prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
+            );
 
-        setConfirmEmployeeOpen(false);
-        setEmployeeToRemove(null);
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.deleteEmployee"),
+                color: "green",
+            });
+        } catch (error) {
+            console.error('Failed to remove employee', error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.deleteEmployeeFailed"),
+                color: "red",
+            });
+
+        } finally {
+            setConfirmEmployeeOpen(false);
+            setEmployeeToRemove(null);
+        }
     };
 
     const confirmInviteRemove = async () => {
         if (!invitationToRemove || !organizationId) return;
 
-        await cancelInviteEmployeeToOrganization(organizationId, invitationToRemove.invitationId)
+        try {
+            await cancelInviteEmployeeToOrganization(organizationId, invitationToRemove.invitationId)
 
-        setInvitations((prev) =>
-            prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
-        );
+            setInvitations((prev) =>
+                prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
+            );
 
-        setConfirmInviteOpen(false);
-        setInvitationToRemove(null);
+            notifications.show({
+                title: t("success.title"),
+                message: t("success.deleteInvitation"),
+                color: "green",
+            });
+        } catch (error) {
+            console.error('Failed to remove employee', error);
+            notifications.show({
+                title: t("errors.error"),
+                message: t("errors.deleteInvitationFailed"),
+                color: "red",
+            });
+
+        } finally {
+            setConfirmInviteOpen(false);
+            setInvitationToRemove(null);
+        }
     };
 
     useEffect(() => {
@@ -115,94 +149,72 @@ export default function OrganizationEmployees() {
     }, [user?.sub]);
 
     return (
-        <>
-            <Box>
-                <Drawer
-                    opened={opened}
-                    onClose={close}
-                    size="xs"
-                    padding="md"
-                    hiddenFrom="md"
-                    zIndex={1000}
-                >
-                    <SideBar></SideBar>
-                </Drawer>
+        <Stack gap="md" p="md">
+            <Group justify="space-between">
+                <Title order={2}>{t("title")}</Title>
+                {user?.sub === owner &&
+                    <Button
+                        onClick={() => {
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        {t("addButton")}
+                    </Button>
+                }
+            </Group>
 
-                <Group align="flex-start" gap={0} wrap="nowrap">
-                    {!isMobile && (
-                        <Paper
-                            w={250}
-                            p="md"
-                            style={{minHeight: "calc(100vh - 80px)", borderRadius: 0}}
-                            withBorder
-                        >
-                            <SideBar></SideBar>
-                        </Paper>
-                    )}
+            <AddEmployeeModal
+                opened={isModalOpen}
+                onClose={handleCloseModal}
+                onSuccess={handleSuccess}
+                email={employeeEmail}
+                setEmail={setEmployeeEmail}
+                organizationId={organizationId!}
+            />
 
-                    <div style={{flex: 1, minWidth: 0}}>
-                        <Stack gap="md" p="md">
-                            <Group justify="space-between">
-                                <Title order={2}>{t("title")}</Title>
-                                {user?.sub === owner &&
-                                    <Button
-                                        onClick={() => {
-                                            setIsModalOpen(true);
-                                        }}
-                                    >
-                                        {t("addButton")}
-                                    </Button>
-                                }
-                            </Group>
+            {user?.sub && owner && (
+                <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
+                    <InvitationTable
+                        invitations={invitations}
+                        onDelete={handleDeleteInvitation}
+                    />
 
-                            <AddEmployeeModal
-                                opened={isModalOpen}
-                                onClose={handleCloseModal}
-                                onSuccess={handleSuccess}
-                                email={employeeEmail}
-                                setEmail={setEmployeeEmail}
-                                organizationId={organizationId!}
-                            />
+                    <EmployeeTable
+                        employees={employees}
+                        onDelete={handleDeleteEmployee}
+                        currentUserId={user.sub}
+                        ownerId={owner}
+                    />
+                </Accordion>
+            )}
 
-                            {user?.sub && owner && (
-                                <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
-                                        <InvitationTable
-                                            invitations={invitations}
-                                            onDelete={handleDeleteInvitation}
-                                        />
+            <ConfirmationModal
+                opened={confirmEmployeeOpen}
+                title={t("modal.employeeTitle")}
+                message={t.rich("modal.employeeMessage", {
+                    name: employeeToRemove?.name || "",
+                    bold: (chunks) => <strong>{chunks}</strong>
+                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
+                cancelLabel={t("modal.cancel")}
+                confirmLabel={t("modal.confirm")}
+                confirmColor="red"
+                onCancel={() => setConfirmEmployeeOpen(false)}
+                onConfirm={confirmEmployeeRemove}
+            />
 
-                                        <EmployeeTable
-                                            employees={employees}
-                                            onDelete={handleDeleteEmployee}
-                                            currentUserId={user.sub}
-                                            ownerId={owner}
-                                        />
-                                </Accordion>
-                            )}
-
-                            <ConfirmationModal
-                                opened={confirmEmployeeOpen}
-                                title={t("modal.employeeTitle")}
-                                message={t.rich("modal.employeeMessage", {
-                                    name: employeeToRemove?.name || "",
-                                    bold: (chunks) => <strong>{chunks}</strong>
-                                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
-                                cancelLabel={t("modal.cancel")}
-                                confirmLabel={t("modal.confirm")}
-                                confirmColor="red"
-                                onCancel={() => setConfirmEmployeeOpen(false)}
-                                onConfirm={confirmEmployeeRemove}
-                            />
-                            <ConfirmRemoveInviteModal
-                                opened={confirmInviteOpen}
-                                email={invitationToRemove?.email || ""}
-                                onCancel={() => setConfirmInviteOpen(false)}
-                                onConfirm={confirmInviteRemove}
-                            />
-                        </Stack>
-                    </div>
-                </Group>
-            </Box>
-        </>
+            <ConfirmationModal
+                opened={confirmInviteOpen}
+                title={t("modal.invitationTitle")}
+                message={t.rich("modal.invitationMessage", {
+                    email: invitationToRemove?.email || "",
+                    bold: (chunks) => <strong>{chunks}</strong>
+                })}
+                cancelLabel={t("modal.cancel")}
+                confirmLabel={t("modal.confirm")}
+                confirmColor="red"
+                onCancel={() => setConfirmInviteOpen(false)}
+                onConfirm={confirmInviteRemove}
+            />
+        </Stack>
     );
 }

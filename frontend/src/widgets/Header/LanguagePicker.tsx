@@ -3,6 +3,7 @@ import { Button, Group, Text } from "@mantine/core";
 import { useRouter, usePathname } from "@/shared/lib/i18n/navigation";
 import { useLocale } from "next-intl";
 import Image from "next/image";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const locales = [
   { image: "/images/english.png", locale: "en", alt: "English", label: "EN" },
@@ -14,9 +15,27 @@ export function LanguagePicker() {
   const pathname = usePathname();
   const currentLocale = useLocale();
   const [isPending, startTransition] = useTransition();
+  const { user } = useUser();
 
-  const handleToggle = () => {
+  const handleToggle = async () => {
     const nextLocale = currentLocale === "en" ? "fr" : "en";
+
+    if (user) {
+      try {
+        const response = await fetch(`/api/auth0/update-user-language/${encodeURIComponent(user.sub)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ locale: nextLocale }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to save language preference', response.status);
+        }
+      } catch {
+        console.error('Failed to save language preference');
+      }
+    }
+
     startTransition(() => {
       router.replace(pathname, { locale: nextLocale });
     });
