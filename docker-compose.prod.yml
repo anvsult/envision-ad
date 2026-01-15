@@ -63,6 +63,8 @@ services:
       EMAIL_SMTP: "${EMAIL_SMTP}"
       EMAIL_USER: "${EMAIL_USER}"
       EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
     restart: unless-stopped
     networks:
       - appnet
