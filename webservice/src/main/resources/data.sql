@@ -1,5 +1,5 @@
 INSERT INTO address (street, city, state, zip_code, country)
-VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
+VALUES ('900 Rue Riverside', 'Saint-Lambert', 'QC', 'J4P 3P2', 'Canada'),
        ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),
        ('789 Stanley Park Dr', 'Vancouver', 'BC', 'V6G 3E2', 'Canada'),
        ('404 Rocky View Rd', 'Calgary', 'AB', 'T3K 5Y6', 'Canada'),
@@ -7,7 +7,7 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
     ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,
+VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934e8515479d2b6d3cf7575', 'MEDIUM', 1, true,
         true, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, NOW()),
@@ -26,25 +26,25 @@ ON CONFLICT (invitation_id) DO NOTHING;
 
 INSERT INTO media_location (media_location_id, name, description, country, province, city, street, postal_code, latitude, longitude)
 VALUES
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Downtown Billboard A', 'Large DIGITAL billboard near main intersection',
-     'Canada', 'ON', 'Toronto', '123 King St W', 'M5H 1A1',
-     43.651070, -79.347015),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Champlain College Gym Hallway', 'Digital screen located near the campus gym and fitness facilities. This screen reaches a health-conscious, active audience during workouts and transitions, offering repeated exposure in a performance-focused environment.',
+     'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
+     45.501600, -73.554600),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'Highway 401 Mega Screen', 'Massive digital board facing expressway traffic',
-     'Canada', 'ON', 'Mississauga', '401 Expressway Westbound', 'L4W 1S2',
-     43.660500, -79.636900),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002', 'Champlain College Main Entrance', 'Digital screen installed at the main campus entrance, visible to students, staff, and visitors entering the building. This location provides strong first-contact visibility and repeated exposure throughout the day during peak arrival and departure periods.',
+     'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
+     45.501600, -73.554600),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003', 'Union Station Atrium Display', 'Indoor transit hub screen with high foot traffic',
-     'Canada', 'ON', 'Toronto', '65 Front St W', 'M5J 1E6',
-     43.645330, -79.380580),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003', 'Champlain College Student Lounge 1', 'Screen installed inside a student lounge area where students spend extended time seated or socializing. This placement offers longer dwell time and increased message retention in a relaxed and attentive setting.',
+     'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
+     45.501600, -73.554600),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Montreal Downtown Wrap Display', 'Full-building wrap-style digital display',
-     'Canada', 'QC', 'Montreal', '800 Sainte-Catherine St W', 'H3B 1B1',
-     45.501690, -73.567253),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Entrepôt en Folie Main Entrance', 'Digital screen installed at the store’s main entrance, visible to all incoming customers. This placement delivers immediate brand exposure at the start of the shopping experience and benefits from consistent foot traffic.',
+     'Canada', 'QC', 'Longueuil', '2685 Ch. de Chambly', 'J4L 1M3',
+     45.524800, -73.465800),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Calgary Stadium DIGITAL Board', 'Outdoor DIGITAL panel at sports & event venue',
-     'Canada', 'AB', 'Calgary', '555 SaddDIGITALome Rise SE', 'T2G 2W1',
-     51.037400, -114.051900),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Ping Mo Digital Board', 'Screens positioned in entertainment venues or shopping centers with steady visitor flow. These environments offer broad reach and repeated visibility among a diverse audience in a dynamic and discovery-driven setting.',
+     'Canada', 'QC', 'Montreal', '3575 Av. du Parc', 'H2X 3P9',
+     45.510290, -73.575050),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006', 'Vancouver Waterfront Screen', 'Premium digital screen along popular tourist waterfront',
      'Canada', 'BC', 'Vancouver', '999 Canada Pl', 'V6C 3T4',
@@ -115,103 +115,103 @@ INSERT INTO media (
     title, media_owner_name, type_of_display,
     loop_duration, resolution, aspect_ratio,
     width, height, price, daily_impressions,
-    schedule, status, image_file_name,
-    image_content_type, image_data
+    schedule, status,
+    image_url
 )
 VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-           'Downtown Digital Board', 'MetroAds', 'DIGITAL',
-           30, '1920x1080', '16:9',
-           1920, 1080, 150.00, 25000,
+           'Gym Hallway Digital Board', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '9:16',
+           2160, 3840, 26.40, 1200,
            '{
-               "selectedMonths": ["January", "February", "March", "April", "May", "June"],
+               "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
                    {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'screen1.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_3834_uagq7g.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002',
-           'Highway 401 Mega Screen', 'Express Media', 'DIGITAL',
-           60, '3840x1080', '32:9',
-           3840, 1080, 300.00, 40000,
+           'Main Entrance Digital Board ', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '9:16',
+           2160, 3840, 26.40, 1200,
            '{
-               "selectedMonths": ["January", "February", "March"],
+         "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "06:00", "endTime": "22:00"},
-                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "08:00", "endTime": "20:00"},
-                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'highway1.jpg', 'image/jpeg', NULL
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
-           'Union Station Atrium Screen', 'Transit Media', 'DIGITAL',
-           20, '1920x1080', '16:9',
-           1920, 1080, 120.00, 15000,
-           '{
-               "selectedMonths": ["April", "May", "June"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "21:00"},
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
                    {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'unionstation.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768504494/IMG_3783_hkaz3g.jpg'
        ),
        (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
-           'Montreal Downtown Wrap', 'Urban Media', 'DIGITAL',
-           45, '1080x1920', '9:16',
-           1080, 1920, 200.00, 18000,
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
+           'Student Lounge 1', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '16:9',
+           2160, 3840, 26.40, 1200,
            '{
-               "selectedMonths": ["July", "August", "September"],
+                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "12:00", "endTime": "20:00"},
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'montreal_wrap.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407532/IMG_4963_ufrd4d.jpg'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
+           'Entrepôt en Folie Main Entrance', 'Entrepôt en Folie', 'DIGITAL',
+           60, '2160x3840', '9:16',
+           2160, 3840, 5.60, 1875,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": "09:00", "endTime": "17:00"}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4934_iykhic.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
-           'Calgary Stadium DIGITAL', 'Sports Media', 'DIGITAL',
+           'Ping Mo Mall Entrance', 'Ping Mo', 'DIGITAL',
            60, '3840x2160', '16:9',
-           3840, 2160, 350.00, 50000,
+           3840, 2160, 7.50, 1875,
            '{
-               "selectedMonths": ["September", "October", "November"],
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": false, "startTime": null, "endTime": null},
-                   {"dayOfWeek": "tuesday",  "isActive": false, "startTime": null, "endTime": null},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "12:00", "endTime": "23:00"},
-                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "23:00"},
-                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "20:00"}
+                   {"dayOfWeek": "monday",   "isActive": false, "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": false, "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"}
                ]
            }'::jsonb,
-           'ACTIVE', 'calgary_stadium.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4736_emvnha.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006',
@@ -230,7 +230,7 @@ VALUES (
                    {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"}
                ]
            }'::jsonb,
-           'PENDING', 'vancouver_waterfront.jpg', 'image/jpeg', NULL
+           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
@@ -249,7 +249,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'eaton_wall.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
@@ -268,7 +268,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'parliament.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
@@ -287,7 +287,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'ice_district.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
@@ -306,7 +306,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
                ]
            }'::jsonb,
-           'PENDING', 'halifax_board.jpg', 'image/jpeg', NULL
+           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
@@ -325,7 +325,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'eaton_wall_north.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
@@ -344,7 +344,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'eaton_wall_south.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
@@ -363,7 +363,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'parliament_visitor.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
@@ -382,7 +382,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'PENDING', 'parliament_south_gate.jpg', 'image/jpeg', NULL
+           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
@@ -401,7 +401,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'ice_arena.jpg', 'image/jpeg', NULL
+           'ACTIVE','https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
@@ -420,7 +420,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'ice_plaza.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
 
        (
@@ -440,7 +440,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'halifax_pier.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
@@ -459,7 +459,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
                ]
            }'::jsonb,
-           'ACTIVE', 'halifax_market.jpg', 'image/jpeg', NULL
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        );;
 
 

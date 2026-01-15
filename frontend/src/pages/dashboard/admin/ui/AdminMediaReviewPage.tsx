@@ -16,7 +16,6 @@ import {
   Modal,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
-import Image from "next/image";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/shared/lib/i18n/navigation";
@@ -225,11 +224,10 @@ export default function AdminMediaReviewPage() {
 
             <Card p={0} withBorder radius="lg">
               <div style={{ position: "relative", width: "100%", height: 300 }}>
-                <Image
-                  src={imageSrc}
-                  alt={media.title}
-                  fill
-                  style={{ objectFit: "cover" }}
+                <img
+                    src={imageSrc}
+                    alt={media.title}
+                    style={{ width: "100%", height: 300, objectFit: "cover", display: "block" }}
                 />
               </div>
             </Card>
