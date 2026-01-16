@@ -17,11 +17,13 @@ import { IconAlertCircle } from "@tabler/icons-react";
 import Image from "next/image";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
+import { MediaCardCarousel, MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
+import { useMediaList } from "@/features/media-management/api/useMediaList";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -38,34 +40,6 @@ const monthDefs = [
   { id: "December", key: "december" },
 ];
 
-// const buildScheduleFromMedia = (formState: Media) => {
-//     const selectedMonths = Object.keys(formState.activeMonths).filter(
-//         (m) => !!formState.activeMonths[m]
-//     );
-
-//     const weeklySchedule = [
-//         "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
-//     ].map(day => ({
-//         dayOfWeek: day.toLowerCase(),
-//         isActive: !!formState.activeDaysOfWeek[day],
-//         startTime: formState.dailyOperatingHours[day]?.start ?? null,
-//         endTime: formState.dailyOperatingHours[day]?.end ?? null
-//     }));
-
-//     return {
-//         selectedMonths,
-//         weeklySchedule,
-//     };
-// };
-// const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
-//   { dayId: "Monday", dayKey: "monday", closed: false },
-//   { dayId: "Tuesday", dayKey: "tuesday", closed: false },
-//   { dayId: "Wednesday", dayKey: "wednesday", closed: false },
-//   { dayId: "Thursday", dayKey: "thursday", closed: false },
-//   { dayId: "Friday", dayKey: "friday", closed: false },
-//   { dayId: "Saturday", dayKey: "saturday", closed: true },
-//   { dayId: "Sunday", dayKey: "sunday", closed: true },
-// ];
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
@@ -73,10 +47,24 @@ export default function MediaDetailsPage() {
   const params = useParams();
   const id = params?.id as string | undefined;
 
-  const [media, setMedia] = useState<Media | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+
+  const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
+  const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
+  const [error, setError] = useState<string | null>(null); //The error message
+
+  
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
+
+  const filteredMediaProps = useMemo(() => ({
+    sort: "price,asc",
+    page: 0,
+    size: 6
+  }), []);
+
+  const orgMediaList = useMediaList({ 
+    filteredMediaProps 
+  });
 
   useEffect(() => {
     if (!id) return;
@@ -98,6 +86,8 @@ export default function MediaDetailsPage() {
 
     void loadMedia();
   }, [id]);
+
+  
 
   if (loading) {
     return (
@@ -319,7 +309,10 @@ export default function MediaDetailsPage() {
             </Card>
           </Stack>
         </Group>
+        {/* <MediaCardCarouselLoader id="Other Media Carousel" title="Other medias by this Media Owner" filteredMediaProps={filteredMediaProps}/> */}
       </Container>
+      
+      <></>
       {media && (
         <ReserveMediaModal
           opened={reserveModalOpen}

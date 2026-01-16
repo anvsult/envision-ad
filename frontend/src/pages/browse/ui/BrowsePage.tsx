@@ -4,7 +4,7 @@ import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, Stack, T
 import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {getAllFilteredActiveMedia, SpecialSort} from "@/features/media-management/api";
 import { MediaCardProps } from '@/widgets/Cards/MediaCard';
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
@@ -13,17 +13,20 @@ import { IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
 import { LatLngLiteral } from 'leaflet';
+import { FilteredActiveMediaProps, MediaStatus } from '@/entities/media/model/media';
+import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
+import { useMediaList } from '@/features/media-management/api/useMediaList';
+import { MediaCardCarousel } from '@/widgets/Carousel/CardCarousel';
 
 function BrowsePage() {
   const t = useTranslations('browse');
   const sortNearest = t('browseactions.sort.nearest');
   const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
+  
   // Lists
-  const [media, setMedia] = useState<MediaCardProps[]>([]);
-
   const ITEMS_PER_PAGE = 16;
-  const [activePage, setActivePage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [activePage, setActivePage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -34,16 +37,36 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
-  const [userLocation, setUserLocation] = useState<LatLngLiteral | null>(null);
+  const [location, setLocation] = useState<LatLngLiteral | null>(null);
   const [sortBy, setSortBy] = useState<string>(SpecialSort.nearest);
 
-  type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
+  
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
-
-  type LocationStatus = 'idle' | 'loading' | 'success' | 'denied' | 'error';
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
 
+  const filteredMediaProps = useMemo(() => ({
+    title: titleFilter,
+    minPrice,
+    maxPrice,
+    minDailyImpressions: minImpressions,
+    sort: sortBy,
+    latLng: location,
+    page: activePage - 1,
+    size: ITEMS_PER_PAGE
+  }), [
+    titleFilter,
+    minPrice,
+    maxPrice,
+    minImpressions,
+    sortBy,
+    location,
+    activePage
+  ]);
 
+  const media = useMediaList({ 
+    filteredMediaProps: filteredMediaProps, 
+    loadingLocation: locationStatus === 'loading',
+    setMediaStatus: setMediaStatus });
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +81,7 @@ function BrowsePage() {
         ) {
           const coords = await GetUserGeoLocation();
           if (!cancelled) {
-            setUserLocation(coords);
+            setLocation(coords);
             setLocationStatus('success');
           }
         } else {
@@ -69,7 +92,7 @@ function BrowsePage() {
           }
 
           if (!cancelled) {
-            setUserLocation({ lat: address.lat, lng: address.lng });
+            setLocation({ lat: address.lat, lng: address.lng });
             setLocationStatus('success');
           }
         }
@@ -86,70 +109,6 @@ function BrowsePage() {
     resolveLocation();
     return () => { cancelled = true };
   }, [addressSearch, searchLanguage, sortBy, sortNearest]);
-
-
-
-  // Update Media List
-  useEffect(() => {
-    if (sortBy === SpecialSort.nearest && locationStatus === 'loading') {
-      return;
-    }
-
-
-    let cancelled = false;
-
-    async function loadMedia() {
-      setMediaStatus('loading');
-
-      try {
-        const data = await getAllFilteredActiveMedia(
-          titleFilter,
-          minPrice,
-          maxPrice,
-          minImpressions,
-          sortBy,
-          userLocation,
-          activePage - 1,
-          ITEMS_PER_PAGE
-        );
-
-        if (cancelled) return;
-
-        const items = (data.content || [])
-          .filter((m) => m.id != null)
-          .map((m, index) => ({
-            index: String(index),
-            href: String(m.id),
-            title: m.title,
-            mediaOwnerName: m.mediaOwnerName,
-            mediaLocation: m.mediaLocation,
-            resolution: m.resolution,
-            aspectRatio: m.aspectRatio,
-            price: m.price ?? 0,
-            dailyImpressions: m.dailyImpressions ?? 0,
-            typeOfDisplay: m.typeOfDisplay,
-            imageUrl: m.imageUrl
-          }));
-
-        setMedia(items);
-        setTotalPages(data.totalPages);
-
-        setMediaStatus(items.length === 0 ? 'empty' : 'success');
-      } catch {
-        if (!cancelled) {
-          setMediaStatus('error');
-        }
-      }
-    }
-
-    loadMedia();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [titleFilter, minPrice, maxPrice, minImpressions, userLocation, sortBy, activePage, locationStatus]);
-
-
 
 
   useEffect(() => {
@@ -238,7 +197,10 @@ function BrowsePage() {
               <Text>{t('nomedia.changefilters')}</Text>
             </Stack>
           ) : (
+            <>
             <MediaCardGrid medias={media} />
+            {/* <MediaCardCarousel id="Other Media Carousel" title="Other medias by this Media Owner" medias={media}/> */}
+            </>
           )}
 
           {totalPages > 1 && (

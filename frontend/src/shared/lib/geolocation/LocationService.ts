@@ -7,6 +7,8 @@ interface LatLngSession {
   expiryTime: number;
 }
 
+export type LocationStatus = 'idle' | 'loading' | 'success' | 'denied' | 'error';
+
 // Stores the user location in the session storage for a set amount of time. 
 // After that time is up, it will check the user's location again.
 // That way you don't need to check the user's exact position every time you open the website.

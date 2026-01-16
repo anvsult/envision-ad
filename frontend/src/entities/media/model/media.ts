@@ -1,3 +1,5 @@
+import { LatLngLiteral } from "leaflet";
+
 export interface Media {
     id?: string;
     title: string;
@@ -56,6 +58,16 @@ export interface MediaLocation {
     longitude: number | null;
 }
 
+export interface FilteredActiveMediaProps{
+    title?: string | null,
+    minPrice?: number | null,
+    maxPrice?: number | null,
+    minDailyImpressions?: number | null,
+    sort?: string | null,
+    latLng?: LatLngLiteral | null,
+    page?: number,
+    size?: number
+}
 
 export interface MonthlyScheduleModel {
     selectedMonths: string[];
@@ -88,3 +100,11 @@ export const MediaAdStatusMap = {
         text: "Displaying",
     },
 } as const;
+
+export type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
+
+export interface UseMediaListProps{
+    filteredMediaProps: FilteredActiveMediaProps,
+    loadingLocation?: boolean
+    setMediaStatus?: React.Dispatch<React.SetStateAction<MediaStatus>>
+}

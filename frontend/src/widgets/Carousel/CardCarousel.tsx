@@ -2,6 +2,10 @@ import { Carousel, CarouselSlide } from "@mantine/carousel";
 import classes from "./CardCarousel.module.css";
 import { Title } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
+import { useEffect, useState } from "react";
+import { getAllFilteredActiveMedia, SpecialSort } from "@/features/media-management/api/getAllFilteredActiveMedia";
+import { FilteredActiveMediaProps, MediaStatus } from "@/entities/media/model/media";
+import { useMediaList } from "@/features/media-management/api/useMediaList";
 
 interface CardCarouselProps {
     title?: string;
@@ -14,8 +18,8 @@ function CardCarousel({title, children}: CardCarouselProps) {
             {title ? <Title order={2}>{title}</Title>: <></>}
             <Carousel 
                 classNames={classes}
-                slideSize={{ base: '50%', sm: '33.33333%', md: '20%'}}
-                slideGap={{ base: 'sm', sm: 'md' }}
+                slideSize={{ base: '50%', sm: '33.33333%', md: '%'}}
+                slideGap={{ base: 'sm', sm: 'md', md:'lg' }}
                 emblaOptions={{ loop: true, align: 'center' }}
                 
             >
@@ -36,8 +40,8 @@ export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
         <div>
             <CardCarousel title={title}>
                 {medias.map((media) => (
-                <CarouselSlide key={media.index} py="sm">
                     <MediaCard
+                        key={id ? id + media.index : media.index}
                         index={id ? id + media.index : media.index}
                         href={media.href}
                         imageUrl={media.imageUrl}
@@ -50,10 +54,26 @@ export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
                         dailyImpressions={media.dailyImpressions}
                         resolution={media.resolution} 
                     />
-                </CarouselSlide>
               ))}
             </CardCarousel>
         </div>
+    )
+}
+
+interface MediaCardCarouselLoaderProps {
+    id?: string;
+    title?: string;
+    filteredMediaProps: FilteredActiveMediaProps;
+}
+
+export function MediaCardCarouselLoader({id, title, filteredMediaProps}: MediaCardCarouselLoaderProps){
+    const medias = useMediaList({filteredMediaProps: filteredMediaProps});
+    return(
+        MediaCardCarousel({
+            id: id, 
+            title: title, 
+            medias: medias
+        })
     )
 }
 

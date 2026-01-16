@@ -1,6 +1,6 @@
 import { MediaListResponseDTO } from "@/entities/media";
-import { LatLngLiteral } from "leaflet";
 import axiosInstance from "@/shared/api/axios/axios";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 
 
 export enum SpecialSort {
@@ -14,15 +14,10 @@ function escapeLike(input: string): string {
         .replace(/_/g, "\\_");
 }
 
+
+
 export async function getAllFilteredActiveMedia(
-    title?: string | null,
-    minPrice?: number | null,
-    maxPrice?: number | null,
-    minDailyImpressions?: number | null,
-    sort?: string | null,
-    userLatLng?: LatLngLiteral | null,
-    page?: number,
-    size?: number
+    {title, minPrice, maxPrice, minDailyImpressions, sort, latLng, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
@@ -52,9 +47,9 @@ export async function getAllFilteredActiveMedia(
     }
 
 
-    if (userLatLng && userLatLng.lat != null && userLatLng.lng != null) {
-        params.append("userLat", userLatLng.lat.toString());
-        params.append("userLng", userLatLng.lng.toString());
+    if (latLng && latLng.lat != null && latLng.lng != null) {
+        params.append("userLat", latLng.lat.toString());
+        params.append("userLng", latLng.lng.toString());
     }
 
     if (page) {
