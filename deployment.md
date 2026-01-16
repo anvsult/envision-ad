@@ -25,6 +25,27 @@ Access to these projects from our deployed instances is managed via Service Toke
 * DOPPLER_FRONTEND_TOKEN
 * DOPPLER_BACKEND_TOKEN
 
+### To run the project locally with Doppler
+
+1. Install the Doppler CLI by following the instructions at https://docs.doppler.com/docs/install-cli.
+2. Authenticate with Doppler using your account credentials:
+   ```bash
+   doppler login
+   ```
+3. Run the project using this command:
+   ```bash
+   doppler run -- docker compose up --build
+   ```
+4. If you want to run the project using a local .env file, uncomment the following lines in the `docker-compose.yml` file:
+   ```yaml
+   env_file:
+     - .env
+   ```
+   and
+   ```yaml
+   env_file:
+     - ./frontend/.env
+   ```
 ---
 
 ### Infrastructure Setup (Amazon Linux 2023)

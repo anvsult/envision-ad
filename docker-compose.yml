@@ -9,7 +9,7 @@ services:
     networks:
       - appnet
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost"]
+      test: ["CMD-SHELL", "pg_isready -U ${SPRING_DATASOURCE_USERNAME} -d ${SPRING_DATASOURCE_DBNAME} -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -35,13 +35,21 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
+        - NEXT_PUBLIC_CLOUDINARY_API_KEY=${NEXT_PUBLIC_CLOUDINARY_API_KEY}
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+        - APP_BASE_URL=${APP_BASE_URL}
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
-    env_file:
-      - ./frontend/.env
+#      If running locally using
+#      `docker-compose up --build`
+#      uncomment to load from .env file
+#    env_file:
+#      - ./frontend/.env
     depends_on:
       - webservice
     restart: unless-stopped
@@ -57,13 +65,21 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
       # Spring datasource
-      SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres:5432/${POSTGRES_DB}"
-      SPRING_DATASOURCE_USERNAME: "${POSTGRES_USER}"
-      SPRING_DATASOURCE_PASSWORD: "${POSTGRES_PASSWORD}"
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
       SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
       SPRING_EMAIL_PORT: "${EMAIL_PORT}"
       SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
       SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+
+#      If running locally using
+#      `docker-compose up --build`
+#      uncomment to load from .env file
+#    env_file:
+#      - .env
     depends_on:
       postgres:
         condition: service_healthy
