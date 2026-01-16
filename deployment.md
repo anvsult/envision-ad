@@ -35,7 +35,7 @@ The Doppler CLI is required on the EC2 instance to fetch secrets during the depl
    sudo rpm --import 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key'
 
 2. Add the Doppler repository:
-   curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/config.rpm.txt'
+   curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/config.rpm.txt' | sudo tee /etc/yum.repos.d/doppler-cli.repo
 
 3. Install the CLI using dnf:
    sudo dnf install doppler -y
@@ -49,7 +49,7 @@ The GitHub deployment action uses a nested command structure to inject environme
 Deployment Command:
 ```
 doppler run --project envision-ad-frontend --config prd --token ${{ secrets.DOPPLER_FRONTEND_TOKEN }} -- \
-doppler run --project envision-ad-webservice --config prd --token ${{ secrets.DOPPLER_BACKEND_TOKEN }} -- \
+doppler run --project envision-ad-backend --config prd --token ${{ secrets.DOPPLER_BACKEND_TOKEN }} -- \
 docker compose -f docker-compose.prod.yml up -d --build --force-recreate
 ```
 

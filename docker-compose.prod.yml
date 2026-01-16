@@ -13,8 +13,6 @@ services:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
         - APP_BASE_URL=${APP_BASE_URL}
       dockerfile: Dockerfile
-    ports:
-      - "127.0.0.1:3000:3000"
     #   Here, I am listing the variables that Next.js will potentially need
     #   while it's running (runtime).
     #   These are the secrets that CANNOT be seen by others
@@ -51,8 +49,6 @@ services:
     build:
       context: ./webservice
       dockerfile: Dockerfile
-    ports:
-      - "127.0.0.1:8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
       # Point this directly to the variables injected by GitHub Actions
@@ -80,6 +76,23 @@ services:
         max-size: "50m"
         max-file: "5"
 
+  reverse-proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - frontend
+      - webservice
+    networks:
+      - appnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 networks:
   appnet:
     driver: bridge
