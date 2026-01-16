@@ -229,7 +229,10 @@ export default function AdminMediaReviewPage() {
                   tabIndex={0}
                   onClick={() => setImageModalOpen(true)}
                   onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") setImageModalOpen(true);
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setImageModalOpen(true);
+                    }
                   }}
                   style={{
                     position: "relative",
