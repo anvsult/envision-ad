@@ -240,7 +240,7 @@ VALUES (
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime": null,"endTime": null},
+                   {"dayOfWeek": "monday","isActive": false,"startTime": null,"endTime": null},
                    {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "17:00"},
                    {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
                    {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "17:00"},
