@@ -25,7 +25,7 @@ services:
       AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
       AUTH0_SECRET: "${AUTH0_SECRET}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-      AUTH0_MGMT_AUDIENCE: "${AUTH0_MGMT_AUDIENCE}"
+      AUTH0_MGMT_DOMAIN: "${AUTH0_MGMT_DOMAIN}"
       AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
       AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
       CLOUDINARY_URL: "${CLOUDINARY_URL}"
@@ -80,6 +80,7 @@ services:
     image: nginx:alpine
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
