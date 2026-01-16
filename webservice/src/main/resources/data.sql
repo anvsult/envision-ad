@@ -159,7 +159,7 @@ VALUES (
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
            'Student Lounge 1', 'Champlain College', 'DIGITAL',
-           30, '2160x3840', '16:9',
+           30, '2160x3840', '9:16',
            2160, 3840, 26.45, 1200,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
