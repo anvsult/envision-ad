@@ -235,7 +235,7 @@ VALUES (
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
            'Lola Salon Main Lobby', 'Lola Salon', 'DIGITAL',
-           30, '1440x2560', '16:9',
+           30, '1440x2560', '9:16',
            1440, 2560, 2.55, 56,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
