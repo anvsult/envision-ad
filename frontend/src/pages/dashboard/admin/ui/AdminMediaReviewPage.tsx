@@ -62,6 +62,7 @@ export default function AdminMediaReviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const [confirmAction, setConfirmAction] = useState<"approve" | "deny" | null>(
     null
@@ -223,11 +224,31 @@ export default function AdminMediaReviewPage() {
             </Group>
 
             <Card p={0} withBorder radius="lg">
-              <div style={{ position: "relative", width: "100%", height: 300 }}>
+              <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setImageModalOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") setImageModalOpen(true);
+                  }}
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: 300,
+                    cursor: "zoom-in",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                  }}
+              >
                 <img
                     src={imageSrc}
                     alt={media.title}
-                    style={{ width: "100%", height: 300, objectFit: "cover", display: "block" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
                 />
               </div>
             </Card>
@@ -409,6 +430,35 @@ export default function AdminMediaReviewPage() {
           </Stack>
         </Group>
       </Container>
+
+      <Modal
+          opened={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          centered
+          withCloseButton
+          title={media.title}
+          size="auto"
+          padding="md"
+          overlayProps={{ opacity: 0.6 }}
+          styles={{
+            content: { maxWidth: "92vw" },
+            body: { paddingTop: 8 },
+          }}
+      >
+        <img
+            src={imageSrc}
+            alt={media.title}
+            style={{
+              display: "block",
+              maxWidth: "88vw",
+              maxHeight: "80vh",
+              width: "auto",
+              height: "auto",
+              objectFit: "contain",
+              borderRadius: 12,
+            }}
+        />
+      </Modal>
 
       <Modal
         key={confirmAction ?? "closed"}

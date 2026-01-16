@@ -46,13 +46,13 @@ VALUES
      'Canada', 'QC', 'Montreal', '3575 Av. du Parc', 'H2X 3P9',
      45.510290, -73.575050),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006', 'Vancouver Waterfront Screen', 'Premium digital screen along popular tourist waterfront',
-     'Canada', 'BC', 'Vancouver', '999 Canada Pl', 'V6C 3T4',
-     49.289300, -123.116226),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006', 'Upstairs Hallway A Block', 'Premium digital screen along popular tourist waterfront',
+     'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
+     45.501600, -73.554600),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007', 'Toronto Eaton Centre LED Wall', 'Indoor shopping mall LED mega wall',
-     'Canada', 'ON', 'Toronto', '220 Yonge St', 'M5B 2H1',
-     43.654438, -79.380699),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007', 'Lola Salon Main Lobby', 'Digital screen installed inside a women-focused hair salon, where clients spend extended time seated during appointments. This environment offers high dwell time and sustained attention in a calm, personal setting, making it particularly effective for brands targeting a female audience, including beauty, wellness, lifestyle, and local services.',
+     'Canada', 'QC', 'Brossard', '4785 Grande Allée', 'J4Z 3G1',
+     45.481660, -73.454690),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008', 'Ottawa Parliament Hill Board', 'Digital board near major tourist attraction',
      'Canada', 'ON', 'Ottawa', '111 Wellington St', 'K1A 0A6',
@@ -122,7 +122,7 @@ VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
            'Gym Hallway Digital Board', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '9:16',
-           2160, 3840, 26.40, 1200,
+           2160, 3840, 26.45, 1200,
            '{
                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -141,7 +141,7 @@ VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002',
            'Main Entrance Digital Board ', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '9:16',
-           2160, 3840, 26.40, 1200,
+           2160, 3840, 26.45, 1200,
            '{
          "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -160,7 +160,7 @@ VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003',
            'Student Lounge 1', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '16:9',
-           2160, 3840, 26.40, 1200,
+           2160, 3840, 26.45, 1200,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -179,7 +179,7 @@ VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
            'Entrepôt en Folie Main Entrance', 'Entrepôt en Folie', 'DIGITAL',
            60, '2160x3840', '9:16',
-           2160, 3840, 5.60, 1875,
+           2160, 3840, 5.65, 1875,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -196,9 +196,9 @@ VALUES (
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
-           'Ping Mo Mall Entrance', 'Ping Mo', 'DIGITAL',
+           'Ping Mo Store Entrance', 'Ping Mo', 'DIGITAL',
            60, '3840x2160', '16:9',
-           3840, 2160, 7.50, 1875,
+           3840, 2160, 7.55, 1875,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -215,156 +215,43 @@ VALUES (
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006',
-           'Vancouver Waterfront DIGITAL', 'Tourism Media', 'DIGITAL',
-           30, '1920x1080', '16:9',
-           1920, 1080, 180.00, 22000,
-           '{
-               "selectedMonths": ["December", "January", "February"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "10:00", "endTime": "22:00"},
-                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "10:00", "endTime": "22:00"}
-               ]
-           }'::jsonb,
-           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-           'Eaton Centre LED Wall', 'ShopMedia', 'DIGITAL',
-           20, '1920x1080', '16:9',
-           1920, 1080, 175.00, 30000,
-           '{
-               "selectedMonths": ["January", "February", "March"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "22:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "23:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-           'Parliament Hill Digital Board', 'GovMedia', 'DIGITAL',
-           25, '2560x1440', '16:9',
-           2560, 1440, 220.00, 26000,
-           '{
-               "selectedMonths": ["April", "May", "June"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": false, "startTime": null,"endTime": null},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "20:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-           'ICE District Mega Screen', 'Arena Media', 'DIGITAL',
+           'Student Lounge 2', 'Champlain College', 'DIGITAL',
            30, '3840x2160', '16:9',
-           3840, 2160, 300.00, 42000,
+           3840, 2160, 26.45, 1875,
            '{
-               "selectedMonths": ["July", "August", "September"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime": "11:00","endTime": "23:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime": "10:00","endTime": "23:59"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "23:59"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+                "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407676/woiadydpsfax7aiajiee.jpg'
        ),
        (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-           'Halifax Harbourfront Screen', 'Atlantic Media', 'DIGITAL',
-           40, '1920x1080', '16:9',
-           1920, 1080, 160.00, 20000,
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
+           'Lola Salon Main Lobby', 'Lola Salon', 'DIGITAL',
+           30, '1440x2560', '16:9',
+           1440, 2560, 2.55, 56,
            '{
-               "selectedMonths": ["January", "February", "December"],
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "monday","isActive": true,"startTime": null,"endTime": null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "17:00"},
                    {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime": "09:00","endTime": "21:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime": "10:00","endTime": "22:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "17:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "18:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "16:00"},
                    {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
                ]
            }'::jsonb,
-           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407524/3e4af6aa-17a5-47cf-a388-bbf13f451703_v4czap.jpg'
        ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-           'Eaton Centre LED Wall - North', 'ShopMedia', 'DIGITAL',
-           20, '1920x1080', '16:9',
-           1920, 1080, 175.00, 30000,
-           '{
-               "selectedMonths": ["January", "February", "March"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-           'Eaton Centre LED Wall - South', 'AdCentral', 'DIGITAL',
-           25, '2560x1440', '16:9',
-           2560, 1440, 185.00, 28000,
-           '{
-               "selectedMonths": ["April", "May"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"21:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime":"11:00","endTime":"22:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
-       (
-           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-           'Parliament Hill Visitor Screen', 'GovMedia', 'DIGITAL',
-           30, '1920x1080', '16:9',
-           1920, 1080, 190.00, 24000,
-           '{
-               "selectedMonths": ["March", "April", "May"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"20:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"21:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"19:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-               ]
-           }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-       ),
+
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
            'Parliament Hill South Gate Screen', 'FederalAds', 'DIGITAL',
@@ -401,7 +288,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE','https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'PENDING','https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
@@ -420,12 +307,12 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
 
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-           'Harbourfront Pier Screen', 'AtlanticAds', 'DIGITAL',
+           'Harbour Front Pier Screen', 'AtlanticAds', 'DIGITAL',
            25, '1920x1080', '16:9',
            1920, 1080, 140.00, 23000,
            '{
@@ -440,11 +327,11 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-           'Harbourfront Market Screen', 'Seaside Media', 'DIGITAL',
+           'Harbour Front Market Screen', 'Seaside Media', 'DIGITAL',
            35, '2560x1440', '16:9',
            2560, 1440, 165.00, 21000,
            '{
@@ -459,7 +346,7 @@ VALUES (
                    {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
        );;
 
 
