@@ -13,7 +13,7 @@ import {
     Menu,
 } from "@mantine/core";
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
 import { Link, usePathname } from "@/shared/lib/i18n/navigation";
@@ -26,14 +26,11 @@ interface HeaderProps {
     onToggleSidebar?: () => void;
 }
 
-export function Header({
-                           // dashboardMode = false,
-                           // sidebarOpened = false,
-                           // onToggleSidebar,
-                       }: HeaderProps) {
+export function Header({}: HeaderProps) {
+    const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
-    const { user, isLoading } = useUser();
+    const { user } = useUser();
 
     const links: Array<{
         link: "/" | "/dashboard" | "/browse";
@@ -54,7 +51,7 @@ export function Header({
         useDisclosure(false);
 
     const items = filteredLinks.map((link) => {
-        const active = pathname === link.link;
+        const active = pathname === link.link || pathname.startsWith(link.link + '/');
         return (
             <Link
                 key={link.label}
@@ -75,14 +72,12 @@ export function Header({
 
     const authButtons = (
         <Group gap="sm">
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/auth/login?screen_hint=signup" style={{ textDecoration: "none" }}>
+            <a href={`/auth/login?ui_locales=${locale}&screen_hint=signup`} style={{ textDecoration: "none" }}>
                 <Button variant="outline" color="blue.6" radius="xl">
                     {t("register")}
                 </Button>
             </a>
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/auth/login" style={{ textDecoration: "none" }}>
+            <a href={`/auth/login?ui_locales=${locale}`} style={{ textDecoration: "none" }}>
                 <Button variant="filled" color="blue.8" radius="xl">
                     {t("signIn")}
                 </Button>
@@ -112,10 +107,6 @@ export function Header({
             </Menu.Dropdown>
         </Menu>
     );
-
-    if (isLoading) {
-        return null;
-    }
 
     return (
         <Box>
@@ -163,7 +154,7 @@ export function Header({
                         {items}
                     </Group>
 
-                    {/* Auth Buttons */}
+                    {/* Auth Buttons - no loading state needed! */}
                     <Group visibleFrom="md" gap="sm" align="center">
                         <LanguagePicker />
                         {user ? userMenu : authButtons}
@@ -173,44 +164,42 @@ export function Header({
                     <Burger
                         opened={drawerOpened}
                         onClick={toggleDrawer}
-                        hiddenFrom={ "md"}
-                        aria-label={"Toggle navigation"}
+                        hiddenFrom="md"
+                        aria-label="Toggle navigation"
                     />
                 </Group>
             </Box>
 
-            {/* Navigation drawer for non-dashboard mode */}
-            {
-                <Drawer
-                    opened={drawerOpened}
-                    onClose={closeDrawer}
-                    size="100%"
-                    padding="md"
-                    title={
-                        <Group justify="space-between" align="center" style={{ width: "100%" }}>
-                            <Text fw={700}>Navigation</Text>
-                            <LanguagePicker />
-                        </Group>
-                    }
-                    hiddenFrom="md"
-                    zIndex={1000000}
-                >
-                    <ScrollArea h="calc(100vh - 80px)" mx="-md">
+            {/* Navigation drawer */}
+            <Drawer
+                opened={drawerOpened}
+                onClose={closeDrawer}
+                size="100%"
+                padding="md"
+                title={
+                    <Group justify="space-between" align="center" style={{ width: "100%" }}>
+                        <Text fw={700}>Navigation</Text>
+                        <LanguagePicker />
+                    </Group>
+                }
+                hiddenFrom="md"
+                zIndex={1000000}
+            >
+                <ScrollArea h="calc(100vh - 80px)" mx="-md">
+                    <Divider my="sm" />
+
+                    <Box hiddenFrom="sm">
+                        <Stack px="md">
+                            {items}
+                        </Stack>
                         <Divider my="sm" />
+                    </Box>
 
-                        <Box hiddenFrom="sm">
-                            <Stack px="md">
-                                {items}
-                            </Stack>
-                            <Divider my="sm" />
-                        </Box>
-
-                        <Group justify="center" grow pb="xl" px="md">
-                            {user ? userMenu : authButtons}
-                        </Group>
-                    </ScrollArea>
-                </Drawer>
-            }
+                    <Group justify="center" grow pb="xl" px="md">
+                        {user ? userMenu : authButtons}
+                    </Group>
+                </ScrollArea>
+            </Drawer>
         </Box>
     );
 }

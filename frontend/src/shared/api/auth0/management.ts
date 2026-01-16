@@ -127,4 +127,29 @@ export class Auth0ManagementService {
 
         return res.json();
     }
+
+    /**
+     * Updates a user's preferred language in their metadata.
+     * @param {string} userId - The unique identifier of the user.
+     * @param {string} locale - The preferred language code (e.g., "en" or "fr").
+     * @returns {Promise<any>} The updated user object.
+     * @throws {Error} If the update fails.
+     */
+    static async updateUserLanguage(userId: string, locale: string) {
+        return this.updateUser(userId, {
+            user_metadata: {
+                preferred_language: locale,
+            },
+        });
+    }
+
+    /**
+     * Retrieves a user's preferred language from their metadata.
+     * @param {string} userId - The unique identifier of the user.
+     * @returns {Promise<string | undefined>} The preferred language code, or undefined if not set.
+     */
+    static async getUserLanguage(userId: string): Promise<string | undefined> {
+        const user = await this.getUser(userId);
+        return user?.user_metadata?.preferred_language || undefined;
+    }
 }
