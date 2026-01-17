@@ -3,9 +3,9 @@
 As of writing this, Envision Ad is deployed on an Amazon Linux 2023 EC2 instance using Docker Compose. The deployment process is automated via GitHub Actions, which builds and deploys the Docker containers whenever changes are pushed to the `main` branch.
 
 ### Setup
-- EC2 Instance: Amazon Linux 2023 -> Running docker-compose.prod.yml (frontend and backend services)
+- EC2 Instance: Amazon Linux 2023 -> Running `docker-compose.prod.yml` (frontend, backend, and reverse-proxy/Nginx services)
 - RDS Instance: Amazon RDS for PostgreSQL -> Running the database for the backend service
-- Nginx: Reverse proxy installed on the EC2 instance to route traffic from the outer world to the appropriate Docker containers.
+- Nginx: Reverse proxy running as a Docker container on the EC2 instance (defined as the reverse-proxy service in `docker-compose.prod.yml`) to route traffic from the outer world to the appropriate Docker containers.
 
 ---
 

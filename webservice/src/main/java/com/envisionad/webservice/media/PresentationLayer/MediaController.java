@@ -23,7 +23,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class MediaController {
 
     private final MediaService mediaService;

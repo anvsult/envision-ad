@@ -15,7 +15,9 @@ services:
       dockerfile: Dockerfile
     #   Here, I am listing the variables that Next.js will potentially need
     #   while it's running (runtime).
-    #   These are the secrets that CANNOT be seen by others
+    #   These are server-side secrets that are not sent to the browser, but can
+    #   still be accessed by anyone with access to the EC2 instance or container
+    #   and must be protected at the infrastructure level.
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
@@ -30,9 +32,6 @@ services:
       AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
       CLOUDINARY_URL: "${CLOUDINARY_URL}"
       CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
-      NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
-      NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
-      NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
     depends_on:
       webservice:
         condition: service_healthy
@@ -65,7 +64,7 @@ services:
     networks:
       - appnet
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/api/v1/media" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/api/actuator/health" ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -84,6 +83,14 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      # TLS certificates are provided by Let's Encrypt via Certbot on the EC2 host.
+      # Before running this compose file in production, install Certbot on the host
+      # and obtain certificates for your domain, for example (adjusting plugins/flags
+      # to your environment):
+      #   sudo certbot certonly --nginx -d example.com -d www.example.com
+      # Certbot stores certificates under /etc/letsencrypt on the host and configures
+      # automatic renewal (via systemd timer or cron). The renewed certificates will be
+      # available to this container through the read-only bind mount below.
     depends_on:
       - frontend
       - webservice
