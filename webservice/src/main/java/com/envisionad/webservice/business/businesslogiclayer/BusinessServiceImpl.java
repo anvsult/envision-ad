@@ -1,13 +1,11 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.*;
-import com.envisionad.webservice.business.exceptions.BusinessEmployeeNotFoundException;
-import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
-import com.envisionad.webservice.business.exceptions.DuplicateBusinessNameException;
-import com.envisionad.webservice.business.exceptions.InvitationNotFoundException;
+import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
 import com.envisionad.webservice.business.mappinglayer.EmployeeMapper;
 import com.envisionad.webservice.business.mappinglayer.InvitationMapper;
+import com.envisionad.webservice.business.mappinglayer.VerificationMapper;
 import com.envisionad.webservice.business.presentationlayer.models.*;
 import com.envisionad.webservice.business.utils.Validator;
 import com.envisionad.webservice.utils.EmailService;
@@ -33,20 +31,26 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final EmployeeRepository employeeRepository;
 
+    private final VerificationRepository verificationRepository;
+
     private final BusinessMapper businessMapper;
 
     private final EmployeeMapper employeeMapper;
 
     private final InvitationMapper invitationMapper;
 
-    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper) {
+    private final VerificationMapper verificationMapper;
+
+    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, VerificationRepository verificationRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper, VerificationMapper verificationMapper) {
         this.emailService = emailService;
         this.businessRepository = businessRepository;
         this.invitationRepository = invitationRepository;
         this.employeeRepository = employeeRepository;
+        this.verificationRepository = verificationRepository;
         this.businessMapper = businessMapper;
         this.employeeMapper = employeeMapper;
         this.invitationMapper = invitationMapper;
+        this.verificationMapper = verificationMapper;
     }
 
     @Override
@@ -64,12 +68,20 @@ public class BusinessServiceImpl implements BusinessService {
         business.setBusinessId(new BusinessIdentifier());
         business.setOwnerId(userId);
 
-        return businessMapper.toResponse(businessRepository.save(business));
+        Employee employee = new Employee();
+        employee.setBusinessId(business.getBusinessId());
+        employee.setEmployeeId(new EmployeeIdentifier());
+        employee.setUserId(userId);
+
+        businessRepository.save(business);
+        employeeRepository.save(employee);
+
+        return businessMapper.toResponse(business);
     }
 
     @Override
     public List<BusinessResponseModel> getAllBusinesses() {
-        return businessRepository.findAll().stream().map(businessMapper::toResponse).collect(Collectors.toList());
+        return businessRepository.findAll().stream().map(businessMapper::toResponse).toList();
     }
 
     @Override
@@ -89,6 +101,9 @@ public class BusinessServiceImpl implements BusinessService {
         if (existingBusiness == null)
             throw new BusinessNotFoundException();
 
+        if (businessRepository.existsByName(businessRequestModel.getName()))
+            throw new DuplicateBusinessNameException();
+
         String userId = extractUserId(jwt);
         validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -101,14 +116,62 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public BusinessResponseModel verifyBusinessById(String businessId){
+    public VerificationResponseModel approveBusinessVerification(String businessId, String verificationId){
+        VerificationContext context = updateBusinessVerification(businessId, verificationId);
+
+        context.verification.setStatus(VerificationStatus.APPROVED);
+        context.business.setVerified(true);
+
+        businessRepository.save(context.business);
+        return verificationMapper.toResponse(verificationRepository.save(context.verification));
+    }
+
+    @Override
+    public VerificationResponseModel denyBusinessVerification(String businessId, String verificationId, String reason) {
+        if (reason == null || reason.isEmpty() || reason.length() > 512)
+            throw new BadVerificationRequestException();
+
+        Verification verification = updateBusinessVerification(businessId, verificationId).verification;
+
+        verification.setStatus(VerificationStatus.DENIED);
+        verification.setComments(reason);
+
+        return verificationMapper.toResponse(verificationRepository.save(verification));
+    }
+
+    @Override
+    public VerificationResponseModel requestVerification(Jwt jwt, String businessId) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
             throw new BusinessNotFoundException();
 
-        business.setVerified(true);
+        String userId = extractUserId(jwt);
+        validateUserIsEmployeeOfBusiness(userId, businessId);
 
-        return businessMapper.toResponse(businessRepository.save(business));
+        if (business.isVerified())
+            throw new BusinessAlreadyVerifiedException();
+
+        if (verificationRepository.findAllByBusinessId_BusinessId(businessId).stream().anyMatch(v -> v.getStatus() == VerificationStatus.PENDING))
+            throw new BadVerificationRequestException();
+
+        Verification verification = new Verification();
+        verification.setVerificationId(new VerificationIdentifier());
+        verification.setBusinessId(new BusinessIdentifier(businessId));
+
+        return verificationMapper.toResponse(verificationRepository.save(verification));
+    }
+
+    @Override
+    public List<VerificationResponseModel> getAllVerificationsByBusinessId(Jwt jwt, String businessId) {
+        String userId = extractUserId(jwt);
+        validateUserIsEmployeeOfBusiness(userId, businessId);
+
+        return verificationRepository.findAllByBusinessId_BusinessId(businessId).stream().map(verificationMapper::toResponse).toList();
+    }
+
+    @Override
+    public List<VerificationResponseModel> getAllVerificationRequests() {
+        return verificationRepository.findAllByStatus(VerificationStatus.PENDING).stream().map(verificationMapper::toResponse).toList();
     }
 
     @Override
@@ -120,8 +183,12 @@ public class BusinessServiceImpl implements BusinessService {
         String userId = extractUserId(jwt);
         validateUserIsEmployeeOfBusiness(userId, businessId);
 
-        String token = UUID.randomUUID().toString();
         Invitation invitation =  invitationMapper.toEntity(invitationRequest);
+
+        if (invitationRepository.existsByBusinessId_BusinessIdAndEmail(businessId, invitation.getEmail()))
+            throw new BadInvitationRequestException();
+
+        String token = UUID.randomUUID().toString();
         invitation.setToken(token);
         invitation.setInvitationId(new InvitationIdentifier());
         invitation.setBusinessId(new BusinessIdentifier(businessId));
@@ -168,12 +235,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
-
         String userId = extractUserId(jwt);
-        if (employees.stream().noneMatch(e -> e.getUserId().equals(userId)))
-            throw new AccessDeniedException("Access Denied");
-
+        validateUserIsEmployeeOfBusiness(userId, businessId);
 
         return invitationRepository.findAllByBusinessId_BusinessId(businessId).stream().map(invitationMapper::toResponse).collect(Collectors.toList());
     }
@@ -206,14 +269,17 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public void removeBusinessEmployeeById(Jwt jwt, String businessId, String employeeId) {
-        if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
-
-        List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business.getOwnerId().equals(employeeId))
+            throw new BadBusinessRequestException();
 
         String userId = extractUserId(jwt);
         validateUserIsEmployeeOfBusiness(userId, businessId);
 
+        if (!businessRepository.existsByBusinessId_BusinessId(businessId))
+            throw new BusinessNotFoundException();
+
+        List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
         Employee employee = employees.stream().filter(e -> e.getEmployeeId().getEmployeeId().equals(employeeId)).findFirst().orElse(null);
 
         if (employee == null)
@@ -247,8 +313,27 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     private void validateUserIsEmployeeOfBusiness(String userId, String businessId) {
-        boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
-        if (!isEmployee)
+        if (!employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId))
             throw new AccessDeniedException("Access Denied");
     }
+
+    private VerificationContext updateBusinessVerification(String businessId, String verificationId){
+        Verification verification = verificationRepository.findVerificationByVerificationId_VerificationId(verificationId);
+        if (verification == null)
+            throw new VerificationNotFoundException();
+
+        if (verification.getStatus() != VerificationStatus.PENDING)
+            throw new BadVerificationRequestException();
+
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business == null)
+            throw new BusinessNotFoundException();
+
+        if (business.isVerified())
+            throw new BusinessAlreadyVerifiedException();
+
+        return new VerificationContext(verification, business);
+    }
+
+    private record VerificationContext(Verification verification, Business business) {}
 }

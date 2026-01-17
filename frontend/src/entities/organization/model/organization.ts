@@ -19,6 +19,7 @@ export interface OrganizationResponseDTO {
     organizationSize: OrganizationSize | string; // Handle potential string response from backend if enum serialization varies
     address: Address;
     roles: Roles;
+    verified: boolean;
     dateCreated: string;
 }
 

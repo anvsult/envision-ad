@@ -50,46 +50,63 @@ class BusinessControllerIntegrationTest {
     private EmployeeRepository employeeRepository;
 
     @Autowired
-    private PlatformTransactionManager transactionManager;
+    private VerificationRepository verificationRepository;
 
     @BeforeEach
     void setUp() {
-        Jwt jwt = Jwt.withTokenValue("mock-token")
+        Jwt admin = Jwt.withTokenValue("admin-token")
                 .header("alg", "none")
-                .claim("sub", "auth0|6934e8515479d2b6d3cf7575")
+                .claim("sub", "auth0|696a89377cfdb558ea4a4a61")
                 .claim("scope", "read write")
                 .claim("permissions", List.of(
-                        "create:employee",
-                        "create:media",
-                        "delete:employee",
-                        "read:employee",
-                        "update:business",
-                        "update:media",
-                        "create:business",
-                        "readAll:business",
-                        "read:business"
+                        "readAll:verification",
+                        "update:verification"
                 ))
                 .build();
 
-        Jwt jwt2 = Jwt.withTokenValue("mock-token2")
+        Jwt media = Jwt.withTokenValue("media-token")
                 .header("alg", "none")
-                .claim("sub", "auth0|6934e8515479d2b6d3cf7576")
+                .claim("sub", "auth0|696a89137cfdb558ea4a4a4a")
                 .claim("scope", "read write")
                 .claim("permissions", List.of(
-                        "create:employee",
                         "create:media",
-                        "delete:employee",
-                        "read:employee",
-                        "update:business",
                         "update:media",
-                        "create:business",
-                        "readAll:business",
-                        "read:business"
+                        "update:business",
+                        "read:employee",
+                        "create:employee",
+                        "delete:employee",
+                        "read:verification",
+                        "create:verification"
                 ))
                 .build();
 
-        when(jwtDecoder.decode("mock-token")).thenReturn(jwt);
-        when(jwtDecoder.decode("mock-token2")).thenReturn(jwt2);
+        Jwt advertiser = Jwt.withTokenValue("advertiser-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696a88eb347945897ef17093")
+                .claim("scope", "read write")
+                .claim("permissions", List.of(
+                        "read:campaign",
+                        "create:campaign",
+                        "update:campaign",
+                        "update:business",
+                        "read:employee",
+                        "create:employee",
+                        "delete:employee",
+                        "read:verification",
+                        "create:verification"
+                ))
+                .build();
+
+        Jwt newUser = Jwt.withTokenValue("newUser-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696b10a00bba0a28c21d3829")
+                .claim("scope", "read write")
+                .build();
+
+        when(jwtDecoder.decode("admin-token")).thenReturn(admin);
+        when(jwtDecoder.decode("media-token")).thenReturn(media);
+        when(jwtDecoder.decode("advertiser-token")).thenReturn(advertiser);
+        when(jwtDecoder.decode("newUser-token")).thenReturn(newUser);
     }
 
     @Test
@@ -98,7 +115,7 @@ class BusinessControllerIntegrationTest {
                 .uri(uriBuilder -> uriBuilder.path(BASE_URI_BUSINESSES)
                         .build())
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("newUser-token"))
                 .exchange().expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody().jsonPath("$.length()").isEqualTo(5);
@@ -129,7 +146,7 @@ class BusinessControllerIntegrationTest {
                 .uri(BASE_URI_BUSINESSES)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token2"))
+                .headers(headers -> headers.setBearerAuth("newUser-token"))
                 .body(BodyInserters.fromValue(requestModel))
                 .exchange()
                 .expectStatus().isCreated()
@@ -151,7 +168,7 @@ class BusinessControllerIntegrationTest {
         webTestClient.get()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}", businessId)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -168,14 +185,14 @@ class BusinessControllerIntegrationTest {
         webTestClient.get()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}", invalidBusinessId)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
 
     @Test
     void updateBusinessById_ShouldUpdateAndReturnBusiness() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
 
         // Arrange
         BusinessRequestModel requestModel = new BusinessRequestModel();
@@ -200,7 +217,7 @@ class BusinessControllerIntegrationTest {
                 .uri(BASE_URI_BUSINESSES + "/{businessId}", businessId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .body(BodyInserters.fromValue(requestModel))
                 .exchange()
                 .expectStatus().isOk()
@@ -217,41 +234,112 @@ class BusinessControllerIntegrationTest {
     }
 
     @Test
-    void verifyBusinessById_ShouldReturnVerifiedBusiness() {
+    void approveBusinessVerificationByBusinessIdAndVerificationId_ShouldReturnVerification() {
         String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+        String verificationId = "cf4dc890-d86c-48c4-9a8b-7705e0420da3";
 
         // Act & Assert
         webTestClient.patch()
-                .uri(BASE_URI_BUSINESSES + "/{businessId}/verify", businessId)
+                .uri(BASE_URI_BUSINESSES + "/{businessId}/verifications/{verificationId}/approve", businessId, verificationId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("admin-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.verificationId").isEqualTo(verificationId)
+                .jsonPath("$.businessId").isEqualTo(businessId)
+                .jsonPath("$.status").isEqualTo(VerificationStatus.APPROVED)
+                .jsonPath("$.comments").isEmpty();
+
+        assertEquals(3, verificationRepository.count());
+    }
+
+    @Test
+    void denyBusinessVerificationByBusinessIdAndVerificationId_ShouldReturnVerification() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+        String verificationId = "cf4dc890-d86c-48c4-9a8b-7705e0420da3";
+        String comment = "Denied because of missing address.";
+
+        // Act & Assert
+        webTestClient.patch()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}/verifications/{verificationId}/deny", businessId, verificationId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("admin-token"))
+                .body(BodyInserters.fromValue(comment))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.verificationId").isEqualTo(verificationId)
+                .jsonPath("$.businessId").isEqualTo(businessId)
+                .jsonPath("$.status").isEqualTo(VerificationStatus.DENIED)
+                .jsonPath("$.comments").isEqualTo(comment);
+
+        assertEquals(3, verificationRepository.count());
+    }
+
+    @Test
+    void requestBusinessVerification_ShouldReturnVerification() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33";
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}/verifications", businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody()
                 .jsonPath("$.businessId").isEqualTo(businessId)
-                .jsonPath("$.name").isEqualTo("TechGiant Solutions")
-                .jsonPath("$.organizationSize").isEqualTo("ENTERPRISE")
-                .jsonPath("$.address.street").isEqualTo("500 Tech Blvd")
-                .jsonPath("$.address.city").isEqualTo("Toronto")
-                .jsonPath("$.address.state").isEqualTo("ON")
-                .jsonPath("$.address.zipCode").isEqualTo("M5V 2T6")
-                .jsonPath("$.address.country").isEqualTo("Canada")
-                .jsonPath("$.verified").isEqualTo("true");
+                .jsonPath("$.status").isEqualTo(VerificationStatus.PENDING);
 
-        assertEquals(5, businessRepository.count());
+        assertEquals(4, verificationRepository.count());
+    }
+
+    @Test
+    void getAllBusinessVerifications_ShouldReturnOneVerifications() {
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+
+        // Act & Assert
+        webTestClient.get()
+                .uri(BASE_URI_BUSINESSES + "/{businessId}/verifications", businessId)
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("media-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1);
+    }
+
+    @Test
+    void getAllPendingVerifications_ShouldReturnOneVerification() {
+        // Act & Assert
+        webTestClient.get()
+                .uri(BASE_URI_BUSINESSES + "/verifications")
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("admin-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(1);
     }
 
     @Test
     void getAllBusinessInvitations_ShouldReturnAllInvitations() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
         long initialInvitationCount = invitationRepository.findAllByBusinessId_BusinessId(businessId).size();
 
         webTestClient.get()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/invites", businessId)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -261,7 +349,7 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void createInvitation_ShouldPersistAndReturnInvitation() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
         long initialInvitationCount = invitationRepository.count();
 
         InvitationRequestModel invitationRequest = new InvitationRequestModel();
@@ -271,7 +359,7 @@ class BusinessControllerIntegrationTest {
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/invites", businessId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .body(BodyInserters.fromValue(invitationRequest))
                 .exchange()
                 .expectStatus().isCreated()
@@ -286,7 +374,7 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void cancelInvitation_ShouldRemoveInvitation() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
 
         // First create an invitation
         InvitationRequestModel invitationRequest = new InvitationRequestModel();
@@ -296,7 +384,7 @@ class BusinessControllerIntegrationTest {
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/invites", businessId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .body(BodyInserters.fromValue(invitationRequest))
                 .exchange()
                 .expectStatus().isCreated()
@@ -316,7 +404,7 @@ class BusinessControllerIntegrationTest {
         webTestClient.delete()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/invites/{invitationId}",
                         businessId, invitation.getInvitationId().getInvitationId())
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isNoContent();
 
@@ -325,13 +413,13 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void getAllBusinessEmployees_ShouldReturnAllEmployees() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
         long employeeCount = employeeRepository.findAllByBusinessId_BusinessId(businessId).size();
 
         webTestClient.get()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/employees", businessId)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -341,7 +429,7 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void addEmployeeToBusiness_WithValidToken_ShouldAddEmployee() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
 
         // Create an invitation first
         InvitationRequestModel invitationRequest = new InvitationRequestModel();
@@ -351,7 +439,7 @@ class BusinessControllerIntegrationTest {
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/invites", businessId)
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .body(BodyInserters.fromValue(invitationRequest))
                 .exchange()
                 .expectStatus().isCreated();
@@ -372,7 +460,7 @@ class BusinessControllerIntegrationTest {
                         .queryParam("token", token)
                         .build(businessId))
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token2"))
+                .headers(headers -> headers.setBearerAuth("newUser-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
@@ -384,20 +472,20 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void removeEmployeeFromBusiness_ShouldRemoveEmployee() {
-        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11";
+        String businessId = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
 
         // Get an existing employee
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
         assertFalse(employees.isEmpty(), "Should have at least one employee");
 
-        Employee employeeToRemove = employees.getFirst();
+        Employee employeeToRemove = employees.getLast();
         String employeeId = employeeToRemove.getEmployeeId().getEmployeeId();
         long employeeCountBefore = employeeRepository.count();
 
         webTestClient.delete()
                 .uri(BASE_URI_BUSINESSES + "/{businessId}/employees/{employeeId}",
                         businessId, employeeId)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isNoContent();
 
@@ -406,12 +494,12 @@ class BusinessControllerIntegrationTest {
 
     @Test
     void getBusinessByUserId_ShouldReturnBusiness() {
-        String userId = "auth0|6934e8515479d2b6d3cf7575";
+        String userId = "auth0|696a89137cfdb558ea4a4a4a";
 
         webTestClient.get()
                 .uri(BASE_URI_BUSINESSES + "/employee/{userId}", userId)
                 .accept(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("media-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)

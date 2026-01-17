@@ -26,7 +26,6 @@ export default function OrganizationEmployees() {
     const [organizationId, setOrganizationId] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [employeeEmail, setEmployeeEmail] = useState("");
 
     const [confirmEmployeeOpen, setConfirmEmployeeOpen] = useState(false);
     const [confirmInviteOpen, setConfirmInviteOpen] = useState(false);
@@ -45,12 +44,6 @@ export default function OrganizationEmployees() {
 
         if (organizationId)
             setInvitations(await getAllOrganizationInvitations(organizationId));
-
-        notifications.show({
-            title: t("success.title"),
-            message: t("success.inviteEmployee"),
-            color: "green",
-        });
     };
 
     const handleDeleteEmployee = (employee: Employee) => {
@@ -167,8 +160,8 @@ export default function OrganizationEmployees() {
                 opened={isModalOpen}
                 onClose={handleCloseModal}
                 onSuccess={handleSuccess}
-                email={employeeEmail}
-                setEmail={setEmployeeEmail}
+                employees={employees}
+                invitations={invitations}
                 organizationId={organizationId!}
             />
 

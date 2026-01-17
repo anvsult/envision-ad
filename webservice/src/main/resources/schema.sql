@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS media CASCADE;
 DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
+DROP TABLE IF EXISTS verification CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address CASCADE;
 DROP TABLE IF EXISTS ad_campaigns CASCADE;
@@ -44,6 +45,19 @@ CREATE TABLE business
         FOREIGN KEY (address_id)
             REFERENCES address (id)
             ON DELETE CASCADE
+);
+
+CREATE TABLE verification
+(
+    id SERIAL PRIMARY KEY,
+    verification_id varchar(36) UNIQUE NOT NULL,
+    business_id  varchar(36) NOT NULL,
+    status varchar(8) NOT NULL DEFAULT 'PENDING',
+    comments varchar(512),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
 
 CREATE TABLE employee
@@ -124,7 +138,7 @@ CREATE TABLE ads
     ad_duration_seconds INTEGER NOT NULL,
     ad_type VARCHAR(50) NOT NULL,
 
-    ad_campaign_ref_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE CASCADE
+    ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reservations

@@ -6,13 +6,14 @@ import {useTranslations} from "next-intl";
 import {createInviteEmployeeToOrganization} from "@/features/organization-management/api";
 import {IconInfoCircle} from "@tabler/icons-react";
 import {notifications} from "@mantine/notifications";
+import {Employee, InvitationResponse} from "@/entities/organization";
 
 interface BusinessModalProps {
     opened: boolean;
     onClose: () => void;
     onSuccess: () => void;
-    email: string
-    setEmail: (value: string) => void;
+    employees: Employee[];
+    invitations: InvitationResponse[];
     organizationId: string;
 }
 
@@ -20,13 +21,14 @@ export function AddEmployeeModal({
                                      opened,
                                      onClose,
                                      onSuccess,
-                                     email,
-                                     setEmail,
+                                     employees,
+                                     invitations,
                                      organizationId,
                                  }: BusinessModalProps) {
     const t = useTranslations("organization.employees.form");
     const [saving, setSaving] = useState(false);
     const [invalidInputWarning, setInvalidInputWarning] = useState<string | null>(null);
+    const [email, setEmail] = useState("");
 
     useEffect(() => {
         if (opened) {
@@ -50,6 +52,16 @@ export function AddEmployeeModal({
             return;
         }
 
+        if (employees.some(employee => employee.email === email)) {
+            setInvalidInputWarning(t("errors.emailExists"));
+            return;
+        }
+
+        if (invitations.some(invitation => invitation.email === email)) {
+            setInvalidInputWarning(t("errors.emailInvited"));
+            return;
+        }
+
         setSaving(true);
         try {
             await createInviteEmployeeToOrganization(organizationId, { email });
@@ -58,7 +70,7 @@ export function AddEmployeeModal({
             onClose();
             notifications.show({
                 title: t("success.title"),
-                message: t("success.invite"),
+                message: t("success.invitation"),
                 color: "green",
             });
         } catch (error) {

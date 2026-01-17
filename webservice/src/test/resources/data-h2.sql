@@ -7,17 +7,24 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
 
 INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, verified)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,true, true),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true,false),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'auth0|696a89137cfdb558ea4a4a4a', 'ENTERPRISE', 2, false, true,false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'auth0|696a88eb347945897ef17093', 'LARGE', 3, true, false, false),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false,false),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true,false);
 
 INSERT INTO employee (employee_id, user_id, business_id)
 VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
-       ('202fc843-77a7-409e-8547-e013763ded4f', 'auth0|693746439e8a7ab9e8b910b2', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11');
+       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
+       ('9c881832-3489-4518-b7a2-2e0ecdb659f2', 'auth0|695d67069dadc99900c81a0f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33');
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
-VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', CURRENT_TIMESTAMP, DATEADD('HOUR', 1, CURRENT_TIMESTAMP));
+VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', CURRENT_TIMESTAMP, DATEADD('HOUR', 1, CURRENT_TIMESTAMP));
+
+INSERT INTO verification (verification_id, business_id, status, comments, date_created, date_modified)
+VALUES ('636e63e2-a3c0-4171-ac90-bfad8aeb6613', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'DENIED', 'Application denied due invalid Address Entered', DATEADD('HOUR', -1, CURRENT_TIMESTAMP), CURRENT_TIMESTAMP),
+       ('75472797-b9e0-4e53-bdf8-81ffe57d9fa5', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'APPROVED', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('cf4dc890-d86c-48c4-9a8b-7705e0420da3', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO media (media_id, title, media_owner_name, address,
                    type_of_display, loop_duration, resolution, aspect_ratio,

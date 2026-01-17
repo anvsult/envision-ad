@@ -1,7 +1,7 @@
 import {Button, Card, Group, Stack, Text, Title} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {OrganizationResponseDTO} from "@/entities/organization";
-import {IconEdit} from "@tabler/icons-react";
+import {IconDiscountCheck, IconEdit} from "@tabler/icons-react";
 import {useUser} from "@auth0/nextjs-auth0/client";
 
 interface OrganizationDetailProps {
@@ -19,7 +19,12 @@ export function OrganizationDetail({organization, onEdit}: OrganizationDetailPro
         <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Stack gap="sm">
                 <Group justify="space-between">
-                    <Title order={3}>{organization.name}</Title>
+                    <Group gap="xs">
+                        <Title order={3}>{organization.name}</Title>
+                        {organization.verified &&
+                            <IconDiscountCheck size={30} stroke={1.5} />
+                        }
+                    </Group>
                     <Group gap="xs">
                         {onEdit && user?.sub === organization.ownerId && (
                             <Button

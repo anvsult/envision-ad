@@ -8,19 +8,27 @@ VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
 
 INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, verified)
 VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Mom & Pop Bakery', 'auth0|6934e8515479d2b6d3cf7575', 'SMALL', 1, true,true, true),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', null, 'ENTERPRISE', 2, false, true, false),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', null, 'LARGE', 3, true, false, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'auth0|696a89137cfdb558ea4a4a4a', 'ENTERPRISE', 2, true, false, false),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'auth0|696a88eb347945897ef17093', 'LARGE', 3, false, true, false),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, false),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, false)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO employee (employee_id, user_id, business_id)
-VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11')
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
+       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33')
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
 VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', NOW(), NOW() + INTERVAL '1 hour')
 ON CONFLICT (invitation_id) DO NOTHING;
+
+INSERT INTO verification (verification_id, business_id, status, comments, date_created, date_modified)
+VALUES ('636e63e2-a3c0-4171-ac90-bfad8aeb6613', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'DENIED', 'Application denied due invalid Address Entered', CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP),
+       ('75472797-b9e0-4e53-bdf8-81ffe57d9fa5', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'APPROVED', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('cf4dc890-d86c-48c4-9a8b-7705e0420da3', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+       ('ed2ecdbb-84e9-4625-8b06-3fb500d8d081', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO media_location (media_location_id, name, description, country, province, city, street, postal_code, latitude, longitude)
 VALUES
@@ -474,7 +482,7 @@ VALUES
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
-    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d'),
-    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e'),
-    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e'),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e');
+    ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1),
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2);

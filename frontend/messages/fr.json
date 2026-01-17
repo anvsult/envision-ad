@@ -208,9 +208,11 @@
     }
   },
   "organization": {
-    "title": "Organization",
-    "createButton": "Créer une organization",
+    "title": "Organisation",
+    "createButton": "Créer une organisation",
     "noOrganization": "Aucune organisation trouvée.",
+    "noOrganizationDescription": "Vous ne faites encore partie d’aucune organisation ? Créez votre propre organisation pour commencer !",
+    "createOrganization": "Créer une organisation",
     "roles": {
       "mediaOwner": "Propriétaire de médias",
       "advertiser": "Annonceur"
@@ -224,62 +226,66 @@
       "actions": "Actions",
       "edit": "Modifier"
     },
-    "errors": {
-      "loadFailed": "Échec du chargement de l'organization pour modification"
-    },
     "form": {
-      "title": "Détails de l'organization",
-      "nameLabel": "Nom de l'organization",
+      "createTitle": "Créer une organisation",
+      "editTitle": "Modifier l’organisation",
+      "nameLabel": "Nom de l’organisation",
       "namePlaceholder": "Ex. Tech Corp",
-      "sizeLabel": "Taille de l'organization",
+      "sizeLabel": "Taille de l’organisation",
       "sizePlaceholder": "Sélectionner la taille",
-      "addressLabel": "Détails de l'adresse",
+      "addressLabel": "Détails de l’adresse",
       "streetLabel": "Rue",
       "streetPlaceholder": "123 Rue Principale",
       "cityLabel": "Ville",
       "cityPlaceholder": "Paris",
       "stateLabel": "État/Province",
       "statePlaceholder": "QC",
-      "zipLabel": "Code Postal",
+      "zipLabel": "Code postal",
       "zipPlaceholder": "H1A 1A1",
       "countryLabel": "Pays",
       "countryPlaceholder": "Canada",
-      "roleLabel": "Rôles de l'organization",
-      "submit": "Créer l'organization",
+      "roleLabel": "Rôles de l’organisation",
+      "create": "Créer",
       "cancel": "Annuler",
+      "update": "Mettre à jour",
       "errors": {
         "error": "Erreur",
         "validationError": "Informations manquantes ou invalides.",
         "nameRequired": "Le nom de l’organisation est requis.",
         "sizeRequired": "La taille de l’organisation est requise.",
-        "streetRequired": "L’adresse de l’organisation est requise.",
+        "streetRequired": "La rue de l’organisation est requise.",
         "cityRequired": "La ville de l’organisation est requise.",
         "stateRequired": "La province ou l’État de l’organisation est requis.",
         "zipRequired": "Le code postal de l’organisation est requis.",
         "countryRequired": "Le pays de l’organisation est requis.",
         "roleRequired": "Au moins un rôle est requis.",
-        "updateFailed": "Échec de la mise à jour des informations de l’organisation."
+        "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
+        "createFailed": "Échec de la création de l’organisation."
       },
       "success": {
         "title": "Succès",
-        "update": "Les informations de l’organisation ont été mises à jour"
+        "update": "Les informations de l’organisation ont été mises à jour.",
+        "create": "L’organisation a été créée."
       }
     },
     "sizes": {
       "SMALL": "Petite (1-50)",
       "MEDIUM": "Moyenne (51-150)",
       "LARGE": "Grande (151-500)",
-      "ENTERPRISE": "Organization (500+)"
+      "ENTERPRISE": "Entreprise (500+)"
     },
     "employees": {
       "title": "Employés",
       "pending": "Invitations en attente",
       "active": "Employés actifs",
       "addButton": "Inviter un employé",
+      "cancelInvitation": "Annuler l’invitation",
+      "deleteEmployee": "Supprimer l’employé",
       "invites": "Invitations en attente",
       "name": "Nom",
       "email": "Courriel",
       "expire": "Expire dans",
+      "expired": "Expirée",
       "actions": "Actions",
       "invitationNotFound": "Aucune invitation en attente trouvée",
       "employeeNotFound": "Aucun employé actif trouvé",
@@ -293,26 +299,61 @@
           "error": "Erreur",
           "validationError": "Informations manquantes ou invalides.",
           "emailRequired": "Une adresse courriel est requise.",
-          "emailInvalid": "L'adresse courriel fournie est invalide.",
-          "saveFailed": "Échec de l’invitation de l’employé.",
-          "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
-          "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
+          "emailInvalid": "L’adresse courriel est invalide.",
+          "emailExists": "Cette adresse courriel est déjà utilisée par un autre employé.",
+          "emailInvited": "Une invitation a déjà été envoyée à cette adresse courriel.",
+          "saveFailed": "Échec de l’invitation de l’employé."
         },
         "success": {
           "title": "Succès",
-          "invitation": "L’invitation a été envoyée",
-          "deleteEmployee": "L’employé a été supprimé",
-          "deleteInvitation": "L’invitation a été annulée"
+          "invitation": "L’invitation a été envoyée"
         }
       },
       "modal": {
         "employeeTitle": "Supprimer un employé",
         "invitationTitle": "Annuler l’invitation",
-        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre organization?",
-        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre organization?",
+        "employeeMessage": "Êtes-vous sûr de vouloir retirer <bold>{name}</bold> de votre organisation ?",
+        "invitationMessage": "Êtes-vous sûr de vouloir annuler l’invitation envoyée à <bold>{email}</bold> pour rejoindre votre organisation ?",
         "confirm": "Confirmer",
         "cancel": "Annuler"
+      },
+      "success": {
+        "title": "Succès",
+        "deleteEmployee": "L’employé a été supprimé",
+        "deleteInvitation": "L’invitation a été annulée"
+      },
+      "errors": {
+        "title": "Erreur",
+        "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
+        "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
       }
+    },
+    "verificationHistory": "Historique des vérifications",
+    "requestVerification": "Demander une vérification",
+    "verificationTable": {
+      "requestDate": "Date de la demande",
+      "status": "Statut",
+      "reason": "Raison"
+    },
+    "verificationStatus": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "denied": "Refusée"
+    },
+    "modal": {
+      "verification": "Demande de vérification",
+      "verificationMessage": "Avant de demander une vérification, assurez-vous que toutes les informations de l’organisation sont exactes.",
+      "confirm": "Confirmer",
+      "cancel": "Annuler"
+    },
+    "success": {
+      "title": "Succès",
+      "verificationRequest": "La demande de vérification a été envoyée."
+    },
+    "errors": {
+      "title": "Erreur",
+      "loadFailed": "Échec du chargement de l’organisation pour modification.",
+      "verificationRequestFailed": "Échec de la demande de vérification."
     }
   },
   "media": {
@@ -654,7 +695,25 @@
       "price": "Prix",
       "mediaOwner": "Propriétaire de médias",
       "location": "Site",
-      "dailyImpressions": "Impressions quotidiennes"
+      "dailyImpressions": "Impressions quotidiennes",
+      "cancel": "Annuler",
+      "pendingOrganization": "Organisations en attente de vérification",
+      "organization": "Organisation",
+      "requestDate": "Date de la demande",
+      "verificationDetails": "Détails de la vérification",
+      "approveConfirmMessage": "Êtes-vous sûr de vouloir approuver cette organisation ?",
+      "denyReason": "Raison du refus",
+      "denyReasonPlaceholder": "Entrez une raison pour refuser cette organisation.",
+      "success": {
+        "title": "Succès",
+        "approved": "Le statut de vérification de l’organisation a été approuvé.",
+        "denied": "Le statut de vérification de l’organisation a été refusé."
+      },
+      "errors": {
+        "title": "Erreur",
+        "approveFailed": "Échec de l’approbation du statut de vérification de l’organisation.",
+        "denyFailed": "Échec du refus du statut de vérification de l’organisation."
+      }
     }
   },
   "reserveModal": {

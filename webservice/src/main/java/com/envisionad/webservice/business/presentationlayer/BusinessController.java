@@ -28,13 +28,11 @@ public class BusinessController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('readAll:business')")
     public ResponseEntity<List<BusinessResponseModel>> getAllBusinesses() {
         return ResponseEntity.ok(businessService.getAllBusinesses());
     }
 
     @GetMapping("/{businessId}")
-    @PreAuthorize("hasAuthority('read:business')")
     public ResponseEntity<BusinessResponseModel> getBusinessById(@PathVariable String businessId) {
         return ResponseEntity.ok(businessService.getBusinessById(businessId));
     }
@@ -45,9 +43,34 @@ public class BusinessController {
         return ResponseEntity.ok(businessService.updateBusinessById(jwt, businessId, requestModel));
     }
 
-    @PatchMapping("/{businessId}/verify")
-    public ResponseEntity<BusinessResponseModel> verifyBusinessById(@PathVariable String businessId){
-        return ResponseEntity.ok(businessService.verifyBusinessById(businessId));
+    @PostMapping("/{businessId}/verifications")
+    @PreAuthorize("hasAuthority('create:verification')")
+    public ResponseEntity<VerificationResponseModel> requestVerification(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId){
+        return ResponseEntity.ok(businessService.requestVerification(jwt, businessId));
+    }
+
+    @GetMapping("/{businessId}/verifications")
+    @PreAuthorize("hasAuthority('read:verification')")
+    public ResponseEntity<List<VerificationResponseModel>> getAllVerificationsByBusinessId(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId){
+        return ResponseEntity.ok(businessService.getAllVerificationsByBusinessId(jwt, businessId));
+    }
+
+    @GetMapping("/verifications")
+    @PreAuthorize("hasAuthority('readAll:verification')")
+    public ResponseEntity<List<VerificationResponseModel>> getAllVerificationRequests(){
+        return ResponseEntity.ok(businessService.getAllVerificationRequests());
+    }
+
+    @PatchMapping("/{businessId}/verifications/{verificationId}/approve")
+    @PreAuthorize("hasAuthority('update:verification')")
+    public ResponseEntity<VerificationResponseModel> approveBusinessVerification(@PathVariable String businessId, @PathVariable String verificationId){
+        return ResponseEntity.ok(businessService.approveBusinessVerification(businessId, verificationId));
+    }
+
+    @PatchMapping("/{businessId}/verifications/{verificationId}/deny")
+    @PreAuthorize("hasAuthority('update:verification')")
+    public ResponseEntity<VerificationResponseModel> denyBusinessVerification(@PathVariable String businessId, @PathVariable String verificationId, @RequestBody String reason){
+        return ResponseEntity.ok(businessService.denyBusinessVerification(businessId, verificationId, reason));
     }
 
     @GetMapping("/{businessId}/invites")

@@ -14,7 +14,15 @@ public interface BusinessService {
 
     BusinessResponseModel updateBusinessById(Jwt jwt, String id, BusinessRequestModel business);
 
-    BusinessResponseModel verifyBusinessById(String businessId);
+    VerificationResponseModel approveBusinessVerification(String businessId, String verificationId);
+
+    VerificationResponseModel denyBusinessVerification(String businessId, String verificationId, String reason);
+
+    VerificationResponseModel requestVerification(Jwt jwt, String businessId);
+
+    List<VerificationResponseModel> getAllVerificationsByBusinessId(Jwt jwt, String businessId);
+
+    List<VerificationResponseModel> getAllVerificationRequests();
 
     List<InvitationResponseModel> getAllInvitationsByBusinessId(Jwt jwt, String businessId);
 

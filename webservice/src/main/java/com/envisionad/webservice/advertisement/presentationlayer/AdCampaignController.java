@@ -7,6 +7,7 @@ import com.envisionad.webservice.advertisement.presentationlayer.models.AdReques
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdResponseModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class AdCampaignController {
     }
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('create:campaign')")
     public ResponseEntity<AdCampaignResponseModel> createAdCampaign(
             @RequestBody AdCampaignRequestModel adCampaignRequestModel
             ) {
@@ -36,6 +38,7 @@ public class AdCampaignController {
     }
 
     @PostMapping("/{campaignId}/ads")
+    @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> addAdToCampaign(
             @PathVariable String campaignId,
             @RequestBody AdRequestModel adRequestModel) {
@@ -46,6 +49,7 @@ public class AdCampaignController {
     }
 
     @DeleteMapping("/{campaignId}/ads/{adId}")
+    @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> deleteAdFromCampaign(
             @PathVariable String campaignId,
             @PathVariable String adId) {
