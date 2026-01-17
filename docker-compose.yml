@@ -36,22 +36,29 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-        - NEXT_PUBLIC_CLOUDINARY_API_KEY=${NEXT_PUBLIC_CLOUDINARY_API_KEY}
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-        - APP_BASE_URL=${APP_BASE_URL}
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+        NEXT_PUBLIC_APP_BASE_URL: "${APP_BASE_URL}"
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+        NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
     ports:
       - "3000:3000"
     environment:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
-#      If running locally using
-#      `docker-compose up --build`
-#      uncomment to load from .env file
-#    env_file:
-#      - ./frontend/.env
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      APP_BASE_URL: "${APP_BASE_URL}"
+      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
+      AUTH0_SECRET: "${AUTH0_SECRET}"
+      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
+      AUTH0_MGMT_DOMAIN: "${AUTH0_MGMT_DOMAIN}"
+      AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
+      AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+      CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
+    env_file:
+      - ./frontend/.env
     depends_on:
-      - webservice
+      webservice:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - appnet
@@ -63,26 +70,27 @@ services:
     ports:
       - "8080:8080"
     environment:
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       SPRING_PROFILES_ACTIVE: "prod"
       # Spring datasource
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+
       SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
       SPRING_EMAIL_PORT: "${EMAIL_PORT}"
       SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
       SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
-      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-
-#      If running locally using
-#      `docker-compose up --build`
-#      uncomment to load from .env file
-#    env_file:
-#      - .env
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
     networks:
       - appnet
@@ -92,4 +100,4 @@ networks:
     driver: bridge
 
 volumes:
-    pgdata:
+  pgdata:

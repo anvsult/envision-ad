@@ -8,10 +8,10 @@ services:
 #      We are injecting the secrets at runtime (into the javascript files)
 #      Those are the variables that CAN be seen by other people
       args:
-        - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}
-        - NEXT_PUBLIC_CLOUDINARY_API_KEY=${NEXT_PUBLIC_CLOUDINARY_API_KEY}
-        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-        - APP_BASE_URL=${APP_BASE_URL}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}"
+        NEXT_PUBLIC_APP_BASE_URL: ${APP_BASE_URL}"
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+        NEXT_PUBLIC_CLOUDINARY_API_KEY: ${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
       dockerfile: Dockerfile
     #   Here, I am listing the variables that Next.js will potentially need
     #   while it's running (runtime).
@@ -26,11 +26,9 @@ services:
       AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
       AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
       AUTH0_SECRET: "${AUTH0_SECRET}"
-      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       AUTH0_MGMT_DOMAIN: "${AUTH0_MGMT_DOMAIN}"
       AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
       AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
-      CLOUDINARY_URL: "${CLOUDINARY_URL}"
       CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
     depends_on:
       webservice:
@@ -49,6 +47,9 @@ services:
       context: ./webservice
       dockerfile: Dockerfile
     environment:
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+
       SPRING_PROFILES_ACTIVE: "prod"
       # Point this directly to the variables injected by GitHub Actions
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
@@ -58,8 +59,6 @@ services:
       EMAIL_SMTP: "${EMAIL_SMTP}"
       EMAIL_USER: "${EMAIL_USER}"
       EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
-      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
     restart: unless-stopped
     networks:
       - appnet
