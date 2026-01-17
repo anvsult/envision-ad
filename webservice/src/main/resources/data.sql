@@ -54,9 +54,9 @@ VALUES
      'Canada', 'QC', 'Brossard', '4785 Grande Allée', 'J4Z 3G1',
      45.481660, -73.454690),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008', 'Ottawa Parliament Hill Board', 'Digital board near major tourist attraction',
-     'Canada', 'ON', 'Ottawa', '111 Wellington St', 'K1A 0A6',
-     45.423593, -75.700929),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008', 'Cafeteria Entrance', 'Screen positioned at the cafeteria entrance, capturing attention during meal periods when student traffic is at its highest. This placement benefits from repeated daily exposure and extended dwell time around food and social activity areas.',
+     'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
+     45.501600, -73.554600),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009', 'Edmonton ICE District Screen', 'Large outdoor screen in entertainment district',
      'Canada', 'AB', 'Edmonton', '10220 104 Ave NW', 'T5J 0H6',
@@ -217,7 +217,7 @@ VALUES (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380006',
            'Student Lounge 2', 'Champlain College', 'DIGITAL',
            30, '3840x2160', '16:9',
-           3840, 2160, 26.45, 1875,
+           3840, 2160, 26.45, 1200,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                 "weeklySchedule": [
@@ -254,22 +254,22 @@ VALUES (
 
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380008',
-           'Parliament Hill South Gate Screen', 'FederalAds', 'DIGITAL',
-           35, '2560x1440', '16:9',
-           2560, 1440, 210.00, 26000,
+           'Cafeteria Entrance', 'Champlain College', 'DIGITAL',
+           30, '3840x2160', '16:9',
+           3840, 2160, 26.45, 1200,
            '{
-               "selectedMonths": ["June", "July"],
-               "weeklySchedule": [
-                   {"dayOfWeek": "monday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-                   {"dayOfWeek": "thursday","isActive": true,"startTime":"09:00","endTime":"18:00"},
-                   {"dayOfWeek": "friday","isActive": true,"startTime":"09:00","endTime":"20:00"},
-                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+              "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+                "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768662804/Screenshot_2026-01-17_101221_dbsrlv.png'
        ),
        (
            'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',

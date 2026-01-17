@@ -14,6 +14,7 @@ import {
   Center,
   SimpleGrid,
   Modal,
+  Image,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
@@ -210,7 +211,7 @@ export default function AdminMediaReviewPage() {
     weekly.map((w) => [w.dayOfWeek.toLowerCase(), w])
   );
 
-  const imageSrc = media.imageUrl || "/sample-screen.jpg";
+  const imageSrc = media.imageUrl || "https://placehold.co/600x400?text=Loading";
 
   return (
     <>
@@ -243,16 +244,16 @@ export default function AdminMediaReviewPage() {
                     overflow: "hidden",
                   }}
               >
-                <img
+                <Image
                     src={imageSrc}
                     alt={media.title}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
+                    h={300}
+                    w="100%"
+                    fit="cover"
+                    radius={0}
+                    fallbackSrc="https://placehold.co/600x400?text=NotFound"
                 />
+
               </div>
             </Card>
 
@@ -448,17 +449,17 @@ export default function AdminMediaReviewPage() {
             body: { paddingTop: 8 },
           }}
       >
-        <img
+        <Image
             src={imageSrc}
             alt={media.title}
-            style={{
-              display: "block",
-              maxWidth: "88vw",
-              maxHeight: "80vh",
-              width: "auto",
-              height: "auto",
-              objectFit: "contain",
-              borderRadius: 12,
+            fit="contain"
+            radius="md"
+            fallbackSrc="https://placehold.co/600x400?text=NotFound"
+            styles={{
+              root: {
+                maxWidth: "88vw",
+                maxHeight: "80vh",
+              }
             }}
         />
       </Modal>

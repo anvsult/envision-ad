@@ -13,6 +13,7 @@ import {
   Center,
   SimpleGrid,
   Modal,
+  Image,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
@@ -167,15 +168,13 @@ export default function MediaDetailsPage() {
                     overflow: "hidden",
                   }}
               >
-                <img
+                <Image
                     src={imageSrc}
                     alt={media.title}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      display: "block",
-                    }}
+                    h={300}
+                    w="100%"
+                    fit="cover"
+                    radius={0}
                 />
               </div>
             </Card>
@@ -338,17 +337,14 @@ export default function MediaDetailsPage() {
             },
           }}
       >
-        <img
+        <Image
             src={imageSrc}
             alt={media.title}
-            style={{
-              display: "block",
-              maxWidth: "88vw",
-              maxHeight: "80vh",
-              width: "auto",
-              height: "auto",
-              objectFit: "contain",
-              borderRadius: 12,
+            fit="contain"
+            w="auto"
+            radius="md"
+            styles={{
+              root: { maxWidth: "88vw", maxHeight: "80vh" },
             }}
         />
       </Modal>
