@@ -1,25 +1,25 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {useDisclosure, useMediaQuery} from "@mantine/hooks";
-import {Box, Drawer, Group, Paper, Stack, Title} from "@mantine/core";
-import {OrganizationDetail} from "@/pages/dashboard/organization/ui/tables/OrganizationTable";
-import {OrganizationModal} from "@/pages/dashboard/organization/ui/modals/OrganizationModal";
-import {useTranslations} from "next-intl";
-import {useOrganizationForm} from "@/pages/dashboard/organization/hooks/useOrganizationForm";
-import {OrganizationResponseDTO, OrganizationSize} from "@/entities/organization";
-import {useUser} from "@auth0/nextjs-auth0";
-import {getEmployeeOrganization} from "@/features/organization-management/api";
+import React, { useEffect, useState } from "react";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
+import { Box, Drawer, Group, Paper, Stack, Title } from "@mantine/core";
+import { OrganizationDetail } from "@/pages/dashboard/organization/ui/tables/OrganizationTable";
+import { OrganizationModal } from "@/pages/dashboard/organization/ui/modals/OrganizationModal";
+import { useTranslations } from "next-intl";
+import { useOrganizationForm } from "@/pages/dashboard/organization/hooks/useOrganizationForm";
+import { OrganizationResponseDTO, OrganizationSize } from "@/entities/organization";
+import { useUser } from "@auth0/nextjs-auth0";
+import { getEmployeeOrganization } from "@/features/organization-management/api";
 import SideBar from "@/widgets/SideBar/SideBar";
 
 export default function OrganizationDashboard() {
-    const [opened, {toggle, close}] = useDisclosure(false);
+    const [opened, { toggle, close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
 
-    const {formState, updateField, resetForm, setFormState} = useOrganizationForm();
+    const { formState, updateField, resetForm, setFormState } = useOrganizationForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
-    const {user} = useUser();
+    const { user } = useUser();
 
     const loadOrganization = async () => {
         const organization = await getEmployeeOrganization(user!.sub);
@@ -91,14 +91,14 @@ export default function OrganizationDashboard() {
                         <Paper
                             w={250}
                             p="md"
-                            style={{minHeight: "calc(100vh - 80px)", borderRadius: 0}}
+                            style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
                             withBorder
                         >
                             <SideBar></SideBar>
                         </Paper>
                     )}
 
-                    <div style={{flex: 1, minWidth: 0}}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
                         <Stack gap="md" p="md">
                             <Group justify="space-between">
                                 <Title order={2}>{t("title")}</Title>

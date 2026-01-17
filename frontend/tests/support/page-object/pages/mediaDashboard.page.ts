@@ -10,21 +10,31 @@ export default class MediaDashboardPage {
     }
 
     // Locators
-    sidebarToggle = () => this.page.getByLabel('Toggle sidebar');
+    sidebarToggle = () => this.page.getByLabel('Toggle navigation');
+    dashboardButton = () => this.page.getByText('Dashboard').filter({ visible: true });
     mediaOwnerAccordion = () => this.page.getByRole('button', { name: 'Media Owner' });
-    mediaLink = () => this.page.getByRole('link', { name: 'Media' });
+    mediaLink = () => this.page.getByRole('link', { name: 'Media', exact: true });
 
     async clickMediaLink() {
         const mobile = await isMobileView(this.page);
 
-        // On mobile, if the accordion isn't visible, we must toggle the sidebar
-        if (mobile && !(await this.mediaOwnerAccordion().isVisible())) {
-            const toggle = this.sidebarToggle();
-            await toggle.waitFor({ state: 'visible' });
-            await toggle.click();
+        // On mobile, navigation is inside the drawer
+        if (mobile) {
+            // 1. Open Global Navigation if Dashboard button is not visible
+            if (!(await this.dashboardButton().isVisible())) {
+                const toggle = this.sidebarToggle();
+                await toggle.waitFor({ state: 'visible' });
+                await toggle.click();
+            }
+
+            // 2. Expand Dashboard section if Media Owner is not visible
+            // The Dashboard item is now a NavLink wrapping the SideBar
+            if (!(await this.mediaOwnerAccordion().isVisible())) {
+                await this.dashboardButton().click();
+            }
         }
 
-        // Wait for the accordion to be interactable (Drawer animation or rendering)
+        // Wait for the accordion to be interactable
         await this.mediaOwnerAccordion().waitFor();
 
         // Ensure Media Owner accordion is expanded
@@ -63,10 +73,40 @@ export default class MediaDashboardPage {
         }).toPass({ timeout: 10000 });
     }
 
-    editMenuItem = () => this.page.getByRole('menuitem', { name: 'Edit' });
-    mediaNameInput = () => this.page.getByRole('textbox', { name: 'Media Name' });
-    priceInput = () => this.page.getByRole('textbox', { name: 'Price (per week)' });
+    addMediaButton = () => this.page.getByRole('button', { name: 'Add new media' });
+
+    // Modal Locators
+    modalTitleInput = () => this.page.getByRole('textbox', { name: 'Media Name' });
+    modalDisplayTypeSelect = () => this.page.getByRole('textbox', { name: 'Type of display' });
+    modalPriceInput = () => this.page.getByLabel('Price (per week)');
+    modalImpressionsInput = () => this.page.getByLabel('Daily impressions');
+    modalLoopDurationInput = () => this.page.getByPlaceholder('Ex. 12');
+
+    // Resolution split inputs
+    modalResolutionWidthInput = () => this.page.getByLabel('Resolution - Width (px)');
+    modalResolutionHeightInput = () => this.page.getByLabel('Resolution - Height (px)');
+
+    // Aspect Ratio split inputs
+    modalAspectRatioWidthInput = () => this.page.getByLabel('Aspect ratio - Width');
+    modalAspectRatioHeightInput = () => this.page.getByLabel('Aspect ratio - Height');
+
+    // Poster dimensions
+    modalWidthInput = () => this.page.getByLabel('Width (cm)');
+    modalHeightInput = () => this.page.getByLabel('Height (cm)');
+
+    modalFileInput = () => this.page.locator('input[type="file"]');
+
+    // Schedule Locators (simplified for now, asserting they exist or interacting if needed)
+    // For this test, we might rely on defaults or simple interaction if required.
+
     saveButton = () => this.page.getByRole('button', { name: 'Save' });
+    cancelButton = () => this.page.getByRole('button', { name: 'Cancel' });
+
+    editMenuItem = () => this.page.getByRole('menuitem', { name: 'Edit' });
+
+    // Legacy locators from previous usage (keeping for compatibility if used elsewhere)
+    mediaNameInput = () => this.modalTitleInput();
+    priceInput = () => this.modalPriceInput();
 
     // Proxy methods for raw access if needed (optional, but consistent with snippet usage if they don't refactor)
     getByRole(role: Parameters<Page['getByRole']>[0], options?: Parameters<Page['getByRole']>[1]) {

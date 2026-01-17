@@ -51,8 +51,6 @@ public class MediaController {
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
 
-    // ... (rest of methods)
-
     @GetMapping("/active")
     public ResponseEntity<?> getAllFilteredActiveMedia(
             Pageable pageable,
@@ -63,7 +61,6 @@ public class MediaController {
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng) {
-        // ... (existing logic)
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
         }
@@ -105,11 +102,6 @@ public class MediaController {
             @RequestBody MediaRequestModel requestModel) {
         MediaRequestValidator.validateMediaRequest(requestModel);
 
-        // Securely set Business ID from authenticated user
-        // We do this server-side to prevent users from spoofing the businessId in the
-        // request body.
-        // The Jwt contains the 'sub' (user ID), which we use to look up their
-        // associated Business.
         if (jwt != null) {
             try {
                 BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
@@ -117,11 +109,6 @@ public class MediaController {
                     requestModel.setBusinessId(business.getBusinessId());
                 }
             } catch (Exception e) {
-                // If business lookup fails, we log it but don't strictly block in this
-                // iteration.
-                // In production, you might want to throw a specific error if Business is
-                // required.
-                // System.out.println("Could not find business for user: " + e.getMessage());
             }
         }
 

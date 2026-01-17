@@ -34,24 +34,24 @@ export default function ApprovingMediaDashboard() {
 
   const pendingRows: ApproveMediaRowData[] = useMemo(() => {
     return (media ?? [])
-        .filter((m) => (m.status ?? "PENDING") === "PENDING")
-        .map((m) => {
-          const city = m.mediaLocation?.city ?? "";
-          const province = m.mediaLocation?.province ?? "";
-          const location = [city, province].filter(Boolean).join(", ") || "—";
+      .filter((m) => (m.status ?? "PENDING") === "PENDING")
+      .map((m) => {
+        const city = m.mediaLocation?.city ?? "";
+        const province = m.mediaLocation?.province ?? "";
+        const location = [city, province].filter(Boolean).join(", ") || "—";
 
-          return {
-            id: String(m.id),
-            name: m.title ?? "—",
-            image: m.imageUrl ?? null,
-            mediaOwnerName: m.mediaOwnerName ?? "—",
-            location,
-            dailyImpressions: Number(m.dailyImpressions ?? 0),
-            price:
-                m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
-            status: m.status ?? "PENDING",
-          };
-        });
+        return {
+          id: String(m.id),
+          name: m.title ?? "—",
+          image: m.imageUrl ?? null,
+          mediaOwnerName: m.mediaOwnerName ?? "—",
+          location,
+          dailyImpressions: Number(m.dailyImpressions ?? 0),
+          price:
+            m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
+          status: m.status ?? "PENDING",
+        };
+      });
   }, [media]);
 
   const totalPages = Math.max(1, Math.ceil(pendingRows.length / ITEMS_PER_PAGE));
@@ -67,63 +67,63 @@ export default function ApprovingMediaDashboard() {
   }, [activePage, totalPages]);
 
   return (
-      <>
-        <Box>
-          <Drawer
-              opened={opened}
-              onClose={close}
-              size="xs"
-              padding="md"
-              hiddenFrom="md"
-              zIndex={1000}
-          >
-            <SideBar />
-          </Drawer>
+    <>
+      <Box>
+        <Drawer
+          opened={opened}
+          onClose={close}
+          size="xs"
+          padding="md"
+          hiddenFrom="md"
+          zIndex={1000}
+        >
+          <SideBar />
+        </Drawer>
 
-          <Group align="flex-start" gap={0} wrap="nowrap">
-            {!isMobile && (
-                <Paper
-                    w={250}
-                    p="md"
-                    style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
-                    withBorder
-                >
-                  <SideBar />
-                </Paper>
+        <Group align="flex-start" gap={0} wrap="nowrap">
+          {!isMobile && (
+            <Paper
+              w={250}
+              p="md"
+              style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
+              withBorder
+            >
+              <SideBar />
+            </Paper>
+          )}
+
+          <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
+            <Group justify="space-between" align="center">
+              <Title order={3}>{t("pendingMedia")}</Title>
+            </Group>
+
+            {loading ? (
+              <Center py="xl">
+                <Loader />
+              </Center>
+            ) : error ? (
+              <Text c="red" fw={500}>
+                {error}
+              </Text>
+            ) : (
+              <>
+                <ApproveMediaTable rows={paginatedRows} />
+
+                {pendingRows.length > ITEMS_PER_PAGE && (
+                  <Group justify="center" mt="md">
+                    <Pagination
+                      total={totalPages}
+                      value={activePage}
+                      onChange={setActivePage}
+                      size="md"
+                    />
+                  </Group>
+                )}
+              </>
             )}
-
-            <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
-              <Group justify="space-between" align="center">
-                <Title order={3}>{t("pendingMedia")}</Title>
-              </Group>
-
-              {loading ? (
-                  <Center py="xl">
-                    <Loader />
-                  </Center>
-              ) : error ? (
-                  <Text c="red" fw={500}>
-                    {error}
-                  </Text>
-              ) : (
-                  <>
-                    <ApproveMediaTable rows={paginatedRows} />
-
-                    {pendingRows.length > ITEMS_PER_PAGE && (
-                        <Group justify="center" mt="md">
-                          <Pagination
-                              total={totalPages}
-                              value={activePage}
-                              onChange={setActivePage}
-                              size="md"
-                          />
-                        </Group>
-                    )}
-                  </>
-              )}
-            </Stack>
-          </Group>
-        </Box>
-      </>
+          </Stack>
+        </Group>
+      </Box>
+    </>
   );
 }
