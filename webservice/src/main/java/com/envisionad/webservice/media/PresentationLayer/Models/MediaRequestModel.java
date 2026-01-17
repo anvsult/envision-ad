@@ -27,4 +27,6 @@ public class MediaRequestModel {
     private Status status;
     private String imageUrl;
     private String businessId;
+    private String previewConfiguration;
+
 }

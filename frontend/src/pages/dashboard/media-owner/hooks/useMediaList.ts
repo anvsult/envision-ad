@@ -78,7 +78,8 @@ export function useMediaList() {
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
             status: 'PENDING',
-            imageUrl: formState.imageUrl
+            imageUrl: formState.imageUrl,
+            previewConfiguration: formState.previewConfiguration
         };
 
         try {
@@ -122,6 +123,7 @@ export function useMediaList() {
             status: 'PENDING',
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
+            previewConfiguration: formState.previewConfiguration
         };
 
         try {

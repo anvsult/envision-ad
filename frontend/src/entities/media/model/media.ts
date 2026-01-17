@@ -22,6 +22,8 @@ export interface Media {
     status: string | null;
     typeOfDisplay: string;
     imageUrl?: string | null;
+    previewConfiguration?: string | null;
+    businessId?: string;
 }
 
 export interface MediaRequestDTO {
@@ -39,6 +41,7 @@ export interface MediaRequestDTO {
     schedule: MonthlyScheduleModel | null;
     status: string;
     imageUrl: string | null;
+    previewConfiguration?: string | null;
 }
 
 export interface MediaListResponseDTO {

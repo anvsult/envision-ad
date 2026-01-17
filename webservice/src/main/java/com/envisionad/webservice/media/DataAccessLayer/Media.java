@@ -80,4 +80,8 @@ public class Media {
 
     @Column(name = "business_id")
     private UUID businessId;
+
+    @Column(name = "preview_configuration", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String previewConfiguration;
 }

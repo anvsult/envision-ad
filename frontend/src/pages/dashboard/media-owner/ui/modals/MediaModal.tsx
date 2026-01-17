@@ -6,6 +6,7 @@ import { CldUploadWidget } from "next-cloudinary";
 import { notifications } from "@mantine/notifications";
 import { MediaDetailsForm } from "./MediaDetailsForm";
 import { ScheduleSelector } from "./ScheduleSelector";
+import { ImageCornerSelector } from "../components/ImageCornerSelector";
 import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { useTranslations } from "next-intl";
 
@@ -58,7 +59,7 @@ export function MediaModal({
             overlayProps={{ opacity: 0.55 }}
         >
             <ScrollArea style={{ height: 600 }}>
-                <div style={{ paddingRight: 8 }}>
+                <div style={{ paddingRight: 8, overflowX: 'hidden' }}>
                     <Grid gutter="xl">
                         {/* LEFT COLUMN: FORM */}
                         <Grid.Col span={6}>
@@ -74,63 +75,81 @@ export function MediaModal({
                                 {t("labels.mediaImage")}
                             </Text>
 
-                            <CldUploadWidget
-                                signatureEndpoint="/api/cloudinary/sign-upload"
-                                onSuccess={handleUploadSuccess}
-                                options={widgetOptions}
-                            >
-                                {({ open }) => (
-                                    <div
-                                        style={{
-                                            border: '2px dashed var(--mantine-color-gray-4)',
-                                            borderRadius: '8px',
-                                            height: '300px',
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            cursor: 'pointer',
-                                            backgroundColor: formState.imageUrl ? 'transparent' : 'var(--mantine-color-gray-0)',
-                                            position: 'relative',
-                                            overflow: 'hidden'
-                                        }}
-                                        onClick={() => open()}
-                                    >
-                                        {formState.imageUrl ? (
-                                            <img
-                                                src={formState.imageUrl}
-                                                alt="Uploaded media"
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                        ) : (
-                                            <>
-                                                <IconUpload size={40} color="var(--mantine-color-gray-5)" />
-                                                <Text size="sm" c="dimmed" mt="sm">
-                                                    {t("buttons.uploadFile")}
-                                                </Text>
-                                            </>
-                                        )}
+                            {!formState.imageUrl ? (
+                                <CldUploadWidget
+                                    signatureEndpoint="/api/cloudinary/sign-upload"
+                                    onSuccess={handleUploadSuccess}
+                                    options={widgetOptions}
+                                >
+                                    {({ open }) => (
+                                        <div
+                                            style={{
+                                                border: '2px dashed var(--mantine-color-gray-4)',
+                                                borderRadius: '8px',
+                                                height: '300px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                cursor: 'pointer',
+                                                backgroundColor: 'var(--mantine-color-gray-0)',
+                                            }}
+                                            onClick={() => open()}
+                                        >
+                                            <IconUpload size={40} color="var(--mantine-color-gray-5)" />
+                                            <Text size="sm" c="dimmed" mt="sm">
+                                                {t("buttons.uploadFile")}
+                                            </Text>
+                                        </div>
+                                    )}
+                                </CldUploadWidget>
+                            ) : (
+                                <div>
+                                    <Text size="sm" fw={500} mb={4}>
+                                        Preview & Set Corners
+                                    </Text>
 
-                                        {formState.imageUrl && (
-                                            <div style={{
-                                                position: 'absolute',
-                                                bottom: 10,
-                                                right: 10,
-                                                backgroundColor: 'rgba(255,255,255,0.8)',
-                                                padding: '4px 8px',
-                                                borderRadius: '4px'
-                                            }}>
-                                                <Button size="xs" variant="default" onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    open();
-                                                }}>
+                                    <div style={{
+                                        border: '1px solid var(--mantine-color-gray-3)',
+                                        borderRadius: '8px',
+                                        padding: '8px',
+                                        position: 'relative',
+                                        backgroundColor: 'var(--mantine-color-gray-0)'
+                                    }}>
+                                        <ImageCornerSelector
+                                            imageUrl={formState.imageUrl}
+                                            initialCorners={formState.previewConfiguration ? JSON.parse(formState.previewConfiguration) : undefined}
+                                            onChange={(corners) => {
+                                                const config = JSON.stringify(corners);
+                                                if (config !== formState.previewConfiguration) {
+                                                    onFieldChange("previewConfiguration", config);
+                                                }
+                                            }}
+                                        />
+
+                                        <CldUploadWidget
+                                            signatureEndpoint="/api/cloudinary/sign-upload"
+                                            onSuccess={handleUploadSuccess}
+                                            options={widgetOptions}
+                                        >
+                                            {({ open }) => (
+                                                <Button
+                                                    size="xs"
+                                                    variant="default"
+                                                    style={{ marginTop: 12, width: '100%' }}
+                                                    onClick={() => open()}
+                                                >
                                                     {t("buttons.changeFile")}
                                                 </Button>
-                                            </div>
-                                        )}
+                                            )}
+                                        </CldUploadWidget>
+
+                                        <Text size="xs" c="dimmed" ta="center" mt={4}>
+                                            Drag corners to match the display area
+                                        </Text>
                                     </div>
-                                )}
-                            </CldUploadWidget>
+                                </div>
+                            )}
                         </Grid.Col>
                     </Grid>
 
@@ -160,6 +179,16 @@ export function MediaModal({
 
                     if (!formState.mediaTitle.trim()) {
                         newErrors["mediaTitle"] = t("errors.mediaTitleRequired");
+                    }
+
+                    if (!formState.imageUrl) {
+                        notifications.show({ message: "Please upload an image for the media.", color: "red" });
+                        return;
+                    }
+
+                    if (formState.imageUrl && !formState.previewConfiguration) {
+                        notifications.show({ message: "Please set the preview corners on the image.", color: "red" });
+                        return;
                     }
 
                     if (formState.displayType === 'DIGITAL') {
@@ -220,6 +249,6 @@ export function MediaModal({
                     onSave();
                 }}>{t("buttons.save")}</Button>
             </div>
-        </Modal>
+        </Modal >
     );
 }

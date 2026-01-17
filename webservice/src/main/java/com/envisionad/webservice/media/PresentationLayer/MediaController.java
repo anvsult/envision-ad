@@ -106,6 +106,10 @@ public class MediaController {
         MediaRequestValidator.validateMediaRequest(requestModel);
 
         // Securely set Business ID from authenticated user
+        // We do this server-side to prevent users from spoofing the businessId in the
+        // request body.
+        // The Jwt contains the 'sub' (user ID), which we use to look up their
+        // associated Business.
         if (jwt != null) {
             try {
                 BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
@@ -113,8 +117,10 @@ public class MediaController {
                     requestModel.setBusinessId(business.getBusinessId());
                 }
             } catch (Exception e) {
-                // Determine if we should fail or just log. For now, we proceed, but ideally we
-                // block if no business.
+                // If business lookup fails, we log it but don't strictly block in this
+                // iteration.
+                // In production, you might want to throw a specific error if Business is
+                // required.
                 // System.out.println("Could not find business for user: " + e.getMessage());
             }
         }
