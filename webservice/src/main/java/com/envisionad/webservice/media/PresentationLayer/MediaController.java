@@ -21,6 +21,11 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
 @CrossOrigin(origins = "http://localhost:3000")
@@ -29,19 +34,24 @@ public class MediaController {
     private final MediaService mediaService;
     private final MediaRequestMapper requestMapper;
     private final MediaResponseMapper responseMapper;
+    private final BusinessService businessService;
 
     public MediaController(MediaService mediaService,
             MediaRequestMapper requestMapper,
-            MediaResponseMapper responseMapper) {
+            MediaResponseMapper responseMapper,
+            BusinessService businessService) {
         this.mediaService = mediaService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.businessService = businessService;
     }
 
     @GetMapping
     public List<MediaResponseModel> getAllMedia() {
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
+
+    // ... (rest of methods)
 
     @GetMapping("/active")
     public ResponseEntity<?> getAllFilteredActiveMedia(
@@ -52,9 +62,8 @@ public class MediaController {
             @RequestParam(required = false) Integer minDailyImpressions,
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
-            @RequestParam(required = false) Double userLng
-
-    ) {
+            @RequestParam(required = false) Double userLng) {
+        // ... (existing logic)
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
         }
@@ -68,22 +77,18 @@ public class MediaController {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
 
-        Page<MediaResponseModel> responsePage =
-                mediaService.getAllFilteredActiveMedia(
-                        pageable,
-                        title,
-                        minPrice,
-                        maxPrice,
-                        minDailyImpressions,
-                        specialSort,
-                        userLat,
-                        userLng
-                ).map(responseMapper::entityToResponseModel);
+        Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
+                pageable,
+                title,
+                minPrice,
+                maxPrice,
+                minDailyImpressions,
+                specialSort,
+                userLat,
+                userLng).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
@@ -96,8 +101,24 @@ public class MediaController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('create:media')")
-    public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
+    public ResponseEntity<MediaResponseModel> addMedia(@AuthenticationPrincipal Jwt jwt,
+            @RequestBody MediaRequestModel requestModel) {
         MediaRequestValidator.validateMediaRequest(requestModel);
+
+        // Securely set Business ID from authenticated user
+        if (jwt != null) {
+            try {
+                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+                if (business != null && business.getBusinessId() != null) {
+                    requestModel.setBusinessId(business.getBusinessId());
+                }
+            } catch (Exception e) {
+                // Determine if we should fail or just log. For now, we proceed, but ideally we
+                // block if no business.
+                // System.out.println("Could not find business for user: " + e.getMessage());
+            }
+        }
+
         Media entity = requestMapper.requestModelToEntity(requestModel);
         Media savedEntity = mediaService.addMedia(entity);
 

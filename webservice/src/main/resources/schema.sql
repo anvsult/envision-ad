@@ -103,7 +103,8 @@ CREATE TABLE media (
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
     image_data         bytea,
-    image_url          VARCHAR(2048)
+    image_url          VARCHAR(2048),
+    business_id        UUID
 );
 
 -- 5. Create Ad Campaigns Table

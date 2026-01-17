@@ -27,6 +27,9 @@ public class MediaResponseMapper {
         response.setHeight(media.getHeight());
         response.setPrice(media.getPrice());
         response.setDailyImpressions(media.getDailyImpressions());
+        if (media.getBusinessId() != null) {
+            response.setBusinessId(media.getBusinessId().toString());
+        }
 
         if (media.getImageUrl() != null) {
             response.setImageUrl(media.getImageUrl());

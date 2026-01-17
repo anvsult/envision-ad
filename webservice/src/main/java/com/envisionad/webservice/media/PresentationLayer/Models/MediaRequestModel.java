@@ -26,4 +26,5 @@ public class MediaRequestModel {
     private ScheduleModel schedule;
     private Status status;
     private String imageUrl;
+    private String businessId;
 }
