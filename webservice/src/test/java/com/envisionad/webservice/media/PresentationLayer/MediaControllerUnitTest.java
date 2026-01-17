@@ -133,6 +133,8 @@ class MediaControllerUnitTest {
                 requestModel.setAspectRatio("16:9");
                 requestModel.setLoopDuration(30);
                 requestModel.setSchedule(schedule);
+                requestModel.setImageUrl("http://example.com/image.jpg");
+                requestModel.setPreviewConfiguration("{\"corners\": []}");
         }
 
         @Test
