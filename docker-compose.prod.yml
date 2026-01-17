@@ -8,10 +8,10 @@ services:
 #      We are injecting the secrets at runtime (into the javascript files)
 #      Those are the variables that CAN be seen by other people
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}"
-        NEXT_PUBLIC_APP_BASE_URL: ${APP_BASE_URL}"
-        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
-        NEXT_PUBLIC_CLOUDINARY_API_KEY: ${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+        NEXT_PUBLIC_APP_BASE_URL: "${APP_BASE_URL}"
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+        NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
       dockerfile: Dockerfile
     #   Here, I am listing the variables that Next.js will potentially need
     #   while it's running (runtime).
