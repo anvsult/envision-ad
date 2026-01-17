@@ -28,8 +28,9 @@ public class MediaResponseMapper {
         response.setPrice(media.getPrice());
         response.setDailyImpressions(media.getDailyImpressions());
 
-        if (media.getImageData() != null) {
-            response.setImageUrl("/api/v1/media/" + media.getId() + "/image");
+        // Using Cloudinary URL
+        if (media.getImageUrl() != null && !media.getImageUrl().isBlank()) {
+            response.setImageUrl(media.getImageUrl());
         }
 
         if (media.getMediaLocation() != null) {
