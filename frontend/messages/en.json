@@ -155,7 +155,17 @@
       "sunday": "Sunday",
       "closed": "Closed"
     },
-    "hoursPattern": "7:30 - 18:30"
+    "hoursPattern": "7:30 - 18:30",
+    "success": {
+      "title": "Success",
+      "approve": "Media has been approved",
+      "deny": "Media has been denied"
+    },
+    "errors": {
+      "error": "Error",
+      "approveFailed": "Media approval has failed",
+      "denyFailed": "Media deny has failed"
+    }
   },
   "mediacard": {
     "perWeek": "${price} per week",
@@ -198,6 +208,7 @@
   "organization": {
     "title": "Organization",
     "createButton": "Create Organization",
+    "noOrganization": "No organization found.",
     "roles": {
       "mediaOwner": "Media Owner",
       "advertiser": "Advertiser"
@@ -233,7 +244,24 @@
       "countryPlaceholder": "USA",
       "roleLabel": "Organization Roles",
       "submit": "Create Organization",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "errors": {
+        "error": "Error",
+        "validationError": "Missing or Invalid information.",
+        "nameRequired": "Organization name is required.",
+        "sizeRequired": "Organization size is required.",
+        "streetRequired": "Organization street is required.",
+        "cityRequired": "Organization city is required.",
+        "stateRequired": "Organization state/Province is required.",
+        "zipRequired": "Organization zip/postal code is required.",
+        "countryRequired": "Organization country is required.",
+        "roleRequired": "At least one role is required.",
+        "updateFailed": "Failed to update organization details."
+      },
+      "success": {
+        "title": "Success",
+        "update": "Organization details has been updated"
+      }
     },
     "sizes": {
       "SMALL": "Small (1-50)",
@@ -258,7 +286,22 @@
         "submit": "Invite Employee",
         "cancel": "Cancel",
         "email": "Email",
-        "placeholder": "email@email.com"
+        "placeholder": "email@email.com",
+        "errors": {
+          "error": "Error",
+          "validationError": "Missing or Invalid information.",
+          "emailRequired": "Email is required.",
+          "emailInvalid": "Invalid email address.",
+          "saveFailed": "Failed to invite employee.",
+          "deleteEmployeeFailed": "Failed to remove employee.",
+          "deleteInvitationFailed": "Failed to cancel invitation."
+        },
+        "success": {
+          "title": "Success",
+          "invitation": "Invitation has been sent",
+          "deleteEmployee": "Employee has been removed",
+          "deleteInvitation": "Invitation has been canceled"
+        }
       },
       "modal": {
         "employeeTitle": "Remove Employee",
@@ -271,10 +314,29 @@
     }
   },
   "media": {
+    "newMedia": "Add new media",
+    "table": {
+      "noMedia": "No media found. Add your first media to get started.",
+      "image": "Image",
+      "name": "Name",
+      "displayed": "Ads displayed",
+      "pending": "Ads pending",
+      "status": "Status",
+      "update": "Next Update",
+      "price": "Price"
+    },
+    "status": {
+      "active": "Active",
+      "pending": "Pending",
+      "rejected": "Rejected",
+      "inactive": "Deactivated"
+    },
     "errors": {
-      "loadFailed": "Failed to load media for editing",
-      "deleteFailed": "Failed to delete media",
-      "statusToggleFailed": "Failed to change media status."
+      "error": "Error",
+      "loadFailed": "Failed to load media for editing.",
+      "saveFailed": "Failed to save media.",
+      "deleteFailed": "Failed to delete media.",
+      "toggleFailed": "Failed to change media status."
     },
     "deleteConfirm": {
       "title": "Delete Media",
@@ -304,7 +366,10 @@
     "success": {
       "title": "Success!",
       "create": "Media created",
-      "update": "Media updated"
+      "update": "Media updated",
+      "delete": "Media deleted",
+      "active": "Media activated",
+      "inactive": "Media deactivated"
     }
   },
   "mediaModal": {
@@ -451,6 +516,11 @@
     }
   },
   "adCampaigns": {
+    "page": {
+      "title": "My Campaigns",
+      "createButton": "Create Campaign",
+      "noCampaigns": "No campaigns found. Create your first campaign!"
+    },
     "createCampaignModal": {
       "title": "Create Campaign",
       "labels": {
@@ -467,10 +537,18 @@
         "nameTooShort": "Name too short"
       }
     },
-    "page": {
-      "title": "My Campaigns",
-      "createButton": "Create Campaign",
-      "noCampaigns": "No campaigns found. Create your first campaign!"
+    "table": {
+      "newAd": "Create Ad",
+      "preview": "Preview",
+      "name": "Name",
+      "type": "Type",
+      "duration": "Duration",
+      "actions": "Actions",
+      "noAd": "No ads found in this campaign",
+      "types": {
+        "video": "Video",
+        "image": "Image"
+      }
     },
     "notifications": {
       "loadFailed": {
@@ -512,7 +590,8 @@
       "deleteAd": {
         "title": "Delete Ad",
         "message": "Are you sure you want to delete this ad? This action cannot be undone.",
-        "confirm": "Delete"
+        "confirm": "Delete",
+        "cancel": "Cancel"
       }
     }
   },
@@ -581,6 +660,10 @@
   },
   "reserveModal": {
     "title": "Reserve: {title}",
+    "reservation": "Reservation",
+    "dates": "Select dates",
+    "checkout": "Checkout",
+    "payment": "Payment",
     "selectCampaign": "Select Campaign",
     "chooseCampaign": "Choose one of your campaigns",
     "selectStartDateNote": "Select a Start Date. End dates are restricted to weekly intervals.",

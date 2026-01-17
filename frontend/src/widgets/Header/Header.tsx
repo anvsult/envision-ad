@@ -11,12 +11,9 @@ import {
     Divider,
     Burger,
     Menu,
-    NavLink,
 } from "@mantine/core";
-import SideBar from "@/widgets/SideBar/SideBar";
-import React, { useEffect } from "react";
 import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
 import { Link, usePathname } from "@/shared/lib/i18n/navigation";
@@ -29,25 +26,21 @@ interface HeaderProps {
     onToggleSidebar?: () => void;
 }
 
-export function Header({
-    // dashboardMode = false,
-    // sidebarOpened = false,
-    // onToggleSidebar,
-}: HeaderProps) {
+export function Header({}: HeaderProps) {
     const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
-    const { user, isLoading } = useUser();
+    const { user } = useUser();
 
     const links: Array<{
         link: "/" | "/dashboard" | "/browse";
         label: string;
         authRequired?: boolean;
     }> = [
-            { link: "/", label: t("home"), authRequired: false },
-            { link: "/dashboard", label: t("dashboard"), authRequired: true },
-            { link: "/browse", label: t("browse"), authRequired: false },
-        ];
+        { link: "/", label: t("home"), authRequired : false},
+        { link: "/dashboard", label: t("dashboard"), authRequired: true},
+        { link: "/browse", label: t("browse"), authRequired: false },
+    ];
 
     const filteredLinks = links.filter((link) => {
         if (link.authRequired && !user) return false;
@@ -57,50 +50,8 @@ export function Header({
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
         useDisclosure(false);
 
-    useEffect(() => {
-        closeDrawer();
-    }, [pathname]);
-
-    const mobileItems = filteredLinks.map((link) => {
-        if (link.link === "/dashboard") {
-            return (
-                <NavLink
-                    key={link.label}
-                    label={link.label}
-                    childrenOffset={16}
-                    defaultOpened={false}
-                    styles={{
-                        label: { fontWeight: 500 },
-                        root: { borderRadius: 12 }
-                    }}
-                >
-                    <SideBar />
-                </NavLink>
-            );
-        }
-
-        const active = pathname === link.link;
-        return (
-            <Link
-                key={link.label}
-                href={link.link}
-                style={{
-                    textDecoration: "none",
-                    color: active ? "var(--mantine-color-blue-6)" : "inherit",
-                    fontWeight: active ? 600 : 500,
-                    padding: "8px 12px",
-                    borderRadius: 12,
-                    transition: "background-color .15s ease",
-                    display: "block" // Ensure it takes width
-                }}
-            >
-                {link.label}
-            </Link>
-        );
-    });
-
-    const desktopItems = filteredLinks.map((link) => {
-        const active = pathname === link.link;
+    const items = filteredLinks.map((link) => {
+        const active = pathname === link.link || pathname.startsWith(link.link + '/');
         return (
             <Link
                 key={link.label}
@@ -157,10 +108,6 @@ export function Header({
         </Menu>
     );
 
-    if (isLoading) {
-        return null;
-    }
-
     return (
         <Box>
             <Box
@@ -204,10 +151,10 @@ export function Header({
 
                     {/* Navigation */}
                     <Group gap="md" visibleFrom="sm">
-                        {desktopItems}
+                        {items}
                     </Group>
 
-                    {/* Auth Buttons */}
+                    {/* Auth Buttons - no loading state needed! */}
                     <Group visibleFrom="md" gap="sm" align="center">
                         <LanguagePicker />
                         {user ? userMenu : authButtons}
@@ -217,44 +164,42 @@ export function Header({
                     <Burger
                         opened={drawerOpened}
                         onClick={toggleDrawer}
-                        hiddenFrom={"md"}
-                        aria-label={"Toggle navigation"}
+                        hiddenFrom="md"
+                        aria-label="Toggle navigation"
                     />
                 </Group>
             </Box>
 
-            {/* Navigation drawer for non-dashboard mode */}
-            {
-                <Drawer
-                    opened={drawerOpened}
-                    onClose={closeDrawer}
-                    size="100%"
-                    padding="md"
-                    title={
-                        <Group justify="space-between" align="center" style={{ width: "100%" }}>
-                            <Text fw={700}>Navigation</Text>
-                            <LanguagePicker />
-                        </Group>
-                    }
-                    hiddenFrom="md"
-                    zIndex={1000000}
-                >
-                    <ScrollArea h="calc(100vh - 80px)" mx="-md">
+            {/* Navigation drawer */}
+            <Drawer
+                opened={drawerOpened}
+                onClose={closeDrawer}
+                size="100%"
+                padding="md"
+                title={
+                    <Group justify="space-between" align="center" style={{ width: "100%" }}>
+                        <Text fw={700}>Navigation</Text>
+                        <LanguagePicker />
+                    </Group>
+                }
+                hiddenFrom="md"
+                zIndex={1000000}
+            >
+                <ScrollArea h="calc(100vh - 80px)" mx="-md">
+                    <Divider my="sm" />
+
+                    <Box hiddenFrom="sm">
+                        <Stack px="md">
+                            {items}
+                        </Stack>
                         <Divider my="sm" />
+                    </Box>
 
-                        <Box hiddenFrom="sm">
-                            <Stack px="md">
-                                {mobileItems}
-                            </Stack>
-                            <Divider my="sm" />
-                        </Box>
-
-                        <Group justify="center" grow pb="xl" px="md">
-                            {user ? userMenu : authButtons}
-                        </Group>
-                    </ScrollArea>
-                </Drawer>
-            }
+                    <Group justify="center" grow pb="xl" px="md">
+                        {user ? userMenu : authButtons}
+                    </Group>
+                </ScrollArea>
+            </Drawer>
         </Box>
     );
 }

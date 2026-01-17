@@ -27,21 +27,14 @@ public class MediaResponseMapper {
         response.setHeight(media.getHeight());
         response.setPrice(media.getPrice());
         response.setDailyImpressions(media.getDailyImpressions());
-        response.setPreviewConfiguration(media.getPreviewConfiguration());
 
-        if (media.getBusinessId() != null) {
-            response.setBusinessId(media.getBusinessId().toString());
-        }
-
-        if (media.getImageUrl() != null) {
+        // Using Cloudinary URL
+        if (media.getImageUrl() != null && !media.getImageUrl().isBlank()) {
             response.setImageUrl(media.getImageUrl());
-        } else if (media.getImageData() != null) {
-            response.setImageUrl("/api/v1/media/" + media.getId() + "/image");
         }
 
         if (media.getMediaLocation() != null) {
-            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(
-                    media);
+            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(media);
 
             response.setMediaLocation(mediaLocationResponseModel);
         }

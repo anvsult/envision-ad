@@ -14,9 +14,9 @@ import {
   Center,
   SimpleGrid,
   Modal,
+  Image,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
-import Image from "next/image";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/shared/lib/i18n/navigation";
@@ -24,6 +24,7 @@ import { getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { useAdminMedia } from "@/pages/dashboard/admin/hooks/useAdminMedia";
+import {notifications} from "@mantine/notifications";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -62,6 +63,7 @@ export default function AdminMediaReviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const [confirmAction, setConfirmAction] = useState<"approve" | "deny" | null>(
     null
@@ -93,9 +95,19 @@ export default function AdminMediaReviewPage() {
       }
 
       closeConfirm();
+      notifications.show({
+        title: t("success.title"),
+        message: t("success." + confirmAction),
+        color: "green",
+      });
       router.push("/dashboard/admin/media/pending");
     } catch (e) {
       console.error(e);
+      notifications.show({
+        title: t("errors.error"),
+        message: t("errors." + confirmAction + "Failed"),
+        color: "red",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -199,7 +211,7 @@ export default function AdminMediaReviewPage() {
     weekly.map((w) => [w.dayOfWeek.toLowerCase(), w])
   );
 
-  const imageSrc = media.imageUrl || "/sample-screen.jpg";
+  const imageSrc = media.imageUrl || "https://placehold.co/600x400?text=Loading";
 
   return (
     <>
@@ -213,13 +225,35 @@ export default function AdminMediaReviewPage() {
             </Group>
 
             <Card p={0} withBorder radius="lg">
-              <div style={{ position: "relative", width: "100%", height: 300 }}>
+              <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setImageModalOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setImageModalOpen(true);
+                    }
+                  }}
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: 300,
+                    cursor: "zoom-in",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                  }}
+              >
                 <Image
-                  src={imageSrc}
-                  alt={media.title}
-                  fill
-                  style={{ objectFit: "cover" }}
+                    src={imageSrc}
+                    alt={media.title}
+                    h={300}
+                    w="100%"
+                    fit="cover"
+                    radius={0}
+                    fallbackSrc="https://placehold.co/600x400?text=NotFound"
                 />
+
               </div>
             </Card>
 
@@ -400,6 +434,35 @@ export default function AdminMediaReviewPage() {
           </Stack>
         </Group>
       </Container>
+
+      <Modal
+          opened={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          centered
+          withCloseButton
+          title={media.title}
+          size="auto"
+          padding="md"
+          overlayProps={{ opacity: 0.6 }}
+          styles={{
+            content: { maxWidth: "92vw" },
+            body: { paddingTop: 8 },
+          }}
+      >
+        <Image
+            src={imageSrc}
+            alt={media.title}
+            fit="contain"
+            radius="md"
+            fallbackSrc="https://placehold.co/600x400?text=NotFound"
+            styles={{
+              root: {
+                maxWidth: "88vw",
+                maxHeight: "80vh",
+              }
+            }}
+        />
+      </Modal>
 
       <Modal
         key={confirmAction ?? "closed"}

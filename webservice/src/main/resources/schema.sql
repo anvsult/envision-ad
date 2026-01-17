@@ -100,6 +100,7 @@ CREATE TABLE media (
     daily_impressions INTEGER,
     schedule JSONB,
     status VARCHAR(50) NOT NULL,
+    image_url VARCHAR(512),
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
     image_data         bytea,

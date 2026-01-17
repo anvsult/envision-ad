@@ -12,9 +12,10 @@ import {
   Loader,
   Center,
   SimpleGrid,
+  Modal,
+  Image,
 } from "@mantine/core";
 import { IconAlertCircle } from "@tabler/icons-react";
-import Image from "next/image";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -58,6 +59,7 @@ export default function MediaDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
+  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -147,16 +149,35 @@ export default function MediaDetailsPage() {
             </Group>
 
             <Card p={0} withBorder radius="lg">
-              <div style={{ position: "relative", width: "100%", height: 300 }}>
+              <div
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setImageModalOpen(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setImageModalOpen(true);
+                    }
+                  }}
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: 300,
+                    cursor: "zoom-in",
+                    borderRadius: 12,
+                    overflow: "hidden",
+                  }}
+              >
                 <Image
-                  src={imageSrc}
-                  alt={media.title}
-                  fill
-                  style={{ objectFit: "cover" }}
+                    src={imageSrc}
+                    alt={media.title}
+                    h={300}
+                    w="100%"
+                    fit="cover"
+                    radius={0}
                 />
               </div>
             </Card>
-
             <Stack gap={4}>
               <Text fw={600} size="lg">
                 {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
@@ -298,6 +319,35 @@ export default function MediaDetailsPage() {
           </Stack>
         </Group>
       </Container>
+      <Modal
+          opened={imageModalOpen}
+          onClose={() => setImageModalOpen(false)}
+          centered
+          withCloseButton
+          title={media.title}
+          size="auto"
+          padding="md"
+          overlayProps={{ opacity: 0.6 }}
+          styles={{
+            content: {
+              maxWidth: "92vw",
+            },
+            body: {
+              paddingTop: 8,
+            },
+          }}
+      >
+        <Image
+            src={imageSrc}
+            alt={media.title}
+            fit="contain"
+            w="auto"
+            radius="md"
+            styles={{
+              root: { maxWidth: "88vw", maxHeight: "80vh" },
+            }}
+        />
+      </Modal>
       {media && (
         <ReserveMediaModal
           opened={reserveModalOpen}
