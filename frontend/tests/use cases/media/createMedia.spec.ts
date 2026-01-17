@@ -184,7 +184,6 @@ test.describe('Media Creation', () => {
             console.log('Validation Errors Found:', validationErrors);
         }
 
-        await page.screenshot({ path: 'debug-save-fail.png' });
 
         // Verify Modal Closed and Success
         await expect(mediaDashboardPage.modalTitleInput()).toBeHidden();

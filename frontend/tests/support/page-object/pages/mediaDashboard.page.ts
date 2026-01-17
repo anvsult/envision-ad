@@ -20,15 +20,12 @@ export default class MediaDashboardPage {
 
         // On mobile, navigation is inside the drawer
         if (mobile) {
-            // 1. Open Global Navigation if Dashboard button is not visible
             if (!(await this.dashboardButton().isVisible())) {
                 const toggle = this.sidebarToggle();
                 await toggle.waitFor({ state: 'visible' });
                 await toggle.click();
             }
 
-            // 2. Expand Dashboard section if Media Owner is not visible
-            // The Dashboard item is now a NavLink wrapping the SideBar
             if (!(await this.mediaOwnerAccordion().isVisible())) {
                 await this.dashboardButton().click();
             }

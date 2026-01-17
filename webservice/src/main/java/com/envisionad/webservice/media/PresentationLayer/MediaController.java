@@ -109,6 +109,7 @@ public class MediaController {
                     requestModel.setBusinessId(business.getBusinessId());
                 }
             } catch (Exception e) {
+                System.out.println("Error fetching business for user: " + e.getMessage());
             }
         }
 

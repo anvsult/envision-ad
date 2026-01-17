@@ -26,9 +26,31 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
     const svgRef = useRef<SVGSVGElement>(null);
     const [dragging, setDragging] = useState<keyof typeof corners | null>(null);
 
+
+    // Stabilize onChange to prevent effects from firing when parent re-renders
+    const onChangeRef = useRef(onChange);
     useEffect(() => {
-        onChange(corners);
-    }, [corners, onChange]);
+        onChangeRef.current = onChange;
+    }, [onChange]);
+
+    useEffect(() => {
+        if (initialCorners) {
+            setCorners((prev) => {
+                // Check for value equality to prevent infinite loops (since JSON.parse creates new refs)
+                const isDifferent =
+                    initialCorners.tl.x !== prev.tl.x || initialCorners.tl.y !== prev.tl.y ||
+                    initialCorners.tr.x !== prev.tr.x || initialCorners.tr.y !== prev.tr.y ||
+                    initialCorners.br.x !== prev.br.x || initialCorners.br.y !== prev.br.y ||
+                    initialCorners.bl.x !== prev.bl.x || initialCorners.bl.y !== prev.bl.y;
+
+                return isDifferent ? initialCorners : prev;
+            });
+        }
+    }, [initialCorners]);
+
+    useEffect(() => {
+        onChangeRef.current(corners);
+    }, [corners]);
 
     const getMousePosition = (evt: ReactMouseEvent | globalThis.MouseEvent) => {
         if (!svgRef.current) return { x: 0, y: 0 };

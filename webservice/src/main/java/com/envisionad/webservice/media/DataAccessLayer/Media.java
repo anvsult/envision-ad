@@ -78,9 +78,6 @@ public class Media {
     @Column(name = "image_data")
     private byte[] imageData;
 
-    @Column(name = "image_url")
-    private String imageUrl;
-
     @Column(name = "business_id")
     private UUID businessId;
 
