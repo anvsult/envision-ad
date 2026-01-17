@@ -62,7 +62,7 @@ export function MediaModal({
                 <div style={{ paddingRight: 8, overflowX: 'hidden' }}>
                     <Grid gutter="xl">
                         {/* LEFT COLUMN: FORM */}
-                        <Grid.Col span={6}>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
                             <MediaDetailsForm
                                 formState={formState}
                                 onFieldChange={onFieldChange}
@@ -70,9 +70,9 @@ export function MediaModal({
                         </Grid.Col>
 
                         {/* RIGHT COLUMN: UPLOAD */}
-                        <Grid.Col span={6}>
+                        <Grid.Col span={{ base: 12, md: 6 }}>
                             <Text size="sm" fw={500} mb={4}>
-                                {t("labels.mediaImage")}
+                                {t("labels.mediaImage")} <span style={{ color: "var(--mantine-color-red-6)" }}>*</span>
                             </Text>
 
                             {!formState.imageUrl ? (

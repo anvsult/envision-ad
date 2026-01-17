@@ -24,6 +24,7 @@ public class MediaRequestValidator {
         validateDailyImpressions(request.getDailyImpressions());
         validateTypeOfDisplay(request);
         validateSchedule(request);
+        validateImageAndConfiguration(request.getImageUrl(), request.getPreviewConfiguration());
     }
 
     private static void validateTitle(String title) {
@@ -134,6 +135,15 @@ public class MediaRequestValidator {
             }
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid time format. Use HH:mm");
+        }
+    }
+
+    private static void validateImageAndConfiguration(String imageUrl, String previewConfiguration) {
+        if (imageUrl == null || imageUrl.trim().isEmpty()) {
+            throw new IllegalArgumentException("Image is required");
+        }
+        if (previewConfiguration == null || previewConfiguration.trim().isEmpty()) {
+            throw new IllegalArgumentException("Preview configuration (corners) is required when an image is uploaded");
         }
     }
 }

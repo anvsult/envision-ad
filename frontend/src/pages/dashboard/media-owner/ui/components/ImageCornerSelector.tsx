@@ -11,7 +11,7 @@ interface ImageCornerSelectorProps {
     onChange: (corners: { tl: Point; tr: Point; br: Point; bl: Point }) => void;
 }
 
-const HANDLE_RADIUS = 10;
+const HANDLE_RADIUS = 15;
 
 export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageUrl, initialCorners, onChange }) => {
     const [corners, setCorners] = useState<{ tl: Point; tr: Point; br: Point; bl: Point }>(
@@ -71,17 +71,54 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         setDragging(null);
     };
 
+    const handleTouchStart = (key: keyof typeof corners) => (e: React.TouchEvent) => {
+        setDragging(key);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+        if (!dragging || !svgRef.current) return;
+        if (e.cancelable) e.preventDefault();
+
+        const touch = e.touches[0];
+
+        const CTM = svgRef.current.getScreenCTM();
+        if (!CTM) return;
+
+        const x = (touch.clientX - CTM.e) / CTM.a;
+        const y = (touch.clientY - CTM.f) / CTM.d;
+
+        const { width, height } = svgRef.current.getBoundingClientRect();
+
+        const nextX = Math.max(0, Math.min(1, x / width));
+        const nextY = Math.max(0, Math.min(1, y / height));
+
+        setCorners((prev) => ({
+            ...prev,
+            [dragging]: { x: nextX, y: nextY },
+        }));
+    };
+
+    const handleTouchEnd = () => {
+        setDragging(null);
+    };
+
     useEffect(() => {
         if (dragging) {
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd);
         } else {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         }
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('touchmove', handleTouchMove);
+            window.removeEventListener('touchend', handleTouchEnd);
         };
     }, [dragging]);
 
@@ -137,10 +174,11 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
                         fill="white"
                         stroke="#2563EB"
                         strokeWidth="3"
-                        style={{ cursor: 'move', transition: 'r 0.1s' }} // Animate radius instead of transform
+                        style={{ cursor: 'move', transition: 'r 0.1s', touchAction: 'none' }} // Animate radius instead of transform
                         onMouseEnter={(e) => e.currentTarget.setAttribute('r', (HANDLE_RADIUS * 1.2).toString())}
                         onMouseLeave={(e) => e.currentTarget.setAttribute('r', HANDLE_RADIUS.toString())}
                         onMouseDown={handleMouseDown(key as keyof typeof corners)}
+                        onTouchStart={handleTouchStart(key as keyof typeof corners)}
                     />
                 ))}
             </svg>
