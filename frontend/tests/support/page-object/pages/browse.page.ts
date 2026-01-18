@@ -13,21 +13,14 @@ export enum SortSelectOptions {
 }
 
 export enum TestMediaTitles {
-  montrealDowntownWrap = 'Montreal Downtown Wrap',
-  parliamentHillDigitalBoard = 'Parliament Hill Digital Board',
-  parliamentHillVisitorScreen = 'Parliament Hill Visitor Screen',
-  downtownDigitalBoard = 'Downtown Digital Board',
-  eatonCentreLEDWall = 'Eaton Centre LED Wall',
-  eatonCentreLEDWallNorth = 'Eaton Centre LED Wall - North',
-  eatonCentreLEDWallSouth = 'Eaton Centre LED Wall - South',
-  unionStationAtriumScreen = 'Union Station Atrium Screen',
-  highway401MegaScreen = 'Highway 401 Mega Screen',
-  harbourfrontPierScreen = 'Harbourfront Pier Screen',
-  harbourfrontMarketScreen = 'Harbourfront Market Screen',
-  iceDistrictMegaScreen = 'ICE District Mega Screen',
-  iceDistrictArenaBoard = 'ICE District Arena Board',
-  icePlazaOutdoorScreen = 'ICE Plaza Outdoor Screen',
-  calgaryStadiumDigital = 'Calgary Stadium DIGITAL',
+    lolaSalonMainLobby = 'Lola Salon Main Lobby',
+    entrepotEnFolieMainEntrance = 'Entrepôt en Folie Main Entrance',
+    gymHallwayDigitalBoard = 'Gym Hallway Digital Board',
+    mainEntranceDigitalBoard = 'Main Entrance Digital Board',
+    studentLounge1 = 'Student Lounge 1',
+    studentLounge2 = 'Student Lounge 2',
+    cafetariaEntrance = 'Cafeteria Entrance',
+    pingMoStoreEntrance = 'Ping Mo Store Entrance'
 }
 
 

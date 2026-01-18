@@ -1,22 +1,20 @@
 'use client'
 
 import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
-import '@mantine/carousel/styles.css';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useEffect, useMemo, useState } from 'react';
-import {getAllFilteredActiveMedia, SpecialSort} from "@/features/media-management/api";
-import { MediaCardProps } from '@/widgets/Cards/MediaCard';
+import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
 import { LatLngLiteral } from 'leaflet';
-import { FilteredActiveMediaProps, MediaStatus } from '@/entities/media/model/media';
+import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
-import { MediaCardCarousel } from '@/widgets/Carousel/CardCarousel';
+import { MediaCardCarouselLoader } from '@/widgets/Carousel/CardCarousel';
 
 function BrowsePage() {
   const t = useTranslations('browse');
@@ -141,7 +139,6 @@ function BrowsePage() {
   }
 
   return (
-    <>
       <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
           <Group grow>
@@ -201,8 +198,9 @@ function BrowsePage() {
             <MediaCardGrid medias={media} />
             {/* <MediaCardCarousel id="Other Media Carousel" title="Other medias by this Media Owner" medias={media}/> */}
             </>
-          )}
 
+          )}
+          <MediaCardCarouselLoader id="Other Media Carousel" title="Other medias by this Media Owner" filteredMediaProps={filteredMediaProps}/>
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination
@@ -216,7 +214,6 @@ function BrowsePage() {
           
         </Stack>
       </Container>
-    </>
   );
 }
 
