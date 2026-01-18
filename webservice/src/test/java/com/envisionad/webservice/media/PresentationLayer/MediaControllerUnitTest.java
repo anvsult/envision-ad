@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
@@ -24,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -46,6 +48,9 @@ class MediaControllerUnitTest {
         @MockitoBean
         private MediaResponseMapper responseMapper;
 
+        @MockitoBean
+        private BusinessService businessService; // Added Mock
+
         @Autowired
         private MediaController mediaController;
 
@@ -57,7 +62,7 @@ class MediaControllerUnitTest {
 
         @BeforeEach
         void setUp() {
-
+                // ... (setup remains same until end of method)
                 MediaLocation mediaLocation = new MediaLocation();
                 mediaLocation.setId(mediaLocationId);
                 mediaLocation.setName("Name");
@@ -129,13 +134,42 @@ class MediaControllerUnitTest {
                 requestModel.setAspectRatio("16:9");
                 requestModel.setLoopDuration(30);
                 requestModel.setSchedule(schedule);
+                requestModel.setImageUrl("http://example.com/image.jpg");
+                requestModel.setPreviewConfiguration("{\"corners\": []}");
+        }
+
+        @Test
+        void addMedia_WithValidJwt_ShouldSetBusinessId() {
+                UUID businessId = UUID.randomUUID();
+                String userId = "auth0|123";
+
+                // Mock JWT
+                Jwt jwt = mock(Jwt.class);
+                when(jwt.getSubject()).thenReturn(userId);
+
+                // Mock Business Service
+                com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel businessResponse = new com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel();
+                businessResponse.setBusinessId(businessId.toString());
+                when(businessService.getBusinessByUserId(jwt, userId)).thenReturn(businessResponse);
+
+                // Mock Mapper and Service
+                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+                when(mediaService.addMedia(any(Media.class))).thenReturn(media);
+                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
+
+                // Execute
+                mediaController.addMedia(jwt, requestModel);
+
+                // Verify
+                assertEquals(businessId.toString(), requestModel.getBusinessId());
+                verify(businessService).getBusinessByUserId(jwt, userId);
         }
 
         @Test
         void addMedia_ResolutionExceedsLimit_ShouldThrowException() {
                 requestModel.setResolution("A".repeat(21));
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.addMedia(requestModel);
+                        mediaController.addMedia(null, requestModel);
                 });
                 assertEquals("Resolution cannot exceed 20 characters", exception.getMessage());
         }
@@ -144,7 +178,7 @@ class MediaControllerUnitTest {
         void addMedia_AspectRatioExceedsLimit_ShouldThrowException() {
                 requestModel.setAspectRatio("A".repeat(11));
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.addMedia(requestModel);
+                        mediaController.addMedia(null, requestModel);
                 });
                 assertEquals("Aspect ratio cannot exceed 10 characters", exception.getMessage());
         }
@@ -153,7 +187,7 @@ class MediaControllerUnitTest {
         void addMedia_PriceExceedsLimit_ShouldThrowException() {
                 requestModel.setPrice(new BigDecimal("100000.00"));
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.addMedia(requestModel);
+                        mediaController.addMedia(null, requestModel);
                 });
                 assertEquals("Price cannot exceed 99999.99", exception.getMessage());
         }
@@ -176,172 +210,165 @@ class MediaControllerUnitTest {
                 verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
         }
 
-    @Test
-    void getAllFilteredActiveMedia_NoFilters_ShouldReturnPage() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Media> mediaPage = new PageImpl<>(List.of(media));
-        Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
+        @Test
+        void getAllFilteredActiveMedia_NoFilters_ShouldReturnPage() {
+                Pageable pageable = PageRequest.of(0, 10);
+                Page<Media> mediaPage = new PageImpl<>(List.of(media));
+                Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null))
-                .thenReturn(mediaPage);
-        when(responseMapper.entityToResponseModel(media))
-                .thenReturn(responseModel);
+                when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null))
+                                .thenReturn(mediaPage);
+                when(responseMapper.entityToResponseModel(media))
+                                .thenReturn(responseModel);
 
-        ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null,
+                                null, null, null);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Page<?> body = (Page<?>) response.getBody();
-        assertEquals(1, body.getTotalElements());
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                Page<?> body = (Page<?>) response.getBody();
+                assertEquals(1, body.getTotalElements());
 
-        verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
-    }
+                verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
+        }
 
+        @Test
+        void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
+                Pageable pageable = PageRequest.of(0, 10);
+                Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
+                when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null))
+                                .thenReturn(mediaPage);
+                when(responseMapper.entityToResponseModel(media))
+                                .thenReturn(responseModel);
 
-    @Test
-    void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null,
+                                null, null, null, null);
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null))
-                .thenReturn(mediaPage);
-        when(responseMapper.entityToResponseModel(media))
-                .thenReturn(responseModel);
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                Page<?> body = (Page<?>) response.getBody();
+                assertEquals(1, body.getContent().size());
+        }
 
-        ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null);
+        @Test
+        void getAllFilteredActiveMedia_MultipleFilters_ShouldReturnFiltered() {
+                Pageable pageable = PageRequest.of(0, 10);
+                Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Page<?> body = (Page<?>) response.getBody();
-        assertEquals(1, body.getContent().size());
-    }
+                when(mediaService.getAllFilteredActiveMedia(
+                                pageable,
+                                "Billboard",
+                                BigDecimal.valueOf(50),
+                                BigDecimal.valueOf(200),
+                                1000,
+                                "nearest",
+                                50.0,
+                                50.0))
+                                .thenReturn(mediaPage);
 
+                when(responseMapper.entityToResponseModel(media))
+                                .thenReturn(responseModel);
 
-    @Test
-    void getAllFilteredActiveMedia_MultipleFilters_ShouldReturnFiltered() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                                pageable,
+                                "Billboard",
+                                BigDecimal.valueOf(50),
+                                BigDecimal.valueOf(200),
+                                1000,
+                                "nearest",
+                                50.0,
+                                50.0);
 
-        when(mediaService.getAllFilteredActiveMedia(
-                pageable,
-                "Billboard",
-                BigDecimal.valueOf(50),
-                BigDecimal.valueOf(200),
-                1000,
-                "nearest",
-                50.0,
-                50.0))
-                .thenReturn(mediaPage);
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                Page<?> body = (Page<?>) response.getBody();
+                assertEquals(1, body.getTotalElements());
+        }
 
-        when(responseMapper.entityToResponseModel(media))
-                .thenReturn(responseModel);
+        @Test
+        void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyPage() {
+                Pageable pageable = PageRequest.of(0, 10);
+                Page<Media> emptyPage = Page.empty();
 
-        ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(
-                        pageable,
-                        "Billboard",
-                        BigDecimal.valueOf(50),
-                        BigDecimal.valueOf(200),
-                        1000,
-                        "nearest",
-                        50.0,
-                        50.0
-                );
+                when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null))
+                                .thenReturn(emptyPage);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Page<?> body = (Page<?>) response.getBody();
-        assertEquals(1, body.getTotalElements());
-    }
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null,
+                                null, null, null, null);
 
+                assertEquals(HttpStatus.OK, response.getStatusCode());
+                Page<?> body = (Page<?>) response.getBody();
+                assertTrue(body.isEmpty());
+        }
 
-    @Test
-    void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyPage() {
-        Pageable pageable = PageRequest.of(0, 10);
-        Page<Media> emptyPage = Page.empty();
+        @Test
+        void getAllFilteredActiveMedia_MinPriceNegative_ShouldThrowException() {
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        mediaController.getAllFilteredActiveMedia(
+                                        null,
+                                        null,
+                                        BigDecimal.valueOf(-1),
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                });
 
-        when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null))
-                .thenReturn(emptyPage);
+                assertEquals("minPrice must be non-negative.", exception.getMessage());
+                verifyNoInteractions(mediaService);
+        }
 
-        ResponseEntity<?> response =
-                mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null);
+        @Test
+        void getAllFilteredActiveMedia_MaxPriceNegative_ShouldThrowException() {
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        mediaController.getAllFilteredActiveMedia(
+                                        null,
+                                        null,
+                                        null,
+                                        BigDecimal.valueOf(-5),
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                });
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        Page<?> body = (Page<?>) response.getBody();
-        assertTrue(body.isEmpty());
-    }
+                assertEquals("maxPrice must be non-negative.", exception.getMessage());
+                verifyNoInteractions(mediaService);
+        }
 
-    @Test
-    void getAllFilteredActiveMedia_MinPriceNegative_ShouldThrowException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            mediaController.getAllFilteredActiveMedia(
-                null,
-                null,
-                BigDecimal.valueOf(-1),
-                null,
-                null,
-                null,
-                null,
-                null);
-        });
+        @Test
+        void getAllFilteredActiveMedia_MinGreaterThanMax_ShouldThrowException() {
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        mediaController.getAllFilteredActiveMedia(
+                                        null,
+                                        null,
+                                        BigDecimal.valueOf(50),
+                                        BigDecimal.valueOf(10),
+                                        null,
+                                        null,
+                                        null,
+                                        null);
+                });
 
-        assertEquals("minPrice must be non-negative.", exception.getMessage());
-        verifyNoInteractions(mediaService);
-    }
-
-    @Test
-    void getAllFilteredActiveMedia_MaxPriceNegative_ShouldThrowException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            mediaController.getAllFilteredActiveMedia(
-                null,
-                null,
-                null,
-                BigDecimal.valueOf(-5),
-                null,
-                null,
-                null,
-                null
-                );
-        });
-
-        assertEquals("maxPrice must be non-negative.", exception.getMessage());
-        verifyNoInteractions(mediaService);
-    }
-
-    @Test
-    void getAllFilteredActiveMedia_MinGreaterThanMax_ShouldThrowException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            mediaController.getAllFilteredActiveMedia(
-                null,
-                null,
-                BigDecimal.valueOf(50),
-                BigDecimal.valueOf(10),
-                null,
-                null,
-                null,
-                null);
-        });
-
-        assertEquals("minPrice must not be greater than maxPrice.", exception.getMessage());
-        verifyNoInteractions(mediaService);
-    }
+                assertEquals("minPrice must not be greater than maxPrice.", exception.getMessage());
+                verifyNoInteractions(mediaService);
+        }
 
         @Test
         void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldThrowException() {
-            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                mediaController.getAllFilteredActiveMedia(
-                null,
-                null,
-                null,
-                null,
-                -10,
-                null,
-                null,
-                null);
-            });
+                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                        mediaController.getAllFilteredActiveMedia(
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        -10,
+                                        null,
+                                        null,
+                                        null);
+                });
 
-            assertEquals("minDailyImpressions must be non-negative.", exception.getMessage());
-            verifyNoInteractions(mediaService);
+                assertEquals("minDailyImpressions must be non-negative.", exception.getMessage());
+                verifyNoInteractions(mediaService);
         }
 
         @Test
@@ -377,7 +404,7 @@ class MediaControllerUnitTest {
                 when(mediaService.addMedia(any(Media.class))).thenReturn(media);
                 when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-                ResponseEntity<MediaResponseModel> response = mediaController.addMedia(requestModel);
+                ResponseEntity<MediaResponseModel> response = mediaController.addMedia(null, requestModel);
 
                 assertNotNull(response);
                 assertEquals(HttpStatus.CREATED, response.getStatusCode());

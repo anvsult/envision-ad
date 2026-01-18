@@ -14,8 +14,7 @@ import java.util.List;
 public class MediaSpecifications {
 
     public static Specification<Media> hasStatus(Status status) {
-        return (root, query, cb) ->
-            status == null ? null : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> status == null ? null : cb.equal(root.get("status"), status);
     }
 
     public static Specification<Media> titleContains(String title) {
@@ -46,48 +45,48 @@ public class MediaSpecifications {
     }
 
     public static Specification<Media> dailyImpressionsGreaterThan(Integer minDailyImpressions) {
-        return (root, query, cb) ->
-            minDailyImpressions == null ? null : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
+        return (root, query, cb) -> minDailyImpressions == null ? null
+                : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
     }
 
-//    public static Specification<Media> locationContains(String locationName) {
-//        return (root, query, cb) -> {
-//
-//            if (locationName == null || locationName.isBlank()) {
-//                return cb.conjunction();
-//            }
-//
-//            Join<Media, MediaLocation> location =
-//                    root.join("mediaLocation", JoinType.LEFT);
-//
-//            List<String> tokens = Arrays.stream(locationName.split(","))
-//                    .map(String::trim)
-//                    .filter(s -> !s.isEmpty())
-//                    .map(String::toLowerCase)
-//                    .toList();
-//
-//            List<Predicate> tokenPredicates = new ArrayList<>();
-//
-//            for (String token : tokens) {
-//                String like = "%" + token + "%";
-//
-//                tokenPredicates.add(
-//                    cb.or(
-//                    cb.like(cb.lower(location.get("postalCode")), like),
-//                    cb.like(cb.lower(location.get("street")), like),
-//                    cb.like(cb.lower(location.get("city")), like),
-//                    cb.like(cb.lower(location.get("province")), like),
-//                    cb.like(cb.lower(location.get("country")), like)
-//                    )
-//                );
-//            }
-//
-//            return cb.and(tokenPredicates.toArray(new Predicate[0]));
-//        };
-//    }
+    public static Specification<Media> businessIdEquals(java.util.UUID businessId) {
+        return (root, query, cb) -> businessId == null ? null : cb.equal(root.get("businessId"), businessId);
+    }
 
-
-
-
+    // public static Specification<Media> locationContains(String locationName) {
+    // return (root, query, cb) -> {
+    //
+    // if (locationName == null || locationName.isBlank()) {
+    // return cb.conjunction();
+    // }
+    //
+    // Join<Media, MediaLocation> location =
+    // root.join("mediaLocation", JoinType.LEFT);
+    //
+    // List<String> tokens = Arrays.stream(locationName.split(","))
+    // .map(String::trim)
+    // .filter(s -> !s.isEmpty())
+    // .map(String::toLowerCase)
+    // .toList();
+    //
+    // List<Predicate> tokenPredicates = new ArrayList<>();
+    //
+    // for (String token : tokens) {
+    // String like = "%" + token + "%";
+    //
+    // tokenPredicates.add(
+    // cb.or(
+    // cb.like(cb.lower(location.get("postalCode")), like),
+    // cb.like(cb.lower(location.get("street")), like),
+    // cb.like(cb.lower(location.get("city")), like),
+    // cb.like(cb.lower(location.get("province")), like),
+    // cb.like(cb.lower(location.get("country")), like)
+    // )
+    // );
+    // }
+    //
+    // return cb.and(tokenPredicates.toArray(new Predicate[0]));
+    // };
+    // }
 
 }

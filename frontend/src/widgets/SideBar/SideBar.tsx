@@ -1,5 +1,5 @@
-import {NavLink, Stack, Accordion} from "@mantine/core";
-import {Link, usePathname} from "@/shared/lib/i18n/navigation";
+import { NavLink, Stack, Accordion } from "@mantine/core";
+import { Link, usePathname } from "@/shared/lib/i18n/navigation";
 import {
     IconAd,
     IconDeviceTv,
@@ -9,7 +9,7 @@ import {
     IconShieldCheck,
 } from "@tabler/icons-react";
 import React from "react";
-import {useTranslations} from "next-intl";
+import { useTranslations } from "next-intl";
 
 export default function SideBar() {
     const pathname = usePathname();
@@ -115,18 +115,18 @@ export default function SideBar() {
                 </Accordion.Panel>
             </Accordion.Item>
             <Accordion.Item value="admin">
-                        <Accordion.Control>{t("adminTitle")}</Accordion.Control>
-                    <Accordion.Panel>
-                        <Stack gap="xs">
-                            <NavLink
-                                component={Link}
-                                href="/dashboard/admin/media/pending"
-                                label={t("admin.pendingMedia")}
-                                leftSection={<IconShieldCheck size={20} stroke={1.5} />}
-                                active={pathname?.includes("/dashboard/admin/media/pending")}
-                            />
-                        </Stack>
-                    </Accordion.Panel>
+                <Accordion.Control>{t("adminTitle")}</Accordion.Control>
+                <Accordion.Panel>
+                    <Stack gap="xs">
+                        <NavLink
+                            component={Link}
+                            href="/dashboard/admin/media/pending"
+                            label={t("admin.pendingMedia")}
+                            leftSection={<IconShieldCheck size={20} stroke={1.5} />}
+                            active={pathname?.includes("/dashboard/admin/media/pending")}
+                        />
+                    </Stack>
+                </Accordion.Panel>
             </Accordion.Item>
             {/*<NavLink*/}
             {/*    component={Link}*/}
@@ -137,5 +137,5 @@ export default function SideBar() {
             {/*    onClick={isMobile ? close : undefined}*/}
             {/*/>*/}
         </Accordion>
-)
+    )
 }

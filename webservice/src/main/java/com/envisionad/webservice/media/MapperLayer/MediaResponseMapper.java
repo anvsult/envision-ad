@@ -27,6 +27,11 @@ public class MediaResponseMapper {
         response.setHeight(media.getHeight());
         response.setPrice(media.getPrice());
         response.setDailyImpressions(media.getDailyImpressions());
+        response.setPreviewConfiguration(media.getPreviewConfiguration());
+
+        if (media.getBusinessId() != null) {
+            response.setBusinessId(media.getBusinessId().toString());
+        }
 
         // Using Cloudinary URL
         if (media.getImageUrl() != null && !media.getImageUrl().isBlank()) {
@@ -34,7 +39,8 @@ public class MediaResponseMapper {
         }
 
         if (media.getMediaLocation() != null) {
-            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(media);
+            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(
+                    media);
 
             response.setMediaLocation(mediaLocationResponseModel);
         }

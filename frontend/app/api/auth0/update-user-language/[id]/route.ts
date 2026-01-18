@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { Auth0ManagementService } from "@/shared/api/auth0/management";
 import { auth0 } from "@/shared/api/auth0/auth0";
 import { routing } from "@/shared/lib/i18n/routing";
@@ -36,10 +36,10 @@ export async function PATCH(
         });
 
         return res;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error updating language:', error);
         return NextResponse.json(
-            { error: 'Failed to update language' },
+            { error: error.message || 'Failed to update language' },
             { status: 500 }
         );
     }
