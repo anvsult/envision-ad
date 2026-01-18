@@ -9,5 +9,5 @@ import java.util.List;
 public interface ReservationService {
     List<ReservationResponseModel> getAllReservationsByMediaId(String mediaId);
 
-    ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel);
+    ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel, String mediaOwnerEmailAddress);
 }
