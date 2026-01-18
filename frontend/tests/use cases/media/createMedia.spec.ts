@@ -134,7 +134,7 @@ test.describe('Media Creation', () => {
             await route.fulfill({
                 status: 200,
                 body: JSON.stringify({
-                    secure_url: 'http://example.com/uploaded.jpg',
+                    secure_url: 'https://res.cloudinary.com/demo/image/upload/sample.jpg',
                     public_id: 'sample_id'
                 })
             });

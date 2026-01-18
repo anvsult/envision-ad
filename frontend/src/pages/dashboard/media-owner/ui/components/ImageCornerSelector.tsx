@@ -162,6 +162,9 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
     // Convert percentage to percentage string for SVG
     const toPct = (val: number) => `${val * 100}%`;
 
+    // Order of corners to draw lines: TL -> TR -> BR -> BL -> TL
+    const cornerKeys: (keyof typeof corners)[] = ['tl', 'tr', 'br', 'bl'];
+
     return (
         <div style={{ position: 'relative', width: '100%', height: 'auto', userSelect: 'none', display: 'flex', justifyContent: 'center' }}>
             <img
@@ -188,36 +191,80 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
                     zIndex: 10
                 }}
             >
-                {/* Polygon showing the area */}
-                <polygon
-                    points={`
-                        ${corners.tl.x * 100}%,${corners.tl.y * 100}%
-                        ${corners.tr.x * 100}%,${corners.tr.y * 100}%
-                        ${corners.br.x * 100}%,${corners.br.y * 100}%
-                        ${corners.bl.x * 100}%,${corners.bl.y * 100}%
-                    `}
-                    fill="rgba(59, 130, 246, 0.3)"
-                    stroke="rgba(59, 130, 246, 0.8)"
-                    strokeWidth="2"
-                />
+                <defs>
+                    <marker
+                        id="arrow"
+                        viewBox="0 0 10 10"
+                        refX="8"
+                        refY="5"
+                        markerWidth="6"
+                        markerHeight="6"
+                        orient="auto-start-reverse"
+                    >
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#2563EB" />
+                    </marker>
+                </defs>
+
+                {/* Lines connecting corners with arrows */}
+                {cornerKeys.map((key, index) => {
+                    const nextKey = cornerKeys[(index + 1) % cornerKeys.length];
+                    const p1 = corners[key];
+                    const p2 = corners[nextKey];
+                    return (
+                        <line
+                            key={`${key}-${nextKey}`}
+                            x1={toPct(p1.x)}
+                            y1={toPct(p1.y)}
+                            x2={toPct(p2.x)}
+                            y2={toPct(p2.y)}
+                            stroke="rgba(59, 130, 246, 0.8)"
+                            strokeWidth="2"
+                            markerEnd="url(#arrow)"
+                        />
+                    );
+                })}
 
                 {/* Corner Handles */}
-                {Object.entries(corners).map(([key, point]) => (
-                    <circle
-                        key={key}
-                        cx={toPct(point.x)}
-                        cy={toPct(point.y)}
-                        r={HANDLE_RADIUS}
-                        fill="white"
-                        stroke="#2563EB"
-                        strokeWidth="3"
-                        style={{ cursor: 'move', transition: 'r 0.1s', touchAction: 'none' }} // Animate radius instead of transform
-                        onMouseEnter={(e) => e.currentTarget.setAttribute('r', (HANDLE_RADIUS * 1.2).toString())}
-                        onMouseLeave={(e) => e.currentTarget.setAttribute('r', HANDLE_RADIUS.toString())}
-                        onMouseDown={handleMouseDown(key as keyof typeof corners)}
-                        onTouchStart={handleTouchStart(key as keyof typeof corners)}
-                    />
-                ))}
+                {Object.entries(corners).map(([key, point]) => {
+                    let rotation = 0;
+                    switch (key) {
+                        case 'tl': rotation = -135; break;
+                        case 'tr': rotation = -45; break;
+                        case 'br': rotation = 45; break;
+                        case 'bl': rotation = 135; break;
+                    }
+
+                    return (
+                        <svg
+                            key={key}
+                            x={toPct(point.x)}
+                            y={toPct(point.y)}
+                            style={{ overflow: 'visible' }}
+                        >
+                            <circle
+                                r={HANDLE_RADIUS}
+                                fill="white"
+                                stroke="#2563EB"
+                                strokeWidth="3"
+                                style={{ cursor: 'move', transition: 'r 0.1s', touchAction: 'none' }} // Animate radius instead of transform
+                                onMouseEnter={(e) => e.currentTarget.setAttribute('r', (HANDLE_RADIUS * 1.2).toString())}
+                                onMouseLeave={(e) => e.currentTarget.setAttribute('r', HANDLE_RADIUS.toString())}
+                                onMouseDown={handleMouseDown(key as keyof typeof corners)}
+                                onTouchStart={handleTouchStart(key as keyof typeof corners)}
+                            />
+                            <path
+                                d="M -5 0 L 5 0 M 1 -4 L 5 0 L 1 4"
+                                fill="none"
+                                stroke="#2563EB"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                transform={`rotate(${rotation})`}
+                                style={{ pointerEvents: 'none' }}
+                            />
+                        </svg>
+                    );
+                })}
             </svg>
         </div>
     );
