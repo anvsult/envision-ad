@@ -298,7 +298,7 @@
         },
         "success": {
           "title": "Success",
-          "invitation": "Invitation has been sent",
+          "inviteEmployee": "Invitation has been sent",
           "deleteEmployee": "Employee has been removed",
           "deleteInvitation": "Invitation has been canceled"
         }

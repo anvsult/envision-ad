@@ -1,0 +1,106 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+#      Since Next.js has a client and a server side, it needs some secrets at
+#      runtime and others at build time
+#      Here by listing the NEXT_PUBLIC variables in the args section,
+#      We are injecting the secrets at runtime (into the javascript files)
+#      Those are the variables that CAN be seen by other people
+      args:
+        NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
+        NEXT_PUBLIC_APP_BASE_URL: "${APP_BASE_URL}"
+        NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
+        NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
+      dockerfile: Dockerfile
+    #   Here, I am listing the variables that Next.js will potentially need
+    #   while it's running (runtime).
+    #   These are server-side secrets that are not sent to the browser, but can
+    #   still be accessed by anyone with access to the EC2 instance or container
+    #   and must be protected at the infrastructure level.
+    environment:
+      NODE_ENV: "production"
+      NEXT_TELEMETRY_DISABLED: "1"
+      APP_BASE_URL: "${APP_BASE_URL}"
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+      AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
+      AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
+      AUTH0_SECRET: "${AUTH0_SECRET}"
+      AUTH0_MGMT_DOMAIN: "${AUTH0_MGMT_DOMAIN}"
+      AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
+      AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+      CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
+    depends_on:
+      webservice:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - appnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  webservice:
+    build:
+      context: ./webservice
+      dockerfile: Dockerfile
+    environment:
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+
+      SPRING_PROFILES_ACTIVE: "prod"
+      # Point this directly to the variables injected by GitHub Actions
+      SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
+      SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+      EMAIL_PORT: "${EMAIL_PORT}"
+      EMAIL_SMTP: "${EMAIL_SMTP}"
+      EMAIL_USER: "${EMAIL_USER}"
+      EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+    restart: unless-stopped
+    networks:
+      - appnet
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+
+  reverse-proxy:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      # TLS certificates are provided by Let's Encrypt via Certbot on the EC2 host.
+      # Before running this compose file in production, install Certbot on the host
+      # and obtain certificates for your domain, for example (adjusting plugins/flags
+      # to your environment):
+      #   sudo certbot certonly --nginx -d example.com -d www.example.com
+      # Certbot stores certificates under /etc/letsencrypt on the host and configures
+      # automatic renewal (via systemd timer or cron). The renewed certificates will be
+      # available to this container through the read-only bind mount below.
+    depends_on:
+      - frontend
+      - webservice
+    networks:
+      - appnet
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+networks:
+  appnet:
+    driver: bridge

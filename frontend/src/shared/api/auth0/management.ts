@@ -33,13 +33,13 @@ export class Auth0ManagementService {
         }
 
         try {
-            const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
+            const tokenRes = await fetch(`https://${process.env.AUTH0_MGMT_DOMAIN}/oauth/token`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({
                     client_id: process.env.AUTH0_MGMT_CLIENT_ID,
                     client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                    audience: process.env.AUTH0_MGMT_AUDIENCE,
+                    audience: `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/`,
                     grant_type: 'client_credentials',
                 }),
             });
@@ -87,7 +87,7 @@ export class Auth0ManagementService {
         try {
             const token = await this.getAccessToken();
             const res = await fetch(
-                `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${encodeURIComponent(userId)}`,
+                `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -135,7 +135,7 @@ export class Auth0ManagementService {
     static async updateUser(userId: string, data: any) {
         const token = await this.getAccessToken();
         const res = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${encodeURIComponent(userId)}`,
+            `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -154,7 +154,6 @@ export class Auth0ManagementService {
             } catch (_) {
                 // ignore JSON parse errors
             }
-            console.error(`Auth0 Update Failed: ${res.status} ${errorMsg}`);
             throw new Error(errorMsg);
         }
 
