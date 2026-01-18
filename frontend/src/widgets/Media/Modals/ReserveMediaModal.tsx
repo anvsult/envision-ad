@@ -357,8 +357,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                ${(media.price || 100) * (dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1)}
-                                            </Text>
+                                            ${Math.round(((media.price || 100) * (dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1)) * 100) / 100}                                            </Text>
                                         </Group>
                                     </Paper>
                                 </Stack>

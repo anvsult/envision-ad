@@ -69,6 +69,19 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     }
 
     @Override
+    public List<String> getAllCampaignImageLinks(String campaignId) {
+        AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
+        if (adCampaign == null) {
+            throw new AdCampaignNotFoundException(campaignId);
+        }
+
+        return adCampaign.getAds().stream()
+                .map(Ad::getAdUrl)
+                .filter(url -> url != null && !url.isEmpty())
+                .toList();
+    }
+
+    @Override
     public AdResponseModel addAdToCampaign(String campaignId, AdRequestModel adRequestModel) {
         AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (adCampaign == null) throw new AdCampaignNotFoundException(campaignId);
