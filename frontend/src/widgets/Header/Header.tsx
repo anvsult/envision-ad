@@ -11,9 +11,12 @@ import {
     Divider,
     Burger,
     Menu,
+    NavLink,
 } from "@mantine/core";
+import SideBar from "@/widgets/SideBar/SideBar";
+import React, { useEffect } from "react";
 import Image from "next/image";
-import {useLocale, useTranslations} from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useDisclosure } from "@mantine/hooks";
 import { LanguagePicker } from "./LanguagePicker";
 import { Link, usePathname } from "@/shared/lib/i18n/navigation";
@@ -26,7 +29,7 @@ interface HeaderProps {
     onToggleSidebar?: () => void;
 }
 
-export function Header({}: HeaderProps) {
+export function Header({ }: HeaderProps) {
     const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
@@ -37,10 +40,10 @@ export function Header({}: HeaderProps) {
         label: string;
         authRequired?: boolean;
     }> = [
-        { link: "/", label: t("home"), authRequired : false},
-        { link: "/dashboard", label: t("dashboard"), authRequired: true},
-        { link: "/browse", label: t("browse"), authRequired: false },
-    ];
+            { link: "/", label: t("home"), authRequired: false },
+            { link: "/dashboard", label: t("dashboard"), authRequired: true },
+            { link: "/browse", label: t("browse"), authRequired: false },
+        ];
 
     const filteredLinks = links.filter((link) => {
         if (link.authRequired && !user) return false;
@@ -50,7 +53,49 @@ export function Header({}: HeaderProps) {
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
         useDisclosure(false);
 
-    const items = filteredLinks.map((link) => {
+    useEffect(() => {
+        closeDrawer();
+    }, [pathname]);
+
+    const mobileItems = filteredLinks.map((link) => {
+        if (link.link === "/dashboard") {
+            return (
+                <NavLink
+                    key={link.label}
+                    label={link.label}
+                    childrenOffset={16}
+                    defaultOpened={false}
+                    styles={{
+                        label: { fontWeight: 500 },
+                        root: { borderRadius: 12 }
+                    }}
+                >
+                    <SideBar />
+                </NavLink>
+            );
+        }
+
+        const active = pathname === link.link || pathname.startsWith(link.link + '/');
+        return (
+            <Link
+                key={link.label}
+                href={link.link}
+                style={{
+                    textDecoration: "none",
+                    color: active ? "var(--mantine-color-blue-6)" : "inherit",
+                    fontWeight: active ? 600 : 500,
+                    padding: "8px 12px",
+                    borderRadius: 12,
+                    transition: "background-color .15s ease",
+                    display: "block" // Ensure it takes width
+                }}
+            >
+                {link.label}
+            </Link>
+        );
+    });
+
+    const desktopItems = filteredLinks.map((link) => {
         const active = pathname === link.link || pathname.startsWith(link.link + '/');
         return (
             <Link
@@ -151,7 +196,7 @@ export function Header({}: HeaderProps) {
 
                     {/* Navigation */}
                     <Group gap="md" visibleFrom="sm">
-                        {items}
+                        {desktopItems}
                     </Group>
 
                     {/* Auth Buttons - no loading state needed! */}
@@ -190,7 +235,7 @@ export function Header({}: HeaderProps) {
 
                     <Box hiddenFrom="sm">
                         <Stack px="md">
-                            {items}
+                            {mobileItems}
                         </Stack>
                         <Divider my="sm" />
                     </Box>
