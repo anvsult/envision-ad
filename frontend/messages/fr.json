@@ -677,6 +677,9 @@
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
       "selectDate": "Veuillez sélectionner une date de début et de fin valides"
     },
+    "errorTitle": "Erreur de réservation",
+    "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
+    "campaignNotFoundErrorMessage": "Campagne introuvable.",
     "mediaIdMissing": "L'identifiant du média est manquant.",
     "successTitle": "Réservation réussie !",
     "successMessage": "Réservation confirmée !",

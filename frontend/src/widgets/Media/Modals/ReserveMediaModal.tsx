@@ -204,13 +204,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 } else if (axiosError.response?.status === 403) {
                     notifications.show({
                         title: t('errorTitle'),
-                        message: 'You do not have permission to create reservations for this campaign',
+                        message: t('missingPermissionErrorMessage'),
                         color: 'red'
                     });
                 } else if (axiosError.response?.status === 404) {
                     notifications.show({
                         title: t('errorTitle'),
-                        message: 'Media or campaign not found',
+                        message: t('campaignNotFoundErrorMessage'),
                         color: 'red'
                     });
                 } else {

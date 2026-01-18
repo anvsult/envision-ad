@@ -94,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
         validateUserIsEmployeeOfBusiness(userId, businessId);
 
         // Validate business owns the campaign
-        validateBusinessOwnsCampaign(businessId, requestModel.getCampaignId());
+        validateBusinessOwnsCampaign(businessId, campaign);
 
         // Calculate price
         long days = Duration.between(requestModel.getStartDate(), requestModel.getEndDate()).toDays();
@@ -142,12 +142,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new AccessDeniedException("User is not an employee of the business");
     }
 
-    private void validateBusinessOwnsCampaign(String businessId, String campaignId) {
-        AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
-        if (campaign == null) {
-            throw new AdCampaignNotFoundException(campaignId);
-        }
-
+    private void validateBusinessOwnsCampaign(String businessId, AdCampaign campaign) {
         String campaignBusinessId = campaign.getBusinessId().getBusinessId();
         if (!campaignBusinessId.equals(businessId)) {
             throw new AccessDeniedException("Campaign does not belong to the specified business");

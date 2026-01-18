@@ -677,6 +677,8 @@
       "selectDate": "Please select a valid start and end date"
     },
     "errorTitle": "Error",
+    "missingPermissionErrorMessage": "You do not have permission to create reservations for this campaign",
+    "campaignNotFoundErrorMessage": "Media or campaign not found",
     "successTitle": "Reservation Successful!",
     "successMessage": "Reservation Confirmed!",
     "successMessageLong": "Your ad slot has been successfully booked. You can view it in your dashboard schedule.",

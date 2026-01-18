@@ -113,7 +113,7 @@ CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
-    business_id VARCHAR(36) NOT NULL,
+    business_id VARCHAR(36) NOT NULL REFERENCES business(business_id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL
 );
 -- 6. Create Ads Table
