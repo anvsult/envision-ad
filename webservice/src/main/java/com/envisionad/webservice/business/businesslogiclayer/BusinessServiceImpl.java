@@ -12,6 +12,7 @@ import com.envisionad.webservice.business.presentationlayer.models.*;
 import com.envisionad.webservice.business.utils.Validator;
 import com.envisionad.webservice.utils.EmailService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class BusinessServiceImpl implements BusinessService {
+
+    @Value("${app.base.url}")
+    private String appBaseUrl;
 
     private final EmailService emailService;
 
@@ -116,7 +120,7 @@ public class BusinessServiceImpl implements BusinessService {
         invitation.setBusinessId(new BusinessIdentifier(businessId));
         invitation.setTimeExpires(LocalDateTime.now().plusHours(1));
 
-        String link = "http://localhost:3000/invite?businessId=" + businessId + "&token=" + token;
+        String link = appBaseUrl + "/invite?businessId=" + businessId + "&token=" + token;
         emailService.sendSimpleEmail(invitation.getEmail(), "Invitation to join " + business.getName() + " on Envision Ad", "Click on this link to join " + business.getName() + "\n" + link);
 
         return invitationMapper.toResponse(invitationRepository.save(invitation));

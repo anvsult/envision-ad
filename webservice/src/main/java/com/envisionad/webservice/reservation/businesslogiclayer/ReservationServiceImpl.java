@@ -17,6 +17,8 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationResponseMapper reservationResponseMapper;
     private final EmployeeRepository employeeRepository;
     private final AdCampaignService adCampaignService;
+    private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
     public ReservationServiceImpl(EmailService emailService, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, EmployeeRepository employeeRepository, AdCampaignService adCampaignService) {
         this.emailService = emailService;
@@ -67,6 +70,14 @@ public class ReservationServiceImpl implements ReservationService {
         // Validate media exists
         Media media = mediaRepository.findById(UUID.fromString(mediaId))
                 .orElseThrow(() -> new MediaNotFoundException(mediaId));
+
+        if (media.getPrice() == null || media.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("Media does not have a valid price");
+        }
+
+        if (!requestModel.getEndDate().isAfter(requestModel.getStartDate())) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
 
         // Validate campaign exists and user has access
         AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(requestModel.getCampaignId());
@@ -119,8 +130,9 @@ public class ReservationServiceImpl implements ReservationService {
             );
             emailService.sendSimpleEmail(ownerEmail, "New Reservation Created", emailBody);
         } catch (Exception e) {
-            System.out.println("Failed to send reservation notification email for reservation: {}" +
-                    reservation.getReservationId() + e);
+//            I made it log the error instead of throwing an exception to avoid failing the reservation creation
+            log.error("Failed to send reservation notification email for reservation: {} to owner: {}",
+                    reservation.getReservationId(), ownerEmail, e);
         }
     }
 

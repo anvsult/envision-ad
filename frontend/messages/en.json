@@ -696,5 +696,18 @@
       "dates": "Dates",
       "totalCost": "Total Cost"
     }
+  },
+  "invitation": {
+    "loading": "Loading...",
+    "processing": "Processing your invitation...",
+    "invalidLinkTitle": "Invalid Invitation Link",
+    "invalidLink": "This invitation link is invalid or incomplete.",
+    "successTitle": "Success!",
+    "success": "You've successfully joined the organization!",
+    "errorTitle": "Failed",
+    "error": "An error occurred while accepting the invitation.",
+    "redirecting": "Redirecting to dashboard...",
+    "goHome": "Go Home"
   }
+
 }

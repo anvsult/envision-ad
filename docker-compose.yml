@@ -70,6 +70,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      APP_BASE_URL: "${APP_BASE_URL}"
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       SPRING_PROFILES_ACTIVE: "prod"
