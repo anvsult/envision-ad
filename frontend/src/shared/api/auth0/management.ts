@@ -23,6 +23,15 @@ export class Auth0ManagementService {
             return this.cachedToken;
         }
 
+        const domain = process.env.AUTH0_DOMAIN;
+        const clientId = process.env.AUTH0_MGMT_CLIENT_ID;
+        const clientSecret = process.env.AUTH0_MGMT_CLIENT_SECRET;
+        const audience = process.env.AUTH0_MGMT_AUDIENCE;
+
+        if (!domain || !clientId || !clientSecret || !audience) {
+            throw new Error("Missing Auth0 Management API environment variables");
+        }
+
         try {
             const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
                 method: 'POST',
@@ -78,7 +87,7 @@ export class Auth0ManagementService {
         try {
             const token = await this.getAccessToken();
             const res = await fetch(
-                `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+                `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${encodeURIComponent(userId)}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -126,7 +135,7 @@ export class Auth0ManagementService {
     static async updateUser(userId: string, data: any) {
         const token = await this.getAccessToken();
         const res = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${encodeURIComponent(userId)}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -145,6 +154,7 @@ export class Auth0ManagementService {
             } catch (_) {
                 // ignore JSON parse errors
             }
+            console.error(`Auth0 Update Failed: ${res.status} ${errorMsg}`);
             throw new Error(errorMsg);
         }
 

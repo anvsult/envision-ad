@@ -387,6 +387,7 @@
     },
     "labels": {
       "mediaName": "Nom du média",
+      "mediaImage": "Image du média",
       "typeOfDisplay": "Type d'affichage",
       "loopDuration": "Durée de la boucle (sec)",
       "resolution": "Résolution (px)",
@@ -447,7 +448,9 @@
     },
     "buttons": {
       "cancel": "Annuler",
-      "save": "Enregistrer"
+      "save": "Enregistrer",
+      "uploadFile": "Téléverser un fichier",
+      "changeFile": "Changer de fichier"
     },
     "calendar": {
       "months": {

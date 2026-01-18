@@ -34,23 +34,38 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
     }, [onChange]);
 
     useEffect(() => {
-        if (initialCorners) {
-            setCorners((prev) => {
-                // Check for value equality to prevent infinite loops (since JSON.parse creates new refs)
-                const isDifferent =
-                    initialCorners.tl.x !== prev.tl.x || initialCorners.tl.y !== prev.tl.y ||
-                    initialCorners.tr.x !== prev.tr.x || initialCorners.tr.y !== prev.tr.y ||
-                    initialCorners.br.x !== prev.br.x || initialCorners.br.y !== prev.br.y ||
-                    initialCorners.bl.x !== prev.bl.x || initialCorners.bl.y !== prev.bl.y;
+        // If we are currently dragging, do NOT update state from props.
+        // This prevents the "drag -> parent update -> prop update -> state update" cycle
+        // that causes the infinite loop and crash.
+        if (dragging || !initialCorners) return;
 
-                return isDifferent ? initialCorners : prev;
-            });
-        }
-    }, [initialCorners]);
+        setCorners((prev) => {
+            // Check for value equality to prevent infinite loops (since JSON.parse creates new refs)
+            const isDifferent =
+                initialCorners.tl.x !== prev.tl.x || initialCorners.tl.y !== prev.tl.y ||
+                initialCorners.tr.x !== prev.tr.x || initialCorners.tr.y !== prev.tr.y ||
+                initialCorners.br.x !== prev.br.x || initialCorners.br.y !== prev.br.y ||
+                initialCorners.bl.x !== prev.bl.x || initialCorners.bl.y !== prev.bl.y;
+
+            return isDifferent ? initialCorners : prev;
+        });
+    }, [initialCorners, dragging]);
 
     useEffect(() => {
-        onChangeRef.current(corners);
-    }, [corners]);
+        // Only emit changes to parent if we are actively dragging.
+        // This prevents updates from props (which update 'corners' state) from echoing back to the parent
+        // and causing infinite loops.
+        if (dragging) {
+            onChangeRef.current(corners);
+        }
+    }, [corners, dragging]);
+
+    // Emit initial value on mount if needed (optional, depends on if parent needs to know defaults immediately)
+    useEffect(() => {
+        if (!initialCorners && corners) {
+            onChangeRef.current(corners);
+        }
+    }, []);
 
     const getMousePosition = (evt: ReactMouseEvent | globalThis.MouseEvent) => {
         if (!svgRef.current) return { x: 0, y: 0 };

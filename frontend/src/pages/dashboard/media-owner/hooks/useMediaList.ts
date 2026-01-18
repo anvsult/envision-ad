@@ -178,13 +178,31 @@ export function useMediaList() {
             // Get full backend DTO so updateMedia gets what it expects
             const backend = await getMediaById(targetId);
 
-            const payload = {
-                ...backend,
+            const payload: MediaRequestDTO = {
+                title: backend.title,
+                mediaOwnerName: backend.mediaOwnerName,
                 mediaLocationId: backend.mediaLocation?.id ?? null,
+                typeOfDisplay: backend.typeOfDisplay,
+                loopDuration: backend.loopDuration ?? 0,
+                resolution: backend.resolution,
+                aspectRatio: backend.aspectRatio,
+                width: backend.width ?? 0,
+                height: backend.height ?? 0,
+                price: backend.price ?? 0,
+                dailyImpressions: backend.dailyImpressions ?? 0,
+                schedule: backend.schedule,
+                imageUrl: backend.imageUrl ?? null,
+                previewConfiguration: backend.previewConfiguration ?? JSON.stringify({
+                    tl: { x: 0, y: 0 },
+                    tr: { x: 100, y: 0 },
+                    br: { x: 100, y: 100 },
+                    bl: { x: 0, y: 100 },
+                }),
+                // STATUS CHANGE HERE
                 status: nextStatus,
             };
 
-            const updated = await updateMedia(targetId, payload as any);
+            const updated = await updateMedia(targetId, payload);
 
             // Ensure local list matches whatever backend finally saved
             setMedia((prev) =>

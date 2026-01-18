@@ -1,6 +1,7 @@
 "use client";
 
 import { Button, Modal, ScrollArea, Grid, Text } from "@mantine/core";
+import { useMemo } from "react";
 import { IconUpload } from "@tabler/icons-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { notifications } from "@mantine/notifications";
@@ -51,6 +52,12 @@ export function MediaModal({
             }
         }
     };
+
+    const initialCorners = useMemo(() =>
+        formState.previewConfiguration
+            ? JSON.parse(formState.previewConfiguration)
+            : undefined
+        , [formState.previewConfiguration]);
 
     return (
         <Modal
@@ -121,7 +128,7 @@ export function MediaModal({
                                     }}>
                                         <ImageCornerSelector
                                             imageUrl={formState.imageUrl}
-                                            initialCorners={formState.previewConfiguration ? JSON.parse(formState.previewConfiguration) : undefined}
+                                            initialCorners={initialCorners}
                                             onChange={(corners) => {
                                                 const config = JSON.stringify(corners);
                                                 if (config !== formState.previewConfiguration) {
