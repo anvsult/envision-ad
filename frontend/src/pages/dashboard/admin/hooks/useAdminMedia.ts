@@ -36,7 +36,14 @@ export function useAdminMedia() {
 
             schedule: m.schedule,
             status,
-            imageUrl: m.imageUrl ?? null
+            imageUrl: m.imageUrl ?? null,
+            previewConfiguration: m.previewConfiguration ?? (m.imageUrl ? JSON.stringify({
+                tl: { x: 0.1, y: 0.1 },
+                tr: { x: 0.9, y: 0.1 },
+                br: { x: 0.9, y: 0.9 },
+                bl: { x: 0.1, y: 0.9 },
+            }) : null),
+            businessId: m.businessId ?? null
         };
 
         return updateMedia(id, payload as MediaRequestDTO);

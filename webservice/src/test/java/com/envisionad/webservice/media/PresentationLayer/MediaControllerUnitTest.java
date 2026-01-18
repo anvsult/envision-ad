@@ -25,6 +25,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -135,6 +136,33 @@ class MediaControllerUnitTest {
                 requestModel.setSchedule(schedule);
                 requestModel.setImageUrl("http://example.com/image.jpg");
                 requestModel.setPreviewConfiguration("{\"corners\": []}");
+        }
+
+        @Test
+        void addMedia_WithValidJwt_ShouldSetBusinessId() {
+                UUID businessId = UUID.randomUUID();
+                String userId = "auth0|123";
+
+                // Mock JWT
+                Jwt jwt = mock(Jwt.class);
+                when(jwt.getSubject()).thenReturn(userId);
+
+                // Mock Business Service
+                com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel businessResponse = new com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel();
+                businessResponse.setBusinessId(businessId.toString());
+                when(businessService.getBusinessByUserId(jwt, userId)).thenReturn(businessResponse);
+
+                // Mock Mapper and Service
+                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+                when(mediaService.addMedia(any(Media.class))).thenReturn(media);
+                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
+
+                // Execute
+                mediaController.addMedia(jwt, requestModel);
+
+                // Verify
+                assertEquals(businessId.toString(), requestModel.getBusinessId());
+                verify(businessService).getBusinessByUserId(jwt, userId);
         }
 
         @Test

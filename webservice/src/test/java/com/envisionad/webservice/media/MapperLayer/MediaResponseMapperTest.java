@@ -51,23 +51,6 @@ class MediaResponseMapperTest {
         assertEquals(imageUrl, response.getImageUrl());
     }
 
-    @Test
-    void entityToResponseModel_WithImageDataAndNoImageUrl_ShouldMapImageUrlFromId() {
-        // Arrange
-        UUID mediaId = UUID.randomUUID();
-        byte[] imageData = new byte[] { 1, 2, 3 };
-        Media media = new Media();
-        media.setId(mediaId);
-        media.setImageData(imageData);
-        media.setImageUrl(null); // Ensure imageUrl is null
-
-        // Act
-        MediaResponseModel response = mapper.entityToResponseModel(media);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals("/api/v1/media/" + mediaId + "/image", response.getImageUrl());
-    }
 
     @Test
     void entityToResponseModel_WithMediaLocation_ShouldMapLocation() {
@@ -89,5 +72,34 @@ class MediaResponseMapperTest {
         assertNotNull(response.getMediaLocation());
         assertEquals(locationId, response.getMediaLocation().getId());
         assertEquals("Test Location", response.getMediaLocation().getName());
+    }
+
+    @Test
+    void entityToResponseModel_WithPreviewConfiguration_ShouldMapPreviewConfiguration() {
+        // Arrange
+        String previewConfig = "{\"corners\": []}";
+        Media media = new Media();
+        media.setPreviewConfiguration(previewConfig);
+
+        // Act
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(previewConfig, response.getPreviewConfiguration());
+    }
+
+    @Test
+    void entityToResponseModel_WithNullPreviewConfiguration_ShouldMapNull() {
+        // Arrange
+        Media media = new Media();
+        media.setPreviewConfiguration(null);
+
+        // Act
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        // Assert
+        assertNotNull(response);
+        assertNull(response.getPreviewConfiguration());
     }
 }

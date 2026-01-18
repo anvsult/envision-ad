@@ -25,10 +25,12 @@ import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
 @CrossOrigin(origins = "http://localhost:3000")
+@Slf4j
 public class MediaController {
 
     private final MediaService mediaService;
@@ -109,7 +111,7 @@ public class MediaController {
                     requestModel.setBusinessId(business.getBusinessId());
                 }
             } catch (Exception e) {
-                System.out.println("Error fetching business for user: " + e.getMessage());
+                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
             }
         }
 

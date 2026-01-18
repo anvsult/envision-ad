@@ -69,11 +69,11 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         setDragging(key);
     };
 
-    const handleMouseMove = (e: globalThis.MouseEvent) => {
+    const handleMouseMove = React.useCallback((e: globalThis.MouseEvent) => {
         if (!dragging || !svgRef.current) return;
         e.preventDefault();
 
-        const { x, y } = getMousePosition(e);
+        const { x, y } = getMousePosition(e as any);
 
         // Get SVG dimensions to convert pixel to percentage
         const { width, height } = svgRef.current.getBoundingClientRect();
@@ -87,17 +87,17 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
             ...prev,
             [dragging]: { x: nextX, y: nextY },
         }));
-    };
+    }, [dragging]);
 
-    const handleMouseUp = () => {
+    const handleMouseUp = React.useCallback(() => {
         setDragging(null);
-    };
+    }, []);
 
     const handleTouchStart = (key: keyof typeof corners) => (e: React.TouchEvent) => {
         setDragging(key);
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
+    const handleTouchMove = React.useCallback((e: TouchEvent) => {
         if (!dragging || !svgRef.current) return;
         if (e.cancelable) e.preventDefault();
 
@@ -118,11 +118,11 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
             ...prev,
             [dragging]: { x: nextX, y: nextY },
         }));
-    };
+    }, [dragging]);
 
-    const handleTouchEnd = () => {
+    const handleTouchEnd = React.useCallback(() => {
         setDragging(null);
-    };
+    }, []);
 
     useEffect(() => {
         if (dragging) {
@@ -142,7 +142,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
             window.removeEventListener('touchmove', handleTouchMove);
             window.removeEventListener('touchend', handleTouchEnd);
         };
-    }, [dragging]);
+    }, [dragging, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd]);
 
     // Convert percentage to percentage string for SVG
     const toPct = (val: number) => `${val * 100}%`;

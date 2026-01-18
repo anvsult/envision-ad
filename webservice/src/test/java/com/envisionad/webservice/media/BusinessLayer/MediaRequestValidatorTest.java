@@ -376,4 +376,28 @@ class MediaRequestValidatorTest {
                 () -> MediaRequestValidator.validateMediaRequest(request));
         assertEquals("Preview configuration (corners) is required when an image is uploaded", exception.getMessage());
     }
+
+    @Test
+    void validateMediaRequest_ImageUrlIsInvalid_ShouldThrowException() {
+        request.setImageUrl("invalid-url");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> MediaRequestValidator.validateMediaRequest(request));
+        assertEquals("Image URL must be a valid URL", exception.getMessage());
+    }
+
+    @Test
+    void validateMediaRequest_PreviewConfigurationIsInvalidJson_ShouldThrowException() {
+        request.setPreviewConfiguration("{corners: invalid}");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> MediaRequestValidator.validateMediaRequest(request));
+        assertEquals("Preview configuration must be valid JSON", exception.getMessage());
+    }
+
+    @Test
+    void validateMediaRequest_ImageUrlAndConfigsAreValid_ShouldPass() {
+        // These are already set in setUp() but verifying explicit valid values pass
+        request.setImageUrl("https://example.com/image.png");
+        request.setPreviewConfiguration("{\"corners\": [{\"x\": 10, \"y\": 10}]}");
+        MediaRequestValidator.validateMediaRequest(request);
+    }
 }

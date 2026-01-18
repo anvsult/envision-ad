@@ -42,6 +42,7 @@ export interface MediaRequestDTO {
     status: string;
     imageUrl: string | null;
     previewConfiguration?: string | null;
+    businessId?: string | null;
 }
 
 export interface MediaListResponseDTO {

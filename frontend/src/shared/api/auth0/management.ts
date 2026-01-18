@@ -68,11 +68,11 @@ export class Auth0ManagementService {
      * @param {string} userId - The unique identifier of the user (e.g., "auth0|123456").
      * @returns {Promise<any | null>} The user object if found, or null if not found or an error occurs.
      */
-    static async getUser(userId: string) {
+    static async getUser(userId: string): Promise<{ data: any; isStale: boolean } | null> {
         // Return cached user if valid
         const cached = this.userCache[userId];
         if (cached && Date.now() < cached.expires) {
-            return cached.data;
+            return { data: cached.data, isStale: false };
         }
 
         try {
@@ -91,7 +91,7 @@ export class Auth0ManagementService {
                 // If 429, try to return stale cache if available
                 if (res.status === 429 && cached) {
                     console.warn(`Rate limited for user ${userId}, returning stale cache`);
-                    return cached.data;
+                    return { data: cached.data, isStale: true };
                 }
                 console.error(`Failed to fetch user ${userId}: ${res.statusText}`);
                 throw new Error(`Failed to fetch user ${userId}: ${res.statusText}`);
@@ -105,12 +105,12 @@ export class Auth0ManagementService {
                 expires: Date.now() + this.CACHE_DURATION
             };
 
-            return data;
+            return { data, isStale: false };
         } catch (error) {
             console.error("Error in Auth0ManagementService.getUserClient:", error);
             // Fallback to stale cache on error if possible
             if (this.userCache[userId]) {
-                return this.userCache[userId].data;
+                return { data: this.userCache[userId].data, isStale: true };
             }
             return null;
         }
@@ -181,6 +181,6 @@ export class Auth0ManagementService {
      */
     static async getUserLanguage(userId: string): Promise<string | undefined> {
         const user = await this.getUser(userId);
-        return user?.user_metadata?.preferred_language || undefined;
+        return user?.data?.user_metadata?.preferred_language || undefined;
     }
 }

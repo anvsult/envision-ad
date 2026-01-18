@@ -41,6 +41,20 @@ class MediaRequestMapperTest {
     }
 
     @Test
+    void requestModelToEntity_WithNullBusinessId_ShouldMapNull() {
+        // Arrange
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setBusinessId(null);
+
+        // Act
+        Media media = mediaRequestMapper.requestModelToEntity(requestModel);
+
+        // Assert
+        assertNotNull(media);
+        assertNull(media.getBusinessId());
+    }
+
+    @Test
     void requestModelToEntity_WithMediaLocationId_ShouldMapMediaLocation() {
         // Arrange
         UUID locationId = UUID.randomUUID();
@@ -73,5 +87,35 @@ class MediaRequestMapperTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> mediaRequestMapper.requestModelToEntity(requestModel));
         assertEquals("Invalid mediaLocationId", exception.getMessage());
+    }
+
+    @Test
+    void requestModelToEntity_WithImageUrl_ShouldMapImageUrl() {
+        // Arrange
+        String imageUrl = "https://res.cloudinary.com/demo/image/upload/v1/sample.jpg";
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setImageUrl(imageUrl);
+
+        // Act
+        Media media = mediaRequestMapper.requestModelToEntity(requestModel);
+
+        // Assert
+        assertNotNull(media);
+        assertEquals(imageUrl, media.getImageUrl());
+    }
+
+    @Test
+    void requestModelToEntity_WithPreviewConfiguration_ShouldMapPreviewConfiguration() {
+        // Arrange
+        String previewConfig = "{\"corners\": []}";
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setPreviewConfiguration(previewConfig);
+
+        // Act
+        Media media = mediaRequestMapper.requestModelToEntity(requestModel);
+
+        // Assert
+        assertNotNull(media);
+        assertEquals(previewConfig, media.getPreviewConfiguration());
     }
 }

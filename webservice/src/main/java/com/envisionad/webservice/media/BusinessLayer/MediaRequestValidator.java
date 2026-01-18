@@ -142,8 +142,19 @@ public class MediaRequestValidator {
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
             throw new IllegalArgumentException("Image is required");
         }
+        try {
+            new java.net.URL(imageUrl);
+        } catch (java.net.MalformedURLException e) {
+            throw new IllegalArgumentException("Image URL must be a valid URL");
+        }
+
         if (previewConfiguration == null || previewConfiguration.trim().isEmpty()) {
             throw new IllegalArgumentException("Preview configuration (corners) is required when an image is uploaded");
+        }
+        try {
+            new com.fasterxml.jackson.databind.ObjectMapper().readTree(previewConfiguration);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            throw new IllegalArgumentException("Preview configuration must be valid JSON");
         }
     }
 }

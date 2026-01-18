@@ -177,10 +177,10 @@
     "searchAddress": "Adresse",
     "languages": {
       "primary": "fr-CA",
-      "fallback": "en" 
+      "fallback": "en"
     },
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filtres:",
         "price": "Prix ($)",
         "impressions": "Impressions minimum",
@@ -204,7 +204,6 @@
       "locationDenied": "Impossible de trouver les médias les plus proches. Veuillez autoriser l'accès à votre emplacement ou choisir un autre triage.",
       "noSupport": "La géolocalisation n'est pas prise en charge par votre navigateur.",
       "failedToLoad": "Erreur lors du chargement des média."
-
     }
   },
   "organization": {
@@ -399,7 +398,9 @@
       "width": "Largeur (cm)",
       "height": "Hauteur (cm)",
       "price": "Prix (par semaine)",
-      "dailyImpressions": "Impressions quotidiennes"
+      "dailyImpressions": "Impressions quotidiennes",
+      "previewCorners": "Prévisualiser et définir les coins",
+      "dragCorners": "Faites glisser les coins pour correspondre à la zone d'affichage"
     },
     "placeholders": {
       "mediaName": "Nom du média",
@@ -440,7 +441,9 @@
       "impressionsRequired": "Les impressions quotidiennes sont requises",
       "scheduleRequired": "Au moins un jour doit être actif dans l'horaire",
       "startTimeAfterEndTime": "L'heure de fin doit être après l'heure de début",
-      "fixForm": "Veuillez corriger les erreurs dans le formulaire"
+      "fixForm": "Veuillez corriger les erreurs dans le formulaire",
+      "mediaImageRequired": "Veuillez télécharger une image pour le média.",
+      "previewCornersRequired": "Veuillez définir les coins de prévisualisation sur l'image."
     },
     "buttons": {
       "cancel": "Annuler",

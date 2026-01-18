@@ -45,7 +45,10 @@ export function MediaModal({
 
     const handleUploadSuccess = (results: any) => {
         if (typeof results.info === 'object' && results.info.secure_url) {
-            onFieldChange("imageUrl", results.info.secure_url);
+            const secureUrl: string = results.info.secure_url;
+            if (secureUrl.startsWith("https://res.cloudinary.com/")) {
+                onFieldChange("imageUrl", secureUrl);
+            }
         }
     };
 
@@ -106,7 +109,7 @@ export function MediaModal({
                             ) : (
                                 <div>
                                     <Text size="sm" fw={500} mb={4}>
-                                        Preview & Set Corners
+                                        {t("labels.previewCorners")}
                                     </Text>
 
                                     <div style={{
@@ -145,7 +148,7 @@ export function MediaModal({
                                         </CldUploadWidget>
 
                                         <Text size="xs" c="dimmed" ta="center" mt={4}>
-                                            Drag corners to match the display area
+                                            {t("labels.dragCorners")}
                                         </Text>
                                     </div>
                                 </div>
@@ -182,12 +185,12 @@ export function MediaModal({
                     }
 
                     if (!formState.imageUrl) {
-                        notifications.show({ message: "Please upload an image for the media.", color: "red" });
+                        notifications.show({ message: t("errors.mediaImageRequired"), color: "red" });
                         return;
                     }
 
                     if (formState.imageUrl && !formState.previewConfiguration) {
-                        notifications.show({ message: "Please set the preview corners on the image.", color: "red" });
+                        notifications.show({ message: t("errors.previewCornersRequired"), color: "red" });
                         return;
                     }
 
