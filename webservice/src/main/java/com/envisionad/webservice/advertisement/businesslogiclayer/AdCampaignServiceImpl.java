@@ -13,38 +13,59 @@ import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampai
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignResponseModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdResponseModel;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AdCampaignServiceImpl implements AdCampaignService {
+    private final BusinessRepository businessRepository;
+    private final EmployeeRepository employeeRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final AdCampaignRequestMapper adCampaignRequestMapper;
     private final AdCampaignResponseMapper adCampaignResponseMapper;
     private final AdRequestMapper adRequestMapper;
     private final AdResponseMapper adResponseMapper;
 
-    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper) {
+    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, EmployeeRepository employeeRepository) {
+        this.businessRepository = businessRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignRequestMapper = adCampaignRequestMapper;
         this.adCampaignResponseMapper = adCampaignResponseMapper;
         this.adRequestMapper = adRequestMapper;
         this.adResponseMapper = adResponseMapper;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
-    public List<AdCampaignResponseModel> getAllAdCampaigns() {
-        List<AdCampaign> adCampaigns = adCampaignRepository.findAll();
+    public List<AdCampaignResponseModel> getAllAdCampaignsByBusinessId(String businessId) {
+        List<AdCampaign> adCampaigns = adCampaignRepository.findAllByBusinessId_BusinessId(businessId);
         return adCampaignResponseMapper.entitiesToResponseModelList(adCampaigns);
     }
 
     @Override
-    public AdCampaignResponseModel createAdCampaign(AdCampaignRequestModel adCampaignRequestModel) {
-        AdCampaign newCampaign = adCampaignRequestMapper.requestModelToEntity(adCampaignRequestModel);
-        newCampaign.setCampaignId(new AdCampaignIdentifier());
+    public AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel) {
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
 
-        return adCampaignResponseMapper.entityToResponseModel(adCampaignRepository.save(newCampaign));
+        if (business == null) {
+            throw new BusinessNotFoundException();
+        }
+
+        String userId = extractUserId(jwt);
+        validateUserIsEmployeeOfBusiness(userId, businessId);
+
+        AdCampaign adCampaign = adCampaignRequestMapper.requestModelToEntity(adCampaignRequestModel);
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(new BusinessIdentifier(businessId));
+
+        return adCampaignResponseMapper.entityToResponseModel(adCampaignRepository.save(adCampaign));
     }
 
     @Override
@@ -92,5 +113,18 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         adCampaignRepository.save(adCampaign);
 
         return adResponseMapper.entityToResponseModel(adToDelete);
+    }
+
+    private String extractUserId(Jwt jwt) {
+        String userId = jwt.getClaim("sub");
+        if (userId == null || userId.isEmpty())
+            throw new AccessDeniedException("Invalid token");
+        return userId;
+    }
+
+    private void validateUserIsEmployeeOfBusiness(String userId, String businessId) {
+        boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
+        if (!isEmployee)
+            throw new AccessDeniedException("Access Denied");
     }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {Button, Group, Stack, Title} from "@mantine/core";
 import {notifications} from "@mantine/notifications";
 import {useUser} from "@auth0/nextjs-auth0/client";
@@ -20,12 +20,14 @@ import {AdCampaignsTable} from "@/pages/dashboard/advertiser/ui/tables/AdCampaig
 import {AddAdModal} from "@/pages/dashboard/advertiser/ui/modals/AddAdModal";
 import {CreateCampaignModal} from "@/pages/dashboard/advertiser/ui/modals/CreateCampaignModal";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
+import {getEmployeeOrganization} from "@/features/organization-management/api";
 
 export default function AdCampaigns() {
     const t = useTranslations('adCampaigns');
 
     // Data State
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
+    const [businessId, setBusinessId] = useState<string | null>(null);
     const {user} = useUser();
 
     // Modal State
@@ -39,29 +41,33 @@ export default function AdCampaigns() {
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [adToDelete, setAdToDelete] = useState<{ campaignId: string; adId: string } | null>(null);
 
-    // 1. Fetch Data
-    const loadCampaigns = async () => {
+    // 1. Fetch Data - Single method to load campaigns
+    const loadCampaigns = useCallback(async () => {
+        if (!businessId) return;
+
         try {
-            const data = await getAllAdCampaigns();
+            const data = await getAllAdCampaigns(businessId);
             setCampaigns(data);
-        } catch (e) {
+        } catch (error) {
+            console.error('Failed to load campaigns', error);
             notifications.show({
                 title: t('notifications.loadFailed.title'),
                 message: t('notifications.loadFailed.message'),
                 color: 'red'
             });
         }
-    };
+    }, [businessId, t]);
 
+    // Get businessId on mount
     useEffect(() => {
         if (!user) return;
 
-        const fetchData = async () => {
+        const fetchBusinessId = async () => {
             try {
-                const data = await getAllAdCampaigns();
-                setCampaigns(data);
+                const business = await getEmployeeOrganization(user.sub);
+                setBusinessId(business.businessId);
             } catch (error) {
-                console.error('Failed to load campaigns', error);
+                console.error('Failed to load business info', error);
                 notifications.show({
                     title: t('notifications.loadFailed.title'),
                     message: t('notifications.loadFailed.message'),
@@ -70,8 +76,15 @@ export default function AdCampaigns() {
             }
         };
 
-        fetchData();
-    }, [user]);
+        fetchBusinessId();
+    }, [user, t]);
+
+    // Load campaigns when businessId is available
+    useEffect(() => {
+        if (businessId) {
+            loadCampaigns();
+        }
+    }, [businessId, loadCampaigns]);
 
     // 2. Handlers
     const handleOpenAddAd = (campaignId: string) => {

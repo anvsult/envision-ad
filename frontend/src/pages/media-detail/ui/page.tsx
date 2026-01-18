@@ -132,7 +132,6 @@ export default function MediaDetailsPage() {
       ? t("pricePerWeek", { price: media.price.toFixed(2) })
       : t("priceUnavailable");
 
-  // Temp TODO: Replace with real photo when implemened
   const imageSrc = media.imageUrl || "/sample-screen.jpg";
 
   return (

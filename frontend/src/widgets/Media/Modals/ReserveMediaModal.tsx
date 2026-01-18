@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -17,7 +18,7 @@ import {
     Input
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import { IconCheck, IconCalendar, IconCreditCard } from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconCreditCard} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -27,6 +28,8 @@ import dayjs from 'dayjs';
 import '@mantine/dates/styles.css';
 import {useLocale, useTranslations} from "next-intl";
 import 'dayjs/locale/fr';
+import {getEmployeeOrganization} from "@/features/organization-management/api";
+import {useUser} from "@auth0/nextjs-auth0/client";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -45,12 +48,16 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
+    const {user} = useUser();
 
     useEffect(() => {
+        if (!user?.sub) return;
+
         if (opened) {
             const load = async () => {
                 try {
-                    const data = await getAllAdCampaigns();
+                    const business = await getEmployeeOrganization(user.sub);
+                    const data = await getAllAdCampaigns(business.businessId);
                     setCampaigns(data);
                 } catch (e) {
                     console.error("Failed to load campaigns", e);
@@ -58,7 +65,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             };
             void load();
         }
-    }, [opened]);
+    }, [opened, user?.sub]);
 
     const handleDateChange = (val: DatesRangeValue<string>) => {
         if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
@@ -139,14 +146,21 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             }
         }
         setErrors({});
-        setActiveStep((current) => (current < 3 ? current + 1 : current));
+        setActiveStep((current) => (current < 2 ? current + 1 : current));
     };
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
     // typescript
     const handleCheckout = async () => {
-        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) return;
+        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) {
+            notifications.show({
+                title: t('errorTitle'),
+                message: t('errors.selectCampaign') + ' & ' + t('errors.selectDate'),
+                color: 'red'
+            });
+            return;
+        }
 
         if (!media.id) {
             notifications.show({ title: t('errorTitle'), message: t('mediaIdMissing'), color: 'red' });
@@ -155,28 +169,64 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
         setLoading(true);
         try {
+            // Format dates as ISO 8601 LocalDateTime (backend expects LocalDateTime)
+            // Set time to start of day (00:00:00) for startDate and end of day (23:59:59) for endDate
             const payload = {
                 mediaId: media.id,
                 campaignId: selectedCampaignId,
-                startDate: dayjs(dateRange[0]).format('YYYY-MM-DDTHH:mm:ss'),
-                endDate: dayjs(dateRange[1]).format('YYYY-MM-DDTHH:mm:ss'),
-                startTime: dayjs(dateRange[0]).format('HH:mm:ss'),
-                endTime: dayjs(dateRange[1]).format('HH:mm:ss'),
+                startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
             };
 
-            await createReservation(payload);
-            setActiveStep(3);
-            notifications.show({ title: t('successTitle'), message: t('successMessage'), color: 'green' });
+            const response = await createReservation(media.id, payload);
+
+            setActiveStep(2); // Move to completion step (index 2 since we have 3 steps: 0, 1, 2)
+
+            notifications.show({
+                title: t('successTitle'),
+                message: t('successMessage'),
+                color: 'green'
+            });
 
         } catch (error: unknown) {
-            if (error instanceof Response) {
-                if (error.status === 409) {
-                    notifications.show({ title: t('duplicateTitle'), message: t('duplicateMessage'), color: 'orange' });
+            console.error('Failed to create reservation:', error);
+
+            // Handle axios error response
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as { response?: { status: number; data?: { message?: string } } };
+
+                if (axiosError.response?.status === 409) {
+                    notifications.show({
+                        title: t('duplicateTitle'),
+                        message: t('duplicateMessage'),
+                        color: 'orange'
+                    });
+                } else if (axiosError.response?.status === 403) {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: 'You do not have permission to create reservations for this campaign',
+                        color: 'red'
+                    });
+                } else if (axiosError.response?.status === 404) {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: 'Media or campaign not found',
+                        color: 'red'
+                    });
                 } else {
-                    notifications.show({ title: t('errorTitle'), message: t('failedReserve'), color: 'red' });
+                    const errorMessage = axiosError.response?.data?.message || t('failedReserve');
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: errorMessage,
+                        color: 'red'
+                    });
                 }
             } else {
-                notifications.show({ title: t('errorTitle'), message: t('networkError'), color: 'red' });
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('networkError'),
+                    color: 'red'
+                });
             }
         } finally {
             setLoading(false);
@@ -192,7 +242,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             title={<Text fw={700}>{t('title', { title: media.title })}</Text>}
             centered
             padding="xl"
-            closeOnClickOutside={activeStep !== 3}
+            closeOnClickOutside={activeStep !== 2}
         >
             <Stack gap="xl" p="md">
 
@@ -285,16 +335,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 </Stack>
                             )}
 
-                            {/*{activeStep === 1 && (*/}
-                            {/*    <Center h={200}>*/}
-                            {/*        <Stack align="center">*/}
-                            {/*            <IconAd size={48} color="gray" />*/}
-                            {/*            <Text>Ad Preview on Media will go here</Text>*/}
-                            {/*        </Stack>*/}
-                            {/*    </Center>*/}
-                            {/*)}*/}
-
-                            {/*{activeStep === 2 && (*/}
                             {activeStep === 1 && (
                                 <Stack align="center" gap="md">
                                     <Text size="xl">{t('reviewTitle')}</Text>
@@ -333,7 +373,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
 
-                        {activeStep < 2 ? (
+                        {activeStep === 0 ? (
                             <Button onClick={nextStep}>{t('nextStepButton')}</Button>
                         ) : (
                             <Button onClick={handleCheckout} loading={loading} color="green">{t('confirmPayButton')}</Button>

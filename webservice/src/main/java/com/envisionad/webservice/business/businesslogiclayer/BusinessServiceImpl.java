@@ -206,7 +206,7 @@ public class BusinessServiceImpl implements BusinessService {
         Employee employee = employees.stream().filter(e -> e.getEmployeeId().getEmployeeId().equals(employeeId)).findFirst().orElse(null);
 
         if (employee == null)
-            throw new BusinessEmployeeNotFoundException();
+            throw new BusinessEmployeeNotFoundException(employeeId);
 
         employeeRepository.delete(employee);
     }
@@ -219,7 +219,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         Employee employee = employeeRepository.findByUserId(userId);
         if (employee == null)
-            throw new BusinessEmployeeNotFoundException();
+            throw new BusinessEmployeeNotFoundException(userId);
 
         Business business = businessRepository.findByBusinessId_BusinessId(employee.getBusinessId().getBusinessId());
         if (business == null)

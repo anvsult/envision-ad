@@ -110,6 +110,7 @@ CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    business_id VARCHAR(36) NOT NULL,
     name VARCHAR(255) NOT NULL
 );
 -- 6. Create Ads Table
