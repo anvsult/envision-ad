@@ -57,7 +57,7 @@ public class BusinessServiceImpl implements BusinessService {
     public BusinessResponseModel createBusiness(Jwt jwt, BusinessRequestModel businessRequestModel) {
         Validator.validateBusiness(businessRequestModel);
 
-        if (businessRepository.existsByName(businessRequestModel.getName()))
+        if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), null))
             throw new DuplicateBusinessNameException();
 
         String userId = extractUserId(jwt);
@@ -101,7 +101,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (existingBusiness == null)
             throw new BusinessNotFoundException();
 
-        if (businessRepository.existsByName(businessRequestModel.getName()))
+        if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), businessId))
             throw new DuplicateBusinessNameException();
 
         String userId = extractUserId(jwt);

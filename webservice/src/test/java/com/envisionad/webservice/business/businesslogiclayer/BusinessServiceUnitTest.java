@@ -251,7 +251,7 @@ class BusinessServiceUnitTest {
     public void whenCreateBusiness_withDuplicateBusinessName_thenReturnDuplicateBusinessNameException() {
         BusinessRequestModel businessRequestModel = createBusinessRequestModel();
 
-        when(businessRepository.existsByName("Champlain College")).thenReturn(true);
+        when(businessRepository.existsByNameAndBusinessId_BusinessIdNot("Champlain College", null)).thenReturn(true);
 
         assertThrows(DuplicateBusinessNameException.class,
                 () -> businessService.createBusiness(newUserToken, businessRequestModel));
@@ -261,7 +261,7 @@ class BusinessServiceUnitTest {
     public void whenCreateBusiness_withUserAlreadyInBusiness_thenReturnAccessDeniedException() {
         BusinessRequestModel businessRequestModel = createBusinessRequestModel();
 
-        when(businessRepository.existsByName("Champlain College")).thenReturn(false);
+        when(businessRepository.existsByNameAndBusinessId_BusinessIdNot("Champlain College", null)).thenReturn(false);
         when(employeeRepository.existsByUserId("auth0|696a89137cfdb558ea4a4a4a")).thenReturn(true);
 
         assertThrows(AccessDeniedException.class,
@@ -274,7 +274,7 @@ class BusinessServiceUnitTest {
         Business business = createBusiness(true);
 
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
-        when(businessRepository.existsByName("Champlain College")).thenReturn(true);
+        when(businessRepository.existsByNameAndBusinessId_BusinessIdNot("Champlain College", BUSINESS_ID)).thenReturn(true);
 
         assertThrows(DuplicateBusinessNameException.class,
                 () -> businessService.updateBusinessById(newUserToken, BUSINESS_ID, businessRequestModel));
