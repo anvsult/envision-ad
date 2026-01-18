@@ -55,7 +55,6 @@ export default function OrganizationDashboard() {
             const token = await getAccessToken();
             const decodedToken = jwtDecode<Token>(token);
             setPermissions(decodedToken.permissions);
-            console.log(decodedToken.permissions);
         };
 
         void fetchPermissions();

@@ -399,7 +399,7 @@ class BusinessServiceUnitTest {
     }
 
     @Test
-    public void whenGetAllBusinessInvitation_withUserNot_thenReturnBusinessNotFoundException(){
+    public void whenGetAllBusinessInvitation_withUserIdNotFound_thenReturnBusinessNotFoundException(){
         when(businessRepository.existsByBusinessId_BusinessId(NOT_FOUND_BUSINESS_ID)).thenReturn(false);
 
         assertThrows(BusinessNotFoundException.class,

@@ -126,7 +126,7 @@ export function OrganizationModal({
                     title: t("errors.error"),
                     message: t("errors.createFailed"),
                     color: "red",
-                })
+                });
             }
         } finally {
             setSaving(false);

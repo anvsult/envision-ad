@@ -153,5 +153,5 @@ export default function VerifyingOrganizationDashboard() {
                 onReject={handleReject}
             />
         </Stack>
-    )
+    );
 }
