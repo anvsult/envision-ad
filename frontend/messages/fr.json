@@ -40,7 +40,8 @@
     },
     "adminTitle": "Admin",
     "admin": {
-      "pendingMedia": "Médias en attente"
+      "pendingMedia": "Médias en attente",
+      "pendingOrganizations": "Demandes de vérification"
     }
   },
   "homepage": {
@@ -706,6 +707,7 @@
       "pendingOrganization": "Organisations en attente de vérification",
       "organization": "Organisation",
       "requestDate": "Date de la demande",
+      "noOrganizationsPending": "Pas d'organization en attente de vérification.",
       "verificationDetails": "Détails de la vérification",
       "approveConfirmMessage": "Êtes-vous sûr de vouloir approuver cette organisation ?",
       "denyReason": "Raison du refus",

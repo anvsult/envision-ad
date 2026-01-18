@@ -706,6 +706,7 @@
       "pendingOrganization": "Organizations Pending Verification Status Review",
       "organization": "Organization",
       "requestDate": "Date Requested",
+      "noOrganizationsPending": "No organizations pending verification status review.",
       "verificationDetails": "Verification Details",
       "approveConfirmMessage": "Are you sure you want to approve this organization?",
       "denyReason": "Denial Reason",
