@@ -15,10 +15,10 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input
+    Input, Alert
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import {IconCheck, IconCalendar, IconCreditCard} from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconCreditCard, IconEye, IconAlertCircle} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -146,13 +146,12 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             }
         }
         setErrors({});
-        setActiveStep((current) => (current < 2 ? current + 1 : current));
+        setActiveStep((current) => (current < 3 ? current + 1 : current));
     };
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-    // typescript
-    const handleCheckout = async () => {
+    const handleConfirmReservation = async () => {
         if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) {
             notifications.show({
                 title: t('errorTitle'),
@@ -169,8 +168,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
         setLoading(true);
         try {
-            // Format dates as ISO 8601 LocalDateTime (backend expects LocalDateTime)
-            // Set time to start of day (00:00:00) for startDate and end of day (23:59:59) for endDate
             const payload = {
                 mediaId: media.id,
                 campaignId: selectedCampaignId,
@@ -178,9 +175,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
             };
 
-            const response = await createReservation(media.id, payload);
+            await createReservation(media.id, payload);
 
-            setActiveStep(2); // Move to completion step (index 2 since we have 3 steps: 0, 1, 2)
+            setActiveStep(3); // Move to completion step
 
             notifications.show({
                 title: t('successTitle'),
@@ -191,7 +188,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         } catch (error: unknown) {
             console.error('Failed to create reservation:', error);
 
-            // Handle axios error response
             if (error && typeof error === 'object' && 'response' in error) {
                 const axiosError = error as { response?: { status: number; data?: { message?: string } } };
 
@@ -233,6 +229,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         }
     };
 
+    const calculateTotalCost = () => {
+        if (!dateRange[0] || !dateRange[1]) return 0;
+        const weeks = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1;
+        return Math.round((media.price || 100) * weeks * 100) / 100;
+    };
 
     return (
         <Modal
@@ -242,14 +243,17 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             title={<Text fw={700}>{t('title', { title: media.title })}</Text>}
             centered
             padding="xl"
-            closeOnClickOutside={activeStep !== 2}
+            closeOnClickOutside={activeStep !== 3}
         >
             <Stack gap="xl" p="md">
 
-                <Stepper active={activeStep} onStepClick={setActiveStep} allowNextStepsSelect={false}>
-                    <Stepper.Step label={t("reservation")} description={t("dates")} icon={<IconCalendar size={18} />} />
-                    {/*<Stepper.Step label="Preview" description="How it will look" icon={<IconAd size={18} />} />*/}
-                    <Stepper.Step label={t("checkout")} description={t("payment")} icon={<IconCreditCard size={18} />} />
+                <Stepper active={activeStep} onStepClick={(step) => {
+                    // Only allow going back, not forward
+                    if (step < activeStep) setActiveStep(step);
+                }} allowNextStepsSelect={false}>
+                    <Stepper.Step  icon={<IconCalendar size={18} />} />
+                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
+                    <Stepper.Step  icon={<IconEye size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -269,6 +273,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         setTimeout(() => {
                                             setActiveStep(0);
                                             setDateRange([null, null]);
+                                            setSelectedCampaignId(null);
                                             setErrors({});
                                         }, 200);
                                     }}
@@ -280,10 +285,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </Stepper.Completed>
                 </Stepper>
 
-                {activeStep < 2 && (
+                {activeStep < 3 && (
                     <>
                         <Divider />
                         <Box style={{ minHeight: 300 }}>
+                            {/* Step 1: Campaign & Dates */}
                             {activeStep === 0 && (
                                 <Stack align="center">
                                     <Select
@@ -335,9 +341,32 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 </Stack>
                             )}
 
+                            {/* Step 2: Payment Method (Stripe integration - to be implemented) */}
                             {activeStep === 1 && (
+                                <Stack align="center" gap="lg">
+
+                                    {/* TODO: Implement Stripe Payment Element here */}
+                                    {/*<Stack w="100%" maw={500}>*/}
+                                    {/*    <Text fw={500}>{t('selectPaymentMethod')}</Text>*/}
+                                    {/*    <StripePaymentElement*/}
+                                    {/*        onPaymentMethodChange={setPaymentMethod}*/}
+                                    {/*    />*/}
+                                    {/*</Stack>*/}
+
+                                    <Paper withBorder p="xl" w="100%" maw={500} ta="center">
+                                        <IconCreditCard size={48} color="gray" style={{ opacity: 0.3 }} />
+                                        <Text c="dimmed" mt="md">
+                                            {"THIS IS A PLACEHOLDER FOR STRIPE PAYMENT INTEGRATION. PAYMENT FUNCTIONALITY WILL BE IMPLEMENTED IN THE FUTURE."}
+                                        </Text>
+                                    </Paper>
+                                </Stack>
+                            )}
+
+
+                            {/* Step 3: Review */}
+                            {activeStep === 2 && (
                                 <Stack align="center" gap="md">
-                                    <Text size="xl">{t('reviewTitle')}</Text>
+                                    <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
@@ -357,7 +386,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                            ${Math.round(((media.price || 100) * (dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1)) * 100) / 100}                                            </Text>
+                                                ${calculateTotalCost()}
+                                            </Text>
                                         </Group>
                                     </Paper>
                                 </Stack>
@@ -366,16 +396,18 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </>
                 )}
 
-                {activeStep < 2 && (
-                    <Group justify="center" mt="xl">
+                {activeStep < 3 && (
+                    <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? onClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
 
-                        {activeStep === 0 ? (
+                        {activeStep < 2 ? (
                             <Button onClick={nextStep}>{t('nextStepButton')}</Button>
                         ) : (
-                            <Button onClick={handleCheckout} loading={loading} color="green">{t('confirmPayButton')}</Button>
+                            <Button onClick={handleConfirmReservation} loading={loading} color="green">
+                                {t('confirmPayButton')}
+                            </Button>
                         )}
                     </Group>
                 )}

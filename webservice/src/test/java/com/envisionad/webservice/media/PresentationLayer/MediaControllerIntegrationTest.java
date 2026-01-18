@@ -239,6 +239,7 @@ class MediaControllerIntegrationTest {
                 // Act & Assert
                 webTestClient.delete()
                                 .uri(BASE_URI_MEDIA + "/{id}", mediaIdToDelete)
+                                .header("Authorization", "Bearer mock-token")
                                 .exchange()
                                 .expectStatus().isNoContent();
 
