@@ -62,7 +62,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
+    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel, String mediaOwnerEmailAddress) {
         ReservationValidator.validateReservation(requestModel);
 
         if (jwt == null || jwt.getSubject() == null) {
@@ -115,7 +115,7 @@ public class ReservationServiceImpl implements ReservationService {
         // Get media owner's email from the business that owns the media
         // TODO: This currently gets any employee email - should filter to actual media owner
         List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(businessId);
-        String mediaOwnerEmailAddress = mediaOwners.stream()
+        mediaOwnerEmailAddress = mediaOwners.stream()
                 .map(Employee::getEmail)
                 .filter(email -> email != null && !email.isEmpty())
                 .findFirst()
