@@ -1,6 +1,6 @@
-import {auth0} from "@/shared/api/auth0/auth0";
-import {Employee} from "@/entities/organization";
-import {Auth0ManagementService} from "@/shared/api/auth0/management";
+import { auth0 } from "@/shared/api/auth0/auth0";
+import { Employee } from "@/entities/organization";
+import { Auth0ManagementService } from "@/shared/api/auth0/management";
 
 export async function getUserServer(): Promise<Employee | null> {
     const session = await auth0.getSession();
@@ -10,7 +10,11 @@ export async function getUserServer(): Promise<Employee | null> {
     }
 
     try {
-        const auth0User = await Auth0ManagementService.getUser(session.user.sub)
+        const response = await Auth0ManagementService.getUser(session.user.sub);
+        if (response?.isStale) {
+            console.warn(`Using stale user data for ${session.user.sub}`);
+        }
+        const auth0User = response?.data;
         return (auth0User as Employee) || (session.user as Employee);
     } catch (error) {
         console.error("Failed to fetch user data:", error)

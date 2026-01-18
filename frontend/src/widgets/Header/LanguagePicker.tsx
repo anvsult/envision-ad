@@ -29,10 +29,11 @@ export function LanguagePicker() {
         });
 
         if (!response.ok) {
-          console.error('Failed to save language preference', response.status);
+          const errorData = await response.json().catch(() => ({}));
+          console.error('Failed to save language preference:', response.status, errorData.error || response.statusText);
         }
-      } catch {
-        console.error('Failed to save language preference');
+      } catch (err) {
+        console.error('Failed to save language preference', err);
       }
     }
 
@@ -42,34 +43,34 @@ export function LanguagePicker() {
   };
 
   const current =
-      locales.find((item) => item.locale === currentLocale) || locales[0];
+    locales.find((item) => item.locale === currentLocale) || locales[0];
 
   return (
-      <Button
-          onClick={handleToggle}
-          disabled={isPending}
-          variant="subtle"
-          radius="xl"
-          px="xs"
-          aria-label="Switch language"
-          leftSection={
-            <Image src={current.image} width={20} height={20} alt={current.alt} />
-          }
-          styles={{
-            root: {
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              border: "1px solid rgba(0,0,0,0.1)",
-              color: "var(--mantine-color-gray-7)",
-            },
-          }}
-      >
-        <Group gap={4}>
-          <Text size="sm" fw={600}>
-            {current.label}
-          </Text>
-        </Group>
-      </Button>
+    <Button
+      onClick={handleToggle}
+      disabled={isPending}
+      variant="subtle"
+      radius="xl"
+      px="xs"
+      aria-label="Switch language"
+      leftSection={
+        <Image src={current.image} width={20} height={20} alt={current.alt} />
+      }
+      styles={{
+        root: {
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "8px",
+          border: "1px solid rgba(0,0,0,0.1)",
+          color: "var(--mantine-color-gray-7)",
+        },
+      }}
+    >
+      <Group gap={4}>
+        <Text size="sm" fw={600}>
+          {current.label}
+        </Text>
+      </Group>
+    </Button>
   );
 }

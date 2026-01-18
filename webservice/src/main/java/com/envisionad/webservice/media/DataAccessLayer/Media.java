@@ -77,4 +77,11 @@ public class Media {
     @JdbcTypeCode(Types.BINARY)
     @Column(name = "image_data")
     private byte[] imageData;
+
+    @Column(name = "business_id")
+    private UUID businessId;
+
+    @Column(name = "preview_configuration")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private String previewConfiguration;
 }

@@ -23,14 +23,23 @@ export class Auth0ManagementService {
             return this.cachedToken;
         }
 
+        const domain = process.env.AUTH0_DOMAIN;
+        const clientId = process.env.AUTH0_MGMT_CLIENT_ID;
+        const clientSecret = process.env.AUTH0_MGMT_CLIENT_SECRET;
+        const audience = process.env.AUTH0_MGMT_AUDIENCE;
+
+        if (!domain || !clientId || !clientSecret || !audience) {
+            throw new Error("Missing Auth0 Management API environment variables");
+        }
+
         try {
-            const tokenRes = await fetch(`https://${process.env.AUTH0_DOMAIN}/oauth/token`, {
+            const tokenRes = await fetch(`https://${process.env.AUTH0_MGMT_DOMAIN}/oauth/token`, {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify({
                     client_id: process.env.AUTH0_MGMT_CLIENT_ID,
                     client_secret: process.env.AUTH0_MGMT_CLIENT_SECRET,
-                    audience: process.env.AUTH0_MGMT_AUDIENCE,
+                    audience: `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/`,
                     grant_type: 'client_credentials',
                 }),
             });
@@ -60,32 +69,58 @@ export class Auth0ManagementService {
         }
     }
 
+    private static userCache: Record<string, { data: any; expires: number }> = {};
+    private static CACHE_DURATION = 300000; // 5 minutes in ms
+
     /**
      * Retrieves a user's details from Auth0.
      * @param {string} userId - The unique identifier of the user (e.g., "auth0|123456").
      * @returns {Promise<any | null>} The user object if found, or null if not found or an error occurs.
      */
-    static async getUser(userId: string) {
+    static async getUser(userId: string): Promise<{ data: any; isStale: boolean } | null> {
+        // Return cached user if valid
+        const cached = this.userCache[userId];
+        if (cached && Date.now() < cached.expires) {
+            return { data: cached.data, isStale: false };
+        }
+
         try {
             const token = await this.getAccessToken();
             const res = await fetch(
-                `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+                `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
-                    cache: 'no-store' // Ensure we always get fresh data
+                    // cache: 'no-store' removed to allow implementation of manual caching
                 }
             );
 
             if (!res.ok) {
+                // If 429, try to return stale cache if available
+                if (res.status === 429 && cached) {
+                    console.warn(`Rate limited for user ${userId}, returning stale cache`);
+                    return { data: cached.data, isStale: true };
+                }
                 console.error(`Failed to fetch user ${userId}: ${res.statusText}`);
                 throw new Error(`Failed to fetch user ${userId}: ${res.statusText}`);
             }
 
-            return res.json();
+            const data = await res.json();
+
+            // Update cache
+            this.userCache[userId] = {
+                data,
+                expires: Date.now() + this.CACHE_DURATION
+            };
+
+            return { data, isStale: false };
         } catch (error) {
             console.error("Error in Auth0ManagementService.getUserClient:", error);
+            // Fallback to stale cache on error if possible
+            if (this.userCache[userId]) {
+                return { data: this.userCache[userId].data, isStale: true };
+            }
             return null;
         }
     }
@@ -100,7 +135,7 @@ export class Auth0ManagementService {
     static async updateUser(userId: string, data: any) {
         const token = await this.getAccessToken();
         const res = await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}`,
+            `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
             {
                 method: 'PATCH',
                 headers: {
@@ -122,7 +157,15 @@ export class Auth0ManagementService {
             throw new Error(errorMsg);
         }
 
-        return res.json();
+        const updatedData = await res.json();
+
+        // Update cache with new data
+        this.userCache[userId] = {
+            data: updatedData,
+            expires: Date.now() + this.CACHE_DURATION
+        };
+
+        return updatedData;
     }
 
     /**
@@ -147,6 +190,6 @@ export class Auth0ManagementService {
      */
     static async getUserLanguage(userId: string): Promise<string | undefined> {
         const user = await this.getUser(userId);
-        return user?.user_metadata?.preferred_language || undefined;
+        return user?.data?.user_metadata?.preferred_language || undefined;
     }
 }

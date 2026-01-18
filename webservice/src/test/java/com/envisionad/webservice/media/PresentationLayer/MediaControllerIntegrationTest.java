@@ -31,212 +31,217 @@ import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-        "spring.datasource.url=jdbc:h2:mem:user-db",
-        "spring.sql.init.mode=never"
+                "spring.datasource.url=jdbc:h2:mem:user-db",
+                "spring.sql.init.mode=never"
 })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MediaControllerIntegrationTest {
 
-    private final String BASE_URI_MEDIA = "/api/v1/media";
+        private final String BASE_URI_MEDIA = "/api/v1/media";
 
-    @Autowired
-    private WebTestClient webTestClient;
+        @Autowired
+        private WebTestClient webTestClient;
 
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
+        @MockitoBean
+        private JwtDecoder jwtDecoder;
 
-    @MockitoBean
-    private EmailService emailService;
+        @MockitoBean
+        private EmailService emailService;
 
-    @Autowired
-    private MediaRepository mediaRepository;
+        @Autowired
+        private MediaRepository mediaRepository;
 
-    @Autowired
-    private com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository mediaLocationRepository;
+        @Autowired
+        private com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository mediaLocationRepository;
 
-    private String mediaId;
-    private String mediaLocationId;
+        private String mediaId;
+        private String mediaLocationId;
 
-    @BeforeEach
-    void setUp() {
-        Jwt jwt = Jwt.withTokenValue("mock-token")
-                .header("alg", "none")
-                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
-                .claim("scope", "read write")
-                .claim("permissions", List.of(
-                        "create:employee",
-                        "create:media",
-                        "delete:employee",
-                        "read:employee",
-                        "update:business",
-                        "update:media"
-                ))
-                .build();
+        @BeforeEach
+        void setUp() {
+                Jwt jwt = Jwt.withTokenValue("mock-token")
+                                .header("alg", "none")
+                                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
+                                .claim("scope", "read write")
+                                .claim("permissions", List.of(
+                                                "create:employee",
+                                                "create:media",
+                                                "delete:employee",
+                                                "read:employee",
+                                                "update:business",
+                                                "update:media"))
+                                .build();
 
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
 
-        com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
-        location.setName("Downtown Billboard A");
-        location.setDescription("Large DIGITAL billboard");
-        location.setCountry("Canada");
-        location.setProvince("ON");
-        location.setCity("Toronto");
-        location.setStreet("123 King St W");
-        location.setPostalCode("M5H 1A1");
-        location.setLatitude(43.651070);
-        location.setLongitude(-79.347015);
-        mediaLocationRepository.save(location);
-        this.mediaLocationId = location.getId().toString();
+                com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
+                location.setName("Downtown Billboard A");
+                location.setDescription("Large DIGITAL billboard");
+                location.setCountry("Canada");
+                location.setProvince("ON");
+                location.setCity("Toronto");
+                location.setStreet("123 King St W");
+                location.setPostalCode("M5H 1A1");
+                location.setLatitude(43.651070);
+                location.setLongitude(-79.347015);
+                mediaLocationRepository.save(location);
+                this.mediaLocationId = location.getId().toString();
 
-        Media media = new Media();
-        media.setMediaLocation(location);
-        media.setTitle("Downtown Digital Board");
-        media.setMediaOwnerName("MetroAds");
-        media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-        media.setLoopDuration(30);
-        media.setResolution("1920x1080");
-        media.setAspectRatio("16:9");
-        media.setWidth(1920.0);
-        media.setHeight(1080.0);
-        media.setPrice(new BigDecimal("150.00"));
-        media.setDailyImpressions(25000);
-        media.setStatus(Status.ACTIVE);
+                Media media = new Media();
+                media.setMediaLocation(location);
+                media.setTitle("Downtown Digital Board");
+                media.setMediaOwnerName("MetroAds");
+                media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+                media.setLoopDuration(30);
+                media.setResolution("1920x1080");
+                media.setAspectRatio("16:9");
+                media.setWidth(1920.0);
+                media.setHeight(1080.0);
+                media.setPrice(new BigDecimal("150.00"));
+                media.setDailyImpressions(25000);
+                media.setStatus(Status.ACTIVE);
 
-        ScheduleModel schedule = new ScheduleModel();
-        WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-        entry.setDayOfWeek("Monday");
-        entry.setActive(true);
-        entry.setStartTime("09:00");
-        entry.setEndTime("17:00");
-        schedule.setWeeklySchedule(List.of(entry));
-        media.setSchedule(schedule);
+                ScheduleModel schedule = new ScheduleModel();
+                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
+                entry.setDayOfWeek("Monday");
+                entry.setActive(true);
+                entry.setStartTime("09:00");
+                entry.setEndTime("17:00");
+                schedule.setWeeklySchedule(List.of(entry));
+                media.setSchedule(schedule);
 
-        mediaRepository.save(media);
-        this.mediaId = media.getId().toString();
-    }
+                media.setImageUrl("http://example.com/image.jpg");
+                media.setPreviewConfiguration("{\"corners\": []}");
+                mediaRepository.save(media);
+                this.mediaId = media.getId().toString();
+        }
 
-    @Test
-    void addMedia_ShouldPersistAndReturnMedia() {
-        // Arrange
-        MediaRequestModel requestModel = new MediaRequestModel();
-        requestModel.setTitle("Integration Test Media");
-        requestModel.setMediaOwnerName("Integration Owner");
-        requestModel.setMediaLocationId(this.mediaLocationId);
-        requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-        requestModel.setPrice(new BigDecimal("200.00"));
-        requestModel.setStatus(Status.ACTIVE);
-        requestModel.setDailyImpressions(1000);
-        requestModel.setWidth(1920.0);
-        requestModel.setHeight(1080.0);
-        requestModel.setResolution("1920x1080");
-        requestModel.setAspectRatio("16:9");
-        requestModel.setLoopDuration(15);
+        @Test
+        void addMedia_ShouldPersistAndReturnMedia() {
+                // Arrange
+                MediaRequestModel requestModel = new MediaRequestModel();
+                requestModel.setTitle("Integration Test Media");
+                requestModel.setMediaOwnerName("Integration Owner");
+                requestModel.setMediaLocationId(this.mediaLocationId);
+                requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+                requestModel.setPrice(new BigDecimal("200.00"));
+                requestModel.setStatus(Status.ACTIVE);
+                requestModel.setDailyImpressions(1000);
+                requestModel.setWidth(1920.0);
+                requestModel.setHeight(1080.0);
+                requestModel.setResolution("1920x1080");
+                requestModel.setAspectRatio("16:9");
+                requestModel.setLoopDuration(15);
 
-        ScheduleModel schedule = new ScheduleModel();
-        WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-        entry.setDayOfWeek("Monday");
-        entry.setActive(true);
-        entry.setStartTime("09:00");
-        entry.setEndTime("17:00");
-        schedule.setWeeklySchedule(List.of(entry));
-        requestModel.setSchedule(schedule);
+                ScheduleModel schedule = new ScheduleModel();
+                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
+                entry.setDayOfWeek("Monday");
+                entry.setActive(true);
+                entry.setStartTime("09:00");
+                entry.setEndTime("17:00");
+                schedule.setWeeklySchedule(List.of(entry));
+                requestModel.setSchedule(schedule);
+                requestModel.setImageUrl("http://example.com/new_image.jpg");
+                requestModel.setPreviewConfiguration("{\"corners\": []}");
 
-        // Act & Assert
-        webTestClient.post()
-                .uri(BASE_URI_MEDIA)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
-                .body(BodyInserters.fromValue(requestModel))
-                .exchange()
-                .expectStatus().isCreated()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.title").isEqualTo("Integration Test Media")
-                .jsonPath("$.id").isNotEmpty();
+                // Act & Assert
+                webTestClient.post()
+                                .uri(BASE_URI_MEDIA)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .headers(headers -> headers.setBearerAuth("mock-token"))
+                                .body(BodyInserters.fromValue(requestModel))
+                                .exchange()
+                                .expectStatus().isCreated()
+                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                                .expectBody()
+                                .jsonPath("$.title").isEqualTo("Integration Test Media")
+                                .jsonPath("$.id").isNotEmpty();
 
-        assertEquals(2, mediaRepository.count());
-    }
+                assertEquals(2, mediaRepository.count());
+        }
 
-    @Test
-    void getAllMedia_ShouldReturnAllMedia() {
-        // Act & Assert
-        webTestClient.get()
-                .uri(BASE_URI_MEDIA)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.length()").isEqualTo(1);
-    }
+        @Test
+        void getAllMedia_ShouldReturnAllMedia() {
+                // Act & Assert
+                webTestClient.get()
+                                .uri(BASE_URI_MEDIA)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .exchange()
+                                .expectStatus().isOk()
+                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                                .expectBody()
+                                .jsonPath("$.length()").isEqualTo(1);
+        }
 
-    @Test
-    void getMediaById_ShouldReturnOneMedia() {
-        // Act & Assert
-        webTestClient.get()
-                .uri(BASE_URI_MEDIA + "/{id}", this.mediaId)
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.id").isEqualTo(mediaId)
-                .jsonPath("$.title").isEqualTo("Downtown Digital Board");
-    }
+        @Test
+        void getMediaById_ShouldReturnOneMedia() {
+                // Act & Assert
+                webTestClient.get()
+                                .uri(BASE_URI_MEDIA + "/{id}", this.mediaId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .exchange()
+                                .expectStatus().isOk()
+                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                                .expectBody()
+                                .jsonPath("$.id").isEqualTo(mediaId)
+                                .jsonPath("$.title").isEqualTo("Downtown Digital Board");
+        }
 
-    @Test
-    void updateMedia_ShouldUpdateAndReturnMedia() {
-        MediaRequestModel updateRequest = new MediaRequestModel();
-        updateRequest.setTitle("Updated Title");
-        updateRequest.setMediaOwnerName("Integration Owner");
-        updateRequest.setMediaLocationId(this.mediaLocationId);
-        updateRequest.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-        updateRequest.setStatus(Status.ACTIVE);
+        @Test
+        void updateMedia_ShouldUpdateAndReturnMedia() {
+                MediaRequestModel updateRequest = new MediaRequestModel();
+                updateRequest.setTitle("Updated Title");
+                updateRequest.setMediaOwnerName("Integration Owner");
+                updateRequest.setMediaLocationId(this.mediaLocationId);
+                updateRequest.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+                updateRequest.setStatus(Status.ACTIVE);
 
-        ScheduleModel schedule = new ScheduleModel();
-        WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-        entry.setDayOfWeek("Monday");
-        entry.setActive(true);
-        entry.setStartTime("09:00");
-        entry.setEndTime("17:00");
-        schedule.setWeeklySchedule(List.of(entry));
-        updateRequest.setPrice(new BigDecimal("300.00"));
-        updateRequest.setDailyImpressions(2000);
-        updateRequest.setResolution("1920x1080");
-        updateRequest.setAspectRatio("16:9");
-        updateRequest.setLoopDuration(20);
-        updateRequest.setSchedule(schedule);
+                ScheduleModel schedule = new ScheduleModel();
+                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
+                entry.setDayOfWeek("Monday");
+                entry.setActive(true);
+                entry.setStartTime("09:00");
+                entry.setEndTime("17:00");
+                schedule.setWeeklySchedule(List.of(entry));
+                updateRequest.setPrice(new BigDecimal("300.00"));
+                updateRequest.setDailyImpressions(2000);
+                updateRequest.setResolution("1920x1080");
+                updateRequest.setAspectRatio("16:9");
+                updateRequest.setLoopDuration(20);
+                updateRequest.setSchedule(schedule);
+                updateRequest.setImageUrl("http://example.com/updated_image.jpg");
+                updateRequest.setPreviewConfiguration("{\"corners\": []}");
 
-        // Act & Assert
-        webTestClient.put()
-                .uri(BASE_URI_MEDIA + "/{id}", this.mediaId)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
-                .body(BodyInserters.fromValue(updateRequest))
-                .exchange()
-                .expectStatus().isOk()
-                .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody()
-                .jsonPath("$.title").isEqualTo("Updated Title");
+                // Act & Assert
+                webTestClient.put()
+                                .uri(BASE_URI_MEDIA + "/{id}", this.mediaId)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .headers(headers -> headers.setBearerAuth("mock-token"))
+                                .body(BodyInserters.fromValue(updateRequest))
+                                .exchange()
+                                .expectStatus().isOk()
+                                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                                .expectBody()
+                                .jsonPath("$.title").isEqualTo("Updated Title");
 
-        Media updatedMedia = mediaRepository.findById(UUID.fromString(this.mediaId)).orElseThrow();
-        assertEquals("Updated Title", updatedMedia.getTitle());
-    }
+                Media updatedMedia = mediaRepository.findById(UUID.fromString(this.mediaId)).orElseThrow();
+                assertEquals("Updated Title", updatedMedia.getTitle());
+        }
 
-    @Test
-    void deleteMedia_ShouldRemoveMedia() {
-        // Arrange
-        Media media = mediaRepository.findAll().get(0);
-        String mediaIdToDelete = media.getId().toString();
+        @Test
+        void deleteMedia_ShouldRemoveMedia() {
+                // Arrange
+                Media media = mediaRepository.findAll().get(0);
+                String mediaIdToDelete = media.getId().toString();
 
-        // Act & Assert
-        webTestClient.delete()
-                .uri(BASE_URI_MEDIA + "/{id}", mediaIdToDelete)
-                .exchange()
-                .expectStatus().isNoContent();
+                // Act & Assert
+                webTestClient.delete()
+                                .uri(BASE_URI_MEDIA + "/{id}", mediaIdToDelete)
+                                .exchange()
+                                .expectStatus().isNoContent();
 
-        assertEquals(0, mediaRepository.count());
-    }
+                assertEquals(0, mediaRepository.count());
+        }
 }

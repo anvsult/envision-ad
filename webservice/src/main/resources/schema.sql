@@ -115,10 +115,12 @@ CREATE TABLE media (
     daily_impressions INTEGER,
     schedule JSONB,
     status VARCHAR(50) NOT NULL,
-    image_url VARCHAR(512),
+    image_url VARCHAR(2048),
     image_file_name VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data         bytea
+    image_data         bytea,
+    business_id        UUID,
+    preview_configuration JSONB
 );
 
 -- 5. Create Ad Campaigns Table
