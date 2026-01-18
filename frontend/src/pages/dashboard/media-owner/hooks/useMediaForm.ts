@@ -16,10 +16,14 @@ export interface MediaFormState {
     dailyOperatingHours: Record<string, { start: string; end: string }>;
     activeMonths: Record<string, boolean>;
     errors: Record<string, string>;
+    imageUrl: string | null;
+    previewConfiguration: string | null;
 }
 
 const getInitialFormState = (): MediaFormState => ({
     mediaTitle: "",
+    imageUrl: null,
+    previewConfiguration: null,
     mediaOwnerName: "",
     mediaLocationId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380012",
     resolution: "",

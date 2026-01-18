@@ -22,6 +22,8 @@ export interface Media {
     status: string | null;
     typeOfDisplay: string;
     imageUrl?: string | null;
+    previewConfiguration?: string | null;
+    businessId?: string;
 }
 
 export interface MediaRequestDTO {
@@ -38,6 +40,9 @@ export interface MediaRequestDTO {
     dailyImpressions: number;
     schedule: MonthlyScheduleModel | null;
     status: string;
+    imageUrl: string | null;
+    previewConfiguration?: string | null;
+    businessId?: string | null;
 }
 
 export interface MediaListResponseDTO {
@@ -77,7 +82,7 @@ export interface WeeklyScheduleModel {
     endTime: string | null;
 }
 
-export function getJoinedAddress(items: string[]){
+export function getJoinedAddress(items: string[]) {
     return items.join(", ");
 }
 

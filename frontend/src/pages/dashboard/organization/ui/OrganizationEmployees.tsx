@@ -46,11 +46,6 @@ export default function OrganizationEmployees() {
         if (organizationId)
             setInvitations(await getAllOrganizationInvitations(organizationId));
 
-        notifications.show({
-            title: t("success.title"),
-            message: t("success.inviteEmployee"),
-            color: "green",
-        });
     };
 
     const handleDeleteEmployee = (employee: Employee) => {

@@ -1,0 +1,10 @@
+setup:
+  # This covers the backend/root variables
+  - project: envision-ad-backend
+    config: dev
+    path: "."
+
+  # This covers the frontend variables
+  - project: envision-ad-frontend
+    config: dev
+    path: "frontend/"

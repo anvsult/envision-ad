@@ -58,7 +58,7 @@ export function AddEmployeeModal({
             onClose();
             notifications.show({
                 title: t("success.title"),
-                message: t("success.invite"),
+                message: t("success.inviteEmployee"),
                 color: "green",
             });
         } catch (error) {

@@ -21,21 +21,31 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
+import lombok.extern.slf4j.Slf4j;
+
 @RestController
 @RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
-@CrossOrigin(origins = "http://localhost:3000")
+@Slf4j
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class MediaController {
 
     private final MediaService mediaService;
     private final MediaRequestMapper requestMapper;
     private final MediaResponseMapper responseMapper;
+    private final BusinessService businessService;
 
     public MediaController(MediaService mediaService,
             MediaRequestMapper requestMapper,
-            MediaResponseMapper responseMapper) {
+            MediaResponseMapper responseMapper,
+            BusinessService businessService) {
         this.mediaService = mediaService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.businessService = businessService;
     }
 
     @GetMapping
@@ -52,9 +62,7 @@ public class MediaController {
             @RequestParam(required = false) Integer minDailyImpressions,
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
-            @RequestParam(required = false) Double userLng
-
-    ) {
+            @RequestParam(required = false) Double userLng) {
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
         }
@@ -68,22 +76,18 @@ public class MediaController {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
 
-        Page<MediaResponseModel> responsePage =
-                mediaService.getAllFilteredActiveMedia(
-                        pageable,
-                        title,
-                        minPrice,
-                        maxPrice,
-                        minDailyImpressions,
-                        specialSort,
-                        userLat,
-                        userLng
-                ).map(responseMapper::entityToResponseModel);
+        Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
+                pageable,
+                title,
+                minPrice,
+                maxPrice,
+                minDailyImpressions,
+                specialSort,
+                userLat,
+                userLng).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
@@ -96,8 +100,21 @@ public class MediaController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('create:media')")
-    public ResponseEntity<MediaResponseModel> addMedia(@RequestBody MediaRequestModel requestModel) {
+    public ResponseEntity<MediaResponseModel> addMedia(@AuthenticationPrincipal Jwt jwt,
+            @RequestBody MediaRequestModel requestModel) {
         MediaRequestValidator.validateMediaRequest(requestModel);
+
+        if (jwt != null) {
+            try {
+                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+                if (business != null && business.getBusinessId() != null) {
+                    requestModel.setBusinessId(business.getBusinessId());
+                }
+            } catch (Exception e) {
+                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
+            }
+        }
+
         Media entity = requestMapper.requestModelToEntity(requestModel);
         Media savedEntity = mediaService.addMedia(entity);
 

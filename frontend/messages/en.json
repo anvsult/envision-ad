@@ -176,10 +176,10 @@
     "searchAddress": "Address",
     "languages": {
       "primary": "en",
-      "fallback": "fr-CA" 
+      "fallback": "fr-CA"
     },
-    "browseactions":{
-      "filters":{
+    "browseactions": {
+      "filters": {
         "actionName": "Filter:",
         "price": "Price ($)",
         "impressions": "Minimum impressions",
@@ -203,7 +203,6 @@
       "locationDenied": "Could not get nearest media. Please allow access to your location or choose another sorting method.",
       "noSupport": "Geolocation is not supported by your browser.",
       "failedToLoad": "Failed to load media."
-
     }
   },
   "organization": {
@@ -299,7 +298,7 @@
         },
         "success": {
           "title": "Success",
-          "invitation": "Invitation has been sent",
+          "inviteEmployee": "Invitation has been sent",
           "deleteEmployee": "Employee has been removed",
           "deleteInvitation": "Invitation has been canceled"
         }
@@ -387,6 +386,7 @@
     },
     "labels": {
       "mediaName": "Media Name",
+      "mediaImage": "Media Image",
       "typeOfDisplay": "Type of display",
       "loopDuration": "Loop duration (sec)",
       "resolution": "Resolution (px)",
@@ -398,7 +398,9 @@
       "width": "Width (cm)",
       "height": "Height (cm)",
       "price": "Price (per week)",
-      "dailyImpressions": "Daily impressions"
+      "dailyImpressions": "Daily impressions",
+      "previewCorners": "Preview & Set Corners",
+      "dragCorners": "Drag corners to match the display area"
     },
     "placeholders": {
       "mediaName": "Media name",
@@ -439,11 +441,15 @@
       "impressionsRequired": "Daily Impressions is required",
       "scheduleRequired": "At least one day must be active in the schedule",
       "startTimeAfterEndTime": "End time must be after Start time",
-      "fixForm": "Please fix the errors in the form"
+      "fixForm": "Please fix the errors in the form",
+      "mediaImageRequired": "Please upload an image for the media.",
+      "previewCornersRequired": "Please set the preview corners on the image."
     },
     "buttons": {
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "uploadFile": "Upload File",
+      "changeFile": "Change File"
     },
     "calendar": {
       "months": {
