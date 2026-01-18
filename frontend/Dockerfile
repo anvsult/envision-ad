@@ -27,6 +27,17 @@ COPY . .
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry during the build.
+ARG NEXT_PUBLIC_APP_BASE_URL
+ARG NEXT_PUBLIC_API_URL
+ARG NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+ARG NEXT_PUBLIC_CLOUDINARY_API_KEY
+
+# Set them as ENV so the 'next build' process picks them up
+ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=$NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+ENV NEXT_PUBLIC_CLOUDINARY_API_KEY=$NEXT_PUBLIC_CLOUDINARY_API_KEY
+ENV NEXT_PUBLIC_APP_BASE_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN \
