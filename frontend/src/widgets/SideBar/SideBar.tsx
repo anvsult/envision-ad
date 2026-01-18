@@ -42,7 +42,13 @@ export default function SideBar() {
                             leftSection={<IconDeviceTv size={20} stroke={1.5} />}
                             active={pathname?.endsWith("/media-owner/media")}
                         />
-
+                        <NavLink
+                            component={Link}
+                            href="/dashboard/media-owner/proof"
+                            label={t("media-owner.proof")}
+                            leftSection={<IconFileDescription size={20} stroke={1.5} />}
+                            active={pathname?.endsWith("/media-owner/proof")}
+                        />
                         {/*<NavLink*/}
                         {/*    component={Link}*/}
                         {/*    href="/dashboard/media-owner/displayed-ads"*/}
