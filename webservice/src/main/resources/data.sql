@@ -23,13 +23,14 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934
        ('2e4c69ea-d597-4c43-83c1-9af394b10162', 'ArenaMedia', null, 'LARGE', 9, true, false, NOW()),
        ('92bc6a96-689b-41ac-b555-d3ff0e522f42', 'NorthernAds', null, 'MEDIUM', 9, true, false, NOW()),
        ('a50eef7e-14af-4d91-a41c-97c324f7c816', 'AtlanticAds', null, 'LARGE', 10, true, false, NOW()),
-       ('9a190809-1597-440b-bf80-340f260d9d8e', 'Seaside Media', null, 'ENTERPRISE', 10, true, false, NOW())
+       ('9a190809-1597-440b-bf80-340f260d9d8e', 'Seaside Media', null, 'ENTERPRISE', 10, true, false, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, NOW())
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO employee (employee_id, user_id, business_id)
-VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
-       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
-       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33')
+INSERT INTO employee (employee_id, user_id, business_id, email)
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
+       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'anv.sult@gmail.com')
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
@@ -321,11 +322,11 @@ VALUES (
 -- =========================== ADS AND CAMPAIGNS DATA ===========================
 
 -- 1. Insert Dummy Ad Campaigns
-INSERT INTO ad_campaigns (campaign_id, name)
+INSERT INTO ad_campaigns (campaign_id, business_id, name)
 VALUES
-    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025'),
-    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz'),
-    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch');
+    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Summer Sale 2025'),
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz'),
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'New Year Launch');
 
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)

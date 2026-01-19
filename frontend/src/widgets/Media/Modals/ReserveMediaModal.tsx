@@ -1,3 +1,4 @@
+'use client';
 import React, { useEffect, useState } from 'react';
 import { useMediaQuery } from '@mantine/hooks';
 import {
@@ -14,10 +15,10 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input
+    Input, Alert
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import { IconCheck, IconCalendar, IconCreditCard } from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconCreditCard, IconEye, IconAlertCircle} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -27,6 +28,8 @@ import dayjs from 'dayjs';
 import '@mantine/dates/styles.css';
 import {useLocale, useTranslations} from "next-intl";
 import 'dayjs/locale/fr';
+import {getEmployeeOrganization} from "@/features/organization-management/api";
+import {useUser} from "@auth0/nextjs-auth0/client";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -45,12 +48,16 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
+    const {user} = useUser();
 
     useEffect(() => {
+        if (!user?.sub) return;
+
         if (opened) {
             const load = async () => {
                 try {
-                    const data = await getAllAdCampaigns();
+                    const business = await getEmployeeOrganization(user.sub);
+                    const data = await getAllAdCampaigns(business.businessId);
                     setCampaigns(data);
                 } catch (e) {
                     console.error("Failed to load campaigns", e);
@@ -58,7 +65,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             };
             void load();
         }
-    }, [opened]);
+    }, [opened, user?.sub]);
 
     const handleDateChange = (val: DatesRangeValue<string>) => {
         if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
@@ -144,9 +151,15 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-    // typescript
-    const handleCheckout = async () => {
-        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) return;
+    const handleConfirmReservation = async () => {
+        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) {
+            notifications.show({
+                title: t('errorTitle'),
+                message: t('errors.selectCampaign') + ' & ' + t('errors.selectDate'),
+                color: 'red'
+            });
+            return;
+        }
 
         if (!media.id) {
             notifications.show({ title: t('errorTitle'), message: t('mediaIdMissing'), color: 'red' });
@@ -158,31 +171,69 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             const payload = {
                 mediaId: media.id,
                 campaignId: selectedCampaignId,
-                startDate: dayjs(dateRange[0]).format('YYYY-MM-DDTHH:mm:ss'),
-                endDate: dayjs(dateRange[1]).format('YYYY-MM-DDTHH:mm:ss'),
-                startTime: dayjs(dateRange[0]).format('HH:mm:ss'),
-                endTime: dayjs(dateRange[1]).format('HH:mm:ss'),
+                startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
             };
 
-            await createReservation(payload);
-            setActiveStep(3);
-            notifications.show({ title: t('successTitle'), message: t('successMessage'), color: 'green' });
+            await createReservation(media.id, payload);
+
+            setActiveStep(3); // Move to completion step
+
+            notifications.show({
+                title: t('successTitle'),
+                message: t('successMessage'),
+                color: 'green'
+            });
 
         } catch (error: unknown) {
-            if (error instanceof Response) {
-                if (error.status === 409) {
-                    notifications.show({ title: t('duplicateTitle'), message: t('duplicateMessage'), color: 'orange' });
+            console.error('Failed to create reservation:', error);
+
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as { response?: { status: number; data?: { message?: string } } };
+
+                if (axiosError.response?.status === 409) {
+                    notifications.show({
+                        title: t('duplicateTitle'),
+                        message: t('duplicateMessage'),
+                        color: 'orange'
+                    });
+                } else if (axiosError.response?.status === 403) {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('missingPermissionErrorMessage'),
+                        color: 'red'
+                    });
+                } else if (axiosError.response?.status === 404) {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('campaignNotFoundErrorMessage'),
+                        color: 'red'
+                    });
                 } else {
-                    notifications.show({ title: t('errorTitle'), message: t('failedReserve'), color: 'red' });
+                    const errorMessage = axiosError.response?.data?.message || t('failedReserve');
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: errorMessage,
+                        color: 'red'
+                    });
                 }
             } else {
-                notifications.show({ title: t('errorTitle'), message: t('networkError'), color: 'red' });
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('networkError'),
+                    color: 'red'
+                });
             }
         } finally {
             setLoading(false);
         }
     };
 
+    const calculateTotalCost = () => {
+        if (!dateRange[0] || !dateRange[1]) return 0;
+        const weeks = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1;
+        return Math.round((media.price || 100) * weeks * 100) / 100;
+    };
 
     return (
         <Modal
@@ -196,10 +247,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         >
             <Stack gap="xl" p="md">
 
-                <Stepper active={activeStep} onStepClick={setActiveStep} allowNextStepsSelect={false}>
-                    <Stepper.Step label={t("reservation")} description={t("dates")} icon={<IconCalendar size={18} />} />
-                    {/*<Stepper.Step label="Preview" description="How it will look" icon={<IconAd size={18} />} />*/}
-                    <Stepper.Step label={t("checkout")} description={t("payment")} icon={<IconCreditCard size={18} />} />
+                <Stepper active={activeStep} onStepClick={(step) => {
+                    // Only allow going back, not forward
+                    if (step < activeStep) setActiveStep(step);
+                }} allowNextStepsSelect={false}>
+                    <Stepper.Step  icon={<IconCalendar size={18} />} />
+                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
+                    <Stepper.Step  icon={<IconEye size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -219,6 +273,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         setTimeout(() => {
                                             setActiveStep(0);
                                             setDateRange([null, null]);
+                                            setSelectedCampaignId(null);
                                             setErrors({});
                                         }, 200);
                                     }}
@@ -230,10 +285,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </Stepper.Completed>
                 </Stepper>
 
-                {activeStep < 2 && (
+                {activeStep < 3 && (
                     <>
                         <Divider />
                         <Box style={{ minHeight: 300 }}>
+                            {/* Step 1: Campaign & Dates */}
                             {activeStep === 0 && (
                                 <Stack align="center">
                                     <Select
@@ -285,19 +341,32 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 </Stack>
                             )}
 
-                            {/*{activeStep === 1 && (*/}
-                            {/*    <Center h={200}>*/}
-                            {/*        <Stack align="center">*/}
-                            {/*            <IconAd size={48} color="gray" />*/}
-                            {/*            <Text>Ad Preview on Media will go here</Text>*/}
-                            {/*        </Stack>*/}
-                            {/*    </Center>*/}
-                            {/*)}*/}
-
-                            {/*{activeStep === 2 && (*/}
+                            {/* Step 2: Payment Method (Stripe integration - to be implemented) */}
                             {activeStep === 1 && (
+                                <Stack align="center" gap="lg">
+
+                                    {/* TODO: Implement Stripe Payment Element here */}
+                                    {/*<Stack w="100%" maw={500}>*/}
+                                    {/*    <Text fw={500}>{t('selectPaymentMethod')}</Text>*/}
+                                    {/*    <StripePaymentElement*/}
+                                    {/*        onPaymentMethodChange={setPaymentMethod}*/}
+                                    {/*    />*/}
+                                    {/*</Stack>*/}
+
+                                    <Paper withBorder p="xl" w="100%" maw={500} ta="center">
+                                        <IconCreditCard size={48} color="gray" style={{ opacity: 0.3 }} />
+                                        <Text c="dimmed" mt="md">
+                                            {"THIS IS A PLACEHOLDER FOR STRIPE PAYMENT INTEGRATION. PAYMENT FUNCTIONALITY WILL BE IMPLEMENTED IN THE FUTURE."}
+                                        </Text>
+                                    </Paper>
+                                </Stack>
+                            )}
+
+
+                            {/* Step 3: Review */}
+                            {activeStep === 2 && (
                                 <Stack align="center" gap="md">
-                                    <Text size="xl">{t('reviewTitle')}</Text>
+                                    <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
@@ -317,7 +386,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                ${(media.price || 100) * (dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1)}
+                                                ${calculateTotalCost()}
                                             </Text>
                                         </Group>
                                     </Paper>
@@ -327,8 +396,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </>
                 )}
 
-                {activeStep < 2 && (
-                    <Group justify="center" mt="xl">
+                {activeStep < 3 && (
+                    <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? onClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
@@ -336,7 +405,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                         {activeStep < 2 ? (
                             <Button onClick={nextStep}>{t('nextStepButton')}</Button>
                         ) : (
-                            <Button onClick={handleCheckout} loading={loading} color="green">{t('confirmPayButton')}</Button>
+                            <Button onClick={handleConfirmReservation} loading={loading} color="green">
+                                {t('confirmPayButton')}
+                            </Button>
                         )}
                     </Group>
                 )}

@@ -23,12 +23,11 @@ export class Auth0ManagementService {
             return this.cachedToken;
         }
 
-        const domain = process.env.AUTH0_DOMAIN;
+        const domain = process.env.AUTH0_MGMT_DOMAIN;
         const clientId = process.env.AUTH0_MGMT_CLIENT_ID;
         const clientSecret = process.env.AUTH0_MGMT_CLIENT_SECRET;
-        const audience = process.env.AUTH0_MGMT_AUDIENCE;
 
-        if (!domain || !clientId || !clientSecret || !audience) {
+        if (!domain || !clientId || !clientSecret) {
             throw new Error("Missing Auth0 Management API environment variables");
         }
 
