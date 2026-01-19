@@ -7,6 +7,7 @@ export interface ReservationRequestDTO {
 
 export interface ReservationResponseDTO {
     reservationId: string;
+    campaignId: string;
     status: string;
     totalPrice: number;
     startDate: string;

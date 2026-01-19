@@ -48,7 +48,6 @@ services:
       context: ./webservice
       dockerfile: Dockerfile
     environment:
-      APP_BASE_URL: "${APP_BASE_URL}"
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
 
@@ -57,10 +56,10 @@ services:
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
-      EMAIL_PORT: "${EMAIL_PORT}"
-      EMAIL_SMTP: "${EMAIL_SMTP}"
-      EMAIL_USER: "${EMAIL_USER}"
-      EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+      SPRING_EMAIL_PORT: "${EMAIL_PORT}"
+      SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
+      SPRING_EMAIL_USER: "${EMAIL_USER}"
+      SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
     restart: unless-stopped
     networks:
       - appnet

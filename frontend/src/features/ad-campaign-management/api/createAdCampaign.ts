@@ -4,6 +4,6 @@ import axiosInstance from "@/shared/api/axios/axios";
 export const createAdCampaign = async (
     data: AdCampaignRequestDTO
 ): Promise<AdCampaign> => {
-    const response = await axiosInstance.post(`/ad-campaigns`, data);
+    const response = await axiosInstance.post(`/businesses/{businessId}/campaigns`, data);
     return response.data;
 };

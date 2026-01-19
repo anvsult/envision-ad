@@ -111,6 +111,7 @@
     },
     "errorTitle": "Impossible de charger ce média.",
     "errorNotFound": "Média introuvable.",
+    "errorLoading": "Échec du chargement des détails du média.",
     "currentlyDisplaying": "Affiche actuellement {count} autres annonces !",
     "detailsTitle": "Détails",
     "details": {

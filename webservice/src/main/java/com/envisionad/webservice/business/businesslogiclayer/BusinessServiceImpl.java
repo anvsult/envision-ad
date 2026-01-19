@@ -72,7 +72,18 @@ public class BusinessServiceImpl implements BusinessService {
         business.setBusinessId(new BusinessIdentifier());
         business.setOwnerId(userId);
 
-        return businessMapper.toResponse(businessRepository.save(business));
+        Business savedBusiness = businessRepository.save(business);
+
+        // Create employee record for the business owner
+        String email = jwt.getClaimAsString("email");
+        Employee ownerEmployee = new Employee();
+        ownerEmployee.setBusinessId(business.getBusinessId());
+        ownerEmployee.setEmployeeId(new EmployeeIdentifier());
+        ownerEmployee.setUserId(userId);
+        ownerEmployee.setEmail(email);
+        employeeRepository.save(ownerEmployee);
+
+        return businessMapper.toResponse(savedBusiness);
     }
 
     @Override
@@ -193,10 +204,17 @@ public class BusinessServiceImpl implements BusinessService {
         if (employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId))
             throw new AccessDeniedException("User is already an employee");
 
+        // Extract email from JWT token
+        String email = jwt.getClaimAsString("email");
+        if (email == null || email.isEmpty()) {
+            email = invitation.getEmail(); // Fallback to invitation email
+        }
+
         Employee employee = new Employee();
         employee.setBusinessId(new BusinessIdentifier(businessId));
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setUserId(userId);
+        employee.setEmail(email);
 
         return employeeMapper.toResponse(employeeRepository.save(employee));
     }

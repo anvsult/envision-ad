@@ -111,6 +111,7 @@
     },
     "errorTitle": "Could not load this media.",
     "errorNotFound": "Media not found.",
+    "errorLoading": "Failed to load media details.",
     "currentlyDisplaying": "Currently displaying {count} other ads!",
     "detailsTitle": "Details",
     "details": {

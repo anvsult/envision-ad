@@ -4,6 +4,8 @@ import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignServ
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.business.dataaccesslayer.Employee;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -30,6 +32,7 @@ import java.util.UUID;
 @Service
 public class ReservationServiceImpl implements ReservationService {
     private final EmailService emailService;
+    private final EmployeeRepository employeeRepository;
     private final ReservationRepository reservationRepository;
     private final MediaRepository mediaRepository; // We need this to get the Price
     private final AdCampaignRepository adCampaignRepository; // To link the campaign
@@ -39,8 +42,9 @@ public class ReservationServiceImpl implements ReservationService {
     private final JwtUtils jwtUtils;
     private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
-    public ReservationServiceImpl(EmailService emailService, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService, JwtUtils jwtUtils) {
+    public ReservationServiceImpl(EmailService emailService, EmployeeRepository employeeRepository, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService, JwtUtils jwtUtils) {
         this.emailService = emailService;
+        this.employeeRepository = employeeRepository;
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
@@ -57,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel, String mediaOwnerEmailAddress) {
+    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
         ReservationValidator.validateReservation(requestModel);
 
         if (jwt == null || jwt.getSubject() == null) {
@@ -80,7 +84,8 @@ public class ReservationServiceImpl implements ReservationService {
             throw new AdCampaignNotFoundException(requestModel.getCampaignId());
         }
 
-        //TODO Validate that the media is available for the requested dates
+        // Validate that the media is available for the requested dates
+        validateMediaHasLoopDurationLeft(media, requestModel);
 
         // Validate that the user is an employee of the business that owns the campaign
         String businessId = campaign.getBusinessId().getBusinessId();
@@ -106,9 +111,39 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        sendReservationEmail(mediaOwnerEmailAddress, media, savedReservation, campaign, totalPrice);
+        // Get media owner's email from the business that owns the media
+        // TODO: This currently gets any employee email - should filter to actual media owner
+        List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(businessId);
+        String mediaOwnerEmailAddress = mediaOwners.stream()
+                .map(Employee::getEmail)
+                .filter(email -> email != null && !email.isEmpty())
+                .findFirst()
+                .orElse(null);
+
+        if (mediaOwnerEmailAddress != null) {
+            sendReservationEmail(mediaOwnerEmailAddress, media, savedReservation, campaign, totalPrice);
+        } else {
+            log.warn("No email found for media owner in business: {}", businessId);
+        }
 
         return reservationResponseMapper.entityToResponseModel(savedReservation);
+    }
+
+    private void validateMediaHasLoopDurationLeft(Media media, ReservationRequestModel requestModel) {
+        List<AdCampaign> alreadyReservedCampaigns = reservationRepository.findAllActiveReservationsByMediaIdAndDateRange(
+                media.getId(),
+                requestModel.getStartDate(),
+                requestModel.getEndDate()
+        ).stream()
+         .map(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()))
+         .toList();
+        int totalReservedDuration = alreadyReservedCampaigns.stream()
+                .flatMap(campaign -> campaign.getAds().stream())
+                .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
+                .sum();
+        if (media.getLoopDuration() <= totalReservedDuration) {
+            throw new IllegalStateException("Media does not have enough loop duration left for the requested reservation period");
+        }
     }
 
     private void sendReservationEmail(String ownerEmail, Media media, Reservation reservation,

@@ -51,6 +51,7 @@ CREATE TABLE employee
     employee_id VARCHAR(36) UNIQUE NOT NULL,
     user_id     VARCHAR(36) UNIQUE NOT NULL,
     business_id VARCHAR(36)  NOT NULL,
+    email       VARCHAR(255),
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
@@ -84,7 +85,7 @@ CREATE TABLE media_location (
 
 -- 5. Create Media Table
 CREATE TABLE media (
-    media_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    media_id UUID PRIMARY KEY,
     media_location_id UUID NOT NULL
         REFERENCES media_location(media_location_id)
         ON DELETE RESTRICT,
