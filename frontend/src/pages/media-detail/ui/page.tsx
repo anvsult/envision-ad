@@ -360,7 +360,7 @@ export default function MediaDetailsPage() {
                   </Stack>
                 </Card>
               </Stack>
-            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={'Other medias from ' + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
+            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={t("otherMediaBy") + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
           </Group>
         </Stack>
         <Modal
