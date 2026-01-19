@@ -364,7 +364,7 @@ INSERT INTO ad_campaigns (campaign_id, business_id, name)
 VALUES
     ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Summer Sale 2025'),
     ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz'),
-    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'New Year Launch')
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'New Year Launch');
 
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
