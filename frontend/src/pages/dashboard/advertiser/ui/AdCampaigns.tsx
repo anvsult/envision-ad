@@ -27,7 +27,7 @@ export default function AdCampaigns() {
 
     // Data State
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
-    const [businessId, setBusinessId] = useState<string | null>(null);
+    const [businessId, setBusinessId] = useState<string | undefined>();
     const {user} = useUser();
 
     // Modal State
@@ -144,8 +144,10 @@ export default function AdCampaigns() {
 
     // Create Campaign Handler
     const handleCreateCampaign = async (payload: AdCampaignRequestDTO) => {
+        if (!businessId) return;
+
         try {
-            await createAdCampaign(payload);
+            await createAdCampaign(businessId, payload);
             notifications.show({
                 title: t('notifications.createCampaign.success.title'),
                 message: t('notifications.createCampaign.success.message'),

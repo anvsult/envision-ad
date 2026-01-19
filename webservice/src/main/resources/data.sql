@@ -28,7 +28,8 @@ INSERT INTO verification (verification_id, business_id, status, comments, date_c
 VALUES ('636e63e2-a3c0-4171-ac90-bfad8aeb6613', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'DENIED', 'Application denied due to invalid address entered', CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP),
        ('75472797-b9e0-4e53-bdf8-81ffe57d9fa5', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'APPROVED', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('cf4dc890-d86c-48c4-9a8b-7705e0420da3', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-       ('ed2ecdbb-84e9-4625-8b06-3fb500d8d081', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+       ('ed2ecdbb-84e9-4625-8b06-3fb500d8d081', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    ON CONFLICT (verification_id) DO NOTHING;
 
 INSERT INTO media_location (media_location_id, name, description, country, province, city, street, postal_code, latitude, longitude)
 VALUES
@@ -360,11 +361,12 @@ VALUES (
 -- =========================== ADS AND CAMPAIGNS DATA ===========================
 
 -- 1. Insert Dummy Ad Campaigns
-INSERT INTO ad_campaigns (campaign_id, name)
+INSERT INTO ad_campaigns (campaign_id, business_id, name)
 VALUES
-    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'Summer Sale 2025'),
-    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'Black Friday Blitz'),
-    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'New Year Launch');
+    ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Summer Sale 2025'),
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz'),
+    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'New Year Launch')
+    ON CONFLICT (campaign_id) DO NOTHING;
 
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
@@ -372,4 +374,5 @@ VALUES
     ('11111111-2222-3333-4444-555555555555', 'Summer Beach Banner', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1),
     ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2);
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 2)
+    ON CONFLICT (ad_id) DO NOTHING;
