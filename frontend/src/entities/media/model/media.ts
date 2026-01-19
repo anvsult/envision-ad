@@ -17,7 +17,7 @@ export interface Media {
     typeOfDisplay: string;
     imageUrl?: string | null;
     previewConfiguration?: string | null;
-    businessId?: string;
+    businessId: string;
 }
 
 export interface MediaRequestDTO {

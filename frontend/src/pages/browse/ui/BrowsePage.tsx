@@ -140,7 +140,7 @@ function BrowsePage() {
   }
 
   return (
-      <Container size="100%" w="100%" py={20} px={80}>
+      <Container size="xl" py={20} px={80}>
         <Stack gap="sm">
           <Group grow>
             <TextInput

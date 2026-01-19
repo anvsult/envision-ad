@@ -33,7 +33,7 @@ export function useMediaList({
                     index: String(index),
                     href: String(m.id),
                     title: m.title,
-                    mediaOwnerName: m.mediaOwnerName,
+                    organizationId: m.businessId,
                     mediaLocation: m.mediaLocation,
                     resolution: m.resolution,
                     aspectRatio: m.aspectRatio,

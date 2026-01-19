@@ -2,12 +2,14 @@ import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, MediaLocation } from "@/entities/media";
+import { useEffect, useState } from "react";
+import { getOrganizationById } from "@/features/organization-management/api";
 
 export interface MediaCardProps {
     index: string;
     href?: string;
     title: string;
-    mediaOwnerName: string;
+    organizationId: string;
     mediaLocation: MediaLocation;
     resolution: string;
     aspectRatio: string;
@@ -20,10 +22,26 @@ export interface MediaCardProps {
 
 const ratio = 1/1
 
-function MediaCard({index, href, imageUrl, title, mediaOwnerName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
+function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
     // const isMobile = useMediaQuery("(max-width: 768px)");
     const t = useTranslations("mediacard");
+    const [organizationName, setOrganizationName] = useState<string>("");
+    useEffect(() => {
+        if (!organizationId){
+        return
+        }
+        const fetchOrganizationDetails = async (organizationId: string) => {
+        try {
 
+            const response = await getOrganizationById(organizationId);
+            setOrganizationName(response.name);
+        } catch (e){
+            console.log(e)
+        }
+        };
+        
+        fetchOrganizationDetails(organizationId)
+    }, [organizationId]);
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never" >
             <Paper 
@@ -47,7 +65,7 @@ function MediaCard({index, href, imageUrl, title, mediaOwnerName, mediaLocation,
                                 {title}
                             </Text>
                             <Text id={"MediaCardOwnerName" + index} size="sm" color="gray" lineClamp={1}>
-                                {mediaOwnerName}
+                                {organizationName}
                             </Text>
                             
                             
