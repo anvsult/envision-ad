@@ -20,18 +20,6 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(BusinessEmployeeNotFoundException.class)
-    public HttpErrorInfo handleBusinessEmployeeNotFoundException(BusinessEmployeeNotFoundException ex) {
-        return createHttpErrorInfo(NOT_FOUND, ex);
-    }
-
-    @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(InvitationNotFoundException.class)
-    public HttpErrorInfo InvitationNotFoundException(InvitationNotFoundException ex) {
-        return createHttpErrorInfo(NOT_FOUND, ex);
-    }
-
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(DuplicateBusinessNameException.class)
     public HttpErrorInfo handleDuplicateBusinessNameException(DuplicateBusinessNameException ex) {
@@ -39,8 +27,50 @@ public class GlobalControllerHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BadBusinessRequestException.class)
+    public HttpErrorInfo handleBadBusinessException(BadBusinessRequestException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(BusinessEmployeeNotFoundException.class)
+    public HttpErrorInfo handleBusinessEmployeeNotFoundException(BusinessEmployeeNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(DuplicateBusinessEmployeeException.class)
     public HttpErrorInfo handleDuplicateBusinessEmployeeException(DuplicateBusinessEmployeeException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(InvitationNotFoundException.class)
+    public HttpErrorInfo handleInvitationNotFoundException(InvitationNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BadInvitationRequestException.class)
+    public HttpErrorInfo handleBadInvitationRequestException(BadInvitationRequestException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(VerificationNotFoundException.class)
+    public HttpErrorInfo handleVerificationNotFoundException(VerificationNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BusinessAlreadyVerifiedException.class)
+    public HttpErrorInfo handleBusinessAlreadyVerifiedException(BusinessAlreadyVerifiedException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BadVerificationRequestException.class)
+    public HttpErrorInfo handleBadVerificationRequestException(BadVerificationRequestException ex) {
         return createHttpErrorInfo(BAD_REQUEST, ex);
     }
 

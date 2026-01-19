@@ -19,7 +19,7 @@ interface OrganizationModalProps {
         value: OrganizationRequestDTO[K]
     ) => void;
     resetForm: () => void;
-    editingId: string;
+    editingId: string | null;
 }
 
 export function OrganizationModal({
@@ -96,24 +96,38 @@ export function OrganizationModal({
         try {
             if (editingId) {
                 await updateOrganization(editingId, formState);
+                notifications.show({
+                    title: t("success.title"),
+                    message: t("success.update"),
+                    color: "green",
+                });
             } else {
                 await createOrganization(formState);
+                notifications.show({
+                    title: t("success.title"),
+                    message: t("success.create"),
+                    color: "green",
+                });
             }
             onSuccess();
             onClose();
             resetForm();
-            notifications.show({
-                title: t("success.title"),
-                message: t("success.update"),
-                color: "green",
-            });
         } catch (error) {
-            console.error("Failed to update organization", error);
-            notifications.show({
-                title: t("errors.error"),
-                message: t("errors.updateFailed"),
-                color: "red",
-            });
+            if (editingId) {
+                console.error("Failed to update organization", error);
+                notifications.show({
+                    title: t("errors.error"),
+                    message: t("errors.updateFailed"),
+                    color: "red",
+                });
+            } else {
+                console.error("Failed to create organization", error);
+                notifications.show({
+                    title: t("errors.error"),
+                    message: t("errors.createFailed"),
+                    color: "red",
+                });
+            }
         } finally {
             setSaving(false);
         }
@@ -123,7 +137,7 @@ export function OrganizationModal({
         <Modal
             opened={opened}
             onClose={onClose}
-            title={editingId ? "Edit Business" : t("title")}
+            title={editingId ? t("editTitle") : t("createTitle")}
             size="lg"
             centered
         >
@@ -149,7 +163,7 @@ export function OrganizationModal({
                         {t("cancel")}
                     </Button>
                     <Button onClick={handleSave} loading={saving}>
-                        {editingId ? "Update" : t("submit")}
+                        {editingId ? t("update") : t("create")}
                     </Button>
                 </Group>
             </Stack>

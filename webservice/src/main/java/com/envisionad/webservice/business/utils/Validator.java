@@ -2,13 +2,13 @@ package com.envisionad.webservice.business.utils;
 
 import com.envisionad.webservice.business.dataaccesslayer.Address;
 import com.envisionad.webservice.business.dataaccesslayer.Roles;
-import com.envisionad.webservice.business.exceptions.InvalidBusinessException;
+import com.envisionad.webservice.business.exceptions.BadBusinessRequestException;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 
 public class Validator {
     public static void validateBusiness(BusinessRequestModel requestModel) {
         if (requestModel == null || !validateRoles(requestModel) || !validateName(requestModel) || !validateOrganizationSize(requestModel) || !validateAddress(requestModel))
-            throw new InvalidBusinessException();
+            throw new BadBusinessRequestException();
     }
 
     private static boolean validateName(BusinessRequestModel requestModel){

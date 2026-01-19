@@ -1,12 +1,16 @@
 export { createOrganization } from './createOrganization';
 export { getOrganizationById } from './getOrganizationById';
 export { updateOrganization } from './updateOrganization';
-export { getEmployeeOrganization } from './getEmployeeOrganization';
+export { getEmployeeOrganization } from './employee/getEmployeeOrganization';
 export { getAllOrganizations } from './getAllOrganizations';
-export { getAllOrganizationEmployees } from './getAllOrganizationEmployees';
-export { removeEmployeeFromOrganization } from './removeEmployeeFromOrganization';
-export { createInviteEmployeeToOrganization } from './createInviteEmployeeToOrganization';
-export { cancelInviteEmployeeToOrganization } from './cancelInviteEmployeeToOrganization';
-export { getAllOrganizationInvitations } from './getAllOrganizationInvitations';
-export { addEmployeeToOrganization } from './addEmployeeToOrganization';
-
+export { getAllOrganizationEmployees } from './employee/getAllOrganizationEmployees';
+export { removeEmployeeFromOrganization } from './employee/removeEmployeeFromOrganization';
+export { createInviteEmployeeToOrganization } from './invitation/createInviteEmployeeToOrganization';
+export { cancelInviteEmployeeToOrganization } from './invitation/cancelInviteEmployeeToOrganization';
+export { getAllOrganizationInvitations } from './invitation/getAllOrganizationInvitations';
+export { addEmployeeToOrganization } from './employee/addEmployeeToOrganization';
+export { approveOrganizationVerification } from './verification/approveOrganizationVerification';
+export { denyOrganizationVerification } from './verification/denyOrganizationVerification';
+export { getAllOrganizationVerifications } from './verification/getAllOrganizationVerifications';
+export { getAllVerificationRequests } from './verification/getAllVerificationRequests';
+export { requestOrganizationVerification } from './verification/requestOrganizationVerification';
