@@ -13,9 +13,10 @@ import {
     Stack,
     List,
 } from "@mantine/core";
-import { IconUpload, IconTrash } from "@tabler/icons-react";
+import { IconUpload, IconTrash, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import { CldUploadWidget } from "next-cloudinary";
 import { useProofStepper } from "../../hooks/useProofStepper";
+import axiosInstance from "@/shared/api/axios/axios";
 
 type Props = {
     opened: boolean;
@@ -43,21 +44,18 @@ export default function SubmitProofStepperModal({
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Store BOTH name + url (but only show name in UI)
-    const [uploadedProofs, setUploadedProofs] = useState<UploadedProof[]>([]);
+    const [uploaded, setUploaded] = useState<UploadedProof[]>([]);
 
-    // reset when modal closes
     useEffect(() => {
         if (!opened) {
             setActive(0);
             setSelectedCampaignId(null);
-            setUploadedProofs([]);
+            setUploaded([]);
             setError(null);
             setSubmitting(false);
         }
     }, [opened, setSelectedCampaignId]);
 
-    // Cloudinary widget options (multiple)
     const widgetOptions = {
         sources: ["local", "url"] as ("local" | "url")[],
         resourceType: "image",
@@ -67,55 +65,50 @@ export default function SubmitProofStepperModal({
     };
 
     const handleUploadSuccess = (results: any) => {
+        // next-cloudinary gives an object for each uploaded asset
         const info = results?.info;
+        if (!info || typeof info !== "object") return;
 
-        if (typeof info !== "object" || !info?.secure_url) return;
+        const secureUrl: string | undefined = info.secure_url;
+        if (!secureUrl?.startsWith("https://res.cloudinary.com/")) return;
 
-        const url: string = info.secure_url;
-        if (!url.startsWith("https://res.cloudinary.com/")) return;
+        // Prefer original_filename if present, otherwise fallback
+        const originalFilename: string =
+            info.original_filename
+                ? `${info.original_filename}.${info.format ?? "jpg"}`
+                : secureUrl.split("/").pop() ?? "upload";
 
-        // Cloudinary usually provides original_filename (without extension)
-        // Fall back to public_id if needed
-        const baseName: string =
-            info.original_filename ||
-            (typeof info.public_id === "string" ? info.public_id.split("/").pop() : "uploaded-image");
-
-        // If Cloudinary provides format, rebuild a nicer file name
-        const ext: string | undefined = info.format ? `.${info.format}` : undefined;
-        const name = ext ? `${baseName}${ext}` : baseName;
-
-        setUploadedProofs((prev) => {
-            if (prev.some((p) => p.url === url)) return prev;
-            return [...prev, { url, name }];
+        setUploaded((prev) => {
+            if (prev.some((p) => p.url === secureUrl)) return prev;
+            return [...prev, { url: secureUrl, name: originalFilename }];
         });
     };
 
-    const canContinue = useMemo(() => {
+    const canGoNext = useMemo(() => {
         if (active === 0) return !!selectedCampaignId;
-        if (active === 1) return uploadedProofs.length > 0 && !submitting;
         return true;
-    }, [active, selectedCampaignId, uploadedProofs.length, submitting]);
+    }, [active, selectedCampaignId]);
 
+    const canSubmit = useMemo(() => {
+        return !!selectedCampaignId && uploaded.length > 0 && !submitting;
+    }, [selectedCampaignId, uploaded.length, submitting]);
+
+    const nextStep = () => setActive((c) => (c < 1 ? c + 1 : c));
     const prevStep = () => setActive((c) => (c > 0 ? c - 1 : c));
 
-    async function submitProofFrontendOnly() {
+    async function handleSubmit() {
         if (!selectedCampaignId) return;
-        if (uploadedProofs.length === 0) return;
+        if (uploaded.length === 0) return;
 
         setSubmitting(true);
         setError(null);
 
         try {
-            console.log("PROOF SUBMITTED (frontend-only)", {
+            await axiosInstance.post("/proof-of-display/email", {
                 mediaId,
                 campaignId: selectedCampaignId,
-                uploadedCount: uploadedProofs.length,
-                fileNames: uploadedProofs.map((p) => p.name),
-                urls: uploadedProofs.map((p) => p.url),
+                proofImageUrls: uploaded.map((u) => u.url),
             });
-
-            // tiny delay so user sees loading
-            await new Promise((r) => setTimeout(r, 400));
 
             setActive(2);
         } catch (e) {
@@ -126,37 +119,35 @@ export default function SubmitProofStepperModal({
         }
     }
 
-    async function handlePrimaryAction() {
-        // Step 1 -> Step 2
-        if (active === 0) {
-            setActive(1);
-            return;
-        }
-
-        // Step 2 -> Submit -> Completed
-        if (active === 1) {
-            await submitProofFrontendOnly();
-            return;
-        }
-    }
-
     return (
-        <Modal opened={opened} onClose={onClose} centered size="lg" title={`Add proof for ${mediaName}`}>
+        <Modal opened={opened} onClose={onClose} centered size="lg" title={`Add proof • ${mediaName}`}>
             <Stepper active={active}>
                 <Stepper.Step label="Campaign" description="Select campaign">
                     {loadingCampaigns ? (
                         <Loader />
                     ) : (
-                        <Select
-                            label="Campaign"
-                            placeholder="Select campaign"
-                            data={campaigns.map((c) => ({
-                                value: c.campaignId,
-                                label: c.name,
-                            }))}
-                            value={selectedCampaignId}
-                            onChange={setSelectedCampaignId}
-                        />
+                        <Stack gap="sm">
+                            <Select
+                                label="Campaign"
+                                placeholder="Select campaign"
+                                data={campaigns.map((c) => ({
+                                    value: c.campaignId,
+                                    label: c.name,
+                                }))}
+                                value={selectedCampaignId}
+                                onChange={setSelectedCampaignId}
+                            />
+
+                            <Group justify="flex-end">
+                                <Button
+                                    rightSection={<IconArrowRight size={16} />}
+                                    onClick={nextStep}
+                                    disabled={!canGoNext}
+                                >
+                                    Next
+                                </Button>
+                            </Group>
+                        </Stack>
                     )}
                 </Stepper.Step>
 
@@ -183,11 +174,11 @@ export default function SubmitProofStepperModal({
                             )}
                         </CldUploadWidget>
 
-                        {uploadedProofs.length > 0 && (
+                        {uploaded.length > 0 && (
                             <Stack gap={6}>
                                 <Group justify="space-between">
                                     <Text size="sm" fw={600}>
-                                        Uploaded ({uploadedProofs.length})
+                                        Uploaded ({uploaded.length})
                                     </Text>
 
                                     <Button
@@ -195,19 +186,18 @@ export default function SubmitProofStepperModal({
                                         variant="subtle"
                                         color="red"
                                         leftSection={<IconTrash size={14} />}
-                                        onClick={() => setUploadedProofs([])}
+                                        onClick={() => setUploaded([])}
                                         disabled={submitting}
                                     >
                                         Clear
                                     </Button>
                                 </Group>
 
-                                {/* Show file NAMES only (not URLs) */}
                                 <List size="sm" spacing={4}>
-                                    {uploadedProofs.map((p) => (
-                                        <List.Item key={p.url}>
+                                    {uploaded.map((u) => (
+                                        <List.Item key={u.url}>
                                             <Text size="sm" lineClamp={1}>
-                                                {p.name}
+                                                {u.name}
                                             </Text>
                                         </List.Item>
                                     ))}
@@ -216,6 +206,21 @@ export default function SubmitProofStepperModal({
                         )}
 
                         {error && <Alert color="red">{error}</Alert>}
+
+                        <Group justify="space-between" mt="sm">
+                            <Button
+                                variant="default"
+                                leftSection={<IconArrowLeft size={16} />}
+                                onClick={prevStep}
+                                disabled={submitting}
+                            >
+                                Back
+                            </Button>
+
+                            <Button onClick={handleSubmit} loading={submitting} disabled={!canSubmit}>
+                                Submit proof
+                            </Button>
+                        </Group>
                     </Stack>
                 </Stepper.Step>
 
@@ -223,8 +228,9 @@ export default function SubmitProofStepperModal({
                     <Stack gap="xs">
                         <Text fw={600}>Proof submitted</Text>
                         <Text size="sm" c="dimmed">
-                            Uploaded {uploadedProofs.length} file(s).
+                            The advertiser was notified by email for this campaign.
                         </Text>
+                        <Text size="sm">Uploaded: {uploaded.length} file(s)</Text>
 
                         <Group justify="flex-end" mt="sm">
                             <Button onClick={onClose}>Close</Button>
@@ -232,23 +238,6 @@ export default function SubmitProofStepperModal({
                     </Stack>
                 </Stepper.Completed>
             </Stepper>
-
-            {/* Footer: ONE primary button (Next -> Submit proof) */}
-            {active < 2 && (
-                <Group justify="space-between" mt="md">
-                    <Button variant="default" onClick={prevStep} disabled={active === 0 || submitting}>
-                        Back
-                    </Button>
-
-                    <Button
-                        onClick={handlePrimaryAction}
-                        loading={submitting}
-                        disabled={!canContinue}
-                    >
-                        {active === 1 ? "Submit proof" : "Next"}
-                    </Button>
-                </Group>
-            )}
         </Modal>
     );
 }
