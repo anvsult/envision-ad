@@ -19,8 +19,10 @@ public class AdCampaign {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Embedded
     private AdCampaignIdentifier campaignId;
 
+    @Embedded
     private BusinessIdentifier businessId;
 
     private String name;

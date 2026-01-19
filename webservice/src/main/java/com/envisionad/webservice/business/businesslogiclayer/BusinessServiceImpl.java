@@ -1,13 +1,11 @@
 package com.envisionad.webservice.business.businesslogiclayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.*;
-import com.envisionad.webservice.business.exceptions.BusinessEmployeeNotFoundException;
-import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
-import com.envisionad.webservice.business.exceptions.DuplicateBusinessNameException;
-import com.envisionad.webservice.business.exceptions.InvitationNotFoundException;
+import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
 import com.envisionad.webservice.business.mappinglayer.EmployeeMapper;
 import com.envisionad.webservice.business.mappinglayer.InvitationMapper;
+import com.envisionad.webservice.business.mappinglayer.VerificationMapper;
 import com.envisionad.webservice.business.presentationlayer.models.*;
 import com.envisionad.webservice.business.utils.Validator;
 import com.envisionad.webservice.utils.EmailService;
@@ -38,22 +36,28 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final EmployeeRepository employeeRepository;
 
+    private final VerificationRepository verificationRepository;
+
     private final BusinessMapper businessMapper;
 
     private final EmployeeMapper employeeMapper;
 
     private final InvitationMapper invitationMapper;
 
+    private final VerificationMapper verificationMapper;
+
     private final JwtUtils jwtUtils;
 
-    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper, JwtUtils jwtUtils) {
+    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, VerificationRepository verificationRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper, VerificationMapper verificationMapper, JwtUtils jwtUtils) {
         this.emailService = emailService;
         this.businessRepository = businessRepository;
         this.invitationRepository = invitationRepository;
         this.employeeRepository = employeeRepository;
+        this.verificationRepository = verificationRepository;
         this.businessMapper = businessMapper;
         this.employeeMapper = employeeMapper;
         this.invitationMapper = invitationMapper;
+        this.verificationMapper = verificationMapper;
         this.jwtUtils = jwtUtils;
     }
 
@@ -61,7 +65,7 @@ public class BusinessServiceImpl implements BusinessService {
     public BusinessResponseModel createBusiness(Jwt jwt, BusinessRequestModel businessRequestModel) {
         Validator.validateBusiness(businessRequestModel);
 
-        if (businessRepository.existsByName(businessRequestModel.getName()))
+        if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), null))
             throw new DuplicateBusinessNameException();
 
         String userId = jwtUtils.extractUserId(jwt);
@@ -72,23 +76,20 @@ public class BusinessServiceImpl implements BusinessService {
         business.setBusinessId(new BusinessIdentifier());
         business.setOwnerId(userId);
 
-        Business savedBusiness = businessRepository.save(business);
+        Employee employee = new Employee();
+        employee.setBusinessId(business.getBusinessId());
+        employee.setEmployeeId(new EmployeeIdentifier());
+        employee.setUserId(userId);
 
-        // Create employee record for the business owner
-        String email = jwt.getClaimAsString("email");
-        Employee ownerEmployee = new Employee();
-        ownerEmployee.setBusinessId(business.getBusinessId());
-        ownerEmployee.setEmployeeId(new EmployeeIdentifier());
-        ownerEmployee.setUserId(userId);
-        ownerEmployee.setEmail(email);
-        employeeRepository.save(ownerEmployee);
+        businessRepository.save(business);
+        employeeRepository.save(employee);
 
-        return businessMapper.toResponse(savedBusiness);
+        return businessMapper.toResponse(business);
     }
 
     @Override
     public List<BusinessResponseModel> getAllBusinesses() {
-        return businessRepository.findAll().stream().map(businessMapper::toResponse).collect(Collectors.toList());
+        return businessRepository.findAll().stream().map(businessMapper::toResponse).toList();
     }
 
     @Override
@@ -108,6 +109,9 @@ public class BusinessServiceImpl implements BusinessService {
         if (existingBusiness == null)
             throw new BusinessNotFoundException();
 
+        if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), businessId))
+            throw new DuplicateBusinessNameException();
+
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -120,6 +124,65 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
+    public VerificationResponseModel approveBusinessVerification(String businessId, String verificationId){
+        VerificationContext context = updateBusinessVerification(businessId, verificationId);
+
+        context.verification.setStatus(VerificationStatus.APPROVED);
+        context.business.setVerified(true);
+
+        businessRepository.save(context.business);
+        return verificationMapper.toResponse(verificationRepository.save(context.verification));
+    }
+
+    @Override
+    public VerificationResponseModel denyBusinessVerification(String businessId, String verificationId, String reason) {
+        if (reason == null || reason.isEmpty() || reason.length() > 512)
+            throw new BadVerificationRequestException();
+
+        Verification verification = updateBusinessVerification(businessId, verificationId).verification;
+
+        verification.setStatus(VerificationStatus.DENIED);
+        verification.setComments(reason);
+
+        return verificationMapper.toResponse(verificationRepository.save(verification));
+    }
+
+    @Override
+    public VerificationResponseModel requestVerification(Jwt jwt, String businessId) {
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business == null)
+            throw new BusinessNotFoundException();
+
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+
+        if (business.isVerified())
+            throw new BusinessAlreadyVerifiedException();
+
+        if (verificationRepository.findAllByBusinessId_BusinessId(businessId).stream().anyMatch(v -> v.getStatus() == VerificationStatus.PENDING))
+            throw new BadVerificationRequestException();
+
+        Verification verification = new Verification();
+        verification.setVerificationId(new VerificationIdentifier());
+        verification.setBusinessId(new BusinessIdentifier(businessId));
+
+        return verificationMapper.toResponse(verificationRepository.save(verification));
+    }
+
+    @Override
+    public List<VerificationResponseModel> getAllVerificationsByBusinessId(Jwt jwt, String businessId) {
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+
+        return verificationRepository.findAllByBusinessId_BusinessId(businessId).stream().map(verificationMapper::toResponse).toList();
+    }
+
+    @Override
+    public List<VerificationResponseModel> getAllVerificationRequests() {
+        return verificationRepository.findAllByStatus(VerificationStatus.PENDING).stream().map(verificationMapper::toResponse).toList();
+    }
+
+    @Override
     public InvitationResponseModel createInvitation(Jwt jwt, String businessId, InvitationRequestModel invitationRequest) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
@@ -128,8 +191,12 @@ public class BusinessServiceImpl implements BusinessService {
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
-        String token = UUID.randomUUID().toString();
         Invitation invitation =  invitationMapper.toEntity(invitationRequest);
+
+        if (invitationRepository.existsByBusinessId_BusinessIdAndEmail(businessId, invitation.getEmail()))
+            throw new BadInvitationRequestException();
+
+        String token = UUID.randomUUID().toString();
         invitation.setToken(token);
         invitation.setInvitationId(new InvitationIdentifier());
         invitation.setBusinessId(new BusinessIdentifier(businessId));
@@ -221,6 +288,10 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public void removeBusinessEmployeeById(Jwt jwt, String businessId, String employeeId) {
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business.getOwnerId().equals(employeeId))
+            throw new BadBusinessRequestException();
+
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
@@ -254,4 +325,23 @@ public class BusinessServiceImpl implements BusinessService {
         return businessMapper.toResponse(business);
     }
 
+    private VerificationContext updateBusinessVerification(String businessId, String verificationId){
+        Verification verification = verificationRepository.findVerificationByVerificationId_VerificationId(verificationId);
+        if (verification == null)
+            throw new VerificationNotFoundException();
+
+        if (verification.getStatus() != VerificationStatus.PENDING)
+            throw new BadVerificationRequestException();
+
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (business == null)
+            throw new BusinessNotFoundException();
+
+        if (business.isVerified())
+            throw new BusinessAlreadyVerifiedException();
+
+        return new VerificationContext(verification, business);
+    }
+
+    private record VerificationContext(Verification verification, Business business) {}
 }

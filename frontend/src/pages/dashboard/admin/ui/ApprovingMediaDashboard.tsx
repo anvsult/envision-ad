@@ -3,8 +3,7 @@
 import React, {useMemo, useState} from "react";
 import {Center, Group, Loader, Pagination, Stack, Text, Title,} from "@mantine/core";
 import {useTranslations} from "next-intl";
-import {ApproveMediaTable} from "@/pages/dashboard/admin/ApproveMediaTable/ApproveMediaTable";
-import type {ApproveMediaRowData} from "@/pages/dashboard/admin/ApproveMediaTable/ApproveMediaRow";
+import {ApproveMediaRowData, ApproveMediaTable} from "@/pages/dashboard/admin/ui/tables/ApproveMediaTable";
 import {useAdminPendingMedia} from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
 
 const ITEMS_PER_PAGE = 20;

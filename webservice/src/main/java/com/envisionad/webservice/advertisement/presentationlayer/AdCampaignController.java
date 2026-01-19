@@ -43,7 +43,7 @@ public class AdCampaignController {
     }
 
     @PostMapping("/{campaignId}/ads")
-    @PreAuthorize("hasAuthority('create:ad')")
+    @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> addAdToCampaign(
             @PathVariable String campaignId,
             @RequestBody AdRequestModel adRequestModel) {
@@ -54,7 +54,7 @@ public class AdCampaignController {
     }
 
     @DeleteMapping("/{campaignId}/ads/{adId}")
-    @PreAuthorize("hasAuthority('delete:ad')")
+    @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> deleteAdFromCampaign(
             @PathVariable String campaignId,
             @PathVariable String adId) {

@@ -150,13 +150,28 @@ public class ReservationServiceImpl implements ReservationService {
                                       AdCampaign campaign, BigDecimal totalPrice) {
         try {
             List<String> imageLinks = adCampaignService.getAllCampaignImageLinks(campaign.getCampaignId().getCampaignId());
+
+            String previewSection;
+            if (imageLinks == null || imageLinks.isEmpty()) {
+                previewSection = "No preview images available.";
+            } else {
+                StringBuilder sb = new StringBuilder("Preview Images:")
+                        .append(System.lineSeparator());
+                for (String link : imageLinks) {
+                    sb.append("- ")
+                            .append(link)
+                            .append(System.lineSeparator());
+                }
+                previewSection = sb.toString().trim();
+            }
+
             String emailBody = String.format(
                     "A new reservation has been created for your media%n" +
                     "Media Name: %s%n" +
                     "Ad Campaign Name: %s%n" +
                     "Total Price: $%.2f%n" +
-                    "Preview: %s",
-                    media.getTitle(), campaign.getName(), totalPrice, imageLinks
+                    "%s",
+                    media.getTitle(), campaign.getName(), totalPrice, previewSection
             );
             emailService.sendSimpleEmail(ownerEmail, "New Reservation Created", emailBody);
         } catch (Exception e) {
