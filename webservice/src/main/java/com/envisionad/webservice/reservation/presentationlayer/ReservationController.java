@@ -31,6 +31,6 @@ public class ReservationController {
     @PostMapping()
     @PreAuthorize("hasAuthority('create:reservation')")
     public ResponseEntity<ReservationResponseModel> createReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @RequestBody ReservationRequestModel requestModel) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(jwt, mediaId, requestModel, jwt.getClaimAsString("email")));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(jwt, mediaId, requestModel));
     }
 }
