@@ -1,43 +1,78 @@
 package com.envisionad.webservice.proofofdisplay.businesslogiclayer;
 
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
+import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.business.dataaccesslayer.Employee;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
 import com.envisionad.webservice.utils.EmailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProofOfDisplayService {
 
-    private final EmailService emailService;
+    private static final Logger log = LoggerFactory.getLogger(ProofOfDisplayService.class);
 
-    public ProofOfDisplayService(EmailService emailService) {
+    private final EmailService emailService;
+    private final EmployeeRepository employeeRepository;
+    private final MediaRepository mediaRepository;
+    private final AdCampaignRepository adCampaignRepository;
+
+    public ProofOfDisplayService(
+            EmailService emailService,
+            EmployeeRepository employeeRepository,
+            MediaRepository mediaRepository,
+            AdCampaignRepository adCampaignRepository
+    ) {
         this.emailService = emailService;
+        this.employeeRepository = employeeRepository;
+        this.mediaRepository = mediaRepository;
+        this.adCampaignRepository = adCampaignRepository;
     }
 
     public void sendProofEmail(ProofOfDisplayRequest request) {
+        try {
+            Media media = mediaRepository.findById(UUID.fromString(request.getMediaId()))
+                    .orElseThrow(() -> new MediaNotFoundException(request.getMediaId()));
 
-        String subject = "Your Advertisement is Live!";
+            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(request.getCampaignId());
+            if (campaign == null) {
+                throw new AdCampaignNotFoundException(request.getCampaignId());
+            }
 
-        StringBuilder body = new StringBuilder();
+            // TODO: Replace with advertiser email resolution once reservation PR is merged (TEMP BYPASS)
+            String advertiserEmail = "christopher24hd@gmail.com";
 
-        body.append("Hi there,\n\n");
-        body.append("Great news, your ad is officially live!\n\n");
 
-        body.append("Proof of display for your campaign:\n\n");
-        body.append("Campaign: ").append(request.getCampaignName()).append("\n");
-        body.append("Media location: ").append(request.getMediaName()).append("\n\n");
+            String subject = "Your ad is live!";
 
-        body.append("Proof images:\n");
-        for (String url : request.getProofImageUrls()) {
-            body.append("- ").append(url).append("\n");
+            StringBuilder body = new StringBuilder();
+            body.append("Hi there,\n\n");
+            body.append("Great news, your ad has been displayed!\n\n");
+            body.append("Campaign: ").append(campaign.getName()).append("\n");
+            body.append("Media location: ").append(media.getTitle()).append("\n\n");
+            body.append("Proof images:\n");
+
+            for (String url : request.getProofImageUrls()) {
+                body.append("- ").append(url).append("\n");
+            }
+
+            body.append("\nThanks for advertising with Envision Ad!\n");
+            body.append("— The Envision Ad Team");
+
+            emailService.sendSimpleEmail(advertiserEmail, subject, body.toString());
+
+        } catch (Exception e) {
+            log.error("Failed to send proof-of-display email", e);
         }
-
-        body.append("\nThanks for advertising with Envision Ad!\n");
-        body.append("- The Envision Ad Team");
-
-        emailService.sendSimpleEmail(
-                request.getAdvertiserEmail(),
-                subject,
-                body.toString()
-        );
     }
 }
