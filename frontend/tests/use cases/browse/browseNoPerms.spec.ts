@@ -7,7 +7,7 @@ test.use({
 
 test('Browse No Location', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.assertNoLocationVisible();
+    await browsePage.assertMediaCardElementToContainText('Title0', TestMediaTitles.lolaSalonMainLobby);
 });
 
 

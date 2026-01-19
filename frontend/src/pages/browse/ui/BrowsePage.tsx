@@ -14,7 +14,6 @@ import { LatLngLiteral } from 'leaflet';
 import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
-import { MediaCardCarouselLoader } from '@/widgets/Carousel/CardCarousel';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 
 function BrowsePage() {
@@ -65,7 +64,7 @@ function BrowsePage() {
   const media = useMediaList({ 
     filteredMediaProps: filteredMediaProps, 
     loadingLocation: locationStatus === 'loading',
-    setMediaStatus: setMediaStatus });
+    setMediaStatus});
 
   useEffect(() => {
     let cancelled = false;
@@ -141,7 +140,7 @@ function BrowsePage() {
   }
 
   return (
-      <Container size="xl" py={20} px={80}>
+      <Container size="100%" w="100%" py={20} px={80}>
         <Stack gap="sm">
           <Group grow>
             <TextInput
@@ -162,6 +161,7 @@ function BrowsePage() {
             <Autocomplete
               placeholder={t('searchAddress')}
               data={locationOptions.map((o) => o)}
+              
               value={draftAddressSearch}
               onChange={ setDraftAddressSearch }
               onKeyDown={(event) => {

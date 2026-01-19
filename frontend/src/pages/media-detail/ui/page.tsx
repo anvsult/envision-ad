@@ -22,16 +22,14 @@ import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { getAllFilteredActiveMedia, getMediaById, SpecialSort } from "@/features/media-management/api";
+import { getMediaById, SpecialSort } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
 import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
-import { useMediaList } from "@/features/media-management/api/useMediaList";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 import { getOrganizationById } from "@/features/organization-management/api";
 import { LatLngLiteral } from "leaflet";
-import { SortOptions } from "@/features/media-management/api/getAllFilteredActiveMedia";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -200,10 +198,9 @@ export default function MediaDetailsPage() {
             </Button>
           </Group>
           {/* Columns */}
-          <Group align="stretch" gap="70">
+          <Group align="stretch" gap="50">
             {/* Left Column */}
-            <Stack gap="md" style={{ flex: 2, minWidth: 320 }}>
-
+            <Stack gap="sm" style={{ flex: 2, minWidth: 320 }}>
               {/* Media Image */}
               <Anchor 
                 tabIndex={0}
@@ -236,17 +233,17 @@ export default function MediaDetailsPage() {
               </Anchor>
 
               {/* Address */}
-              <Stack gap={5}>
+              <Stack gap={3}>
                 <Text fw={600} size="lg">
                   {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
                 </Text>
-                <Text fw={600} size="sm">{organizationName}</Text>
+                <Text fw={600} size="md">{organizationName}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: 0 })}
                 </Text>
               </Stack>
 
-              <Divider my="5" />
+              <Divider/>
 
               {/* Media Details */}
               <Stack gap="5" >

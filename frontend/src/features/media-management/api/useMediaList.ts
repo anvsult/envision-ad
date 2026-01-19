@@ -44,8 +44,12 @@ export function useMediaList({
                     }));
 
                 setMedias(items);
-
-                setMediaStatus?.('success');
+                
+                if (items.length > 0) {
+                    setMediaStatus?.('success');
+                } else {
+                    setMediaStatus?.('empty');
+                }
                 } catch {
                     if (!cancelled) {
                         setMediaStatus?.('error');

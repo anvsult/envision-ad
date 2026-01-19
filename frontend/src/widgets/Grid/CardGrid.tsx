@@ -25,7 +25,7 @@ export function MediaCardGrid({id, medias}: MediaCardGridProps) {
         <div>
             <CardGrid>
                 {medias.map((media) => (
-                    <GridCol key={id ? `${id}-${media.index}` : media.index} span={{base: 12, xs: 5, sm: 4, md: 3, lg: 3 }}>
+                    <GridCol key={id ? `${id}-${media.index}` : media.index} span={{base: 12, xs: 5, sm: 4, md: 3, lg: 2 }}>
                         <MediaCard 
                             index={id ? id + media.index : media.index}
                             href={media.href}
