@@ -194,13 +194,8 @@ function BrowsePage() {
               <Text>{t('nomedia.changefilters')}</Text>
             </Stack>
           ) : (
-            <>
             <MediaCardGrid medias={media} />
-            {/* <MediaCardCarousel id="Other Media Carousel" title="Other medias by this Media Owner" medias={media}/> */}
-            </>
-
           )}
-          <MediaCardCarouselLoader id="Other Media Carousel" title="Other medias by this Media Owner" filteredMediaProps={filteredMediaProps}/>
           {totalPages > 1 && (
             <Group justify="center" mt="md">
               <Pagination

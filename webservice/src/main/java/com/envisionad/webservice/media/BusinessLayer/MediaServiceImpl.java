@@ -34,6 +34,7 @@ public class MediaServiceImpl implements MediaService {
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
+            String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
@@ -47,6 +48,10 @@ public class MediaServiceImpl implements MediaService {
 
         if (title != null) {
             spec = spec.and(MediaSpecifications.titleContains(title));
+        }
+
+        if (businessId != null) {
+            spec = spec.and(MediaSpecifications.businessIdEquals(UUID.fromString(businessId)));
         }
 
         if (minPrice != null || maxPrice != null) {

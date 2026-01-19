@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class MediaSpecifications {
 
@@ -49,8 +50,9 @@ public class MediaSpecifications {
                 : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
     }
 
-    public static Specification<Media> businessIdEquals(java.util.UUID businessId) {
-        return (root, query, cb) -> businessId == null ? null : cb.equal(root.get("businessId"), businessId);
+    public static Specification<Media> businessIdEquals(UUID businessId) {
+        return (root, query, cb) -> businessId == null ? null
+                : cb.equal(root.get("businessId"), businessId);
     }
 
     // public static Specification<Media> locationContains(String locationName) {

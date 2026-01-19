@@ -19,13 +19,14 @@ import { IconAlertCircle } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { getMediaById } from "@/features/media-management/api";
+import { getAllFilteredActiveMedia, getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
-import { MediaCardCarousel, MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
+import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
 import { useMediaList } from "@/features/media-management/api/useMediaList";
-import { Carousel } from "@mantine/carousel";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
+import { getOrganizationById } from "@/features/organization-management/api";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -52,6 +53,7 @@ export default function MediaDetailsPage() {
 
 
   const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
+  const [organizationName, setOrganizationName] = useState<string | null>(null) //
   const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
   const [error, setError] = useState<string | null>(null); //The error message
 
@@ -59,15 +61,8 @@ export default function MediaDetailsPage() {
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
 
-  const filteredMediaProps = useMemo(() => ({
-    sort: "price,asc",
-    page: 0,
-    size: 6
-  }), []);
+  
 
-  const orgMediaList = useMediaList({ 
-    filteredMediaProps 
-  });
 
   useEffect(() => {
     if (!id) return;
@@ -90,7 +85,29 @@ export default function MediaDetailsPage() {
     void loadMedia();
   }, [id]);
 
-  
+  useEffect(() => {
+    if (!media?.businessId){
+      return
+    }
+    const fetchOrganizationDetails = async (businessId: string) => {
+      try {
+
+        const response = await getOrganizationById(businessId);
+        setOrganizationName(response.name);
+      } catch (e){
+        console.log(e)
+      }
+    };
+    
+    fetchOrganizationDetails(media?.businessId)
+  }, [media?.businessId]);
+
+  const filteredMediaProps: FilteredActiveMediaProps = useMemo(() => ({
+    sort: "price,asc",
+    businessId: media?.businessId,
+    page: 0,
+    size: 6
+  }), [media?.businessId]);
 
   if (loading) {
     return (
@@ -208,7 +225,7 @@ export default function MediaDetailsPage() {
                 <Text fw={600} size="lg">
                   {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
                 </Text>
-                <Text size="sm">{media.mediaOwnerName}</Text>
+                <Text size="sm">{organizationName}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: 0 })}
                 </Text>
@@ -332,7 +349,7 @@ export default function MediaDetailsPage() {
                 </Card>
               </Stack>
           </Group>
-          <MediaCardCarouselLoader id="Other Media Carousel" title="Other medias by this Media Owner" filteredMediaProps={filteredMediaProps}/>
+          <MediaCardCarouselLoader id="Other Media Carousel" title={'Other medias by ' + organizationName} filteredMediaProps={filteredMediaProps}/>
         </Stack>
         <Modal
           opened={imageModalOpen}

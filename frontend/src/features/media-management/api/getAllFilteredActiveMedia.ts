@@ -17,13 +17,17 @@ function escapeLike(input: string): string {
 
 
 export async function getAllFilteredActiveMedia(
-    {title, minPrice, maxPrice, minDailyImpressions, sort, latLng, page, size}: FilteredActiveMediaProps
+    {title, businessId, minPrice, maxPrice, minDailyImpressions, sort, latLng, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
     if (title && title.trim() !== "") {
         const escaped = escapeLike(title);
         params.append("title", escaped);
+    }
+
+    if (businessId) {
+        params.append("businessId", businessId);
     }
 
     if (minPrice) {
@@ -45,7 +49,6 @@ export async function getAllFilteredActiveMedia(
             params.append("sort", sort.toString());
         }
     }
-
 
     if (latLng && latLng.lat != null && latLng.lng != null) {
         params.append("userLat", latLng.lat.toString());

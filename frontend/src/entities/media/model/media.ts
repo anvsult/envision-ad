@@ -65,6 +65,7 @@ export interface MediaLocation {
 
 export interface FilteredActiveMediaProps{
     title?: string | null,
+    businessId?: string | null,
     minPrice?: number | null,
     maxPrice?: number | null,
     minDailyImpressions?: number | null,

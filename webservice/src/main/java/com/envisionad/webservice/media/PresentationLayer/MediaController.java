@@ -57,6 +57,7 @@ public class MediaController {
     public ResponseEntity<?> getAllFilteredActiveMedia(
             Pageable pageable,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false) String businessId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions,
@@ -79,6 +80,7 @@ public class MediaController {
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,
                 title,
+                businessId,
                 minPrice,
                 maxPrice,
                 minDailyImpressions,
