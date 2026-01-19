@@ -8,4 +8,5 @@ public interface InvitationRepository extends JpaRepository<Invitation, Integer>
     Invitation findByInvitationId_InvitationId(String invitationId);
     List<Invitation> findAllByBusinessId_BusinessId(String businessId);
     Invitation findByToken(String code);
+    boolean existsByBusinessId_BusinessIdAndEmail(String businessId, String email);
 }

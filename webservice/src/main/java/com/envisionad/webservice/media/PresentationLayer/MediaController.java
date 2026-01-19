@@ -140,44 +140,4 @@ public class MediaController {
         mediaService.deleteMedia(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
-
-    // image handling will not be done this way
-    @PostMapping("/{id}/image")
-    public ResponseEntity<?> uploadImage(@PathVariable String id,
-            @RequestParam("file") MultipartFile file) {
-        Media media = mediaService.getMediaById(UUID.fromString(id));
-        if (media == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        try {
-            media.setImageFileName(file.getOriginalFilename());
-            media.setImageContentType(file.getContentType());
-            media.setImageData(file.getBytes());
-            Media saved = mediaService.updateMedia(media);
-
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("/api/v1/media/" + saved.getId() + "/image");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getImage(@PathVariable String id) {
-        Media media = mediaService.getMediaById(UUID.fromString(id));
-        if (media == null || media.getImageData() == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        HttpHeaders headers = new HttpHeaders();
-        String contentType = media.getImageContentType() != null ? media.getImageContentType()
-                : "application/octet-stream";
-        headers.setContentType(MediaType.parseMediaType(contentType));
-        if (media.getImageFileName() != null) {
-            headers.setContentDispositionFormData("inline", media.getImageFileName());
-        }
-
-        return new ResponseEntity<>(media.getImageData(), headers, HttpStatus.OK);
-    }
 }

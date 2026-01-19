@@ -34,6 +34,8 @@ public class Business {
     @Embedded
     private Roles roles;
 
+    private boolean verified;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dateCreated;

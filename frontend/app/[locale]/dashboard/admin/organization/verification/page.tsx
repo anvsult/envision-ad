@@ -1,0 +1,1 @@
+export { VerifyingOrganizationDashboard as default } from "@/pages/dashboard/admin"

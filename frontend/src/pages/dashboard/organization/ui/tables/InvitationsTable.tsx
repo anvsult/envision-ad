@@ -14,12 +14,12 @@ export function InvitationTable({invitations, onDelete,}: InvitationTableProps) 
 
     const getTimeLeft = (expiryDate: string) => {
         const now = new Date();
-        const expires = new Date(expiryDate);
+        const expires = new Date(expiryDate + 'Z');
         const diffMs = expires.getTime() - now.getTime();
 
         // If already expired
         if (diffMs <= 0) {
-            return "Expired";
+            return t("expired");
         }
 
         const diffMinutes = Math.floor(diffMs / (1000 * 60));
@@ -57,7 +57,7 @@ export function InvitationTable({invitations, onDelete,}: InvitationTableProps) 
                                     <Table.Td>{getTimeLeft(inv.timeExpires)}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                                <Tooltip label="Delete employee">
+                                                <Tooltip label={t("cancelInvitation")}>
                                                     <ActionIcon
                                                         variant="light"
                                                         color="red"

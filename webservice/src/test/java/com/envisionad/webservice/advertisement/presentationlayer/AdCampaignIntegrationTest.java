@@ -41,7 +41,11 @@ public class AdCampaignIntegrationTest {
                 .header("alg", "none")
                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
                 .claim("scope", "read write")
-                .claim("permissions", java.util.List.of("create:media", "update:media"))
+                .claim("permissions", java.util.List.of(
+                        "create:campaign",
+                        "update:campaign",
+                        "read:campaign"
+                ))
                 .build();
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);
 
@@ -75,6 +79,7 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(BASE_URI_AD_CAMPAIGNS)
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -108,6 +113,7 @@ public class AdCampaignIntegrationTest {
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(campaignId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -134,6 +140,7 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(BASE_URI_AD_CAMPAIGNS)
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated();
@@ -171,6 +178,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(campaignId, adId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -263,6 +271,7 @@ public class AdCampaignIntegrationTest {
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(nonExistentId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -279,6 +288,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(nonExistentCampaignId, adId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -298,6 +308,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(campaignId, nonExistentAdId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
