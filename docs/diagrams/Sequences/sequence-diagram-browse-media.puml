@@ -1,0 +1,18 @@
+@startuml
+title Browse Ad
+
+actor "Advertiser" as Advertiser
+participant "__:System__" as System
+
+Advertiser -> System: getInventory(filters, sorting)
+
+alt screens match filters
+    System --> Advertiser: sortedInventoryList
+else no screens match
+    System --> Advertiser: noResultsFoundMessage
+end
+
+Advertiser -> System: getScreenDetails(screenId)
+System --> Advertiser: screenDetails
+
+@enduml

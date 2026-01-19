@@ -6,41 +6,33 @@ test.use({
     permissions: ['geolocation'],
 });
     
-test('Browse Search Title LED', async ({ browsePage }) => {
+test('Browse Search Ping Mo', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.searchTitle('LED');
-    await browsePage.assertMediaCardElementToContainText('Title0', 'Eaton Centre LED Wall');
+    await browsePage.searchTitle('Ping Mo');
+    await browsePage.assertMediaCardElementToContainText('Title0', TestMediaTitles.pingMoStoreEntrance);
 });
 
-test('Browse Search Address Toronto Canada', async ({ browsePage }) => {
+test('Browse Search Address Brossard, Canada', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.searchAddress('Toronto, Canada');
-    await browsePage.assertMediaCardElementToContainText('Title0', 'Eaton Centre LED Wall');
+    await browsePage.selectSortOption(SortSelectOptions.Nearest);
+    await browsePage.searchAddress('Brossard, Canada');
+    await browsePage.assertMediaCardElementToContainText('Title0', TestMediaTitles.lolaSalonMainLobby);
 });
 
-test('Browse Filter Price Min 220 Max 250', async ({ browsePage }) => {
+test('Browse Filter Price Min 5 Max 10', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.addPriceFilter(220, 250);
-    await browsePage.assertMediaCardElementToContainText('Price0', '$220 per week');
-    await browsePage.assertMediaCardElementToContainText('Price1', '$250 per week');
+    await browsePage.selectSortOption(SortSelectOptions.PriceAsc);
+    await browsePage.addPriceFilter(5, 10);
+    await browsePage.assertMediaCardElementToContainText('Title0', TestMediaTitles.entrepotEnFolieMainEntrance);
+    await browsePage.assertMediaCardElementToContainText('Title1', TestMediaTitles.pingMoStoreEntrance);
 });
 
 
-test('Browse Filter Impressions Min 45000', async ({ browsePage }) => {
+test('Browse Filter Impressions Min 1500', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.addMinimumImpressionsFilter(45000);
-    await browsePage.assertMediaCardElementToContainText('Impressions0', '~45000 daily impressions');
-    await browsePage.assertMediaCardElementToContainText('Impressions1', '~47000 daily impressions');
-    await browsePage.assertMediaCardElementToContainText('Impressions2', '~50000 daily impressions');
-});
-
-test('Browse Nearest', async ({ browsePage }) => {
-  await browsePage.goto();
-  await browsePage.selectSortOption(SortSelectOptions.Nearest);
-  await browsePage.assertMediaCardElementToContainText('Title0', TestMediaTitles.montrealDowntownWrap);
-  await browsePage.assertMediaCardElementToContainText('Title1', TestMediaTitles.parliamentHillDigitalBoard);
-  await browsePage.assertMediaCardElementToContainText('Title2', TestMediaTitles.parliamentHillVisitorScreen);
-  await browsePage.assertMediaCardElementToContainText('Title3', TestMediaTitles.downtownDigitalBoard);
+    await browsePage.addMinimumImpressionsFilter(1500);
+    await browsePage.assertMediaCardElementToContainText('Impressions0', '~1875 daily impressions');
+    await browsePage.assertMediaCardElementToContainText('Impressions1', '~1875 daily impressions');
 });
 
 test('Browse Search Title No Media', async ({ browsePage }) => {

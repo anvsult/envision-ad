@@ -1,5 +1,7 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -39,103 +41,106 @@ import static org.mockito.Mockito.*;
 @SpringBootTest(classes = MediaController.class)
 class MediaControllerUnitTest {
 
-        @MockitoBean
-        private MediaService mediaService;
+    @MockitoBean
+    private MediaService mediaService;
 
-        @MockitoBean
-        private MediaRequestMapper requestMapper;
+    @MockitoBean
+    private MediaRequestMapper requestMapper;
 
-        @MockitoBean
-        private MediaResponseMapper responseMapper;
+    @MockitoBean
+    private MediaResponseMapper responseMapper;
 
-        @MockitoBean
-        private BusinessService businessService; // Added Mock
+    @MockitoBean
+    private BusinessService businessService; // Added Mock
 
-        @Autowired
-        private MediaController mediaController;
+    @Autowired
+    private MediaController mediaController;
 
-        private Media media;
-        private MediaResponseModel responseModel;
-        private MediaRequestModel requestModel;
-        private final UUID mediaLocationId = UUID.randomUUID();
-        private final UUID mediaId = UUID.randomUUID();
+    private Media media;
+    private MediaResponseModel responseModel;
+    private MediaRequestModel requestModel;
+    private final String businessId = UUID.randomUUID().toString();
+    private final UUID mediaLocationId = UUID.randomUUID();
+    private final UUID mediaId = UUID.randomUUID();
 
         @BeforeEach
         void setUp() {
                 // ... (setup remains same until end of method)
-                MediaLocation mediaLocation = new MediaLocation();
-                mediaLocation.setId(mediaLocationId);
-                mediaLocation.setName("Name");
-                mediaLocation.setDescription("This is a location");
-                mediaLocation.setCountry("Canada");
-                mediaLocation.setProvince("Quebec");
-                mediaLocation.setCity("Montreal");
-                mediaLocation.setStreet("Sesame Street 101");
-                mediaLocation.setPostalCode("J3G");
-                mediaLocation.setLatitude(30.5);
-                mediaLocation.setLongitude(-50.7);
 
-                MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
-                mediaLocationResponseModel.setId(mediaLocationId);
-                mediaLocationResponseModel.setName("Name");
-                mediaLocationResponseModel.setDescription("This is a location");
-                mediaLocationResponseModel.setCountry("Canada");
-                mediaLocationResponseModel.setProvince("Quebec");
-                mediaLocationResponseModel.setCity("Montreal");
-                mediaLocationResponseModel.setStreet("Sesame Street 101");
-                mediaLocationResponseModel.setPostalCode("J3G");
-                mediaLocationResponseModel.setLatitude(30.5);
-                mediaLocationResponseModel.setLongitude(-50.7);
+            MediaLocation mediaLocation = new MediaLocation();
+            mediaLocation.setId(mediaLocationId);
+            mediaLocation.setName("Name");
+            mediaLocation.setDescription("This is a location");
+            mediaLocation.setCountry("Canada");
+            mediaLocation.setProvince("Quebec");
+            mediaLocation.setCity("Montreal");
+            mediaLocation.setStreet("Sesame Street 101");
+            mediaLocation.setPostalCode("J3G");
+            mediaLocation.setLatitude(30.5);
+            mediaLocation.setLongitude(-50.7);
 
-                ScheduleModel schedule = new ScheduleModel();
-                WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
-                entry.setDayOfWeek("Monday");
-                entry.setActive(true);
-                entry.setStartTime("09:00");
-                entry.setEndTime("17:00");
-                schedule.setWeeklySchedule(List.of(entry));
+            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
+            mediaLocationResponseModel.setId(mediaLocationId);
+            mediaLocationResponseModel.setName("Name");
+            mediaLocationResponseModel.setDescription("This is a location");
+            mediaLocationResponseModel.setCountry("Canada");
+            mediaLocationResponseModel.setProvince("Quebec");
+            mediaLocationResponseModel.setCity("Montreal");
+            mediaLocationResponseModel.setStreet("Sesame Street 101");
+            mediaLocationResponseModel.setPostalCode("J3G");
+            mediaLocationResponseModel.setLatitude(30.5);
+            mediaLocationResponseModel.setLongitude(-50.7);
 
-                media = new Media();
-                media.setId(mediaId);
-                media.setTitle("Test Media");
-                media.setMediaOwnerName("Owner");
-                media.setMediaLocation(mediaLocation);
-                media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-                media.setPrice(new BigDecimal("100.00"));
-                media.setStatus(Status.ACTIVE);
-                media.setResolution("1920x1080");
-                media.setAspectRatio("16:9");
-                media.setLoopDuration(30);
-                media.setSchedule(schedule);
+            ScheduleModel schedule = new ScheduleModel();
+            WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
+            entry.setDayOfWeek("Monday");
+            entry.setActive(true);
+            entry.setStartTime("09:00");
+            entry.setEndTime("17:00");
+            schedule.setWeeklySchedule(List.of(entry));
 
-                responseModel = new MediaResponseModel();
-                responseModel.setId(mediaId);
-                responseModel.setTitle("Test Media");
-                responseModel.setMediaOwnerName("Owner");
-                responseModel.setMediaLocation(mediaLocationResponseModel);
-                responseModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-                responseModel.setPrice(new BigDecimal("100.00"));
-                responseModel.setStatus(Status.ACTIVE);
-                responseModel.setResolution("1920x1080");
-                responseModel.setAspectRatio("16:9");
-                responseModel.setLoopDuration(30);
-                responseModel.setDailyImpressions(1000);
-                responseModel.setSchedule(schedule);
+            media = new Media();
+            media.setId(mediaId);
+            media.setTitle("Test Media");
+            media.setMediaOwnerName("Owner");
+            media.setMediaLocation(mediaLocation);
+            media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+            media.setPrice(new BigDecimal("100.00"));
+            media.setStatus(Status.ACTIVE);
+            media.setResolution("1920x1080");
+            media.setAspectRatio("16:9");
+            media.setLoopDuration(30);
+            media.setSchedule(schedule);
 
-                requestModel = new MediaRequestModel();
-                requestModel.setTitle("Test Media");
-                requestModel.setMediaOwnerName("Owner");
-                requestModel.setMediaLocationId(mediaLocationId.toString());
-                requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-                requestModel.setPrice(new BigDecimal("100.00"));
-                requestModel.setStatus(Status.ACTIVE);
-                requestModel.setDailyImpressions(1000);
-                requestModel.setResolution("1920x1080");
-                requestModel.setAspectRatio("16:9");
-                requestModel.setLoopDuration(30);
-                requestModel.setSchedule(schedule);
-                requestModel.setImageUrl("http://example.com/image.jpg");
-                requestModel.setPreviewConfiguration("{\"corners\": []}");
+            responseModel = new MediaResponseModel();
+            responseModel.setId(mediaId);
+            responseModel.setBusinessId(businessId);
+            responseModel.setTitle("Test Media");
+            responseModel.setMediaOwnerName("Owner");
+            responseModel.setMediaLocation(mediaLocationResponseModel);
+            responseModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+            responseModel.setPrice(new BigDecimal("100.00"));
+            responseModel.setStatus(Status.ACTIVE);
+            responseModel.setResolution("1920x1080");
+            responseModel.setAspectRatio("16:9");
+            responseModel.setLoopDuration(30);
+            responseModel.setDailyImpressions(1000);
+            responseModel.setSchedule(schedule);
+
+            requestModel = new MediaRequestModel();
+            requestModel.setTitle("Test Media");
+            requestModel.setMediaOwnerName("Owner");
+            requestModel.setMediaLocationId(mediaLocationId.toString());
+            requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+            requestModel.setPrice(new BigDecimal("100.00"));
+            requestModel.setStatus(Status.ACTIVE);
+            requestModel.setDailyImpressions(1000);
+            requestModel.setResolution("1920x1080");
+            requestModel.setAspectRatio("16:9");
+            requestModel.setLoopDuration(30);
+            requestModel.setSchedule(schedule);
+            requestModel.setImageUrl("http://example.com/image.jpg");
+            requestModel.setPreviewConfiguration("{\"corners\": []}");
         }
 
         @Test
@@ -216,37 +221,19 @@ class MediaControllerUnitTest {
                 Page<Media> mediaPage = new PageImpl<>(List.of(media));
                 Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
-                when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null))
+                when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null))
                                 .thenReturn(mediaPage);
                 when(responseMapper.entityToResponseModel(media))
                                 .thenReturn(responseModel);
 
-                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null,
-                                null, null, null);
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null,
+                                null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
                 assertEquals(1, body.getTotalElements());
 
-                verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null);
-        }
-
-        @Test
-        void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
-                Pageable pageable = PageRequest.of(0, 10);
-                Page<Media> mediaPage = new PageImpl<>(List.of(media));
-
-                when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null))
-                                .thenReturn(mediaPage);
-                when(responseMapper.entityToResponseModel(media))
-                                .thenReturn(responseModel);
-
-                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null,
-                                null, null, null, null);
-
-                assertEquals(HttpStatus.OK, response.getStatusCode());
-                Page<?> body = (Page<?>) response.getBody();
-                assertEquals(1, body.getContent().size());
+                verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null);
         }
 
         @Test
@@ -255,28 +242,33 @@ class MediaControllerUnitTest {
                 Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
                 when(mediaService.getAllFilteredActiveMedia(
-                                pageable,
-                                "Billboard",
-                                BigDecimal.valueOf(50),
-                                BigDecimal.valueOf(200),
-                                1000,
-                                "nearest",
-                                50.0,
-                                50.0))
-                                .thenReturn(mediaPage);
+                            pageable,
+                            "Billboard",
+                            businessId,
+                            BigDecimal.valueOf(50),
+                            BigDecimal.valueOf(200),
+                            1000,
+                            "nearest",
+                            50.0,
+                            50.0,
+                            mediaId.toString()
+                    ))
+                    .thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media))
                                 .thenReturn(responseModel);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
-                                pageable,
-                                "Billboard",
-                                BigDecimal.valueOf(50),
-                                BigDecimal.valueOf(200),
-                                1000,
-                                "nearest",
-                                50.0,
-                                50.0);
+                    pageable,
+                    "Billboard",
+                    businessId,
+                    BigDecimal.valueOf(50),
+                    BigDecimal.valueOf(200),
+                    1000,
+                    "nearest",
+                    50.0,
+                    50.0,
+                    mediaId.toString());
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -284,15 +276,34 @@ class MediaControllerUnitTest {
         }
 
         @Test
-        void getAllFilteredActiveMedia_NoResults_ShouldReturnEmptyPage() {
+        void getAllFilteredActiveMedia_TitleOnly_ShouldReturnFiltered() {
+            Pageable pageable = PageRequest.of(0, 10);
+            Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+            when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null, null))
+                    .thenReturn(mediaPage);
+            when(responseMapper.entityToResponseModel(media))
+                    .thenReturn(responseModel);
+
+            ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null,
+                    null, null, null, null, null);
+
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            Page<?> body = (Page<?>) response.getBody();
+            assertEquals(1, body.getContent().size());
+        }
+
+
+        @Test
+        void getAllFilteredActiveMedia_TitleNoResults_ShouldReturnEmptyPage() {
                 Pageable pageable = PageRequest.of(0, 10);
                 Page<Media> emptyPage = Page.empty();
 
-                when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null))
+                when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch",  null,null, null, null, null, null, null, null))
                                 .thenReturn(emptyPage);
 
-                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null,
-                                null, null, null, null);
+                ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null,
+                                null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -301,34 +312,38 @@ class MediaControllerUnitTest {
 
         @Test
         void getAllFilteredActiveMedia_MinPriceNegative_ShouldThrowException() {
-                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.getAllFilteredActiveMedia(
-                                        null,
-                                        null,
-                                        BigDecimal.valueOf(-1),
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null);
-                });
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                mediaController.getAllFilteredActiveMedia(
+                    null,
+                    null,
+                    null,
+                    BigDecimal.valueOf(-1),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
+            });
 
-                assertEquals("minPrice must be non-negative.", exception.getMessage());
-                verifyNoInteractions(mediaService);
+            assertEquals("minPrice must be non-negative.", exception.getMessage());
+            verifyNoInteractions(mediaService);
         }
 
         @Test
         void getAllFilteredActiveMedia_MaxPriceNegative_ShouldThrowException() {
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.getAllFilteredActiveMedia(
-                                        null,
-                                        null,
-                                        null,
-                                        BigDecimal.valueOf(-5),
-                                        null,
-                                        null,
-                                        null,
-                                        null);
+                    mediaController.getAllFilteredActiveMedia(
+                        null,
+                        null,
+                        null,
+                        null,
+                        BigDecimal.valueOf(-5),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
                 });
 
                 assertEquals("maxPrice must be non-negative.", exception.getMessage());
@@ -338,15 +353,17 @@ class MediaControllerUnitTest {
         @Test
         void getAllFilteredActiveMedia_MinGreaterThanMax_ShouldThrowException() {
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.getAllFilteredActiveMedia(
-                                        null,
-                                        null,
-                                        BigDecimal.valueOf(50),
-                                        BigDecimal.valueOf(10),
-                                        null,
-                                        null,
-                                        null,
-                                        null);
+                    mediaController.getAllFilteredActiveMedia(
+                    null,
+                    null,
+                    null,
+                    BigDecimal.valueOf(50),
+                    BigDecimal.valueOf(10),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null);
                 });
 
                 assertEquals("minPrice must not be greater than maxPrice.", exception.getMessage());
@@ -356,15 +373,17 @@ class MediaControllerUnitTest {
         @Test
         void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldThrowException() {
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.getAllFilteredActiveMedia(
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        -10,
-                                        null,
-                                        null,
-                                        null);
+                    mediaController.getAllFilteredActiveMedia(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        -10,
+                        null,
+                        null,
+                        null,
+                        null);
                 });
 
                 assertEquals("minDailyImpressions must be non-negative.", exception.getMessage());

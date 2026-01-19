@@ -1,4 +1,5 @@
 import { SpecialSort } from "@/features/media-management/api";
+import { SortOptions } from "@/features/media-management/api/getAllFilteredActiveMedia";
 import { Group, Select, Text } from "@mantine/core";
 import { useTranslations } from "next-intl";
 
@@ -13,12 +14,12 @@ export default function BrowseActions({filters,  setSortBy, sortSelectValue}: Br
     const t = useTranslations('browse.browseactions');
     const sortSelectData =[
         { value: SpecialSort.nearest, label: t('sort.nearest') },
-        { value: "price,asc", label: (t('sort.price') + t('sort.asc')) },
-        { value: "price,desc", label: (t('sort.price') + t('sort.desc')) },
-        { value: "dailyImpressions,asc", label: (t('sort.impressions') + t('sort.asc')) },
-        { value: "dailyImpressions,desc", label: (t('sort.impressions') + t('sort.desc')) },
-        { value: "loopDuration,asc", label: (t('sort.loop') + t('sort.asc')) },
-        { value: "loopDuration,desc", label: (t('sort.loop') + t('sort.desc')) },
+        { value: SortOptions.priceAsc, label: (t('sort.price') + t('sort.asc')) },
+        { value: SortOptions.priceDesc, label: (t('sort.price') + t('sort.desc')) },
+        { value: SortOptions.dailyImpressionsAsc, label: (t('sort.impressions') + t('sort.asc')) },
+        { value: SortOptions.dailyImpressionsDesc, label: (t('sort.impressions') + t('sort.desc')) },
+        { value: SortOptions.loopDurationAsc, label: (t('sort.loop') + t('sort.asc')) },
+        { value: SortOptions.loopDurationDesc, label: (t('sort.loop') + t('sort.desc')) },
     ];
     
 

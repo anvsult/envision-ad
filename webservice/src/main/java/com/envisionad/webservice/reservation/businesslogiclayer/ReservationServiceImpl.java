@@ -14,6 +14,7 @@ import com.envisionad.webservice.reservation.dataaccesslayer.ReservationReposito
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
+import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
@@ -56,22 +57,9 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponseModel> getAllReservationsByMediaId(String mediaId) {
-        List<Reservation> reservations =
-                reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
-
-        List<ReservationResponseModel> response =
-                reservationResponseMapper.entitiesToResponseModelList(reservations);
-        for (ReservationResponseModel r : response) {
-            if (r.getCampaignId() == null) continue;
-
-            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(r.getCampaignId());
-            if (campaign != null) {
-                r.setCampaignName(campaign.getName());
-            }
-        }
-        return response;
+        List<Reservation> reservations = reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
+        return reservationResponseMapper.entitiesToResponseModelList(reservations);
     }
-
 
     @Override
     public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
@@ -155,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
                 .sum();
         if (media.getLoopDuration() <= totalReservedDuration) {
-            throw new IllegalStateException("Media does not have enough loop duration left for the requested reservation period");
+            throw new InsufficientLoopDurationException();
         }
     }
 

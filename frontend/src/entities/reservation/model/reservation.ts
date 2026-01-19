@@ -8,7 +8,6 @@ export interface ReservationRequestDTO {
 export interface ReservationResponseDTO {
     reservationId: string;
     campaignId: string;
-    campaignName?: string;
     status: string;
     totalPrice: number;
     startDate: string;

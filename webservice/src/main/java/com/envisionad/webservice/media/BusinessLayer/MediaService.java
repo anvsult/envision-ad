@@ -15,12 +15,14 @@ public interface MediaService {
     Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
+            String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
             String specialSort,
             Double userLat,
-            Double userLng
+            Double userLng,
+            String excludedId
     );
 
     Media getMediaById(UUID id);

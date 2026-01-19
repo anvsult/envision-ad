@@ -50,7 +50,7 @@ services:
     environment:
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-
+      APP_BASE_URL: "${APP_BASE_URL}"
       SPRING_PROFILES_ACTIVE: "prod"
       # Point this directly to the variables injected by GitHub Actions
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"

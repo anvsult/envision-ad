@@ -54,10 +54,10 @@ management:
 
 okta:
   oauth2:
-    issuer: "https://${AUTH0_DOMAIN}/"
-    audience: ${AUTH0_AUDIENCE}
+    issuer: "https://${AUTH0_DOMAIN:test.auth0.com}/"
+    audience: ${AUTH0_AUDIENCE:test-audience}
 
 app:
   base:
-    url: ${APP_BASE_URL}
+    url: ${APP_BASE_URL:http://localhost:8080}
 

@@ -57,12 +57,16 @@ public class MediaController {
     public ResponseEntity<?> getAllFilteredActiveMedia(
             Pageable pageable,
             @RequestParam(required = false) String title,
+            @RequestParam(required = false) String businessId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
             @RequestParam(required = false) Integer minDailyImpressions,
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
-            @RequestParam(required = false) Double userLng) {
+            @RequestParam(required = false) Double userLng,
+            @RequestParam(required = false) String excludedId
+            ) {
+
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
         }
@@ -79,12 +83,15 @@ public class MediaController {
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,
                 title,
+                businessId,
                 minPrice,
                 maxPrice,
                 minDailyImpressions,
                 specialSort,
                 userLat,
-                userLng).map(responseMapper::entityToResponseModel);
+                userLng,
+                excludedId
+                ).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }

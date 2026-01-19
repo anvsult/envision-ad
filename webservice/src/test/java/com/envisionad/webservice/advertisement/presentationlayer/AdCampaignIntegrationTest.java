@@ -10,15 +10,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -30,9 +31,6 @@ public class AdCampaignIntegrationTest {
     @Autowired
     private WebTestClient webTestClient;
 
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
-
     @Autowired
     private AdCampaignRepository adCampaignRepository;
 
@@ -42,13 +40,68 @@ public class AdCampaignIntegrationTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
     private BusinessIdentifier businessId;
-    private static final String TEST_USER_ID = "auth0|65702e81e9661e14ab3aac89";
+    private static final String TEST_USER_ID = "auth0|696a88eb347945897ef17093";
+
+    private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+    private static final String TEST_EMAIL = "test@email.com";
 
     @BeforeEach
     void setUp() {
+        // Clear all data from previous tests to avoid constraint violations
+        adCampaignRepository.deleteAll();
+        employeeRepository.deleteAll();
+        businessRepository.deleteAll();
+
+        Jwt media = Jwt.withTokenValue("media-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696a89137cfdb558ea4a4a4a")
+                .claim("scope", "read write")
+                .claim("permissions", List.of(
+                        "create:media",
+                        "update:media",
+                        "update:business",
+                        "read:employee",
+                        "create:employee",
+                        "delete:employee",
+                        "read:verification",
+                        "create:verification"
+                ))
+                .build();
+
+        Jwt advertiser = Jwt.withTokenValue("advertiser-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696a88eb347945897ef17093")
+                .claim("scope", "read write")
+                .claim("permissions", List.of(
+                        "readAll:campaign",
+                        "read:campaign",
+                        "create:campaign",
+                        "update:campaign",
+                        "update:business",
+                        "read:employee",
+                        "create:employee",
+                        "delete:employee",
+                        "read:verification",
+                        "create:verification"
+                ))
+                .build();
+
+        Jwt newUser = Jwt.withTokenValue("newUser-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696b10a00bba0a28c21d3829")
+                .claim("scope", "read write")
+                .build();
+
+        when(jwtDecoder.decode("media-token")).thenReturn(media);
+        when(jwtDecoder.decode("advertiser-token")).thenReturn(advertiser);
+        when(jwtDecoder.decode("newUser-token")).thenReturn(newUser);
+
         // Initialize businessId for all tests
-        businessId = new BusinessIdentifier();
+        businessId = new BusinessIdentifier(BUSINESS_ID);
 
         // Create a test business
         Business business = new Business();
@@ -56,6 +109,12 @@ public class AdCampaignIntegrationTest {
         business.setName("Test Business");
         business.setOwnerId(TEST_USER_ID);
         business.setOrganizationSize(OrganizationSize.LARGE);
+        business.setVerified(true);
+        Address address = createTestAddress();
+        business.setAddress(address);
+        Roles roles = new Roles();
+        roles.setAdvertiser(true);
+        business.setRoles(roles);
         businessRepository.save(business);
 
         // Create an employee for the test user
@@ -63,23 +122,20 @@ public class AdCampaignIntegrationTest {
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setBusinessId(businessId);
         employee.setUserId(TEST_USER_ID);
+        employee.setEmail(TEST_EMAIL);
         employeeRepository.save(employee);
-
-        // Mock JWT token
-        Jwt jwt = Jwt.withTokenValue("mock-token")
-                .header("alg", "none")
-                .claim("sub", TEST_USER_ID)
-                .claim("scope", "read write")
-                .claim("permissions", java.util.List.of(
-                        "create:campaign",
-                        "update:campaign",
-                        "read:campaign"
-                ))
-                .claim("permissions", java.util.List.of("create:media", "update:media", "readAll:campaign", "create:campaign"))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-
     }
+
+    private Address createTestAddress() {
+        Address address = new Address();
+        address.setCity("St-Lambert");
+        address.setStreet("900 Riverside");
+        address.setCountry("Canada");
+        address.setState("QC");
+        address.setZipCode("J4P 3P2");
+        return address;
+    }
+
 
     @Test
     void getAllBusinessCampaigns_shouldReturnAllBusinessCampaigns() {
@@ -100,7 +156,7 @@ public class AdCampaignIntegrationTest {
         // Act & Assert
         webTestClient.get()
                 .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
-                .header("Authorization", "Bearer mock-token")
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBodyList(Object.class)
@@ -117,7 +173,7 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -153,7 +209,7 @@ public class AdCampaignIntegrationTest {
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(businessId.getBusinessId(), campaignId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -180,7 +236,7 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated();
@@ -220,7 +276,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(businessId.getBusinessId(), campaignId, adId))
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -260,7 +316,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(businessId.getBusinessId(), campaignId))
-                .header("Authorization", "Bearer mock-token")
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .bodyValue(adRequestModel)
                 .exchange()
@@ -295,7 +351,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(businessId.getBusinessId(), campaignId))
-                .header("Authorization", "Bearer mock-token")
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .bodyValue(adRequestModel)
                 .exchange()
@@ -319,7 +375,7 @@ public class AdCampaignIntegrationTest {
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
                         .build(businessId.getBusinessId(), nonExistentId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -337,7 +393,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(businessId.getBusinessId(), nonExistentCampaignId, adId))
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -359,7 +415,7 @@ public class AdCampaignIntegrationTest {
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
                         .build(businessId.getBusinessId(), campaignId, nonExistentAdId))
-                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }

@@ -2,9 +2,14 @@ package com.envisionad.webservice.business.businesslogiclayer;
 
 import com.envisionad.webservice.business.dataaccesslayer.*;
 import com.envisionad.webservice.business.exceptions.*;
+import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
+import com.envisionad.webservice.business.mappinglayer.EmployeeMapper;
 import com.envisionad.webservice.business.mappinglayer.InvitationMapper;
+import com.envisionad.webservice.business.mappinglayer.VerificationMapper;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.InvitationRequestModel;
+import com.envisionad.webservice.utils.EmailService;
+import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,7 +31,19 @@ class BusinessServiceUnitTest {
     private BusinessServiceImpl businessService;
 
     @Mock
+    private EmailService emailService;
+
+    @Mock
+    private BusinessMapper businessMapper;
+
+    @Mock
+    private EmployeeMapper employeeMapper;
+
+    @Mock
     private InvitationMapper invitationMapper;
+
+    @Mock
+    private VerificationMapper verificationMapper;
 
     @Mock
     private BusinessRepository businessRepository;
@@ -39,6 +56,9 @@ class BusinessServiceUnitTest {
 
     @Mock
     private VerificationRepository verificationRepository;
+
+    @Mock
+    private JwtUtils jwtUtils;
 
     private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
     private static final String NOT_FOUND_BUSINESS_ID = "5d4bd18a-e062-4dc8-9715-f02dea0b3f99";
@@ -195,6 +215,7 @@ class BusinessServiceUnitTest {
 
         when(businessRepository.existsByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(true);
         when(invitationRepository.findByToken(INVITATION_TOKEN)).thenReturn(invitation);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(employeeRepository.existsByUserIdAndBusinessId_BusinessId("auth0|696a89137cfdb558ea4a4a4a", BUSINESS_ID))
                 .thenReturn(true);
 
@@ -262,6 +283,7 @@ class BusinessServiceUnitTest {
         BusinessRequestModel businessRequestModel = createBusinessRequestModel();
 
         when(businessRepository.existsByNameAndBusinessId_BusinessIdNot("Champlain College", null)).thenReturn(false);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(employeeRepository.existsByUserId("auth0|696a89137cfdb558ea4a4a4a")).thenReturn(true);
 
         assertThrows(AccessDeniedException.class,
@@ -312,7 +334,7 @@ class BusinessServiceUnitTest {
     public void whenRequestBusinessVerification_withAlreadyVerifiedBusiness_thenReturnBusinessAlreadyVerifiedException() {
         Business business = createBusiness(true);
 
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId("auth0|696a89137cfdb558ea4a4a4a", BUSINESS_ID)).thenReturn(true);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
 
         assertThrows(BusinessAlreadyVerifiedException.class,
@@ -324,7 +346,7 @@ class BusinessServiceUnitTest {
         Business business = createBusiness(false);
         Verification verification = createVerification(BUSINESS_ID, VERIFICATION_ID, VerificationStatus.PENDING);
 
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId("auth0|696a89137cfdb558ea4a4a4a", BUSINESS_ID)).thenReturn(true);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
         when(verificationRepository.findAllByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(List.of(verification));
 
@@ -355,7 +377,7 @@ class BusinessServiceUnitTest {
 
         Business business = createBusiness(true);
 
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId("auth0|696a89137cfdb558ea4a4a4a", BUSINESS_ID)).thenReturn(true);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
         when(invitationRepository.existsByBusinessId_BusinessIdAndEmail(BUSINESS_ID, email)).thenReturn(true);
         when(invitationMapper.toEntity(invitationRequestModel)).thenReturn(invitation);
@@ -375,7 +397,7 @@ class BusinessServiceUnitTest {
     @Test
     public void whenCancelInvitation_withNotInvitationId_thenReturnInvitationNotFoundException(){
         when(businessRepository.existsByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(true);
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId("auth0|696a89137cfdb558ea4a4a4a", BUSINESS_ID)).thenReturn(true);
+        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(invitationRepository.findByInvitationId_InvitationId(INVITATION_ID)).thenReturn(null);
 
         assertThrows(InvitationNotFoundException.class,
