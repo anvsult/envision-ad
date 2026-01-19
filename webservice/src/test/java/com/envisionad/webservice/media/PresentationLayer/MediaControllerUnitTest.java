@@ -66,9 +66,6 @@ class MediaControllerUnitTest {
         @BeforeEach
         void setUp() {
                 // ... (setup remains same until end of method)
-            Business business = new Business();
-            business.setBusinessId(new BusinessIdentifier(businessId));
-            business.setName("Business Name");
 
             MediaLocation mediaLocation = new MediaLocation();
             mediaLocation.setId(mediaLocationId);
@@ -117,7 +114,7 @@ class MediaControllerUnitTest {
 
             responseModel = new MediaResponseModel();
             responseModel.setId(mediaId);
-            responseModel.setBusinessId(businessId.toString());
+            responseModel.setBusinessId(businessId);
             responseModel.setTitle("Test Media");
             responseModel.setMediaOwnerName("Owner");
             responseModel.setMediaLocation(mediaLocationResponseModel);

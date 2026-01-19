@@ -333,10 +333,10 @@ export default function MediaDetailsPage() {
 
                         return (
                           <Group key={day.dayOfWeek} justify="space-between">
-                            <Text size="sm" c={closed ? "dimmed" : "dark"}>
+                            <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
                               {t(`days.${day.dayOfWeek}`)}:
                             </Text>
-                            <Text size="sm" c={closed ? "dimmed" : "dark"}>
+                            <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
                               {hoursText}
                             </Text>
                           </Group>
@@ -360,7 +360,7 @@ export default function MediaDetailsPage() {
                   </Stack>
                 </Card>
               </Stack>
-            <MediaCardCarouselLoader id="Other Media By Organization Carousel" title={'Other medias from ' + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
+            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={'Other medias from ' + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
           </Group>
         </Stack>
         <Modal
