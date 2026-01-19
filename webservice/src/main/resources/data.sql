@@ -23,8 +23,7 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934
        ('2e4c69ea-d597-4c43-83c1-9af394b10162', 'ArenaMedia', null, 'LARGE', 9, true, false, NOW()),
        ('92bc6a96-689b-41ac-b555-d3ff0e522f42', 'NorthernAds', null, 'MEDIUM', 9, true, false, NOW()),
        ('a50eef7e-14af-4d91-a41c-97c324f7c816', 'AtlanticAds', null, 'LARGE', 10, true, false, NOW()),
-       ('9a190809-1597-440b-bf80-340f260d9d8e', 'Seaside Media', null, 'ENTERPRISE', 10, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, NOW())
+       ('9a190809-1597-440b-bf80-340f260d9d8e', 'Seaside Media', null, 'ENTERPRISE', 10, true, false, NOW())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO employee (employee_id, user_id, business_id, email)
