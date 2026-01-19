@@ -1,28 +1,42 @@
-import { useEffect, useState } from "react";
-import { getAllAdCampaigns } from "@/features/ad-campaign-management/api/getAllAdCampaigns";
-import type { AdCampaign } from "@/entities/ad-campaign";
+"use client";
 
-export function useProofStepper() {
-    const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
+import { useEffect, useState } from "react";
+import { getMediaReservations } from "@/features/reservation-management/api/getMediaReservations";
+
+export function useProofStepper(mediaId: string) {
+    const [campaigns, setCampaigns] = useState<{ value: string; label: string }[]>([]);
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
     const [loadingCampaigns, setLoadingCampaigns] = useState(false);
 
     useEffect(() => {
-        setLoadingCampaigns(true);
+        if (!mediaId) return;
 
-        getAllAdCampaigns()
-            .then(setCampaigns)
-            .catch((err) => {
-                console.warn("Failed to load ad campaigns:", err);
+        const load = async () => {
+            setLoadingCampaigns(true);
+            try {
+                const reservations = await getMediaReservations(mediaId);
+
+                const map = new Map<string, string>();
+                for (const r of reservations) {
+                    if (!r.campaignId) continue;
+                    if (!map.has(r.campaignId)) {
+                        map.set(r.campaignId, r.campaignName ?? r.campaignId);
+                    }
+                }
+
+                setCampaigns(
+                    Array.from(map.entries()).map(([value, label]) => ({ value, label }))
+                );
+            } catch (err) {
+                console.warn("Failed to load reservations:", err);
                 setCampaigns([]);
-            })
-            .finally(() => setLoadingCampaigns(false));
-    }, []);
+            } finally {
+                setLoadingCampaigns(false);
+            }
+        };
 
-    return {
-        campaigns,
-        selectedCampaignId,
-        setSelectedCampaignId,
-        loadingCampaigns,
-    };
+        void load();
+    }, [mediaId]);
+
+    return { campaigns, selectedCampaignId, setSelectedCampaignId, loadingCampaigns };
 }

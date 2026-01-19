@@ -13,14 +13,23 @@ import {
     Stack,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { useTranslations } from "next-intl";
 
 type Props = {
     rows: MediaRowData[];
     onAddProof: (row: MediaRowData) => void;
+
+    activeAdsCounts?: Record<string, number>;
 };
 
-export default function ProofMediaTable({ rows, onAddProof }: Props) {
+export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {} }: Props) {
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const t = useTranslations("proofOfDisplay");
+
+    const getDisplayedCount = (row: MediaRowData) => {
+        const id = String(row.id);
+        return activeAdsCounts[id] ?? 0;
+    };
 
     if (isMobile) {
         return (
@@ -37,23 +46,25 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
                                 </Group>
 
                                 <Button size="xs" variant="light" onClick={() => onAddProof(row)}>
-                                    Add proof
+                                    {t("table.addProof")}
                                 </Button>
                             </Group>
+
                             <Group grow>
                                 <Stack gap={0} align="center">
                                     <Text size="xs" c="dimmed">
-                                        Displayed
+                                        {t("table.displayed")}
                                     </Text>
                                     <Text fw={700} c="blue">
-                                        {row.adsDisplayed}
+                                        {getDisplayedCount(row)}
                                     </Text>
                                 </Stack>
 
                                 <Stack gap={0} align="center">
                                     <Text size="xs" c="dimmed">
-                                        Pending
+                                        {t("table.pending")}
                                     </Text>
+
                                     <Text fw={700} c="orange">
                                         {row.pending}
                                     </Text>
@@ -63,7 +74,7 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
                     ))
                 ) : (
                     <Text ta="center" c="dimmed" py="xl">
-                        No media found
+                        {t("table.noMedia")}
                     </Text>
                 )}
             </Stack>
@@ -73,25 +84,19 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
     return (
         <Paper shadow="sm" radius="md" withBorder>
             <ScrollArea>
-                <Table
-                    striped
-                    highlightOnHover
-                    verticalSpacing="md"
-                    horizontalSpacing="lg"
-                    layout="fixed"
-                >
+                <Table striped highlightOnHover verticalSpacing="md" horizontalSpacing="lg" layout="fixed">
                     <Table.Thead>
                         <Table.Tr>
-                            <Table.Th w={80}>Image</Table.Th>
-                            <Table.Th>Name</Table.Th>
+                            <Table.Th w={80}>{t("table.image")}</Table.Th>
+                            <Table.Th>{t("table.name")}</Table.Th>
                             <Table.Th w={140} ta="center">
-                                Ads displayed
+                                {t("table.adsDisplayed")}
                             </Table.Th>
                             <Table.Th w={120} ta="center">
-                                Pending
+                                {t("table.pending")}
                             </Table.Th>
                             <Table.Th w={160} ta="right">
-                                Action
+                                {t("table.action")}
                             </Table.Th>
                         </Table.Tr>
                     </Table.Thead>
@@ -112,7 +117,7 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
 
                                     <Table.Td w={140} ta="center">
                                         <Text fw={700} c="blue">
-                                            {row.adsDisplayed}
+                                            {getDisplayedCount(row)}
                                         </Text>
                                     </Table.Td>
 
@@ -124,7 +129,7 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
 
                                     <Table.Td w={160} ta="right">
                                         <Button size="xs" variant="light" onClick={() => onAddProof(row)}>
-                                            Add proof
+                                            {t("table.addProof")}
                                         </Button>
                                     </Table.Td>
                                 </Table.Tr>
@@ -133,7 +138,7 @@ export default function ProofMediaTable({ rows, onAddProof }: Props) {
                             <Table.Tr>
                                 <Table.Td colSpan={5}>
                                     <Text ta="center" c="dimmed" py="xl">
-                                        No media found
+                                        {t("table.noMedia")}
                                     </Text>
                                 </Table.Td>
                             </Table.Tr>

@@ -25,7 +25,8 @@
       "overview": "Overview",
       "media": "Media",
       "displayedAds": "Displayed ads",
-      "adRequests": "Ad requests"
+      "adRequests": "Ad requests",
+      "proof": "Submit Proof"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -413,6 +414,53 @@
       "delete": "Media deleted",
       "active": "Media activated",
       "inactive": "Media deactivated"
+    }
+  },
+  "proofOfDisplay": {
+    "modal": {
+      "title": "Add proof for {mediaName}"
+    },
+    "stepper": {
+      "campaign": {
+        "label": "Campaign",
+        "description": "Select campaign"
+      },
+      "upload": {
+        "label": "Upload",
+        "description": "Upload proof images"
+      }
+    },
+    "campaignSelect": {
+      "label": "Campaign",
+      "placeholder": "Select campaign"
+    },
+    "upload": {
+      "helperText": "Upload one or more photos showing the ad display.",
+      "uploadedCount": "Uploaded ({count})"
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "uploadProofImages": "Upload proof images",
+      "clear": "Clear",
+      "submitProof": "Submit proof",
+      "close": "Close"
+    },
+    "completed": {
+      "title": "Proof submitted",
+      "description": "The advertiser was notified by email for this campaign.",
+      "uploadedFiles": "Uploaded: {count} file(s)"
+    },
+    "page": { "title": "Proof of Display" },
+    "table": {
+      "image": "Image",
+      "name": "Name",
+      "adsDisplayed": "Ads displayed",
+      "pending": "Pending",
+      "displayed": "Displayed",
+      "action": "Action",
+      "addProof": "Add proof",
+      "noMedia": "No media found"
     }
   },
   "mediaModal": {

@@ -17,6 +17,7 @@ import { IconUpload, IconTrash, IconArrowRight, IconArrowLeft } from "@tabler/ic
 import { CldUploadWidget } from "next-cloudinary";
 import { useProofStepper } from "../../hooks/useProofStepper";
 import axiosInstance from "@/shared/api/axios/axios";
+import { useTranslations } from "next-intl";
 
 type Props = {
     opened: boolean;
@@ -39,12 +40,14 @@ export default function SubmitProofStepperModal({
     const [active, setActive] = useState(0);
 
     const { campaigns, selectedCampaignId, setSelectedCampaignId, loadingCampaigns } =
-        useProofStepper();
+        useProofStepper(mediaId);
 
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const [uploaded, setUploaded] = useState<UploadedProof[]>([]);
+    const t = useTranslations("proofOfDisplay");
+
 
     useEffect(() => {
         if (!opened) {
@@ -120,20 +123,19 @@ export default function SubmitProofStepperModal({
     }
 
     return (
-        <Modal opened={opened} onClose={onClose} centered size="lg" title={`Add proof • ${mediaName}`}>
+        <Modal opened={opened} onClose={onClose} centered size="lg" title={t("modal.title", { mediaName })} >
             <Stepper active={active}>
-                <Stepper.Step label="Campaign" description="Select campaign">
+                <Stepper.Step
+                    label={t("stepper.campaign.label")}
+                    description={t("stepper.campaign.description")}>
                     {loadingCampaigns ? (
                         <Loader />
                     ) : (
                         <Stack gap="sm">
                             <Select
-                                label="Campaign"
-                                placeholder="Select campaign"
-                                data={campaigns.map((c) => ({
-                                    value: c.campaignId,
-                                    label: c.name,
-                                }))}
+                                label={t("campaignSelect.label")}
+                                placeholder={t("campaignSelect.placeholder")}
+                                data={campaigns}
                                 value={selectedCampaignId}
                                 onChange={setSelectedCampaignId}
                             />
@@ -144,17 +146,19 @@ export default function SubmitProofStepperModal({
                                     onClick={nextStep}
                                     disabled={!canGoNext}
                                 >
-                                    Next
+                                    {t("buttons.next")}
                                 </Button>
                             </Group>
                         </Stack>
                     )}
                 </Stepper.Step>
 
-                <Stepper.Step label="Upload" description="Upload proof images">
+                <Stepper.Step
+                    label={t("stepper.upload.label")}
+                    description={t("stepper.upload.description")}>
                     <Stack gap="sm">
                         <Text size="sm" c="dimmed">
-                            Upload one or more photos showing the ad display.
+                            {t("upload.helperText")}
                         </Text>
 
                         <CldUploadWidget
@@ -169,7 +173,7 @@ export default function SubmitProofStepperModal({
                                     disabled={!selectedCampaignId || submitting}
                                     variant="light"
                                 >
-                                    Upload proof images
+                                    {t("buttons.uploadProofImages")}
                                 </Button>
                             )}
                         </CldUploadWidget>
@@ -178,7 +182,7 @@ export default function SubmitProofStepperModal({
                             <Stack gap={6}>
                                 <Group justify="space-between">
                                     <Text size="sm" fw={600}>
-                                        Uploaded ({uploaded.length})
+                                        {t("upload.uploadedCount", { count: uploaded.length })}
                                     </Text>
 
                                     <Button
@@ -188,8 +192,7 @@ export default function SubmitProofStepperModal({
                                         leftSection={<IconTrash size={14} />}
                                         onClick={() => setUploaded([])}
                                         disabled={submitting}
-                                    >
-                                        Clear
+                                    >{t("buttons.clear")}
                                     </Button>
                                 </Group>
 
@@ -214,11 +217,11 @@ export default function SubmitProofStepperModal({
                                 onClick={prevStep}
                                 disabled={submitting}
                             >
-                                Back
+                                {t("buttons.back")}
                             </Button>
 
                             <Button onClick={handleSubmit} loading={submitting} disabled={!canSubmit}>
-                                Submit proof
+                                {t("buttons.submitProof")}
                             </Button>
                         </Group>
                     </Stack>
@@ -226,14 +229,14 @@ export default function SubmitProofStepperModal({
 
                 <Stepper.Completed>
                     <Stack gap="xs">
-                        <Text fw={600}>Proof submitted</Text>
+                        <Text fw={600}>{t("completed.title")}</Text>
                         <Text size="sm" c="dimmed">
-                            The advertiser was notified by email for this campaign.
+                            {t("completed.description")}
                         </Text>
-                        <Text size="sm">Uploaded: {uploaded.length} file(s)</Text>
+                        <Text size="sm">{t("completed.uploadedFiles", { count: uploaded.length })}</Text>
 
                         <Group justify="flex-end" mt="sm">
-                            <Button onClick={onClose}>Close</Button>
+                            <Button onClick={onClose}>{t("buttons.close")}</Button>
                         </Group>
                     </Stack>
                 </Stepper.Completed>

@@ -25,7 +25,8 @@
       "overview": "Aperçu",
       "media": "Médias",
       "displayedAds": "Annonces affichées",
-      "adRequests": "Demandes d'annonce"
+      "adRequests": "Demandes d'annonce",
+      "proof": "Preuve d’affichage"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -414,6 +415,55 @@
       "delete": "Média supprimé",
       "active": "Média activé",
       "inactive": "Média désactivé"
+    }
+  },
+  "proofOfDisplay": {
+    "modal": {
+      "title": "Ajouter une preuve pour {mediaName}"
+    },
+    "stepper": {
+      "campaign": {
+        "label": "Campagne",
+        "description": "Sélectionner une campagne"
+      },
+      "upload": {
+        "label": "Téléversement",
+        "description": "Téléverser des images de preuve"
+      }
+    },
+    "campaignSelect": {
+      "label": "Campagne",
+      "placeholder": "Sélectionner une campagne"
+    },
+    "upload": {
+      "helperText": "Téléversez une ou plusieurs photos montrant l’affichage de la publicité.",
+      "uploadedCount": "Téléversé(s) ({count})"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "back": "Retour",
+      "uploadProofImages": "Téléverser des images de preuve",
+      "clear": "Effacer",
+      "submitProof": "Soumettre la preuve",
+      "close": "Fermer"
+    },
+    "completed": {
+      "title": "Preuve soumise",
+      "description": "L’annonceur a été informé par e-mail pour cette campagne.",
+      "uploadedFiles": "Téléversé(s) : {count} fichier(s)"
+    },
+    "page": {
+      "title": "Preuve d’affichage"
+    },
+    "table": {
+      "image": "Image",
+      "name": "Nom",
+      "adsDisplayed": "Publicités affichées",
+      "pending": "En attente",
+      "displayed": "Affichée",
+      "action": "Action",
+      "addProof": "Ajouter une preuve",
+      "noMedia": "Aucun média trouvé"
     }
   },
   "mediaModal": {

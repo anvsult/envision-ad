@@ -5,7 +5,7 @@ import {
     IconDeviceTv,
     IconLayoutDashboard,
     IconUsers,
-    IconShieldCheck, IconDiscountCheck,
+    IconShieldCheck, IconDiscountCheck, IconFileDescription,
 } from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
 import {useUser} from "@auth0/nextjs-auth0/client";
@@ -39,6 +39,16 @@ export default function SideBar() {
                 label={t("media-owner.media")}
                 leftSection={<IconDeviceTv size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/media-owner/media")}
+            />
+        ),
+        (permissions.includes('create:media') || permissions.includes('update:media')) && (
+            <NavLink
+                key="proof"
+                component={Link}
+                href="/dashboard/media-owner/proof"
+                label={t("media-owner.proof")}
+                leftSection={<IconFileDescription size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/media-owner/proof")}
             />
         ),
     ].filter(Boolean);
