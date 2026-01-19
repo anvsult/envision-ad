@@ -85,7 +85,7 @@ CREATE TABLE media_location (
 
 -- 5. Create Media Table
 CREATE TABLE media (
-    media_id UUID PRIMARY KEY,
+    media_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     media_location_id UUID NOT NULL
         REFERENCES media_location(media_location_id)
         ON DELETE RESTRICT,
