@@ -57,9 +57,22 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponseModel> getAllReservationsByMediaId(String mediaId) {
-        List<Reservation> reservations = reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
-        return reservationResponseMapper.entitiesToResponseModelList(reservations);
+        List<Reservation> reservations =
+                reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
+
+        List<ReservationResponseModel> response =
+                reservationResponseMapper.entitiesToResponseModelList(reservations);
+        for (ReservationResponseModel r : response) {
+            if (r.getCampaignId() == null) continue;
+
+            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(r.getCampaignId());
+            if (campaign != null) {
+                r.setCampaignName(campaign.getName());
+            }
+        }
+        return response;
     }
+
 
     @Override
     public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
