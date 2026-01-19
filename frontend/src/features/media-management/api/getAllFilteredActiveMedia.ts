@@ -1,10 +1,19 @@
 import { MediaListResponseDTO } from "@/entities/media";
-import { LatLngLiteral } from "leaflet";
 import axiosInstance from "@/shared/api/axios/axios";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 
 
 export enum SpecialSort {
-    nearest = "nearest",
+    nearest = "nearest"
+}
+
+export enum SortOptions{
+    priceAsc ="price,asc",
+    priceDesc ="price,desc",
+    dailyImpressionsAsc ="dailyImpressions,asc",
+    dailyImpressionsDesc ="dailyImpressions,desc",
+    loopDurationAsc ="loopDuration,asc",
+    loopDurationDesc ="loopDuration,desc"
 }
 
 function escapeLike(input: string): string {
@@ -14,21 +23,20 @@ function escapeLike(input: string): string {
         .replace(/_/g, "\\_");
 }
 
+
+
 export async function getAllFilteredActiveMedia(
-    title?: string | null,
-    minPrice?: number | null,
-    maxPrice?: number | null,
-    minDailyImpressions?: number | null,
-    sort?: string | null,
-    userLatLng?: LatLngLiteral | null,
-    page?: number,
-    size?: number
+    {title, businessId, minPrice, maxPrice, minDailyImpressions, sort, latLng, excludedId, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
     if (title && title.trim() !== "") {
         const escaped = escapeLike(title);
         params.append("title", escaped);
+    }
+
+    if (businessId) {
+        params.append("businessId", businessId);
     }
 
     if (minPrice) {
@@ -51,10 +59,13 @@ export async function getAllFilteredActiveMedia(
         }
     }
 
+    if (latLng && latLng.lat != null && latLng.lng != null) {
+        params.append("userLat", latLng.lat.toString());
+        params.append("userLng", latLng.lng.toString());
+    }
 
-    if (userLatLng && userLatLng.lat != null && userLatLng.lng != null) {
-        params.append("userLat", userLatLng.lat.toString());
-        params.append("userLng", userLatLng.lng.toString());
+    if (excludedId) {
+        params.append("excludedId", excludedId);
     }
 
     if (page) {

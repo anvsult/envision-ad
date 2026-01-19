@@ -1,7 +1,10 @@
-import { Carousel, CarouselSlide } from "@mantine/carousel";
+import { Carousel } from "@mantine/carousel";
 import classes from "./CardCarousel.module.css";
 import { Title } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
+import { useMediaList } from "@/features/media-management/api/useMediaList";
+import '@mantine/carousel/styles.css';
 
 interface CardCarouselProps {
     title?: string;
@@ -14,13 +17,14 @@ function CardCarousel({title, children}: CardCarouselProps) {
             {title ? <Title order={2}>{title}</Title>: <></>}
             <Carousel 
                 classNames={classes}
-                slideSize={{ base: '50%', sm: '33.33333%', md: '20%'}}
-                slideGap={{ base: 'sm', sm: 'md' }}
-                emblaOptions={{ loop: true, align: 'center' }}
-                
+                mih={310}
+                slideSize={{ base: '100%', sm: '50%', md: '25%' }}
+                slideGap={{ base: 0, sm: 'md' }}
+                emblaOptions={{ loop: true, align: 'start', dragFree: true}}
             >
                 {children}
             </Carousel>
+            
         </div>
     )
 }
@@ -33,28 +37,45 @@ interface MediaCardCarouselProps {
 
 export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
     return(
-        <div>
-            <CardCarousel title={title}>
+        (medias.length > 0 &&
+            <CardCarousel title={title} >
                 {medias.map((media) => (
-                <CarouselSlide key={media.index} py="sm">
-                    <MediaCard
-                        index={id ? id + media.index : media.index}
-                        href={media.href}
-                        imageUrl={media.imageUrl}
-                        title={media.title}
-                        mediaOwnerName={media.mediaOwnerName}
-                        mediaLocation={media.mediaLocation}
-                        aspectRatio={media.aspectRatio}
-                        typeOfDisplay={media.typeOfDisplay}
-                        price={media.price} 
-                        dailyImpressions={media.dailyImpressions}
-                        resolution={media.resolution} 
-                    />
-                </CarouselSlide>
-              ))}
+                    <Carousel.Slide key={id ? id + media.index : media.index}>
+                        <MediaCard
+                            index={id ? id + media.index : media.index}
+                            href={media.href}
+                            imageUrl={media.imageUrl}
+                            title={media.title}
+                            organizationId={media.organizationId}
+                            mediaLocation={media.mediaLocation}
+                            aspectRatio={media.aspectRatio}
+                            typeOfDisplay={media.typeOfDisplay}
+                            price={media.price} 
+                            dailyImpressions={media.dailyImpressions}
+                            resolution={media.resolution} 
+                        />
+                    </Carousel.Slide>
+                ))}
             </CardCarousel>
-        </div>
+        )
     )
+}
+
+interface MediaCardCarouselLoaderProps {
+    id?: string;
+    title?: string;
+    filteredMediaProps: FilteredActiveMediaProps;
+}
+
+export function MediaCardCarouselLoader({id, title, filteredMediaProps}: MediaCardCarouselLoaderProps){
+    const medias = useMediaList({filteredMediaProps});
+    return (
+        <MediaCardCarousel
+            id={id}
+            title={title}
+            medias={medias}
+        />
+    );
 }
 
 export default CardCarousel;

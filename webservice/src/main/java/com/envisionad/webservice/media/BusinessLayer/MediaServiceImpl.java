@@ -34,12 +34,14 @@ public class MediaServiceImpl implements MediaService {
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
+            String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
             Integer minDailyImpressions,
             String specialSort,
             Double userLat,
-            Double userLng
+            Double userLng,
+            String excludedId
             ) {
 
         // FILTERING
@@ -49,12 +51,20 @@ public class MediaServiceImpl implements MediaService {
             spec = spec.and(MediaSpecifications.titleContains(title));
         }
 
+        if (businessId != null) {
+            spec = spec.and(MediaSpecifications.businessIdEquals(UUID.fromString(businessId)));
+        }
+
         if (minPrice != null || maxPrice != null) {
             spec = spec.and(MediaSpecifications.priceBetween(minPrice, maxPrice));
         }
 
         if (minDailyImpressions != null) {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
+        }
+
+        if (excludedId != null) {
+            spec = spec.and(MediaSpecifications.mediaIdIsNotEqual(UUID.fromString(excludedId)));
         }
 
         // Sort by Nearest

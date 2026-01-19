@@ -1,14 +1,6 @@
-.controls {
-    transition: opacity 150ms ease;
+.control {
+  &[data-inactive] {
     opacity: 0;
-    
-    
-}
-
-.root {
-  &:hover {
-    .controls {
-      opacity: 1;
-    }
+    cursor: default;
   }
 }

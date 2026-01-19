@@ -14,16 +14,23 @@ import {
   SimpleGrid,
   Modal,
   Image,
+  AspectRatio,
+  Anchor,
+  ActionIcon,
 } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { getMediaById } from "@/features/media-management/api";
+import { useEffect, useMemo, useState } from "react";
+import { getMediaById, SpecialSort } from "@/features/media-management/api";
 import { getMediaReservations } from "@/features/reservation-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
+import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
+import { getOrganizationById } from "@/features/organization-management/api";
+import { LatLngLiteral } from "leaflet";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -40,15 +47,6 @@ const monthDefs = [
   { id: "December", key: "december" },
 ];
 
-const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
-  { dayId: "Monday", dayKey: "monday", closed: false },
-  { dayId: "Tuesday", dayKey: "tuesday", closed: false },
-  { dayId: "Wednesday", dayKey: "wednesday", closed: false },
-  { dayId: "Thursday", dayKey: "thursday", closed: false },
-  { dayId: "Friday", dayKey: "friday", closed: false },
-  { dayId: "Saturday", dayKey: "saturday", closed: true },
-  { dayId: "Sunday", dayKey: "sunday", closed: true },
-];
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
@@ -56,9 +54,10 @@ export default function MediaDetailsPage() {
   const params = useParams();
   const id = params?.id as string | undefined;
 
-  const [media, setMedia] = useState<Media | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
+  const [organizationName, setOrganizationName] = useState<string | null>(null) //
+  const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
+  const [error, setError] = useState<string | null>(null); //The error message
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [activeAdsCount, setActiveAdsCount] = useState<number>(0);
@@ -99,6 +98,38 @@ export default function MediaDetailsPage() {
 
     void loadMedia();
   }, [id]);
+
+  useEffect(() => {
+    if (!media?.businessId){
+      return
+    }
+    const fetchOrganizationDetails = async (businessId: string) => {
+      try {
+
+        const response = await getOrganizationById(businessId);
+        setOrganizationName(response.name);
+      } catch (e){
+        console.log(e)
+      }
+    };
+    
+    fetchOrganizationDetails(media?.businessId)
+  }, [media?.businessId]);
+
+  const latlng: LatLngLiteral = useMemo(() => ({
+    lat: media?.mediaLocation.latitude ?? 0,
+    lng: media?.mediaLocation.longitude ?? 0,
+  }), [media?.mediaLocation.latitude, media?.mediaLocation.longitude]);
+
+  const filteredOrgMediaProps: FilteredActiveMediaProps = useMemo(() => ({
+    sort: SpecialSort.nearest,
+    businessId: media?.businessId,
+    excludedId: media?.id,
+    latlng,
+    page: 0,
+    size: 10
+  }), [latlng, media?.businessId, media?.id]);
+
 
   if (loading) {
     return (
@@ -156,45 +187,66 @@ export default function MediaDetailsPage() {
 
   return (
     <>
-      <Container size="lg" py="xl">
-        <Group align="flex-start" justify="space-between" wrap="wrap">
-          {/* Left Column */}
-          <Stack gap="md" style={{ flex: 2, minWidth: 320 }}>
+      <Container size="md" py={20} px={80}>
+        <Stack gap="sm">
+          {/* Title Bar */}
+          <Group gap="xs" justify="space-between">
             <Group gap="xs">
-              <BackButton />
+              <Anchor href={"/browse"}>
+
+                <ActionIcon
+                  variant="subtle"
+                  radius="xl"
+                  size="lg"
+                  
+                  aria-label="Go back"
+                  >
+                  <IconArrowLeft size={20} />
+                </ActionIcon>
+              </Anchor>
               <Title order={2}>{media.title}</Title>
             </Group>
-
-            <Card p={0} withBorder radius="lg">
-              <div
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setImageModalOpen(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setImageModalOpen(true);
-                    }
-                  }}
-                  style={{
-                    position: "relative",
-                    width: "100%",
-                    height: 300,
-                    cursor: "zoom-in",
-                    borderRadius: 12,
-                    overflow: "hidden",
-                  }}
+            <Button
+              variant="outline"
+              radius="xl"
+              p={0}
+              style={{ width: 40, height: 40, borderRadius: "50%" }}
+            >
+              <IconAlertCircle size={20} />
+            </Button>
+          </Group>
+          {/* Columns */}
+          <Group align="stretch" gap="50">
+            {/* Left Column */}
+            <Stack gap="sm" style={{ flex: 2, minWidth: 320 }}>
+              {/* Media Image */}
+              <Anchor 
+                tabIndex={0}
+                h="auto"
+                w="auto"
+                onClick={() => setImageModalOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setImageModalOpen(true);
+                  }
+                }}
+                style={{                  
+                  cursor: "zoom-in",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                }}
+                
               >
-                <Image
-                    src={imageSrc}
-                    alt={media.title}
-                    h={300}
-                    w="100%"
-                    fit="cover"
-                    radius={0}
-                />
-              </div>
-            </Card>
+                <AspectRatio ratio={1/1}>
+                        <Image
+                            src={imageSrc}
+                            alt={media.title}
+                            fit="cover"
+                            radius={0}
+                        />
+                </AspectRatio>
+              </Anchor>
             <Stack gap={4}>
               <Text fw={600} size="lg">
                 {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
@@ -205,138 +257,138 @@ export default function MediaDetailsPage() {
               </Text>
             </Stack>
 
-            <Divider my="md" />
+              {/* Address */}
+              <Stack gap={3}>
+                <Text fw={600} size="lg">
+                  {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
+                </Text>
+                <Text fw={600} size="md">{organizationName}</Text>
+                <Text size="sm" c="dimmed">
+                  {t("currentlyDisplaying", { count: 0 })}
+                </Text>
+              </Stack>
 
-            <Stack gap="md">
-              <Text fw={600}>{t("detailsTitle")}</Text>
+              <Divider/>
 
-              {(() => {
-                const rows: [string, string][] = [
-                  [t("details.type"), typeLabel],
-                  [t("details.aspectRatio"), media.aspectRatio || "N/A"],
-                  [t("details.resolution"), media.resolution || "N/A"],
-                  [t("details.width"), widthLabel],
-                  [t("details.height"), heightLabel],
-                ];
+              {/* Media Details */}
+              <Stack gap="5" >
+                <Text fw={600}>{t("detailsTitle")}</Text>
 
-                if (!isPoster) {
-                  rows.push([t("details.loopDuration"), loopDurationLabel]);
-                }
+                {(() => {
+                  const rows: [string, string][] = [
+                    [t("details.type"), typeLabel],
+                    [t("details.aspectRatio"), media.aspectRatio || "N/A"],
+                    [t("details.resolution"), media.resolution || "N/A"],
+                    [t("details.width"), widthLabel],
+                    [t("details.height"), heightLabel],
+                  ];
 
-                rows.push([
-                  t("details.dailyImpressions"),
-                  t("dailyImpressionPerDay", {
-                    count: media.dailyImpressions ?? 0,
-                  }),
-                ]);
+                  if (!isPoster) {
+                    rows.push([t("details.loopDuration"), loopDurationLabel]);
+                  }
 
-                return rows.map(([label, val]) => (
-                  <Group key={label} justify="space-between">
-                    <Text size="sm" c="dimmed">
-                      {label}:
+                  rows.push([
+                    t("details.dailyImpressions"),
+                    t("dailyImpressionPerDay", {
+                      count: media.dailyImpressions ?? 0,
+                    }),
+                  ]);
+
+                  return rows.map(([label, val]) => (
+                    <Group key={label} justify="space-between">
+                      <Text size="sm" c="dimmed">
+                        {label}:
+                      </Text>
+                      <Text size="sm">{val}</Text>
+                    </Group>
+                  ));
+                })()}
+                </Stack>
+              </Stack>
+
+              {/* Right Column */}
+              <Stack style={{flex: 1, minWidth: 320 }} align="stretch" justify="flex-start">
+                {/* Schedule */}
+                <Card withBorder radius="lg" p="lg">
+                  <Stack gap="md">
+                    <Text fw="md">{t("scheduleTitle")}</Text>
+
+                    {/* Months */}
+                    <Stack gap="xs">
+                      <Text size="sm">
+                        {t("monthsTitle")}
+                      </Text>
+
+                      <SimpleGrid cols={4} spacing={6} verticalSpacing={6}>
+                        {monthDefs.map((m) => {
+                          const active = activeMonths.has(m.id);
+                          return (
+                            <Button
+                              key={m.id}
+                              size="xs"
+                              px={8}
+                              variant={active ? "filled" : "outline"}
+                              color={active ? "blue" : "gray"}
+                              disabled={!active}
+                              styles={{
+                                label: {
+                                  whiteSpace: "normal",
+                                  lineHeight: 1.2,
+                                },
+                              }}
+                            >
+                              {t(`months.${m.key}`)}
+                            </Button>
+                          );
+                        })}
+                      </SimpleGrid>
+                    </Stack>
+
+                    {/* Hours */}
+                    <Stack gap="xs">
+                      <Text size="sm" fw={500}>
+                        {t("hoursTitle")}
+                      </Text>
+
+                      {media.schedule.weeklySchedule.map((day) => {
+                        const isActive = day.isActive;
+                        const hoursText = 
+                          !isActive ? t("days.closed")
+                          : ((day.startTime ?? "00:00") + " - " + (day.endTime ?? "00:00"));
+
+                        return (
+                          <Group key={day.dayOfWeek} justify="space-between">
+                            <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
+                              {t(`days.${day.dayOfWeek}`)}:
+                            </Text>
+                            <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
+                              {hoursText}
+                            </Text>
+                          </Group>
+                        );
+                      })}
+                    </Stack>
+                  </Stack>
+                </Card>
+
+                <Card withBorder radius="lg" shadow="md" p="lg">
+                  <Stack align="center">
+                    <Text fw={600} size="xl" td="underline">
+                      {priceLabel}
                     </Text>
-                    <Text size="sm">{val}</Text>
-                  </Group>
-                ));
-              })()}
-            </Stack>
-
-            <Divider my="md" />
-          </Stack>
-
-          {/* Right Column */}
-          <Stack gap="lg" style={{ flex: 1, minWidth: 320 }}>
-            <Group justify="flex-end">
-              <Button
-                variant="outline"
-                radius="xl"
-                p={0}
-                style={{ width: 40, height: 40, borderRadius: "50%" }}
-              >
-                <IconAlertCircle size={20} />
-              </Button>
-            </Group>
-
-            {/* Schedule */}
-            <Card withBorder radius="lg" p="lg">
-              <Stack gap="md">
-                <Text fw={600}>{t("scheduleTitle")}</Text>
-
-                {/* Months */}
-                <Stack gap="xs">
-                  <Text size="sm" fw={500}>
-                    {t("monthsTitle")}
-                  </Text>
-
-                  <SimpleGrid cols={4} spacing={6} verticalSpacing={6}>
-                    {monthDefs.map((m) => {
-                      const active = activeMonths.has(m.id);
-                      return (
-                        <Button
-                          key={m.id}
-                          size="xs"
-                          px={8}
-                          variant={active ? "filled" : "outline"}
-                          color={active ? "blue" : "gray"}
-                          disabled={!active}
-                          styles={{
-                            label: {
-                              whiteSpace: "normal",
-                              lineHeight: 1.2,
-                            },
-                          }}
-                        >
-                          {t(`months.${m.key}`)}
-                        </Button>
-                      );
-                    })}
-                  </SimpleGrid>
-                </Stack>
-
-                {/* Hours */}
-                <Stack gap="xs">
-                  <Text size="sm" fw={500}>
-                    {t("hoursTitle")}
-                  </Text>
-
-                  {hourDefs.map((h) => {
-                    const closed = h.closed;
-                    const hoursText = closed
-                      ? t("days.closed")
-                      : t("hoursPattern");
-
-                    return (
-                      <Group key={h.dayId} justify="space-between">
-                        <Text size="sm" c={closed ? "dimmed" : "dark"}>
-                          {t(`days.${h.dayKey}`)}:
-                        </Text>
-                        <Text size="sm" c={closed ? "dimmed" : "dark"}>
-                          {hoursText}
-                        </Text>
-                      </Group>
-                    );
-                  })}
-                </Stack>
+                    <Button radius="xl" fullWidth onClick={() => setReserveModalOpen(true)}>
+                      {t("reserveButton")}
+                    </Button>
+                    <Text size="xs" c="dimmed">
+                      {t("reserveNote")}
+                    </Text>
+                  </Stack>
+                </Card>
               </Stack>
-            </Card>
-
-            <Card withBorder radius="lg" shadow="md" p="lg">
-              <Stack align="center">
-                <Text fw={600} size="xl" td="underline">
-                  {priceLabel}
-                </Text>
-                <Button radius="xl" fullWidth onClick={() => setReserveModalOpen(true)}>
-                  {t("reserveButton")}
-                </Button>
-                <Text size="xs" c="dimmed">
-                  {t("reserveNote")}
-                </Text>
-              </Stack>
-            </Card>
-          </Stack>
-        </Group>
-      </Container>
-      <Modal
+            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={t("otherMediaBy") + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
+          </Group>
+        </Stack>
+        <Modal
           opened={imageModalOpen}
           onClose={() => setImageModalOpen(false)}
           centered
@@ -354,16 +406,16 @@ export default function MediaDetailsPage() {
             },
           }}
       >
-        <Image
-            src={imageSrc}
-            alt={media.title}
-            fit="contain"
-            w="auto"
-            radius="md"
-            styles={{
-              root: { maxWidth: "88vw", maxHeight: "80vh" },
-            }}
-        />
+      <Image
+          src={imageSrc}
+          alt={media.title}
+          fit="contain"
+          w="auto"
+          radius="md"
+          styles={{
+            root: { maxWidth: "88vw", maxHeight: "80vh" },
+          }}
+      />
       </Modal>
       {media && (
         <ReserveMediaModal
@@ -372,6 +424,8 @@ export default function MediaDetailsPage() {
           media={media}
         />
       )}
+      </Container>
+      
     </>
   );
 }

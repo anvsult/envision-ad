@@ -157,12 +157,12 @@
       "sunday": "Sunday",
       "closed": "Closed"
     },
-    "hoursPattern": "7:30 - 18:30",
     "success": {
       "title": "Success",
       "approve": "Media has been approved",
       "deny": "Media has been denied"
     },
+    "otherMediaBy":"Other medias from ",
     "errors": {
       "error": "Error",
       "approveFailed": "Media approval has failed",

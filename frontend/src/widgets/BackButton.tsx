@@ -25,7 +25,7 @@ export function BackButton({ returnPath }: BackButtonProps) {
           router.back();
         }
       }}
-      aria-label="Go back to browse"
+      aria-label="Go back"
     >
       <IconArrowLeft size={20} />
     </ActionIcon>

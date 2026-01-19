@@ -23,6 +23,7 @@ public class BusinessController {
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BusinessResponseModel> createBusiness(@AuthenticationPrincipal Jwt jwt, @RequestBody BusinessRequestModel requestModel) {
         return ResponseEntity.status(HttpStatus.CREATED).body(businessService.createBusiness(jwt, requestModel));
     }
@@ -99,6 +100,7 @@ public class BusinessController {
     }
 
     @PostMapping("/{businessId}/employees")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<EmployeeResponseModel> addEmployeeToBusiness(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId, @RequestParam String token) {
         return ResponseEntity.ok(businessService.addBusinessEmployee(jwt, businessId, token));
     }
@@ -111,6 +113,7 @@ public class BusinessController {
     }
 
     @GetMapping("/employee/{userId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<BusinessResponseModel> getBusinessByUserId(@AuthenticationPrincipal Jwt jwt, @PathVariable String userId) {
         return ResponseEntity.ok(businessService.getBusinessByUserId(jwt, userId));
     }
