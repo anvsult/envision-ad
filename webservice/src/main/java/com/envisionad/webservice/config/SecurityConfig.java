@@ -26,10 +26,6 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/v1/businesses/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/media/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/media/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/api/v1/media/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/media/**").authenticated()
                         .anyRequest().permitAll())
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)

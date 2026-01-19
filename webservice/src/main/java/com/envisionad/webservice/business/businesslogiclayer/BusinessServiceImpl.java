@@ -11,6 +11,7 @@ import com.envisionad.webservice.business.mappinglayer.InvitationMapper;
 import com.envisionad.webservice.business.presentationlayer.models.*;
 import com.envisionad.webservice.business.utils.Validator;
 import com.envisionad.webservice.utils.EmailService;
+import com.envisionad.webservice.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,7 +44,9 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final InvitationMapper invitationMapper;
 
-    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper) {
+    private final JwtUtils jwtUtils;
+
+    public BusinessServiceImpl(EmailService emailService, BusinessRepository businessRepository, InvitationRepository invitationRepository, EmployeeRepository employeeRepository, BusinessMapper businessMapper, EmployeeMapper employeeMapper, InvitationMapper invitationMapper, JwtUtils jwtUtils) {
         this.emailService = emailService;
         this.businessRepository = businessRepository;
         this.invitationRepository = invitationRepository;
@@ -51,6 +54,7 @@ public class BusinessServiceImpl implements BusinessService {
         this.businessMapper = businessMapper;
         this.employeeMapper = employeeMapper;
         this.invitationMapper = invitationMapper;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (businessRepository.existsByName(businessRequestModel.getName()))
             throw new DuplicateBusinessNameException();
 
-        String userId = extractUserId(jwt);
+        String userId = jwtUtils.extractUserId(jwt);
         if(employeeRepository.existsByUserId(userId))
             throw new AccessDeniedException("Access denied");
 
@@ -93,8 +97,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (existingBusiness == null)
             throw new BusinessNotFoundException();
 
-        String userId = extractUserId(jwt);
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         Business newBusiness = businessMapper.toEntity(businessRequestModel);
         newBusiness.setId(existingBusiness.getId());
@@ -110,8 +114,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (business == null)
             throw new BusinessNotFoundException();
 
-        String userId = extractUserId(jwt);
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         String token = UUID.randomUUID().toString();
         Invitation invitation =  invitationMapper.toEntity(invitationRequest);
@@ -131,8 +135,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        String userId = extractUserId(jwt);
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         Invitation invitation = invitationRepository.findByInvitationId_InvitationId(invitationId);
 
@@ -147,8 +151,8 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        String userId = extractUserId(jwt);
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         return employeeRepository.findAllByBusinessId_BusinessId(businessId)
                 .stream()
@@ -163,7 +167,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
 
-        String userId = extractUserId(jwt);
+        String userId = jwtUtils.extractUserId(jwt);
         if (employees.stream().noneMatch(e -> e.getUserId().equals(userId)))
             throw new AccessDeniedException("Access Denied");
 
@@ -185,7 +189,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (invitation.getTimeExpires().isBefore(LocalDateTime.now()))
             throw new InvitationNotFoundException();
 
-        String userId = extractUserId(jwt);
+        String userId = jwtUtils.extractUserId(jwt);
         if (employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId))
             throw new AccessDeniedException("User is already an employee");
 
@@ -204,8 +208,8 @@ public class BusinessServiceImpl implements BusinessService {
 
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
 
-        String userId = extractUserId(jwt);
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         Employee employee = employees.stream().filter(e -> e.getEmployeeId().getEmployeeId().equals(employeeId)).findFirst().orElse(null);
 
@@ -217,7 +221,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public BusinessResponseModel getBusinessByUserId(Jwt jwt, String userId) {
-        String authenticatedUserId = extractUserId(jwt);
+        String authenticatedUserId = jwtUtils.extractUserId(jwt);
         if (!userId.equals(authenticatedUserId))
             throw new AccessDeniedException("Access Denied");
 
@@ -232,16 +236,4 @@ public class BusinessServiceImpl implements BusinessService {
         return businessMapper.toResponse(business);
     }
 
-    private String extractUserId(Jwt jwt) {
-        String userId = jwt.getClaim("sub");
-        if (userId == null || userId.isEmpty())
-            throw new AccessDeniedException("Invalid token");
-        return userId;
-    }
-
-    private void validateUserIsEmployeeOfBusiness(String userId, String businessId) {
-        boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
-        if (!isEmployee)
-            throw new AccessDeniedException("Access Denied");
-    }
 }

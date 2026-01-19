@@ -4,7 +4,6 @@ import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignServ
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -17,9 +16,9 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.EmailService;
+import com.envisionad.webservice.utils.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -36,19 +35,19 @@ public class ReservationServiceImpl implements ReservationService {
     private final AdCampaignRepository adCampaignRepository; // To link the campaign
     private final ReservationRequestMapper reservationRequestMapper;
     private final ReservationResponseMapper reservationResponseMapper;
-    private final EmployeeRepository employeeRepository;
     private final AdCampaignService adCampaignService;
+    private final JwtUtils jwtUtils;
     private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
-    public ReservationServiceImpl(EmailService emailService, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, EmployeeRepository employeeRepository, AdCampaignService adCampaignService) {
+    public ReservationServiceImpl(EmailService emailService, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService, JwtUtils jwtUtils) {
         this.emailService = emailService;
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.reservationRequestMapper = reservationRequestMapper;
         this.reservationResponseMapper = reservationResponseMapper;
-        this.employeeRepository = employeeRepository;
         this.adCampaignService = adCampaignService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new SecurityException("Invalid JWT token or subject");
         }
 
-        String userId = extractUserId(jwt);
+        String userId = jwtUtils.extractUserId(jwt);
 
         // Validate media exists
         Media media = mediaRepository.findById(UUID.fromString(mediaId))
@@ -73,10 +72,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (media.getPrice() == null || media.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalStateException("Media does not have a valid price");
-        }
-
-        if (!requestModel.getEndDate().isAfter(requestModel.getStartDate())) {
-            throw new IllegalArgumentException("End date must be after start date");
         }
 
         // Validate campaign exists and user has access
@@ -91,10 +86,10 @@ public class ReservationServiceImpl implements ReservationService {
         String businessId = campaign.getBusinessId().getBusinessId();
 
         // Validate user is employee of the business
-        validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
         // Validate business owns the campaign
-        validateBusinessOwnsCampaign(businessId, campaign);
+        jwtUtils.validateBusinessOwnsCampaign(businessId, campaign);
 
         // Calculate price
         long days = Duration.between(requestModel.getStartDate(), requestModel.getEndDate()).toDays();
@@ -136,24 +131,5 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 
-    private void validateUserIsEmployeeOfBusiness(String userId, String businessId) {
-        boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
-        if (!isEmployee)
-            throw new AccessDeniedException("User is not an employee of the business");
-    }
-
-    private void validateBusinessOwnsCampaign(String businessId, AdCampaign campaign) {
-        String campaignBusinessId = campaign.getBusinessId().getBusinessId();
-        if (!campaignBusinessId.equals(businessId)) {
-            throw new AccessDeniedException("Campaign does not belong to the specified business");
-        }
-    }
-
-    private String extractUserId(Jwt jwt) {
-        String userId = jwt.getClaim("sub");
-        if (userId == null || userId.isEmpty())
-            throw new org.springframework.security.access.AccessDeniedException("Invalid token");
-        return userId;
-    }
-
 }
+
