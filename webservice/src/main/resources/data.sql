@@ -14,10 +14,10 @@ VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, NOW())
     ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO employee (employee_id, user_id, business_id)
-VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
-       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
-       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33')
+INSERT INTO employee (employee_id, user_id, business_id, email)
+VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
+       ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'anv.sult@gmail.com')
 ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
