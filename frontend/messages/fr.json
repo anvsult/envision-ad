@@ -112,6 +112,7 @@
     },
     "errorTitle": "Impossible de charger ce média.",
     "errorNotFound": "Média introuvable.",
+    "errorLoading": "Échec du chargement des détails du média.",
     "currentlyDisplaying": "Affiche actuellement {count} autres annonces !",
     "detailsTitle": "Détails",
     "details": {
@@ -738,6 +739,9 @@
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
       "selectDate": "Veuillez sélectionner une date de début et de fin valides"
     },
+    "errorTitle": "Erreur de réservation",
+    "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
+    "campaignNotFoundErrorMessage": "Campagne introuvable.",
     "mediaIdMissing": "L'identifiant du média est manquant.",
     "successTitle": "Réservation réussie !",
     "successMessage": "Réservation confirmée !",
@@ -758,5 +762,17 @@
       "dates": "Dates",
       "totalCost": "Coût total"
     }
+  },
+  "invitation": {
+    "loading": "Chargement...",
+    "processing": "Traitement de votre invitation...",
+    "invalidLinkTitle": "Lien d'invitation invalide",
+    "invalidLink": "Ce lien d'invitation est invalide ou incomplet.",
+    "successTitle": "Succès !",
+    "success": "Vous avez rejoint l'organisation avec succès !",
+    "errorTitle": "Échec",
+    "error": "Une erreur s'est produite lors de l'acceptation de l'invitation.",
+    "redirecting": "Redirection vers le tableau de bord...",
+    "goHome": "Retour à l'accueil"
   }
 }

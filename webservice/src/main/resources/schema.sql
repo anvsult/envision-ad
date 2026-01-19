@@ -66,6 +66,7 @@ CREATE TABLE employee
     employee_id VARCHAR(36) UNIQUE NOT NULL,
     user_id     VARCHAR(36) UNIQUE NOT NULL,
     business_id VARCHAR(36)  NOT NULL,
+    email       VARCHAR(255),
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
@@ -128,6 +129,7 @@ CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    business_id VARCHAR(36) NOT NULL REFERENCES business(business_id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL
 );
 

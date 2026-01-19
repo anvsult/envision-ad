@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Media not found")
 public class MediaNotFoundException extends RuntimeException {
-    public MediaNotFoundException(String message) {
-        super(message);
+    public MediaNotFoundException(String mediaId) {
+        super("Media with ID " + mediaId + " not found.");
     }
 }

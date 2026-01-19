@@ -38,3 +38,26 @@ spring:
           auth: true
           starttls:
             enable: true
+
+# Backend health check
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: when-authorized
+  health:
+    mail:
+      enabled: false  # Disable mail health check
+
+okta:
+  oauth2:
+    issuer: "https://${AUTH0_DOMAIN:test.auth0.com}/"
+    audience: ${AUTH0_AUDIENCE:test-audience}
+
+app:
+  base:
+    url: ${APP_BASE_URL:http://localhost:8080}
+

@@ -20,4 +20,6 @@ public class Employee {
     private BusinessIdentifier businessId;
 
     private String userId;
+
+    private String email;
 }

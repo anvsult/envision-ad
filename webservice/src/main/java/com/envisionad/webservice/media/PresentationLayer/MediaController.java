@@ -28,7 +28,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/v1/media") // Base URL: http://localhost:8080
+@RequestMapping("/api/v1/media")
 @Slf4j
 @CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class MediaController {

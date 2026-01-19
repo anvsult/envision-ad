@@ -112,6 +112,7 @@
     },
     "errorTitle": "Could not load this media.",
     "errorNotFound": "Media not found.",
+    "errorLoading": "Failed to load media details.",
     "currentlyDisplaying": "Currently displaying {count} other ads!",
     "detailsTitle": "Details",
     "details": {
@@ -738,6 +739,8 @@
       "selectDate": "Please select a valid start and end date"
     },
     "errorTitle": "Error",
+    "missingPermissionErrorMessage": "You do not have permission to create reservations for this campaign",
+    "campaignNotFoundErrorMessage": "Media or campaign not found",
     "successTitle": "Reservation Successful!",
     "successMessage": "Reservation Confirmed!",
     "successMessageLong": "Your ad slot has been successfully booked. You can view it in your dashboard schedule.",
@@ -757,5 +760,18 @@
       "dates": "Dates",
       "totalCost": "Total Cost"
     }
+  },
+  "invitation": {
+    "loading": "Loading...",
+    "processing": "Processing your invitation...",
+    "invalidLinkTitle": "Invalid Invitation Link",
+    "invalidLink": "This invitation link is invalid or incomplete.",
+    "successTitle": "Success!",
+    "success": "You've successfully joined the organization!",
+    "errorTitle": "Failed",
+    "error": "An error occurred while accepting the invitation.",
+    "redirecting": "Redirecting to dashboard...",
+    "goHome": "Go Home"
   }
+
 }
