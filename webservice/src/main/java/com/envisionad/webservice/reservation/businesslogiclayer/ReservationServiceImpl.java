@@ -14,6 +14,7 @@ import com.envisionad.webservice.reservation.dataaccesslayer.ReservationReposito
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
+import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
@@ -142,7 +143,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
                 .sum();
         if (media.getLoopDuration() <= totalReservedDuration) {
-            throw new IllegalStateException("Media does not have enough loop duration left for the requested reservation period");
+            throw new InsufficientLoopDurationException();
         }
     }
 

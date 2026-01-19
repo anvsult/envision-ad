@@ -14,7 +14,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
     @Query("SELECT r FROM Reservation r WHERE r.mediaId = :mediaId " +
-           "AND r.status = 'ACTIVE' " +
+           "AND r.status = 'CONFIRMED' " +
            "AND r.startDate < :endDate " +
            "AND r.endDate > :startDate")
     List<Reservation> findAllActiveReservationsByMediaIdAndDateRange(
