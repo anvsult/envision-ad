@@ -24,7 +24,7 @@ function BrowsePage() {
   // Lists
   const ITEMS_PER_PAGE = 16;
   const [activePage, setActivePage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalPages] = useState<number>(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -99,7 +99,7 @@ function BrowsePage() {
 
         if (err instanceof GeolocationPositionError && err.code === 1) {
           setLocationStatus('denied');
-          setSortBy(SortOptions.priceAsc)
+          setSortBy(SortOptions.priceAsc);
         } else {
           setLocationStatus('error');
         }

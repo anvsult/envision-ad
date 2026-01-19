@@ -19,7 +19,7 @@ export enum TestMediaTitles {
     mainEntranceDigitalBoard = 'Main Entrance Digital Board',
     studentLounge1 = 'Student Lounge 1',
     studentLounge2 = 'Student Lounge 2',
-    cafetariaEntrance = 'Cafeteria Entrance',
+    cafeteriaEntrance = 'Cafeteria Entrance',
     pingMoStoreEntrance = 'Ping Mo Store Entrance'
 }
 
