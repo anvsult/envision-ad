@@ -112,7 +112,7 @@ export default function MediaDetailsPage() {
         console.log(e)
       }
     };
-    
+
     fetchOrganizationDetails(media?.businessId)
   }, [media?.businessId]);
 
@@ -198,7 +198,7 @@ export default function MediaDetailsPage() {
                   variant="subtle"
                   radius="xl"
                   size="lg"
-                  
+
                   aria-label="Go back"
                   >
                   <IconArrowLeft size={20} />
@@ -220,7 +220,7 @@ export default function MediaDetailsPage() {
             {/* Left Column */}
             <Stack gap="sm" style={{ flex: 2, minWidth: 320 }}>
               {/* Media Image */}
-              <Anchor 
+              <Anchor
                 tabIndex={0}
                 h="auto"
                 w="auto"
@@ -231,12 +231,12 @@ export default function MediaDetailsPage() {
                     setImageModalOpen(true);
                   }
                 }}
-                style={{                  
+                style={{
                   cursor: "zoom-in",
                   borderRadius: 12,
                   overflow: "hidden",
                 }}
-                
+
               >
                 <AspectRatio ratio={1/1}>
                         <Image
@@ -342,7 +342,7 @@ export default function MediaDetailsPage() {
 
                       {media.schedule.weeklySchedule.map((day) => {
                         const isActive = day.isActive;
-                        const hoursText = 
+                        const hoursText =
                           !isActive ? t("days.closed")
                           : ((day.startTime ?? "00:00") + " - " + (day.endTime ?? "00:00"));
 
@@ -415,7 +415,7 @@ export default function MediaDetailsPage() {
         />
       )}
       </Container>
-      
+
     </>
   );
 }
