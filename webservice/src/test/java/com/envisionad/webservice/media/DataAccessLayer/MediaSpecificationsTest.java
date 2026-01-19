@@ -13,8 +13,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -59,4 +58,29 @@ class MediaSpecificationsTest {
         assertNull(result);
         verifyNoInteractions(root, cb);
     }
+
+    @Test
+    void whenExcludedIdIsProvided_thenReturnNotEqualPredicate() {
+        UUID excludedId = UUID.randomUUID();
+
+        when(root.get("id")).thenReturn(path);
+        when(cb.notEqual(path, excludedId)).thenReturn(predicate);
+
+        Specification<Media> spec = MediaSpecifications.mediaIdIsNotEqual(excludedId);
+        Predicate result = spec.toPredicate(root, query, cb);
+
+        assertNotNull(result);
+        assertEquals(predicate, result);
+    }
+
+    @Test
+    void whenExcludedIdIsNull_thenReturnNull() {
+        Specification<Media> spec = MediaSpecifications.mediaIdIsNotEqual(null);
+
+        Predicate result = spec.toPredicate(root, query, cb);
+
+        assertNull(result);
+        verifyNoInteractions(root, cb);
+    }
+
 }

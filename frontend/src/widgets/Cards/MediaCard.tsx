@@ -1,10 +1,7 @@
-import { Paper, Text, Image, Space, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
+import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, MediaLocation } from "@/entities/media";
-import { useMediaQuery } from "@mantine/hooks";
-// import StatusBadge from "../StatusBadge/StatusBadge";
-// import { MediaAdStatuses } from "@/types/MediaAdStatus";
 
 export interface MediaCardProps {
     index: string;
@@ -24,17 +21,16 @@ export interface MediaCardProps {
 const ratio = 1/1
 
 function MediaCard({index, href, imageUrl, title, mediaOwnerName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    // const isMobile = useMediaQuery("(max-width: 768px)");
     const t = useTranslations("mediacard");
-    
-    
 
     return (
-        <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never">
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never" >
             <Paper 
                 shadow="sm"
                 radius="md"
                 className={styles.paper}
+                h="100%"
             >   
                 <Stack gap={0} >
                     <AspectRatio ratio={ratio}>

@@ -20,8 +20,7 @@ function CardCarousel({title, children}: CardCarouselProps) {
                 mih={310}
                 slideSize={{ base: '100%', sm: '50%', md: '25%' }}
                 slideGap={{ base: 0, sm: 'md' }}
-                emblaOptions={{ loop: true, align: 'start' }}
-                bdrs={2}
+                emblaOptions={{ loop: true, align: 'start', dragFree: true}}
             >
                 {children}
             </Carousel>
@@ -38,10 +37,9 @@ interface MediaCardCarouselProps {
 
 export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
     return(
-        <div>
+        (medias.length > 0 &&
             <CardCarousel title={title} >
                 {medias.map((media) => (
-                            
                     <Carousel.Slide key={id ? id + media.index : media.index}>
                         <MediaCard
                             index={id ? id + media.index : media.index}
@@ -59,7 +57,7 @@ export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
                     </Carousel.Slide>
                 ))}
             </CardCarousel>
-        </div>
+        )
     )
 }
 

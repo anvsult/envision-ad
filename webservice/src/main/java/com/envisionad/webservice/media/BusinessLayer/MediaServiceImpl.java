@@ -40,7 +40,8 @@ public class MediaServiceImpl implements MediaService {
             Integer minDailyImpressions,
             String specialSort,
             Double userLat,
-            Double userLng
+            Double userLng,
+            String excludedId
             ) {
 
         // FILTERING
@@ -60,6 +61,10 @@ public class MediaServiceImpl implements MediaService {
 
         if (minDailyImpressions != null) {
             spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
+        }
+
+        if (excludedId != null) {
+            spec = spec.and(MediaSpecifications.mediaIdIsNotEqual(UUID.fromString(excludedId)));
         }
 
         // Sort by Nearest

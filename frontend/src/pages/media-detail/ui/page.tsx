@@ -14,12 +14,15 @@ import {
   SimpleGrid,
   Modal,
   Image,
+  AspectRatio,
+  Anchor,
+  ActionIcon,
 } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
+import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { getAllFilteredActiveMedia, getMediaById } from "@/features/media-management/api";
+import { getAllFilteredActiveMedia, getMediaById, SpecialSort } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
@@ -27,6 +30,8 @@ import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
 import { useMediaList } from "@/features/media-management/api/useMediaList";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 import { getOrganizationById } from "@/features/organization-management/api";
+import { LatLngLiteral } from "leaflet";
+import { SortOptions } from "@/features/media-management/api/getAllFilteredActiveMedia";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -50,20 +55,13 @@ export default function MediaDetailsPage() {
   const params = useParams();
   const id = params?.id as string | undefined;
 
-
-
   const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
   const [organizationName, setOrganizationName] = useState<string | null>(null) //
   const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
   const [error, setError] = useState<string | null>(null); //The error message
-
-  
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
-
   
-
-
   useEffect(() => {
     if (!id) return;
 
@@ -102,12 +100,20 @@ export default function MediaDetailsPage() {
     fetchOrganizationDetails(media?.businessId)
   }, [media?.businessId]);
 
-  const filteredMediaProps: FilteredActiveMediaProps = useMemo(() => ({
-    sort: "price,asc",
+  const latlng: LatLngLiteral = useMemo(() => ({
+    lat: media?.mediaLocation.latitude ?? 0,
+    lng: media?.mediaLocation.longitude ?? 0,
+  }), [media?.mediaLocation.latitude, media?.mediaLocation.longitude]);
+
+  const filteredOrgMediaProps: FilteredActiveMediaProps = useMemo(() => ({
+    sort: SpecialSort.nearest,
     businessId: media?.businessId,
+    excludedId: media?.id,
+    latlng,
     page: 0,
-    size: 6
-  }), [media?.businessId]);
+    size: 10
+  }), [latlng, media?.businessId, media?.id]);
+
 
   if (loading) {
     return (
@@ -161,17 +167,27 @@ export default function MediaDetailsPage() {
       ? t("pricePerWeek", { price: media.price.toFixed(2) })
       : t("priceUnavailable");
 
-  // Temp TODO: Replace with real photo when implemened
-  const imageSrc = media.imageUrl || "/sample-screen.jpg";
+  const imageSrc = media.imageUrl ?? "/sample-screen.jpg";
 
   return (
     <>
-      <Container size="xl" py={20} px={80}>
+      <Container size="md" py={20} px={80}>
         <Stack gap="sm">
           {/* Title Bar */}
           <Group gap="xs" justify="space-between">
             <Group gap="xs">
-              <BackButton />
+              <Anchor href={"/browse"}>
+
+                <ActionIcon
+                  variant="subtle"
+                  radius="xl"
+                  size="lg"
+                  
+                  aria-label="Go back"
+                  >
+                  <IconArrowLeft size={20} />
+                </ActionIcon>
+              </Anchor>
               <Title order={2}>{media.title}</Title>
             </Group>
             <Button
@@ -184,57 +200,56 @@ export default function MediaDetailsPage() {
             </Button>
           </Group>
           {/* Columns */}
-          <Group align="stretch">
+          <Group align="stretch" gap="70">
             {/* Left Column */}
             <Stack gap="md" style={{ flex: 2, minWidth: 320 }}>
 
               {/* Media Image */}
-              <Card p={0} withBorder radius="lg">
-                <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setImageModalOpen(true)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        setImageModalOpen(true);
-                      }
-                    }}
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: 300,
-                      cursor: "zoom-in",
-                      borderRadius: 12,
-                      overflow: "hidden",
-                    }}
-                >
-                  <Image
-                      src={imageSrc}
-                      alt={media.title}
-                      h={300}
-                      w="100%"
-                      fit="cover"
-                      radius={0}
-                  />
-                </div>
-              </Card>
+              <Anchor 
+                tabIndex={0}
+                h="auto"
+                w="auto"
+                onClick={() => setImageModalOpen(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setImageModalOpen(true);
+                  }
+                }}
+                style={{                  
+                  cursor: "zoom-in",
+                  borderRadius: 12,
+                  overflow: "hidden",
+                }}
+                
+              >
+                <AspectRatio ratio={1/1}>
+                        <Image
+                            src={imageSrc}
+                            alt={media.title}
+                            
+                            fit="cover"
+                            radius={0}
+                        />
+                  
+                </AspectRatio>
+              </Anchor>
 
               {/* Address */}
-              <Stack gap={4}>
+              <Stack gap={5}>
                 <Text fw={600} size="lg">
                   {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
                 </Text>
-                <Text size="sm">{organizationName}</Text>
+                <Text fw={600} size="sm">{organizationName}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: 0 })}
                 </Text>
               </Stack>
 
-              <Divider my="md" />
+              <Divider my="5" />
 
               {/* Media Details */}
-              <Stack gap="md">
+              <Stack gap="5" >
                 <Text fw={600}>{t("detailsTitle")}</Text>
 
                 {(() => {
@@ -348,8 +363,8 @@ export default function MediaDetailsPage() {
                   </Stack>
                 </Card>
               </Stack>
+            <MediaCardCarouselLoader id="Other Media By Organization Carousel" title={'Other medias from ' + organizationName} filteredMediaProps={filteredOrgMediaProps}/>
           </Group>
-          <MediaCardCarouselLoader id="Other Media Carousel" title={'Other medias by ' + organizationName} filteredMediaProps={filteredMediaProps}/>
         </Stack>
         <Modal
           opened={imageModalOpen}

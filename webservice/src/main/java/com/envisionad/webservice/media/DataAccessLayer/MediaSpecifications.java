@@ -55,6 +55,11 @@ public class MediaSpecifications {
                 : cb.equal(root.get("businessId"), businessId);
     }
 
+    public static Specification<Media> mediaIdIsNotEqual(UUID excludedId) {
+        return (root, query, cb) -> excludedId == null ? null
+                : cb.notEqual(root.get("id"), excludedId);
+    }
+
     // public static Specification<Media> locationContains(String locationName) {
     // return (root, query, cb) -> {
     //

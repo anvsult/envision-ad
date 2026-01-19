@@ -15,6 +15,7 @@ import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { MediaCardCarouselLoader } from '@/widgets/Carousel/CardCarousel';
+import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 
 function BrowsePage() {
   const t = useTranslations('browse');
@@ -99,6 +100,7 @@ function BrowsePage() {
 
         if (err instanceof GeolocationPositionError && err.code === 1) {
           setLocationStatus('denied');
+          setSortBy(SortOptions.priceAsc)
         } else {
           setLocationStatus('error');
         }
@@ -124,7 +126,7 @@ function BrowsePage() {
         const newResults = [...new Set([nearest].concat(uniqueResults))];
 
         setLocationOptions(newResults);
-      }, 300);
+      }, 100);
       return () => clearTimeout(timeout);
   }, [draftAddressSearch, searchLanguage, sortNearest]);
 
@@ -165,6 +167,7 @@ function BrowsePage() {
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
                   setAddressSearch(draftAddressSearch);
+                  setSortBy(SpecialSort.nearest)
                 }
               }}
               rightSection={

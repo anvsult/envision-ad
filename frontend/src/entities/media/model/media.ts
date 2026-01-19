@@ -71,6 +71,7 @@ export interface FilteredActiveMediaProps{
     minDailyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
+    excludedId?: string | null,
     page?: number,
     size?: number
 }

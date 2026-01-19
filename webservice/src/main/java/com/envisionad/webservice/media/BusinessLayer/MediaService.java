@@ -21,7 +21,8 @@ public interface MediaService {
             Integer minDailyImpressions,
             String specialSort,
             Double userLat,
-            Double userLng
+            Double userLng,
+            String excludedId
     );
 
     Media getMediaById(UUID id);
