@@ -4,17 +4,19 @@ import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampai
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignResponseModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdResponseModel;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 
 public interface AdCampaignService {
 
-    List<AdCampaignResponseModel> getAllAdCampaigns();
-
-    AdCampaignResponseModel createAdCampaign(AdCampaignRequestModel adCampaignRequestModel);
-
     AdResponseModel addAdToCampaign(String campaignId, AdRequestModel adRequestModel);
 
     AdResponseModel deleteAdFromCampaign(String campaignId, String adId);
+
+    List<AdCampaignResponseModel> getAllAdCampaignsByBusinessId(String businessId);
+
+    AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel);
+
+    List<String> getAllCampaignImageLinks(String campaignId);
 }

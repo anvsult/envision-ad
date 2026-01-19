@@ -60,19 +60,23 @@ export const routing = defineRouting({
       'fr': '/tableau-de-bord/annonceur/apercu'
     },
     '/dashboard/advertiser/campaigns': {
-        'en': '/dashboard/advertiser/campaigns',
-        'fr': '/tableau-de-bord/annonceur/campagnes'
+      'en': '/dashboard/advertiser/campaigns',
+      'fr': '/tableau-de-bord/annonceur/campagnes'
     },
     '/dashboard/advertiser/ad-requests': {
-        'en': '/dashboard/advertiser/ad-requests',
-        'fr': '/tableau-de-bord/annonceur/demandes-annonces'
+      'en': '/dashboard/advertiser/ad-requests',
+      'fr': '/tableau-de-bord/annonceur/demandes-annonces'
     },
-    //admin dashboard
 
-// admin dashboard
+    // admin dashboard
     "/dashboard/admin/media/pending": {
-      en: "/dashboard/admin/media/pending",
-      fr: "/tableau-de-bord/admin/media/en-attente",
+      'en': "/dashboard/admin/media/pending",
+      'fr': "/tableau-de-bord/admin/media/en-attente",
+    },
+
+    "/dashboard/admin/organization/verification": {
+      'en': "/dashboard/admin/organization/verification",
+      'fr': "/tableau-de-bord/admin/organization/verification",
     },
 
     //organization dashboard

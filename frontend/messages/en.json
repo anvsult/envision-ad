@@ -40,7 +40,8 @@
     },
     "adminTitle": "Admin",
     "admin": {
-      "pendingMedia": "Pending Media"
+      "pendingMedia": "Pending Media",
+      "pendingOrganizations": "Verification Requests"
     }
   },
   "homepage": {
@@ -111,6 +112,7 @@
     },
     "errorTitle": "Could not load this media.",
     "errorNotFound": "Media not found.",
+    "errorLoading": "Failed to load media details.",
     "currentlyDisplaying": "Currently displaying {count} other ads!",
     "detailsTitle": "Details",
     "details": {
@@ -209,6 +211,8 @@
     "title": "Organization",
     "createButton": "Create Organization",
     "noOrganization": "No organization found.",
+    "noOrganizationDescription": "Not part of any organization yet? Create your own organization to get started!",
+    "createOrganization": "Create Organization",
     "roles": {
       "mediaOwner": "Media Owner",
       "advertiser": "Advertiser"
@@ -222,11 +226,9 @@
       "actions": "Actions",
       "edit": "Edit"
     },
-    "errors": {
-      "loadFailed": "Failed to load organization for editing"
-    },
     "form": {
-      "title": "Organization Details",
+      "createTitle": "Create Organization",
+      "editTitle": "Edit Organization",
       "nameLabel": "Organization Name",
       "namePlaceholder": "Ex. Tech Corp",
       "sizeLabel": "Organization Size",
@@ -243,8 +245,9 @@
       "countryLabel": "Country",
       "countryPlaceholder": "USA",
       "roleLabel": "Organization Roles",
-      "submit": "Create Organization",
+      "create": "Create",
       "cancel": "Cancel",
+      "update": "Update",
       "errors": {
         "error": "Error",
         "validationError": "Missing or Invalid information.",
@@ -256,11 +259,13 @@
         "zipRequired": "Organization zip/postal code is required.",
         "countryRequired": "Organization country is required.",
         "roleRequired": "At least one role is required.",
-        "updateFailed": "Failed to update organization details."
+        "updateFailed": "Failed to update organization details.",
+        "createFailed": "Failed to create organization."
       },
       "success": {
         "title": "Success",
-        "update": "Organization details has been updated"
+        "update": "Organization details has been updated.",
+        "create": "Organization has been created."
       }
     },
     "sizes": {
@@ -274,10 +279,13 @@
       "pending": "Pending Invitations",
       "active": "Active Employees",
       "addButton": "Invite Employee",
+      "cancelInvitation": "Cancel Invitation",
+      "deleteEmployee": "Remove Employee",
       "invites": "Pending invitations",
       "name": "Name",
       "email": "Email",
       "expire": "Expires in",
+      "expired": "Expired",
       "actions": "Actions",
       "invitationNotFound": "No pending invitations found",
       "employeeNotFound": "No active employees found",
@@ -292,15 +300,13 @@
           "validationError": "Missing or Invalid information.",
           "emailRequired": "Email is required.",
           "emailInvalid": "Invalid email address.",
-          "saveFailed": "Failed to invite employee.",
-          "deleteEmployeeFailed": "Failed to remove employee.",
-          "deleteInvitationFailed": "Failed to cancel invitation."
+          "emailExists": "This email address is already used by another employee.",
+          "emailInvited": "Invite already sent to this email address.",
+          "saveFailed": "Failed to invite employee."
         },
         "success": {
           "title": "Success",
-          "inviteEmployee": "Invitation has been sent",
-          "deleteEmployee": "Employee has been removed",
-          "deleteInvitation": "Invitation has been canceled"
+          "invitation": "Invitation has been sent"
         }
       },
       "modal": {
@@ -310,7 +316,44 @@
         "invitationMessage": "Are you sure you want to cancel the invitation for <bold>{email}</bold> to join your organization?",
         "confirm": "Confirm",
         "cancel": "Cancel"
+      },
+      "success": {
+        "title": "Success",
+        "deleteEmployee": "Employee has been removed",
+        "deleteInvitation": "Invitation has been canceled"
+      },
+      "errors": {
+        "title": "Error",
+        "deleteEmployeeFailed": "Failed to remove employee.",
+        "deleteInvitationFailed": "Failed to cancel invitation."
       }
+    },
+    "verificationHistory": "Verification History",
+    "requestVerification": "Request Verification",
+    "verificationTable": {
+      "requestDate": "Request Date",
+      "status": "Status",
+      "reason": "Reason"
+    },
+    "verificationStatus": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "denied": "Denied"
+    },
+    "modal": {
+      "verification": "Request Verification",
+      "verificationMessage": "Before requesting a verification, please ensure that all provided organization details are accurate.",
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "success": {
+      "title": "Success",
+      "verificationRequest": "Verification request has been sent."
+    },
+    "errors": {
+      "title": "Error",
+      "loadFailed": "Failed to load organization for editing.",
+      "verificationRequestFailed": "Failed to request verification."
     }
   },
   "media": {
@@ -659,7 +702,26 @@
       "price": "Price",
       "mediaOwner": "Media Owner",
       "location": "Location",
-      "dailyImpressions": "Daily Impressions"
+      "dailyImpressions": "Daily Impressions",
+      "cancel": "Cancel",
+      "pendingOrganization": "Organizations Pending Verification Status Review",
+      "organization": "Organization",
+      "requestDate": "Date Requested",
+      "noOrganizationsPending": "No organizations pending verification status review.",
+      "verificationDetails": "Verification Details",
+      "approveConfirmMessage": "Are you sure you want to approve this organization?",
+      "denyReason": "Denial Reason",
+      "denyReasonPlaceholder": "Enter a reason for denying this organization.",
+      "success": {
+        "title": "Success",
+        "approved": "Organization verification status has been approved.",
+        "denied": "Organization verification status has been denied."
+      },
+      "errors": {
+        "title": "Error",
+        "approveFailed": "Failed to approve organization verification status.",
+        "denyFailed": "Failed to deny organization verification status."
+      }
     }
   },
   "reserveModal": {
@@ -677,6 +739,8 @@
       "selectDate": "Please select a valid start and end date"
     },
     "errorTitle": "Error",
+    "missingPermissionErrorMessage": "You do not have permission to create reservations for this campaign",
+    "campaignNotFoundErrorMessage": "Media or campaign not found",
     "successTitle": "Reservation Successful!",
     "successMessage": "Reservation Confirmed!",
     "successMessageLong": "Your ad slot has been successfully booked. You can view it in your dashboard schedule.",
@@ -696,5 +760,18 @@
       "dates": "Dates",
       "totalCost": "Total Cost"
     }
+  },
+  "invitation": {
+    "loading": "Loading...",
+    "processing": "Processing your invitation...",
+    "invalidLinkTitle": "Invalid Invitation Link",
+    "invalidLink": "This invitation link is invalid or incomplete.",
+    "successTitle": "Success!",
+    "success": "You've successfully joined the organization!",
+    "errorTitle": "Failed",
+    "error": "An error occurred while accepting the invitation.",
+    "redirecting": "Redirecting to dashboard...",
+    "goHome": "Go Home"
   }
+
 }

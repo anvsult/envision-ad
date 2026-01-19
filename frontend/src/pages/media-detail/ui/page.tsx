@@ -20,6 +20,7 @@ import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMediaById } from "@/features/media-management/api";
+import { getMediaReservations } from "@/features/reservation-management/api";
 import { useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
@@ -60,6 +61,7 @@ export default function MediaDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [activeAdsCount, setActiveAdsCount] = useState<number>(0);
 
   useEffect(() => {
     if (!id) return;
@@ -70,9 +72,25 @@ export default function MediaDetailsPage() {
         setError(null);
         const data = await getMediaById(id);
         setMedia(data);
+
+        // Fetch active reservations to count unique campaigns
+        try {
+          const reservations = await getMediaReservations(id);
+          // Count unique campaign IDs from active reservations
+          const uniqueCampaigns = new Set(
+            reservations
+              .filter(r => r.status === "ACTIVE" || r.status === "PENDING")
+              .map(r => r.campaignId)
+          );
+          setActiveAdsCount(uniqueCampaigns.size);
+        } catch (err) {
+          console.error("Failed to load reservations:", err);
+          // Don't fail the whole page if reservations can't be loaded
+          setActiveAdsCount(0);
+        }
       } catch (err: unknown) {
         const msg =
-          err instanceof Error ? err.message : "Failed to load media details.";
+          err instanceof Error ? err.message : t("errorLoading");
         setError(msg);
       } finally {
         setLoading(false);
@@ -134,7 +152,6 @@ export default function MediaDetailsPage() {
       ? t("pricePerWeek", { price: media.price.toFixed(2) })
       : t("priceUnavailable");
 
-  // Temp TODO: Replace with real photo when implemened
   const imageSrc = media.imageUrl || "/sample-screen.jpg";
 
   return (
@@ -184,7 +201,7 @@ export default function MediaDetailsPage() {
               </Text>
               <Text size="sm">{media.mediaOwnerName}</Text>
               <Text size="sm" c="dimmed">
-                {t("currentlyDisplaying", { count: 0 })}
+                {t("currentlyDisplaying", { count: activeAdsCount })}
               </Text>
             </Stack>
 

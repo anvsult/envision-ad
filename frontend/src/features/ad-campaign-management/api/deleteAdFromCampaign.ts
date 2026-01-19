@@ -4,6 +4,6 @@ export const deleteAdFromCampaign = async (
     campaignId: string,
     adId: string
 ): Promise<void> => {
-    const response = await axiosInstance.delete(`/ad-campaigns/${campaignId}/ads/${adId}`);
+    const response = await axiosInstance.delete(`/businesses/{businessId}/campaigns/${campaignId}/ads/${adId}`);
     return response.data;
 };

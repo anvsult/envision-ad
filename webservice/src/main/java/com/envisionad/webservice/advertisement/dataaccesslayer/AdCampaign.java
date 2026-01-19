@@ -1,12 +1,12 @@
 package com.envisionad.webservice.advertisement.dataaccesslayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -22,7 +22,9 @@ public class AdCampaign {
     @Embedded
     private AdCampaignIdentifier campaignId;
 
-    @Column(name = "name")
+    @Embedded
+    private BusinessIdentifier businessId;
+
     private String name;
 
     @OneToMany(mappedBy = "campaign", cascade = CascadeType.ALL, orphanRemoval = true)

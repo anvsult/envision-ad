@@ -8,6 +8,7 @@ DROP TABLE IF EXISTS media CASCADE;
 DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
+DROP TABLE IF EXISTS verification CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address CASCADE;
 DROP TABLE IF EXISTS ad_campaigns CASCADE;
@@ -38,11 +39,25 @@ CREATE TABLE business
     owner_id     VARCHAR(36),
     media_owner  BOOLEAN,
     advertiser   BOOLEAN,
+    verified     BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT fk_address
         FOREIGN KEY (address_id)
             REFERENCES address (id)
             ON DELETE CASCADE
+);
+
+CREATE TABLE verification
+(
+    id SERIAL PRIMARY KEY,
+    verification_id varchar(36) UNIQUE NOT NULL,
+    business_id  varchar(36) NOT NULL,
+    status varchar(8) NOT NULL DEFAULT 'PENDING',
+    comments varchar(512),
+    date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    date_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
 
 CREATE TABLE employee
@@ -51,6 +66,7 @@ CREATE TABLE employee
     employee_id VARCHAR(36) UNIQUE NOT NULL,
     user_id     VARCHAR(36) UNIQUE NOT NULL,
     business_id VARCHAR(36)  NOT NULL,
+    email       VARCHAR(255),
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
@@ -113,8 +129,10 @@ CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
     campaign_id VARCHAR(36) UNIQUE NOT NULL,
+    business_id VARCHAR(36) NOT NULL REFERENCES business(business_id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL
 );
+
 -- 6. Create Ads Table
 CREATE TABLE ads
 (
@@ -143,5 +161,4 @@ CREATE TABLE reservations
     advertiser_id VARCHAR(36),
     campaign_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE SET NULL,
     media_id UUID REFERENCES media(media_id) ON DELETE CASCADE
-
 );

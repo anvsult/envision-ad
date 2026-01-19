@@ -3,6 +3,7 @@ package com.envisionad.webservice.advertisement.presentationlayer;
 import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
+import com.envisionad.webservice.business.dataaccesslayer.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.datasource.url=jdbc:h2:mem:ad-db"})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AdCampaignIntegrationTest {
-    private final String BASE_URI_AD_CAMPAIGNS = "/api/v1/ad-campaigns";
+    private final String BASE_URI_AD_CAMPAIGNS = "/api/v1/businesses/{businessId}/campaigns";
 
     @Autowired
     private WebTestClient webTestClient;
@@ -35,34 +36,75 @@ public class AdCampaignIntegrationTest {
     @Autowired
     private AdCampaignRepository adCampaignRepository;
 
+    @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
+    private BusinessIdentifier businessId;
+    private static final String TEST_USER_ID = "auth0|65702e81e9661e14ab3aac89";
+
     @BeforeEach
     void setUp() {
+        // Initialize businessId for all tests
+        businessId = new BusinessIdentifier();
+
+        // Create a test business
+        Business business = new Business();
+        business.setBusinessId(businessId);
+        business.setName("Test Business");
+        business.setOwnerId(TEST_USER_ID);
+        business.setOrganizationSize(OrganizationSize.LARGE);
+        businessRepository.save(business);
+
+        // Create an employee for the test user
+        Employee employee = new Employee();
+        employee.setEmployeeId(new EmployeeIdentifier());
+        employee.setBusinessId(businessId);
+        employee.setUserId(TEST_USER_ID);
+        employeeRepository.save(employee);
+
+        // Mock JWT token
         Jwt jwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")
-                .claim("sub", "auth0|65702e81e9661e14ab3aac89")
+                .claim("sub", TEST_USER_ID)
                 .claim("scope", "read write")
-                .claim("permissions", java.util.List.of("create:media", "update:media"))
+                .claim("permissions", java.util.List.of(
+                        "create:campaign",
+                        "update:campaign",
+                        "read:campaign"
+                ))
+                .claim("permissions", java.util.List.of("create:media", "update:media", "readAll:campaign", "create:campaign"))
                 .build();
         when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-
-        AdCampaign adCampaign = new AdCampaign();
-        adCampaign.setName("Winter Sale");
-
-        Ad ad = new Ad();
-        ad.setName("Winter Discount");
-        ad.setAdUrl("http://example.com/winter-discount");
-        ad.setAdType(AdType.IMAGE);
-        ad.setAdDurationSeconds(AdDuration.S10);
 
     }
 
     @Test
-    void getAllCampaigns_shouldReturnAllCampaigns() {
+    void getAllBusinessCampaigns_shouldReturnAllBusinessCampaigns() {
+        // Arrange - Create test campaigns for a business
+        AdCampaign campaign1 = new AdCampaign();
+        campaign1.setName("Winter Sale");
+        campaign1.setCampaignId(new AdCampaignIdentifier());
+        campaign1.setBusinessId(businessId);
+
+        AdCampaign campaign2 = new AdCampaign();
+        campaign2.setName("Summer Sale");
+        campaign2.setCampaignId(new AdCampaignIdentifier());
+        campaign2.setBusinessId(businessId);
+
+        adCampaignRepository.save(campaign1);
+        adCampaignRepository.save(campaign2);
+
+        // Act & Assert
         webTestClient.get()
-                .uri(BASE_URI_AD_CAMPAIGNS)
+                .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
+                .header("Authorization", "Bearer mock-token")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(Object.class);
+                .expectBodyList(Object.class)
+                .hasSize(2);
     }
 
     @Test
@@ -73,8 +115,9 @@ public class AdCampaignIntegrationTest {
 
         // Act & Assert
         webTestClient.post()
-                .uri(BASE_URI_AD_CAMPAIGNS)
+                .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -89,9 +132,11 @@ public class AdCampaignIntegrationTest {
     @Test
     void addAdToCampaign_shouldAddAdSuccessfully() {
         // Arrange
+
         AdCampaign adCampaign = new AdCampaign();
         adCampaign.setName("Winter Sale");
         adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
 
         AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
         String campaignId = savedCampaign.getCampaignId().getCampaignId();
@@ -106,8 +151,9 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
-                        .build(campaignId))
+                        .build(businessId.getBusinessId(), campaignId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isCreated()
@@ -132,8 +178,9 @@ public class AdCampaignIntegrationTest {
 
         // Act
         webTestClient.post()
-                .uri(BASE_URI_AD_CAMPAIGNS)
+                .uri(BASE_URI_AD_CAMPAIGNS, businessId.getBusinessId())
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(requestModel)
                 .exchange()
                 .expectStatus().isCreated();
@@ -148,9 +195,11 @@ public class AdCampaignIntegrationTest {
 
     @Test
     void deleteAdFromCampaign_shouldDeleteAdSuccessfully() {
+
         AdCampaign adCampaign = new AdCampaign();
         adCampaign.setName("Winter Sale");
         adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
 
         Ad ad = new Ad();
         ad.setName("Winter Discount");
@@ -170,7 +219,8 @@ public class AdCampaignIntegrationTest {
         webTestClient.delete()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
-                        .build(campaignId, adId))
+                        .build(businessId.getBusinessId(), campaignId, adId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
@@ -190,9 +240,11 @@ public class AdCampaignIntegrationTest {
     @Test
     void addAdToCampaign_shouldThrowInvalidAdTypeException_whenTypeIsInvalid() {
         // Arrange
+
         AdCampaign adCampaign = new AdCampaign();
         adCampaign.setName("Winter Sale");
         adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
         AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
         String campaignId = savedCampaign.getCampaignId().getCampaignId();
 
@@ -207,7 +259,8 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
-                        .build(campaignId))
+                        .build(businessId.getBusinessId(), campaignId))
+                .header("Authorization", "Bearer mock-token")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .bodyValue(adRequestModel)
                 .exchange()
@@ -222,9 +275,11 @@ public class AdCampaignIntegrationTest {
     @Test
     void addAdToCampaign_shouldThrowInvalidAdDurationException_whenDurationIsInvalid() {
         // Arrange
+
         AdCampaign adCampaign = new AdCampaign();
         adCampaign.setName("Winter Sale");
         adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
         AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
         String campaignId = savedCampaign.getCampaignId().getCampaignId();
 
@@ -239,7 +294,8 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
-                        .build(campaignId))
+                        .build(businessId.getBusinessId(), campaignId))
+                .header("Authorization", "Bearer mock-token")
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
                 .bodyValue(adRequestModel)
                 .exchange()
@@ -261,8 +317,9 @@ public class AdCampaignIntegrationTest {
         webTestClient.post()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
-                        .build(nonExistentId))
+                        .build(businessId.getBusinessId(), nonExistentId))
                 .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .bodyValue(adRequestModel)
                 .exchange()
                 .expectStatus().isNotFound();
@@ -274,11 +331,13 @@ public class AdCampaignIntegrationTest {
         String nonExistentCampaignId = "non-existent-campaign-id";
         String adId = UUID.randomUUID().toString();
 
+
         // Act & Assert
         webTestClient.delete()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
-                        .build(nonExistentCampaignId, adId))
+                        .build(businessId.getBusinessId(), nonExistentCampaignId, adId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }
@@ -286,9 +345,11 @@ public class AdCampaignIntegrationTest {
     @Test
     void deleteNonExistingAdFromCampaign_shouldReturnAdNotFound() {
         // Arrange
+
         AdCampaign adCampaign = new AdCampaign();
         adCampaign.setName("Winter Sale");
         adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
         AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
         String campaignId = savedCampaign.getCampaignId().getCampaignId();
         String nonExistentAdId = "non-existent-ad-id";
@@ -297,7 +358,8 @@ public class AdCampaignIntegrationTest {
         webTestClient.delete()
                 .uri(uriBuilder -> uriBuilder
                         .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
-                        .build(campaignId, nonExistentAdId))
+                        .build(businessId.getBusinessId(), campaignId, nonExistentAdId))
+                .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
                 .expectStatus().isNotFound();
     }

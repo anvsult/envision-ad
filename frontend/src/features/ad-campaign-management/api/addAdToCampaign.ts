@@ -5,6 +5,6 @@ export const addAdToCampaign = async (
     campaignId: string,
     data: AdRequestDTO
 ): Promise<Ad> => {
-    const response = await axiosInstance.post(`/ad-campaigns/${campaignId}/ads`, data);
+    const response = await axiosInstance.post(`/businesses/{businessId}/campaigns/${campaignId}/ads`, data);
     return response.data;
 };
