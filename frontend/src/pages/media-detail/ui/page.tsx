@@ -247,6 +247,7 @@ export default function MediaDetailsPage() {
                         />
                 </AspectRatio>
               </Anchor>
+              {/* Address */}
             <Stack gap={4}>
               <Text fw={600} size="lg">
                 {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
@@ -256,17 +257,6 @@ export default function MediaDetailsPage() {
                 {t("currentlyDisplaying", { count: activeAdsCount })}
               </Text>
             </Stack>
-
-              {/* Address */}
-              <Stack gap={3}>
-                <Text fw={600} size="lg">
-                  {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
-                </Text>
-                <Text fw={600} size="md">{organizationName}</Text>
-                <Text size="sm" c="dimmed">
-                  {t("currentlyDisplaying", { count: 0 })}
-                </Text>
-              </Stack>
 
               <Divider/>
 
