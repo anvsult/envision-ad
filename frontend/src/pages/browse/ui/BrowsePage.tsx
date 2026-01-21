@@ -36,7 +36,7 @@ function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
-  const [sortBy, setSortBy] = useState<string>(SpecialSort.nearest);
+  const [sortBy, setSortBy] = useState<string>(SortOptions.priceAsc);
 
   
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
@@ -113,7 +113,6 @@ function BrowsePage() {
   useEffect(() => {
     const timeout = setTimeout(async () => {
         if (!draftAddressSearch) {
-
           return;
         }
 
