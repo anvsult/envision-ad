@@ -1,5 +1,7 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -36,6 +38,11 @@ class MediaServiceUnitTest {
     @Mock
     private MediaRepository mediaRepository;
 
+    private String business1Id;
+    private String business2Id;
+    private Business business1;
+    private Business business2;
+
     private Media media1;
     private Media media2;
     private Media media3;
@@ -45,6 +52,12 @@ class MediaServiceUnitTest {
 
     @BeforeEach
     void setUp() {
+        business1 = createBusiness(1);
+        business2 = createBusiness(2);
+
+        business1Id = business1.getBusinessId().getBusinessId();
+        business2Id = business2.getBusinessId().getBusinessId();
+
         // Create MediaLocations with different coordinates
         location1 = createMediaLocation(
                 "Downtown Billboard A",
@@ -70,6 +83,7 @@ class MediaServiceUnitTest {
         // Create Media with different properties
         media1 = createMedia(
                 "Premium Downtown Screen",
+                business1Id,
                 location1,
                 new BigDecimal("500.00"),
                 50000,
@@ -78,6 +92,7 @@ class MediaServiceUnitTest {
 
         media2 = createMedia(
                 "Budget Midtown Screen",
+                business1Id,
                 location2,
                 new BigDecimal("200.00"),
                 20000,
@@ -86,6 +101,7 @@ class MediaServiceUnitTest {
 
         media3 = createMedia(
                 "Economy Suburb Screen",
+                business2Id,
                 location3,
                 new BigDecimal("100.00"),
                 10000,
@@ -104,7 +120,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, null, null);
+                pageable, null, null, null, null, null, null, null, null, null);
 
         // Assert
         assertNotNull(result);
@@ -121,7 +137,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, titleFilter, null, null, null, null, null, null);
+                pageable, titleFilter, null, null, null, null, null, null, null, null);
 
         // Assert
         ArgumentCaptor<Specification<Media>> specCaptor = ArgumentCaptor.forClass(Specification.class);
@@ -140,7 +156,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, minPrice, maxPrice, null, null, null, null);
+                pageable, null, null, minPrice, maxPrice, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -156,7 +172,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, minPrice, null, null, null, null, null);
+                pageable, null, null, minPrice, null, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -172,7 +188,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, maxPrice, null, null, null, null);
+                pageable, null, null, null, maxPrice, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -188,7 +204,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, minImpressions, null, null, null);
+                pageable, null, null, null, null, minImpressions, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -207,7 +223,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, title, minPrice, maxPrice, minImpressions, null, null, null);
+                pageable, title, business1Id, minPrice, maxPrice, minImpressions, null, null, null, media2.getId().toString());
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -226,7 +242,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert
         assertNotNull(result);
@@ -249,7 +265,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert
         assertNotNull(result);
@@ -271,7 +287,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert
         assertNotNull(result);
@@ -291,7 +307,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert
         assertNotNull(result);
@@ -305,7 +321,7 @@ class MediaServiceUnitTest {
         Double userLat = 43.651070;
         Double userLng = -79.347015;
 
-        Media mediaWithNullLocation = createMedia("No Location Media", null,
+        Media mediaWithNullLocation = createMedia("No Location Media", business1Id, null,
                 new BigDecimal("150.00"), 15000, Status.ACTIVE);
 
         List<Media> mediaList = new ArrayList<>(List.of(mediaWithNullLocation, media2, media1));
@@ -315,7 +331,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert
         assertNotNull(result);
@@ -333,7 +349,7 @@ class MediaServiceUnitTest {
 
         // Act - Missing userLat
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", null, -79.347015);
+                pageable, null, null, null, null, null, "nearest", null, -79.347015, null);
 
         // Assert - Should use regular pagination instead of distance sorting
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -348,7 +364,7 @@ class MediaServiceUnitTest {
 
         // Act - Missing userLng
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", 43.651070, null);
+                pageable, null, null, null, null, null, "nearest", 43.651070, null, null);
 
         // Assert - Should use regular pagination instead of distance sorting
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -363,7 +379,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "price", 43.651070, -79.347015);
+                pageable, null, null, null, null, null, "price", 43.651070, -79.347015, null);
 
         // Assert - Should use regular pagination
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -479,7 +495,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert - Should be sorted: media1 (closest), media2 (medium), media3 (farthest)
         List<Media> content = result.getContent();
@@ -497,9 +513,9 @@ class MediaServiceUnitTest {
         Double userLng = -79.347015;
 
         // Create multiple media at same location
-        Media media4 = createMedia("Same Location 1", location1,
+        Media media4 = createMedia("Same Location 1", business1Id, location1,
                 new BigDecimal("100.00"), 10000, Status.ACTIVE);
-        Media media5 = createMedia("Same Location 2", location1,
+        Media media5 = createMedia("Same Location 2", business1Id, location1,
                 new BigDecimal("200.00"), 20000, Status.ACTIVE);
 
         List<Media> mediaList = new ArrayList<>(List.of(media4, media5));
@@ -509,7 +525,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, "nearest", userLat, userLng);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
 
         // Assert - Both should be returned as they're at the same distance
         assertEquals(2, result.getContent().size());
@@ -517,8 +533,16 @@ class MediaServiceUnitTest {
 
     // ==================== Helper Methods ====================
 
+    private Business createBusiness(Integer id) {
+        Business business = new Business();
+        business.setId(id);
+        business.setBusinessId(new BusinessIdentifier(UUID.randomUUID().toString()));
+
+        return business;
+    }
+
     private MediaLocation createMediaLocation(String name, String description,
-                                               Double latitude, Double longitude) {
+                                              Double latitude, Double longitude) {
         MediaLocation location = new MediaLocation();
         location.setId(UUID.randomUUID());
         location.setName(name);
@@ -533,11 +557,12 @@ class MediaServiceUnitTest {
         return location;
     }
 
-    private Media createMedia(String title, MediaLocation location,
+    private Media createMedia(String title, String businessId, MediaLocation location,
                               BigDecimal price, Integer dailyImpressions, Status status) {
         Media media = new Media();
         media.setId(UUID.randomUUID());
         media.setTitle(title);
+        media.setBusinessId(UUID.fromString(businessId));
         media.setMediaLocation(location);
         media.setPrice(price);
         media.setDailyImpressions(dailyImpressions);

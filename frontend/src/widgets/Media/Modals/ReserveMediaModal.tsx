@@ -15,7 +15,8 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input
+    Input,
+    Loader
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
 import {IconCheck, IconCalendar, IconCreditCard, IconEye} from '@tabler/icons-react';
@@ -163,23 +164,33 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 return;
             }
 
-            // Create payment intent when moving to payment step
+            // Create checkout session and redirect to Stripe
+            setLoading(true);
             try {
                 const data = await createPaymentIntent({
                     mediaId: media.id,
                     campaignId: selectedCampaignId,
-                    amount: calculateTotalCost() * 100, // Stripe expects amount in cents
+                    amount: calculateTotalCost() * 100,
                     businessId: media.businessId
                 });
-                setClientSecret(data.clientSecret);
-            } catch {
+
+                // Redirect to Stripe Checkout
+                if (data.sessionUrl) {
+                    window.location.href = data.sessionUrl;
+                } else {
+                    throw new Error('No session URL returned');
+                }
+            } catch (error) {
+                console.error('Payment init error:', error);
                 notifications.show({
                     title: t('errorTitle'),
                     message: t('errors.paymentInitFailed'),
                     color: 'red'
                 });
+                setLoading(false);
                 return;
             }
+            return;
         }
         setErrors({});
         setActiveStep((current) => (current < 3 ? current + 1 : current));

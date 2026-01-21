@@ -169,4 +169,70 @@ public class StripeServiceImpl implements StripeService {
 
         return status;
     }
+
+    @Transactional
+    public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId) throws StripeException {
+        // Fetch Stripe account for the business
+        StripeAccount stripeAccount = stripeAccountRepository.findByBusinessId(businessId)
+                .orElseThrow(() -> new RuntimeException("Business has not connected a Stripe account"));
+
+        if (!stripeAccount.isOnboardingComplete()) {
+            throw new RuntimeException("Business has not completed Stripe onboarding");
+        }
+
+        long amountInCents = amount.multiply(BigDecimal.valueOf(100)).longValue();
+        long platformFee = (amountInCents * platformFeePercent) / 100;
+
+        // Create Checkout Session
+        com.stripe.param.checkout.SessionCreateParams params =
+            com.stripe.param.checkout.SessionCreateParams.builder()
+                .setMode(com.stripe.param.checkout.SessionCreateParams.Mode.PAYMENT)
+                .setSuccessUrl("http://localhost:3000/dashboard?session_id={CHECKOUT_SESSION_ID}&success=true")
+                .setCancelUrl("http://localhost:3000/dashboard?canceled=true")
+                .addLineItem(
+                    com.stripe.param.checkout.SessionCreateParams.LineItem.builder()
+                        .setPriceData(
+                            com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("usd")
+                                .setUnitAmount(amountInCents)
+                                .setProductData(
+                                    com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                        .setName("Media Reservation")
+                                        .setDescription("Reservation ID: " + reservationId)
+                                        .build()
+                                )
+                                .build()
+                        )
+                        .setQuantity(1L)
+                        .build()
+                )
+                .setPaymentIntentData(
+                    com.stripe.param.checkout.SessionCreateParams.PaymentIntentData.builder()
+                        .setApplicationFeeAmount(platformFee)
+                        .setTransferData(
+                            com.stripe.param.checkout.SessionCreateParams.PaymentIntentData.TransferData.builder()
+                                .setDestination(stripeAccount.getStripeAccountId())
+                                .build()
+                        )
+                        .putMetadata("reservationId", reservationId)
+                        .build()
+                )
+                .build();
+
+        com.stripe.model.checkout.Session session = com.stripe.model.checkout.Session.create(params);
+
+        // Save payment intent info to database
+        PaymentIntent paymentIntent = new PaymentIntent();
+        paymentIntent.setStripePaymentIntentId(session.getId());
+        paymentIntent.setReservationId(reservationId);
+        paymentIntent.setAmount(amount);
+        paymentIntent.setStatus(PaymentStatus.PENDING);
+        paymentIntent.setCreatedAt(LocalDateTime.now());
+        paymentIntentRepository.save(paymentIntent);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("sessionUrl", session.getUrl());
+        response.put("sessionId", session.getId());
+        return response;
+    }
 }

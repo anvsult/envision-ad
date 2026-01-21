@@ -50,7 +50,7 @@ public class PaymentController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody PaymentIntentRequestModel request) throws StripeException {
 
-        Map<String, String> result = stripeService.createPaymentIntentForBusiness(
+        Map<String, String> result = stripeService.createCheckoutSession(
                 request.getReservationId(),
                 request.getAmount(),
                 request.getBusinessId()

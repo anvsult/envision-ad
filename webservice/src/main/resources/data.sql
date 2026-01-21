@@ -333,3 +333,68 @@ VALUES
     ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
     ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 3);
+
+-- =========================== RESERVATIONS DATA ===========================
+
+-- Insert sample reservations for testing Stripe payments
+-- Note: media_id is NULL since media records have auto-generated UUIDs
+-- In production, these would be set when creating reservations through the API
+INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, advertiser_id, campaign_id, media_id)
+VALUES
+    ('r1111111-1111-1111-1111-111111111111',
+     '2026-02-01 00:00:00', '2026-02-28 23:59:59',
+     'CONFIRMED', 2645.00,
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+     NULL),
+    ('r2222222-2222-2222-2222-222222222222',
+     '2026-03-01 00:00:00', '2026-03-31 23:59:59',
+     'PENDING', 5100.00,
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+     NULL)
+ON CONFLICT (reservation_id) DO NOTHING;
+
+-- =========================== STRIPE DATA ===========================
+
+-- Insert Stripe accounts for all media owner businesses so they can receive payments
+INSERT INTO stripe_accounts (business_id, stripe_account_id, onboarding_complete, charges_enabled, payouts_enabled)
+VALUES
+    -- Champlain College (your business - media owner and advertiser)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'acct_1SqyOW1H9mbHrgki', true, true, true),
+
+    -- TechGiant Solutions (advertiser only)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'acct_test_techgiant_456', true, true, true),
+
+    -- Lotus Yoga Studio (media owner)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'acct_test_lotus_yoga_789', true, true, true),
+
+    -- Prairie Oil & Gas (media owner)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'acct_test_prairie_oil_101', true, true, true),
+
+    -- Entrepôt en Folie (media owner)
+    ('e515de7c-147d-4576-b769-f8c55bff8acc', 'acct_test_entrepot_202', true, true, true),
+
+    -- Lola Salon (media owner)
+    ('64e217e5-4973-40d1-87de-258b3cc915dd', 'acct_1Srum51H9mLTrrgg', true, true, true),
+
+    -- Ping Mo (media owner)
+    ('4742eb4d-f469-45b4-95cc-23c2cf1c2a3e', 'acct_test_ping_mo_404', true, true, true),
+
+    -- ArenaMedia (media owner)
+    ('2e4c69ea-d597-4c43-83c1-9af394b10162', 'acct_test_arena_media_505', true, true, true),
+
+    -- NorthernAds (media owner)
+    ('92bc6a96-689b-41ac-b555-d3ff0e522f42', 'acct_test_northern_ads_606', true, true, true),
+
+    -- AtlanticAds (media owner)
+    ('a50eef7e-14af-4d91-a41c-97c324f7c816', 'acct_test_atlantic_ads_707', true, true, true),
+
+    -- Seaside Media (media owner)
+    ('9a190809-1597-440b-bf80-340f260d9d8e', 'acct_test_seaside_media_808', true, true, true)
+
+ON CONFLICT (business_id) DO UPDATE SET
+    stripe_account_id = EXCLUDED.stripe_account_id,
+    onboarding_complete = EXCLUDED.onboarding_complete,
+    charges_enabled = EXCLUDED.charges_enabled,
+    payouts_enabled = EXCLUDED.payouts_enabled;

@@ -188,8 +188,9 @@ CREATE TABLE payment_intents
     currency VARCHAR(3) DEFAULT 'usd',
     status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-    CONSTRAINT fk_reservation_payment FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE SET NULL
+    -- Note: No foreign key constraint on reservation_id to allow temporary/pending reservations
+    -- that haven't been saved to the reservations table yet (e.g., "temp-123456789")
 );
 
