@@ -16,7 +16,6 @@ jobs:
         working-directory: frontend
 
     steps:
-    steps:
       - name: Checkout repository
         uses: actions/checkout@v5
 
