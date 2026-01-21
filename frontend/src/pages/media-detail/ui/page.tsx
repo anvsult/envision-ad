@@ -97,7 +97,7 @@ export default function MediaDetailsPage() {
     };
 
     void loadMedia();
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     if (!media?.businessId){
