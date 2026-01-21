@@ -1,8 +1,14 @@
 package com.envisionad.webservice.proofofdisplay.presentationlayer;
 
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.proofofdisplay.businesslogiclayer.ProofOfDisplayService;
+import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,9 +22,14 @@ public class ProofOfDisplayController {
         this.service = service;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/email")
-    public ResponseEntity<Void> sendProof(@RequestBody ProofOfDisplayRequest request) {
-        service.sendProofEmail(request);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> sendProof(@AuthenticationPrincipal Jwt jwt, @RequestBody ProofOfDisplayRequest request) {
+        try {
+            service.sendProofEmail(request);
+            return ResponseEntity.ok().build();
+        } catch (AdvertiserEmailNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

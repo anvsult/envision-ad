@@ -20,7 +20,7 @@ export function useProofStepper(mediaId: string) {
                 for (const r of reservations) {
                     if (!r.campaignId) continue;
                     if (!map.has(r.campaignId)) {
-                        map.set(r.campaignId, r.campaignName ?? r.campaignId);
+                        map.set(r.campaignId , r.campaignName ?? r.campaignId);
                     }
                 }
 

@@ -8,6 +8,7 @@ import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
+import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
 import com.envisionad.webservice.utils.EmailService;
 import org.slf4j.Logger;
@@ -41,17 +42,17 @@ public class ProofOfDisplayService {
 
     public void sendProofEmail(ProofOfDisplayRequest request) {
         try {
-            // 1) Validate / fetch media
+            // Validate / fetch media
             Media media = mediaRepository.findById(UUID.fromString(request.getMediaId()))
                     .orElseThrow(() -> new MediaNotFoundException(request.getMediaId()));
 
-            // 2) Validate / fetch campaign
+            // Validate / fetch campaign
             AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(request.getCampaignId());
             if (campaign == null) {
                 throw new AdCampaignNotFoundException(request.getCampaignId());
             }
 
-            // 3) Resolve advertiser email (same approach as reservation: pick an employee email for that business)
+            // Resolve advertiser email (same approach as reservation)
             String businessId = campaign.getBusinessId().getBusinessId();
 
             List<Employee> advertiserEmployees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
@@ -60,14 +61,9 @@ public class ProofOfDisplayService {
                     .map(Employee::getEmail)
                     .filter(email -> email != null && !email.isBlank())
                     .findFirst()
-                    .orElse(null);
+                    .orElseThrow(() -> new AdvertiserEmailNotFoundException(businessId));
 
-            if (advertiserEmail == null) {
-                log.warn("No advertiser email found for business: {}", businessId);
-                return;
-            }
-
-            // 4) Build a nicer email body
+            //  Build email body
             String subject = "Your ad is live!";
 
             StringBuilder body = new StringBuilder();
@@ -91,9 +87,9 @@ public class ProofOfDisplayService {
             emailService.sendSimpleEmail(advertiserEmail, subject, body.toString());
 
         } catch (Exception e) {
-            // Same philosophy as reservation: log, don’t crash flow
             log.error("Failed to send proof-of-display email. mediaId={} campaignId={}",
                     request.getMediaId(), request.getCampaignId(), e);
+            throw e;
         }
     }
 }

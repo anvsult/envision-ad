@@ -55,14 +55,14 @@ export default function SideBar() {
 
     const advertiserNavItems = [
         (permissions.includes('create:campaign') || permissions.includes('update:campaign') || permissions.includes('read:campaign')) && (
-                <NavLink
-                    key="campaigns"
-                    component={Link}
-                    href="/dashboard/advertiser/campaigns"
-                    label={t("advertiser.myAds")}
-                    leftSection={<IconAd size={20} stroke={1.5} />}
-                    active={pathname?.endsWith("/advertiser/campaigns")}
-                />
+            <NavLink
+                key="campaigns"
+                component={Link}
+                href="/dashboard/advertiser/campaigns"
+                label={t("advertiser.myAds")}
+                leftSection={<IconAd size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/campaigns")}
+            />
         )
     ].filter(Boolean);
 
