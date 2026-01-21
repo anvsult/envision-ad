@@ -2,14 +2,13 @@ name: Frontend Build CI
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   pull_request:
-    branches:
-      - main
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-frontend:
     runs-on: ubuntu-latest
 
     defaults:
