@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Button, Center, Loader, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import {addEmployeeToOrganization} from "@/features/organization-management/api";
+import { addEmployeeToOrganization } from "@/features/organization-management/api";
 
 export default function OrganizationInvitationPage() {
     const searchParams = useSearchParams();
@@ -35,7 +35,7 @@ export default function OrganizationInvitationPage() {
                     router.push("/dashboard/organization/employees");
                 }, 2000);
 
-            } catch (error) {
+            } catch {
                 setStatus("error");
                 setMessage("An error occurred while accepting the invitation.");
             }

@@ -36,10 +36,10 @@ export async function PATCH(
         });
 
         return res;
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating language:', error);
         return NextResponse.json(
-            { error: error.message || 'Failed to update language' },
+            { error: (error as Error).message || 'Failed to update language' },
             { status: 500 }
         );
     }

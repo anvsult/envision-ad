@@ -1,5 +1,5 @@
-import {UpdateUserRequestModel} from "@/features/auth";
-import {Employee} from "@/entities/organization";
+import { UpdateUserRequestModel } from "@/features/auth";
+import { Employee } from "@/entities/organization";
 
 export const updateUser = async (id: string, data: UpdateUserRequestModel): Promise<Employee> => {
     const res = await fetch(`/api/auth0/update-user/${encodeURIComponent(id)}`, {
@@ -21,7 +21,7 @@ export const updateUser = async (id: string, data: UpdateUserRequestModel): Prom
             } else {
                 errorBody = await res.text();
             }
-        } catch (e) {
+        } catch {
             // Ignore parsing errors, leave errorBody undefined
         }
         throw new Error(`Failed to update user: ${res.statusText}${errorBody ? ` - ${errorBody}` : ""}`);

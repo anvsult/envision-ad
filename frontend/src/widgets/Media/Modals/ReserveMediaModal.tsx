@@ -15,10 +15,10 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input, Alert
+    Input
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import {IconCheck, IconCalendar, IconCreditCard, IconEye, IconAlertCircle} from '@tabler/icons-react';
+import { IconCheck, IconCalendar, IconCreditCard, IconEye } from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -26,10 +26,10 @@ import { createReservation } from "@/features/reservation-management/api";
 import { AdCampaign } from "@/entities/ad-campaign";
 import dayjs from 'dayjs';
 import '@mantine/dates/styles.css';
-import {useLocale, useTranslations} from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import 'dayjs/locale/fr';
-import {getEmployeeOrganization} from "@/features/organization-management/api";
-import {useUser} from "@auth0/nextjs-auth0/client";
+import { getEmployeeOrganization } from "@/features/organization-management/api";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -48,7 +48,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
-    const {user} = useUser();
+    const { user } = useUser();
 
     useEffect(() => {
         if (!user?.sub) return;
@@ -251,9 +251,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     // Only allow going back, not forward
                     if (step < activeStep) setActiveStep(step);
                 }} allowNextStepsSelect={false}>
-                    <Stepper.Step  icon={<IconCalendar size={18} />} />
-                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
-                    <Stepper.Step  icon={<IconEye size={18} />} />
+                    <Stepper.Step icon={<IconCalendar size={18} />} />
+                    <Stepper.Step icon={<IconCreditCard size={18} />} />
+                    <Stepper.Step icon={<IconEye size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -299,7 +299,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         value={selectedCampaignId}
                                         onChange={(val) => {
                                             setSelectedCampaignId(val);
-                                            if(val) setErrors(prev => ({...prev, campaign: undefined}));
+                                            if (val) setErrors(prev => ({ ...prev, campaign: undefined }));
                                         }}
                                         error={errors.campaign}
                                         style={{ width: '100%', maxWidth: 400 }}
@@ -382,7 +382,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                                 {dayjs(dateRange[0]).format('MMM D, YYYY')} - {dayjs(dateRange[1]).format('MMM D, YYYY')}
                                             </Text>
                                         </Group>
-                                        <Divider my="sm"/>
+                                        <Divider my="sm" />
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">

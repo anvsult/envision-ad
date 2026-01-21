@@ -1,10 +1,10 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {Accordion, Button, Group, Stack, Title} from "@mantine/core";
-import {useTranslations} from "next-intl";
-import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
-import {useUser} from "@auth0/nextjs-auth0/client";
+import React, { useEffect, useState } from "react";
+import { Accordion, Button, Group, Stack, Title } from "@mantine/core";
+import { useTranslations } from "next-intl";
+import { AddEmployeeModal } from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
     cancelInviteEmployeeToOrganization,
     getAllOrganizationEmployees,
@@ -12,12 +12,12 @@ import {
     getEmployeeOrganization,
     removeEmployeeFromOrganization
 } from "@/features/organization-management/api";
-import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
-import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
-import type {Employee} from "@/entities/organization";
-import {InvitationResponse} from "@/entities/organization";
-import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
-import {notifications} from "@mantine/notifications";
+import { EmployeeTable } from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
+import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
+import type { Employee } from "@/entities/organization";
+import { InvitationResponse } from "@/entities/organization";
+import { InvitationTable } from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
+import { notifications } from "@mantine/notifications";
 
 export default function OrganizationEmployees() {
     const [owner, setOwner] = useState<string | null>(null);
@@ -33,7 +33,7 @@ export default function OrganizationEmployees() {
     const [invitationToRemove, setInvitationToRemove] = useState<InvitationResponse | null>(null);
 
     const t = useTranslations("organization.employees");
-    const {user} = useUser();
+    const { user } = useUser();
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -60,10 +60,10 @@ export default function OrganizationEmployees() {
         if (!employeeToRemove || !organizationId) return;
 
         try {
-            await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId);
+            await removeEmployeeFromOrganization(organizationId, employeeToRemove.employee_id!);
 
             setEmployees((prev) =>
-                prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
+                prev.filter((e) => e.employee_id !== employeeToRemove.employee_id)
             );
 
             notifications.show({
@@ -127,7 +127,7 @@ export default function OrganizationEmployees() {
             const ep = await getAllOrganizationEmployees(organization.businessId)
             const employeeData: Employee[] = await Promise.all(
                 ep.map(async (employee) => {
-                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.userId)}`);
+                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.user_id)}`);
                     const user = await res.json() as Promise<Employee>;
                     return {
                         ...user,
