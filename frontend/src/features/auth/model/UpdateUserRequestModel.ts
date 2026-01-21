@@ -5,6 +5,6 @@ export interface UpdateUserRequestModel {
     name?: string;
     user_metadata?: {
         bio?: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
 }

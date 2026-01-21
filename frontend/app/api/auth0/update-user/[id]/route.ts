@@ -58,7 +58,7 @@ export async function PATCH(
             return sanitizeString(trimmed);
         };
 
-        const sanitizedBody: any = {};
+        const sanitizedBody: Record<string, unknown> = {};
 
         // Validations for specific fields (snake_case)
         if (body.given_name !== undefined) {
@@ -82,11 +82,11 @@ export async function PATCH(
         }
 
         if (body.user_metadata && typeof body.user_metadata === 'object') {
-            const metadata: any = {};
+            const metadata: Record<string, unknown> = {};
             // Note: Only the 'bio' field from user_metadata is supported and forwarded to Auth0.
             if ('bio' in body.user_metadata) {
                 const sanitizedBio = validateAndSanitizeTextField(
-                    (body.user_metadata as any).bio,
+                    (body.user_metadata as Record<string, unknown>).bio as string,
                     1000
                 );
                 if (sanitizedBio !== undefined) {
@@ -102,8 +102,8 @@ export async function PATCH(
         const updatedUserRaw = await Auth0ManagementService.updateUser(decodedId, sanitizedBody);
 
         return NextResponse.json(updatedUserRaw);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Error updating user:", err);
-        return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 });
+        return NextResponse.json({ error: (err as Error).message || 'Server error' }, { status: 500 });
     }
 }

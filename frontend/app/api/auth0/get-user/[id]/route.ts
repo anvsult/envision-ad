@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/shared/api/auth0/auth0";
 import { Auth0ManagementService } from "@/shared/api/auth0/management"; // [cite: 151]
 
@@ -29,7 +29,7 @@ export async function GET(
         }
 
         return NextResponse.json(user);
-    } catch (err: any) {
+    } catch (err: unknown) {
         console.error("Error fetching user:", err);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
     }

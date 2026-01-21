@@ -11,6 +11,7 @@ export function useAdminMedia() {
 
         // Prefer explicit mediaLocationId if DTO has it, fallback to mediaLocation.id
         const locationId =
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (m as any).mediaLocationId ?? m.mediaLocation?.id;
 
         if (!locationId) {
