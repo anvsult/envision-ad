@@ -3,6 +3,10 @@ services:
     image: postgres:15
     container_name: envision_ad_postgres
     restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${SPRING_DATASOURCE_DBNAME}
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -46,6 +50,7 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       APP_BASE_URL: "${APP_BASE_URL}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
       AUTH0_SECRET: "${AUTH0_SECRET}"
       AUTH0_CLIENT_SECRET: "${AUTH0_CLIENT_SECRET}"
@@ -70,15 +75,15 @@ services:
       APP_BASE_URL: "${APP_BASE_URL}"
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-      SPRING_PROFILES_ACTIVE: "prod"
-      # Spring datasource
+      SPRING_PROFILES_ACTIVE: "local"
+      # Spring datasource - local uses docker postgres container
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
 
       SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
       SPRING_EMAIL_PORT: "${EMAIL_PORT}"
-      SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
+      SPRING_EMAIL_USER: "${EMAIL_USER}"
       SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
     depends_on:
       postgres:

@@ -2,9 +2,6 @@ spring:
   application:
     name: webservice
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       maximum-pool-size: 10
   jpa:
@@ -15,11 +12,6 @@ spring:
       hibernate:
         format_sql: false
     show-sql: false
-  sql:
-    init:
-      platform: psql
-      mode: always
-      schema-locations: classpath:schema.sql
   mail:
     host: ${SPRING_EMAIL_SMTP}
     port: ${SPRING_EMAIL_PORT}
