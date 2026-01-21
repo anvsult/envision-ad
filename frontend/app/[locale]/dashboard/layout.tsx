@@ -31,7 +31,7 @@ export default function DashboardLayout({
                     <Paper
                         w={250}
                         p="md"
-                        style={{minHeight: "calc(100vh - 80px)", borderRadius: 0}}
+                        style={{minHeight: "calc(100vh - 80px)", borderRadius: 0, backgroundColor:"red"}}
                         withBorder
                     >
                         <SideBar />

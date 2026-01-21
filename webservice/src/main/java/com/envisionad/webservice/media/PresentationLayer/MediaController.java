@@ -54,6 +54,7 @@ public class MediaController {
     }
 
     @GetMapping("/active")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> getAllFilteredActiveMedia(
             Pageable pageable,
             @RequestParam(required = false) String title,
