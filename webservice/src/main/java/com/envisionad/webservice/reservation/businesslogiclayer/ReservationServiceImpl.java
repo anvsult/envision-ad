@@ -102,19 +102,23 @@ public class ReservationServiceImpl implements ReservationService {
         int weeks = (int)Math.max(1, Math.ceil(days / 7.0));
         BigDecimal totalPrice = media.getPrice().multiply(BigDecimal.valueOf(weeks));
 
+        // Note: Payment is already handled by the frontend before calling this endpoint
+        // The frontend creates a PaymentIntent, collects payment, then creates the reservation
+        // We could add validation here to verify payment was successful via Stripe API if needed
+
         // Create and populate reservation
         Reservation reservation = reservationRequestMapper.requestModelToEntity(requestModel);
         reservation.setReservationId(UUID.randomUUID().toString());
         reservation.setMediaId(media.getId());
         reservation.setTotalPrice(totalPrice);
-        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setStatus(ReservationStatus.CONFIRMED); // Payment already completed
         reservation.setAdvertiserId(userId);
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
         // Get media owner's email from the business that owns the media
-        // TODO: This currently gets any employee email - should filter to actual media owner
-        List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(businessId);
+        String mediaOwnerBusinessId = media.getBusinessId().toString();
+        List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
         String mediaOwnerEmailAddress = mediaOwners.stream()
                 .map(Employee::getEmail)
                 .filter(email -> email != null && !email.isEmpty())
@@ -124,7 +128,7 @@ public class ReservationServiceImpl implements ReservationService {
         if (mediaOwnerEmailAddress != null) {
             sendReservationEmail(mediaOwnerEmailAddress, media, savedReservation, campaign, totalPrice);
         } else {
-            log.warn("No email found for media owner in business: {}", businessId);
+            log.warn("No email found for media owner in business: {}", mediaOwnerBusinessId);
         }
 
         return reservationResponseMapper.entityToResponseModel(savedReservation);

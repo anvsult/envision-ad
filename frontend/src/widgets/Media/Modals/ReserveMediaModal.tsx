@@ -15,10 +15,10 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input, Alert
+    Input
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import {IconCheck, IconCalendar, IconCreditCard, IconEye, IconAlertCircle} from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconCreditCard, IconEye} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -30,6 +30,11 @@ import {useLocale, useTranslations} from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
+import {createPaymentIntent, PaymentForm} from "@/features/payment";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -49,6 +54,10 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
     const {user} = useUser();
+
+    // Payment states
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+    const [paymentSucceeded, setPaymentSucceeded] = useState(false);
 
     useEffect(() => {
         if (!user?.sub) return;
@@ -126,7 +135,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         return {};
     };
 
-    const nextStep = () => {
+    const nextStep = async () => {
         if (activeStep === 0) {
             const newErrors: { campaign?: string; date?: string } = {};
             let hasError = false;
@@ -142,6 +151,33 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
             if (hasError) {
                 setErrors(newErrors);
+                return;
+            }
+
+            if (!media.id || !media.businessId || !selectedCampaignId) {
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.missingPaymentInfo'),
+                    color: 'red'
+                });
+                return;
+            }
+
+            // Create payment intent when moving to payment step
+            try {
+                const data = await createPaymentIntent({
+                    mediaId: media.id,
+                    campaignId: selectedCampaignId,
+                    amount: calculateTotalCost() * 100, // Stripe expects amount in cents
+                    businessId: media.businessId
+                });
+                setClientSecret(data.clientSecret);
+            } catch {
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.paymentInitFailed'),
+                    color: 'red'
+                });
                 return;
             }
         }
@@ -163,6 +199,15 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
         if (!media.id) {
             notifications.show({ title: t('errorTitle'), message: t('mediaIdMissing'), color: 'red' });
+            return;
+        }
+
+        if (!paymentSucceeded) {
+            notifications.show({
+                title: t('errorTitle'),
+                message: t('errors.paymentRequired'),
+                color: 'red'
+            });
             return;
         }
 
@@ -229,10 +274,73 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         }
     };
 
-    const calculateTotalCost = () => {
-        if (!dateRange[0] || !dateRange[1]) return 0;
-        const weeks = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1;
-        return Math.round((media.price || 100) * weeks * 100) / 100;
+    /**
+     * Calculate total cost for the reservation.
+     * CRITICAL: This must match the backend calculation in ReservationServiceImpl.java
+     * Backend logic: Math.ceil(days / 7.0) * price
+     *
+     * @returns Total cost in dollars as a number with 2 decimal places
+     */
+    const calculateTotalCost = (): number => {
+        // Validate inputs
+        if (!dateRange[0] || !dateRange[1]) {
+            return 0;
+        }
+
+        if (!media.price || media.price <= 0) {
+            console.error('Invalid media price:', media.price);
+            return 0;
+        }
+
+        // Calculate duration in days - must match backend
+        const startDate = dayjs(dateRange[0]).startOf('day');
+        const endDate = dayjs(dateRange[1]).endOf('day');
+
+        // Get total days (inclusive of both start and end dates)
+        const totalDays = endDate.diff(startDate, 'days');
+
+        // Validate date range
+        if (totalDays < 0) {
+            console.error('Invalid date range: end date is before start date');
+            return 0;
+        }
+
+        // Calculate weeks using the SAME formula as backend: Math.ceil(days / 7.0)
+        // This ensures frontend and backend calculate the same price
+        const weeks = Math.max(1, Math.ceil(totalDays / 7.0));
+
+        // Calculate total using integer arithmetic (cents) to avoid floating point errors
+        const priceInCents = Math.round(media.price * 100);
+        const totalInCents = priceInCents * weeks;
+
+        // Convert back to dollars with exact 2 decimal places
+        const totalInDollars = totalInCents / 100;
+
+        // Validate result
+        if (!Number.isFinite(totalInDollars) || totalInDollars < 0) {
+            console.error('Invalid calculation result:', totalInDollars);
+            return 0;
+        }
+
+        return totalInDollars;
+    };
+
+    /**
+     * Get total cost in cents for Stripe payment
+     * @returns Total cost in cents (integer)
+     */
+    const getTotalCostInCents = (): number => {
+        const totalInDollars = calculateTotalCost();
+        return Math.round(totalInDollars * 100);
+    };
+
+    /**
+     * Format currency for display
+     * @param amount - Amount in dollars
+     * @returns Formatted currency string (e.g., "123.45")
+     */
+    const formatCurrency = (amount: number): string => {
+        return amount.toFixed(2);
     };
 
     return (
@@ -275,6 +383,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                             setDateRange([null, null]);
                                             setSelectedCampaignId(null);
                                             setErrors({});
+                                            setClientSecret(null);
+                                            setPaymentSucceeded(false);
                                         }, 200);
                                     }}
                                 >
@@ -334,32 +444,28 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
                                     {dateRange[0] && dateRange[1] && (
                                         <Text c="blue" fw={500}>
-                                            Selected: {dayjs(dateRange[0]).format('MMM DD')} to {dayjs(dateRange[1]).format('MMM DD')}
-                                            {' '}({dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks')} weeks)
+                                            {t('dateSelection.selected', {
+                                                start: dayjs(dateRange[0]).format('MMM DD'),
+                                                end: dayjs(dateRange[1]).format('MMM DD'),
+                                                weeks: dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks')
+                                            })}
                                         </Text>
                                     )}
                                 </Stack>
                             )}
 
                             {/* Step 2: Payment Method (Stripe integration - to be implemented) */}
-                            {activeStep === 1 && (
-                                <Stack align="center" gap="lg">
-
-                                    {/* TODO: Implement Stripe Payment Element here */}
-                                    {/*<Stack w="100%" maw={500}>*/}
-                                    {/*    <Text fw={500}>{t('selectPaymentMethod')}</Text>*/}
-                                    {/*    <StripePaymentElement*/}
-                                    {/*        onPaymentMethodChange={setPaymentMethod}*/}
-                                    {/*    />*/}
-                                    {/*</Stack>*/}
-
-                                    <Paper withBorder p="xl" w="100%" maw={500} ta="center">
-                                        <IconCreditCard size={48} color="gray" style={{ opacity: 0.3 }} />
-                                        <Text c="dimmed" mt="md">
-                                            {"THIS IS A PLACEHOLDER FOR STRIPE PAYMENT INTEGRATION. PAYMENT FUNCTIONALITY WILL BE IMPLEMENTED IN THE FUTURE."}
-                                        </Text>
-                                    </Paper>
-                                </Stack>
+                            {activeStep === 1 && clientSecret && (
+                                <Elements stripe={stripePromise} options={{ clientSecret }}>
+                                    <PaymentForm
+                                        amount={getTotalCostInCents()}
+                                        onSuccess={() => {
+                                            setPaymentSucceeded(true);
+                                            nextStep();
+                                        }}
+                                        onBack={prevStep}
+                                    />
+                                </Elements>
                             )}
 
 
@@ -386,7 +492,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                ${calculateTotalCost()}
+                                                ${formatCurrency(calculateTotalCost())}
                                             </Text>
                                         </Group>
                                     </Paper>
@@ -396,7 +502,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </>
                 )}
 
-                {activeStep < 3 && (
+                {activeStep < 3 && activeStep !== 1 && (
                     <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? onClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}

@@ -2,6 +2,8 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
 -- 1. Clean up old tables (Order matters: drop tables with FKs first)
+DROP TABLE IF EXISTS payment_intents CASCADE;
+DROP TABLE IF EXISTS stripe_accounts CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
 -- Drop tables that have foreign keys to `media` first, then `media` itself.
 DROP TABLE IF EXISTS media CASCADE;
@@ -162,3 +164,32 @@ CREATE TABLE reservations
     campaign_id VARCHAR(36) REFERENCES ad_campaigns(campaign_id) ON DELETE SET NULL,
     media_id UUID REFERENCES media(media_id) ON DELETE CASCADE
 );
+
+-- 7. Create Stripe Accounts Table (for Stripe Connect)
+CREATE TABLE stripe_accounts
+(
+    id BIGSERIAL PRIMARY KEY,
+    business_id VARCHAR(36) UNIQUE NOT NULL,
+    stripe_account_id VARCHAR(255) UNIQUE NOT NULL,
+    onboarding_complete BOOLEAN DEFAULT FALSE,
+    charges_enabled BOOLEAN DEFAULT FALSE,
+    payouts_enabled BOOLEAN DEFAULT FALSE,
+
+    CONSTRAINT fk_business_stripe FOREIGN KEY (business_id) REFERENCES business(business_id) ON DELETE CASCADE
+);
+
+-- 8. Create Payment Intents Table (for tracking Stripe payments)
+CREATE TABLE payment_intents
+(
+    id BIGSERIAL PRIMARY KEY,
+    stripe_payment_intent_id VARCHAR(255) UNIQUE NOT NULL,
+    reservation_id VARCHAR(36),
+    amount DECIMAL(10, 2) NOT NULL,
+    currency VARCHAR(3) DEFAULT 'usd',
+    status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_reservation_payment FOREIGN KEY (reservation_id) REFERENCES reservations(reservation_id) ON DELETE SET NULL
+);
+

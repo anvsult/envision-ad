@@ -129,7 +129,7 @@
     "hoursTitle": "Heures",
     "reserveButton": "Réserver",
     "reserveNote": "Vous ne serez pas facturé maintenant.",
-    "pricePerWeek": "{price} $ par semaine",
+    "pricePerWeek": "{price} $CAD par semaine",
     "priceUnavailable": "Prix non disponible",
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
@@ -171,7 +171,7 @@
     }
   },
   "mediacard": {
-    "perWeek": "${price} par semaine",
+    "perWeek": "CAD${price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
@@ -184,7 +184,7 @@
     "browseactions": {
       "filters": {
         "actionName": "Filtres:",
-        "price": "Prix ($)",
+        "price": "Prix ($CAD)",
         "impressions": "Impressions minimum",
         "from": "Minimum",
         "to": "Maximum",
@@ -458,7 +458,7 @@
       "aspectRatioHeight": "Ex. 9",
       "width": "Ex. 80",
       "height": "Ex. 200",
-      "price": "50,00 $",
+      "price": "50,00 $CAD",
       "dailyImpressions": "Impressions quotidiennes",
       "timeOpen": "00:00",
       "timeClosed": "Fermé"
@@ -737,7 +737,10 @@
     "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
     "errors": {
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
-      "selectDate": "Veuillez sélectionner une date de début et de fin valides"
+      "selectDate": "Veuillez sélectionner une date de début et de fin valides",
+      "missingPaymentInfo": "Informations de paiement requises manquantes",
+      "paymentInitFailed": "Échec de l'initialisation du paiement",
+      "paymentRequired": "Le paiement doit être complété en premier"
     },
     "errorTitle": "Erreur de réservation",
     "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
@@ -756,12 +759,24 @@
     "nextStepButton": "Étape suivante",
     "confirmPayButton": "Confirmer & Payer",
     "reviewTitle": "Vérifier la réservation",
+    "dateSelection": {
+      "selected": "Sélectionné : {start} à {end} ({weeks} semaines)"
+    },
     "labels": {
       "media": "Média",
       "campaign": "Campagne",
       "dates": "Dates",
       "totalCost": "Coût total"
     }
+  },
+  "paymentForm": {
+    "enterPaymentDetails": "Entrer les détails de paiement",
+    "total": "Total : {amount} $CAD",
+    "payButton": "Payer {amount} $CAD",
+    "back": "Retour",
+    "paymentFailed": "Paiement échoué",
+    "paymentError": "Une erreur s'est produite lors du paiement",
+    "unexpectedError": "Une erreur inattendue s'est produite"
   },
   "invitation": {
     "loading": "Chargement...",
@@ -774,5 +789,34 @@
     "error": "Une erreur s'est produite lors de l'acceptation de l'invitation.",
     "redirecting": "Redirection vers le tableau de bord...",
     "goHome": "Retour à l'accueil"
+  },
+  "stripeOnboarding": {
+    "title": "Connecter votre compte de paiement",
+    "description": "Configurez votre compte Stripe pour recevoir des paiements des annonceurs.",
+    "setupTitle": "Connecter un compte Stripe",
+    "setupDescription": "Vous devez connecter un compte Stripe pour recevoir des paiements lorsque les annonceurs réservent vos médias.",
+    "requiredTitle": "Requis pour recevoir des paiements",
+    "requiredMessage": "Sans un compte Stripe connecté, les annonceurs ne peuvent pas réserver vos médias.",
+    "whatYouNeed": "Ce dont vous aurez besoin :",
+    "requirement1": "Informations sur l'entreprise (nom légal, adresse)",
+    "requirement2": "Coordonnées bancaires pour les paiements",
+    "requirement3": "Numéro d'identification fiscale",
+    "requirement4": "Pièce d'identité personnelle (pour vérification)",
+    "connectStripe": "Connecter le compte Stripe",
+    "continueOnboarding": "Continuer l'intégration",
+    "securityNote": "Vos informations sont transmises en toute sécurité à Stripe et ne sont jamais stockées sur nos serveurs.",
+    "connectedTitle": "Compte de paiement connecté",
+    "connectedMessage": "Votre compte Stripe est entièrement configuré et prêt à recevoir des paiements !",
+    "statusTitle": "État du compte",
+    "onboardingStatus": "Intégration",
+    "chargesStatus": "Accepter les paiements",
+    "payoutsStatus": "Recevoir les paiements",
+    "complete": "Terminé",
+    "incomplete": "Incomplet",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "checkingStatus": "Vérification de l'état du compte...",
+    "errorTitle": "Erreur de connexion",
+    "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
   }
 }
