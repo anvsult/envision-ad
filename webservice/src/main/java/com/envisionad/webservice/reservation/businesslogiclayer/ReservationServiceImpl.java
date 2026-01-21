@@ -62,20 +62,34 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<ReservationResponseModel> response =
                 reservationResponseMapper.entitiesToResponseModelList(reservations);
-        for (ReservationResponseModel r : response) {
-            if (r.getCampaignId() == null) continue;
 
-            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(r.getCampaignId());
-            if (campaign != null) {
-                r.setCampaignName(campaign.getName());
-            }
-        }
+        // collect unique campaignIds from reservations
+        List<String> campaignIds = reservations.stream()
+                .map(Reservation::getCampaignId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .toList();
+
+        if (campaignIds.isEmpty()) return response;
+
+        // batch fetch campaigns
+        var campaigns = adCampaignRepository.findAllByCampaignId_CampaignIdIn(campaignIds);
+
+        // map campaignId to campaignName
+        var campaignNameById = campaigns.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        c -> c.getCampaignId().getCampaignId(),
+                        AdCampaign::getName
+                ));
+
+        // fill campaignName in the response models
+        response.forEach(r -> r.setCampaignName(campaignNameById.get(r.getCampaignId())));
+
         return response;
     }
 
-
     @Override
-    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel, String mediaOwnerEmailAddress) {
+    public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
         ReservationValidator.validateReservation(requestModel);
 
         if (jwt == null || jwt.getSubject() == null) {
@@ -128,7 +142,7 @@ public class ReservationServiceImpl implements ReservationService {
         // Get media owner's email from the business that owns the media
         // TODO: This currently gets any employee email - should filter to actual media owner
         List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(businessId);
-        mediaOwnerEmailAddress = mediaOwners.stream()
+        String mediaOwnerEmailAddress = mediaOwners.stream()
                 .map(Employee::getEmail)
                 .filter(email -> email != null && !email.isEmpty())
                 .findFirst()
