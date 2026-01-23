@@ -115,11 +115,10 @@ To set up a new EC2 instance for deployment, follow these steps:
    sudo dnf install docker-compose -y
    ```
    By default, the ec2-user cannot run docker commands without sudo. To make your GitHub Actions or manual Doppler commands work seamlessly, add the user to the docker group.
-      ```bash
-      sudo usermod -aG docker ec2-user
-      # Note: You must log out and back in for this to take effect, 
-      # or run: newgrp docker
-      ```
+   ```bash
+   sudo usermod -aG docker ec2-user
+   # Note: You must log out and back in for this to take effect, 
+   # or run: newgrp docker
 
    - Amazon Linux 2023 often lacks the Docker Buildx plugin by default. Without it, your docker compose ... --build command will likely fail with a "requires buildx" error.
 
@@ -151,7 +150,7 @@ To set up a new EC2 instance for deployment, follow these steps:
    ```
 7. Clone the repository:
    ```bash
-      git clone github.com/anvsult/envision-ad
+      git clone https://github.com/anvsult/envision-ad.git
    ```
 8. Navigate to the project directory:
    ```bash
@@ -162,7 +161,7 @@ To set up a new EC2 instance for deployment, follow these steps:
    doppler run -- docker compose -f docker-compose.prod.yml up -d --build --force-recreate
    ```
 
-### To get the reverse proxy work with a custom domain:
+### To get the reverse proxy to work with a custom domain:
 
 1. Install Certbot:
    ```bash
