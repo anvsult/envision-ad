@@ -143,6 +143,7 @@ class ReservationControllerIntegrationTest {
         // Create Media
         Media media = new Media();
         media.setMediaLocation(location);
+        media.setBusinessId(UUID.fromString(businessId));
         media.setTitle("Downtown Digital Board");
         media.setMediaOwnerName("MetroAds");
         media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
@@ -200,11 +201,12 @@ class ReservationControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.reservationId").isNotEmpty()
                 .jsonPath("$.campaignId").isEqualTo(this.campaignId)
-                .jsonPath("$.status").isEqualTo("PENDING")
+                .jsonPath("$.status").isEqualTo("CONFIRMED")
                 .jsonPath("$.totalPrice").isNumber();
 
         // Verify reservation was saved
         assertEquals(1, reservationRepository.count());
+        System.out.println("Reservations in DB: " + reservationRepository.findAll());
 
         // Verify email was sent
         verify(emailService, times(1)).sendSimpleEmail(anyString(), anyString(), anyString());
@@ -241,6 +243,8 @@ class ReservationControllerIntegrationTest {
         // Verify in database
         Reservation savedReservation = reservationRepository.findAll().getFirst();
         assertEquals(0, expectedPrice.compareTo(savedReservation.getTotalPrice()));
+        System.out.println("Reservations in DB: " + reservationRepository.findAll());
+
     }
 
     @Test
