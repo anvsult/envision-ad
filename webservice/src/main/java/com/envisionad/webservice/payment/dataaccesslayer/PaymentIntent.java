@@ -13,14 +13,18 @@ public class PaymentIntent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String stripePaymentIntentId;
+
+    @Column(unique = true)
+    private String stripeSessionId;
 
     private String reservationId;
 
     private BigDecimal amount;
 
-    private String currency = "usd";
+    @Enumerated
+    private Currency currency = Currency.CAD;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;

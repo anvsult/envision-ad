@@ -735,6 +735,8 @@
     "chooseCampaign": "Choisissez une de vos campagnes",
     "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
     "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
+    "processingPayment": "Traitement de votre paiement...",
+    "pleaseWait": "Veuillez patienter pendant que nous finalisons votre réservation",
     "errors": {
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
       "selectDate": "Veuillez sélectionner une date de début et de fin valides",

@@ -1,18 +1,19 @@
 import axiosInstance from "@/shared/api/axios/axios";
+import { Dayjs } from 'dayjs';
 
 export const createPaymentIntent = async (params: {
     mediaId: string;
     campaignId: string;
-    amount: number;
-    businessId: string;
+    startDate: Dayjs;
+    endDate: Dayjs;
 }) => {
     const response = await axiosInstance.post('/payments/create-payment-intent', {
         reservationId: `temp-${Date.now()}`, // Temporary ID
-        // Normalize amount so backend applies the 100× scaling only once
-        amount: params.amount / 100,
         mediaId: params.mediaId,
         campaignId: params.campaignId,
-        businessId: params.businessId
+        startDate: params.startDate.toISOString(),
+        endDate: params.endDate.toISOString()
+        // backend calculates price from media data for security
     });
     return response.data;
 };

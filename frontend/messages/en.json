@@ -734,6 +734,8 @@
     "chooseCampaign": "Choose one of your campaigns",
     "selectStartDateNote": "Select a Start Date. End dates are restricted to weekly intervals.",
     "endDateWeekday": "End date must be on the same weekday as start date.",
+    "processingPayment": "Processing your payment...",
+    "pleaseWait": "Please wait while we complete your reservation",
     "errors": {
       "selectCampaign": "Please select a campaign to proceed",
       "selectDate": "Please select a valid start and end date",
@@ -818,5 +820,4 @@
     "errorTitle": "Connection Error",
     "connectionError": "Failed to connect Stripe account. Please try again."
   }
-}
 }

@@ -6,6 +6,7 @@ import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
+import com.stripe.model.checkout.Session;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,9 @@ public class StripeWebhookService {
         log.info("Processing Stripe webhook event: {}", event.getType());
 
         switch (event.getType()) {
+            case "checkout.session.completed":
+                handleCheckoutSessionCompleted(event);
+                break;
             case "payment_intent.succeeded":
                 handlePaymentIntentSucceeded(event);
                 break;
@@ -51,6 +55,47 @@ public class StripeWebhookService {
     }
 
     /**
+     * Handle successful checkout session completion
+     * Links session ID to payment intent ID when payment completes
+     */
+    private void handleCheckoutSessionCompleted(Event event) {
+        try {
+            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+            StripeObject stripeObject = null;
+
+            if (dataObjectDeserializer.getObject().isPresent()) {
+                stripeObject = dataObjectDeserializer.getObject().get();
+            }
+
+            if (stripeObject instanceof Session session) {
+
+                log.info("Checkout session completed: {}", session.getId());
+
+                // Link the session with its payment intent
+                String paymentIntentId = session.getPaymentIntent();
+                if (paymentIntentId == null) {
+                    log.error("checkout.session.completed missing payment_intent for session: {}", session.getId());
+                    return;
+                }
+
+                // Find by session ID and update with payment intent ID
+                paymentIntentRepository.findByStripeSessionId(session.getId())
+                    .ifPresentOrElse(paymentIntent -> {
+                        paymentIntent.setStripePaymentIntentId(paymentIntentId);
+                        paymentIntent.setStatus(PaymentStatus.SUCCEEDED);
+                        paymentIntent.setUpdatedAt(LocalDateTime.now());
+                        paymentIntentRepository.save(paymentIntent);
+                        log.info("Payment intent updated to SUCCEEDED for reservation: {} (session: {}, payment_intent: {})",
+                                 paymentIntent.getReservationId(), session.getId(), paymentIntentId);
+                    }, () -> log.warn("No payment record found for session: {}", session.getId()));
+            }
+        } catch (Exception e) {
+            log.error("Error processing checkout.session.completed event", e);
+            throw new RuntimeException("Failed to process checkout session completion", e);
+        }
+    }
+
+    /**
      * Handle successful payment intent
      */
     private void handlePaymentIntentSucceeded(Event event) {
@@ -62,8 +107,7 @@ public class StripeWebhookService {
                 stripeObject = dataObjectDeserializer.getObject().get();
             }
 
-            if (stripeObject instanceof com.stripe.model.PaymentIntent) {
-                com.stripe.model.PaymentIntent stripePaymentIntent = (com.stripe.model.PaymentIntent) stripeObject;
+            if (stripeObject instanceof com.stripe.model.PaymentIntent stripePaymentIntent) {
 
                 PaymentIntent paymentIntent = paymentIntentRepository
                         .findByStripePaymentIntentId(stripePaymentIntent.getId())
@@ -96,8 +140,7 @@ public class StripeWebhookService {
                 stripeObject = dataObjectDeserializer.getObject().get();
             }
 
-            if (stripeObject instanceof com.stripe.model.PaymentIntent) {
-                com.stripe.model.PaymentIntent stripePaymentIntent = (com.stripe.model.PaymentIntent) stripeObject;
+            if (stripeObject instanceof com.stripe.model.PaymentIntent stripePaymentIntent) {
 
                 PaymentIntent paymentIntent = paymentIntentRepository
                         .findByStripePaymentIntentId(stripePaymentIntent.getId())
@@ -130,8 +173,7 @@ public class StripeWebhookService {
                 stripeObject = dataObjectDeserializer.getObject().get();
             }
 
-            if (stripeObject instanceof com.stripe.model.PaymentIntent) {
-                com.stripe.model.PaymentIntent stripePaymentIntent = (com.stripe.model.PaymentIntent) stripeObject;
+            if (stripeObject instanceof com.stripe.model.PaymentIntent stripePaymentIntent) {
 
                 PaymentIntent paymentIntent = paymentIntentRepository
                         .findByStripePaymentIntentId(stripePaymentIntent.getId())

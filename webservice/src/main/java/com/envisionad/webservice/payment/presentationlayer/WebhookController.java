@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/webhooks")
-
 public class WebhookController {
     private final StripeWebhookService webhookService;
 

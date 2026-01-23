@@ -20,8 +20,7 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.utils.JwtUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +29,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService {
     private final EmailService emailService;
@@ -41,7 +41,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationResponseMapper reservationResponseMapper;
     private final AdCampaignService adCampaignService;
     private final JwtUtils jwtUtils;
-    private static final Logger log = LoggerFactory.getLogger(ReservationServiceImpl.class);
 
     public ReservationServiceImpl(EmailService emailService, EmployeeRepository employeeRepository, ReservationRepository reservationRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper, ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService, JwtUtils jwtUtils) {
         this.emailService = emailService;
@@ -116,17 +115,19 @@ public class ReservationServiceImpl implements ReservationService {
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
-        // Get media owner's email from the business that owns the media
+        // Get all media owners of the business and email them
         String mediaOwnerBusinessId = media.getBusinessId().toString();
         List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
-        String mediaOwnerEmailAddress = mediaOwners.stream()
+        List<String> mediaOwnerEmailAddresses = mediaOwners.stream()
                 .map(Employee::getEmail)
                 .filter(email -> email != null && !email.isEmpty())
-                .findFirst()
-                .orElse(null);
+                .distinct()
+                .toList();
 
-        if (mediaOwnerEmailAddress != null) {
-            sendReservationEmail(mediaOwnerEmailAddress, media, savedReservation, campaign, totalPrice);
+        if (!mediaOwnerEmailAddresses.isEmpty()) {
+            for (String ownerEmailAddress : mediaOwnerEmailAddresses) {
+                sendReservationEmail(ownerEmailAddress, media, savedReservation, campaign, totalPrice);
+            }
         } else {
             log.warn("No email found for media owner in business: {}", mediaOwnerBusinessId);
         }

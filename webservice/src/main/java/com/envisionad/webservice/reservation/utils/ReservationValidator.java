@@ -3,7 +3,7 @@ package com.envisionad.webservice.reservation.utils;
 import com.envisionad.webservice.reservation.exceptions.InvalidReservationException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class ReservationValidator {
     public static void validateReservation(ReservationRequestModel requestModel) {
@@ -11,8 +11,14 @@ public class ReservationValidator {
             throw new InvalidReservationException();
     }
 
+    /**
+     * Validate that start date is AFTER today (cannot reserve for today or in the past)
+     */
     public static boolean validateStartDate(ReservationRequestModel requestModel) {
-        return requestModel.getStartDate().isAfter(LocalDateTime.now());
+        LocalDate startDate = requestModel.getStartDate().toLocalDate();
+        LocalDate today = LocalDate.now();
+        // Start date must be strictly after today (cannot be today or in the past)
+        return startDate.isAfter(today);
     }
 
     public static boolean validateEndDate(ReservationRequestModel requestModel) {

@@ -4,6 +4,7 @@ import com.envisionad.webservice.payment.businesslogiclayer.StripeServiceImpl;
 import com.envisionad.webservice.payment.presentationlayer.models.PaymentIntentRequestModel;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.stripe.exception.StripeException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/payments")
 @CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
@@ -50,10 +52,17 @@ public class PaymentController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody PaymentIntentRequestModel request) throws StripeException {
 
-        Map<String, String> result = stripeService.createCheckoutSession(
+        String userId = jwtUtils.extractUserId(jwt);
+
+        // Delegate all business logic to service layer
+        // Backend calculates price from media data based on dates (for security)
+        Map<String, String> result = stripeService.createAuthorizedCheckoutSession(
+                userId,
+                request.getCampaignId(),
+                request.getMediaId(),
                 request.getReservationId(),
-                request.getAmount(),
-                request.getBusinessId()
+                request.getStartDate(),
+                request.getEndDate()
         );
 
         return ResponseEntity.ok(result);

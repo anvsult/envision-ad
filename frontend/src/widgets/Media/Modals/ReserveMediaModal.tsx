@@ -31,9 +31,9 @@ import {useLocale, useTranslations} from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
-import { Elements } from '@stripe/react-stripe-js';
+import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
-import {createPaymentIntent, PaymentForm} from "@/features/payment";
+import {createPaymentIntent} from "@/features/payment";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -104,9 +104,10 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         const d = dayjs(date);
         const startDateStr = dateRange[0];
         const endDateStr = dateRange[1];
+        const today = dayjs();
 
-        // 1. Disable Past Dates
-        if (d.isBefore(dayjs(), 'day')) {
+        // 1. Disable Today and Past Dates
+        if (d.isBefore(today, 'day') || d.isSame(today, 'day')) {
             return { disabled: true };
         }
 
@@ -137,6 +138,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     };
 
     const nextStep = async () => {
+        // Step 0: Campaign & Dates selection -> Step 1: Review
         if (activeStep === 0) {
             const newErrors: { campaign?: string; date?: string } = {};
             let hasError = false;
@@ -164,21 +166,44 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 return;
             }
 
-            // Create checkout session and redirect to Stripe
+            // Move to review step
+            setErrors({});
+            setActiveStep(1);
+            return;
+        }
+
+        // Step 1: Review -> Step 2: Payment (create checkout session)
+        if (activeStep === 1) {
+            if (!media.id || !selectedCampaignId || !dateRange[0] || !dateRange[1]) {
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.missingPaymentInfo'),
+                    color: 'red'
+                });
+                return;
+            }
+
             setLoading(true);
             try {
                 const data = await createPaymentIntent({
                     mediaId: media.id,
                     campaignId: selectedCampaignId,
-                    amount: calculateTotalCost() * 100,
-                    businessId: media.businessId
+                    startDate: dayjs(dateRange[0]),
+                    endDate: dayjs(dateRange[1])
+                    // amount removed - server calculates price from media data for security
+                    // businessId removed - server derives it from media for security
                 });
 
-                // Redirect to Stripe Checkout
-                if (data.sessionUrl) {
-                    window.location.href = data.sessionUrl;
+                // Set client secret for embedded checkout (no redirect)
+                if (data.clientSecret) {
+                    setClientSecret(data.clientSecret);
+                    setActiveStep(2);
                 } else {
-                    throw new Error('No session URL returned');
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('errors.paymentInitFailed'),
+                        color: 'red'
+                    });
                 }
             } catch (error) {
                 console.error('Payment init error:', error);
@@ -187,13 +212,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     message: t('errors.paymentInitFailed'),
                     color: 'red'
                 });
+            } finally {
                 setLoading(false);
-                return;
             }
             return;
         }
-        setErrors({});
-        setActiveStep((current) => (current < 3 ? current + 1 : current));
     };
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
@@ -278,63 +301,22 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     };
 
     /**
-     * Calculate total cost for the reservation.
-     * CRITICAL: This must match the backend calculation in ReservationServiceImpl.java
-     * Backend logic: Math.ceil(days / 7.0) * price
+     * Calculate total cost for UI display only.
+     * NOTE: The actual payment amount is calculated and validated on the backend for security.
+     * This is just an estimate for the user to see what they'll pay.
      *
-     * @returns Total cost in dollars as a number with 2 decimal places
+     * @returns Estimated total cost in dollars
      */
     const calculateTotalCost = (): number => {
-        // Validate inputs
-        if (!dateRange[0] || !dateRange[1]) {
+        if (!dateRange[0] || !dateRange[1] || !media.price || media.price <= 0) {
             return 0;
         }
 
-        if (!media.price || media.price <= 0) {
-            console.error('Invalid media price:', media.price);
-            return 0;
-        }
+        const totalDays = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'days');
+        if (totalDays < 0) return 0;
 
-        // Calculate duration in days - must match backend Duration.between(startDate, endDate).toDays()
-        const startDate = dayjs(dateRange[0]).startOf('day');
-        const endDate = dayjs(dateRange[1]).startOf('day');
-
-        // Get total days (exclusive of the end date boundary, same as backend)
-        const totalDays = endDate.diff(startDate, 'days');
-
-        // Validate date range
-        if (totalDays < 0) {
-            console.error('Invalid date range: end date is before start date');
-            return 0;
-        }
-
-        // Calculate weeks using the SAME formula as backend: Math.ceil(days / 7.0)
-        // This ensures frontend and backend calculate the same price
         const weeks = Math.max(1, Math.ceil(totalDays / 7.0));
-
-        // Calculate total using integer arithmetic (cents) to avoid floating point errors
-        const priceInCents = Math.round(media.price * 100);
-        const totalInCents = priceInCents * weeks;
-
-        // Convert back to dollars with exact 2 decimal places
-        const totalInDollars = totalInCents / 100;
-
-        // Validate result
-        if (!Number.isFinite(totalInDollars) || totalInDollars < 0) {
-            console.error('Invalid calculation result:', totalInDollars);
-            return 0;
-        }
-
-        return totalInDollars;
-    };
-
-    /**
-     * Get total cost in cents for Stripe payment
-     * @returns Total cost in cents (integer)
-     */
-    const getTotalCostInCents = (): number => {
-        const totalInDollars = calculateTotalCost();
-        return Math.round(totalInDollars * 100);
+        return media.price * weeks;
     };
 
     /**
@@ -349,7 +331,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     return (
         <Modal
             opened={opened}
-            onClose={onClose}
+            onClose={() => { onClose()}}
             size="lg"
             title={<Text fw={700}>{t('title', { title: media.title })}</Text>}
             centered
@@ -363,8 +345,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     if (step < activeStep) setActiveStep(step);
                 }} allowNextStepsSelect={false}>
                     <Stepper.Step  icon={<IconCalendar size={18} />} />
-                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
                     <Stepper.Step  icon={<IconEye size={18} />} />
+                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -457,23 +439,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 </Stack>
                             )}
 
-                            {/* Step 2: Payment Method (Stripe integration - to be implemented) */}
-                            {activeStep === 1 && clientSecret && (
-                                <Elements stripe={stripePromise} options={{ clientSecret }}>
-                                    <PaymentForm
-                                        amount={getTotalCostInCents()}
-                                        onSuccess={() => {
-                                            setPaymentSucceeded(true);
-                                            nextStep();
-                                        }}
-                                        onBack={prevStep}
-                                    />
-                                </Elements>
-                            )}
-
-
-                            {/* Step 3: Review */}
-                            {activeStep === 2 && (
+                            {/* Step 2: Review & Confirm */}
+                            {activeStep === 1 && (
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
@@ -501,21 +468,50 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                     </Paper>
                                 </Stack>
                             )}
+
+                            {/* Step 3: Embedded Stripe Checkout */}
+                            {activeStep === 2 && clientSecret && !paymentSucceeded && (
+                                <EmbeddedCheckoutProvider
+                                    stripe={stripePromise}
+                                    options={{
+                                        clientSecret,
+                                        onComplete: async () => {
+                                            // Payment succeeded in Stripe - now create the reservation
+                                            console.log('Payment completed, creating reservation...');
+                                            setPaymentSucceeded(true);
+
+                                            // Create the reservation after successful payment
+                                            await handleConfirmReservation();
+                                        }
+                                    }}
+                                >
+                                    <EmbeddedCheckout />
+                                </EmbeddedCheckoutProvider>
+                            )}
+
+                            {/* Step 3: Processing after payment */}
+                            {activeStep === 2 && paymentSucceeded && (
+                                <Center py="xl">
+                                    <Stack align="center" gap="md">
+                                        <Loader size="lg" />
+                                        <Text size="lg" fw={500}>{t('processingPayment')}</Text>
+                                        <Text size="sm" c="dimmed">{t('pleaseWait')}</Text>
+                                    </Stack>
+                                </Center>
+                            )}
                         </Box>
                     </>
                 )}
 
-                {activeStep < 3 && activeStep !== 1 && (
+                {activeStep < 3 && !paymentSucceeded && (
                     <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? onClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
 
-                        {activeStep < 2 ? (
-                            <Button onClick={nextStep}>{t('nextStepButton')}</Button>
-                        ) : (
-                            <Button onClick={handleConfirmReservation} loading={loading} color="green">
-                                {t('confirmPayButton')}
+                        {activeStep <= 1 && (
+                            <Button onClick={nextStep} loading={loading}>
+                                {t('nextStepButton')}
                             </Button>
                         )}
                     </Group>
