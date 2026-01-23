@@ -73,7 +73,7 @@ The Doppler CLI is required on the EC2 instance to fetch secrets during the depl
 
 The GitHub deployment action uses a nested command structure to inject environment variables from both Doppler projects into the Docker containers at runtime.
 
--- Option 1: Inject Doppler token through github secrets 
+#### Option 1: Inject Doppler token through github secrets 
 Deployment Command:
 ```bash
 doppler run --project envision-ad-frontend --config prd --token ${{ secrets.DOPPLER_FRONTEND_TOKEN }} -- \
@@ -81,7 +81,7 @@ doppler run --project envision-ad-backend --config prd --token ${{ secrets.DOPPL
 docker compose -f docker-compose.prod.yml up -d --build --force-recreate
 ```
 
--- Option 2: Login to Doppler and then run the same command as locally
+#### Option 2: Login to Doppler and then run the same command as locally
 This will give you a url that you can open on your machine and paste the provided code to authenticate the EC2 instance on Doppler
 ```bash
 doppler login
