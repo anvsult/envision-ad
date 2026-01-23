@@ -213,14 +213,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             return;
         }
 
-        if (!paymentSucceeded) {
-            notifications.show({
-                title: t('errorTitle'),
-                message: t('errors.paymentRequired'),
-                color: 'red'
-            });
-            return;
-        }
 
         setLoading(true);
         try {
@@ -303,11 +295,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             return 0;
         }
 
-        // Calculate duration in days - must match backend
+        // Calculate duration in days - must match backend Duration.between(startDate, endDate).toDays()
         const startDate = dayjs(dateRange[0]).startOf('day');
-        const endDate = dayjs(dateRange[1]).endOf('day');
+        const endDate = dayjs(dateRange[1]).startOf('day');
 
-        // Get total days (inclusive of both start and end dates)
+        // Get total days (exclusive of the end date boundary, same as backend)
         const totalDays = endDate.diff(startDate, 'days');
 
         // Validate date range

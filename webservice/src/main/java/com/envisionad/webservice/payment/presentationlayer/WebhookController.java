@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/webhooks")
-@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
+
 public class WebhookController {
     private final StripeWebhookService webhookService;
 

@@ -8,7 +8,5 @@ import java.math.BigDecimal;
 public class PaymentIntentRequestModel {
     private String reservationId;
     private BigDecimal amount;
-    private String mediaId;
-    private String campaignId;
-    private String businessId;
+
 }

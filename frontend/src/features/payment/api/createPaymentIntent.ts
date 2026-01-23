@@ -8,7 +8,8 @@ export const createPaymentIntent = async (params: {
 }) => {
     const response = await axiosInstance.post('/payments/create-payment-intent', {
         reservationId: `temp-${Date.now()}`, // Temporary ID
-        amount: params.amount,
+        // Normalize amount so backend applies the 100× scaling only once
+        amount: params.amount / 100,
         mediaId: params.mediaId,
         campaignId: params.campaignId,
         businessId: params.businessId

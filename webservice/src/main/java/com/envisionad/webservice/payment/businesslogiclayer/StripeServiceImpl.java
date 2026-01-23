@@ -171,6 +171,7 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Transactional
+    @Override
     public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId) throws StripeException {
         // Fetch Stripe account for the business
         StripeAccount stripeAccount = stripeAccountRepository.findByBusinessId(businessId)
@@ -223,7 +224,10 @@ public class StripeServiceImpl implements StripeService {
 
         // Save payment intent info to database
         PaymentIntent paymentIntent = new PaymentIntent();
-        paymentIntent.setStripePaymentIntentId(session.getId());
+        String stripePaymentIntentId = session.getPaymentIntent();
+        if (stripePaymentIntentId != null) {
+            paymentIntent.setStripePaymentIntentId(stripePaymentIntentId);
+        }
         paymentIntent.setReservationId(reservationId);
         paymentIntent.setAmount(amount);
         paymentIntent.setStatus(PaymentStatus.PENDING);
