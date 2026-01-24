@@ -35,6 +35,7 @@
     "advertiserTitle": "Advertiser",
     "advertiser": {
       "overview": "Overview",
+      "metricOverview": "Metric Overview",
       "adRequests": "Ad requests",
       "myAds": "My Campaigns"
     },
@@ -162,7 +163,7 @@
       "approve": "Media has been approved",
       "deny": "Media has been denied"
     },
-    "otherMediaBy":"Other medias from ",
+    "otherMediaBy": "Other medias from ",
     "errors": {
       "error": "Error",
       "approveFailed": "Media approval has failed",
@@ -773,5 +774,4 @@
     "redirecting": "Redirecting to dashboard...",
     "goHome": "Go Home"
   }
-
 }

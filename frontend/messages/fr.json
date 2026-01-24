@@ -35,6 +35,7 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
+      "metricOverview": "Aperçu des métriques",
       "adRequests": "Demandes d'annonce",
       "myAds": "Mes Campagnes"
     },
@@ -163,7 +164,7 @@
       "approve": "Le média a été approuvé",
       "deny": "Le média a été refusé"
     },
-    "otherMediaBy":"Autres médias par ",
+    "otherMediaBy": "Autres médias par ",
     "errors": {
       "error": "Erreur",
       "approveFailed": "L’approbation du média a échoué",
