@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     Grid,
     Paper,
@@ -12,6 +12,8 @@ import {
     Title,
     RingProgress,
     Center,
+    Box,
+    Skeleton,
 } from "@mantine/core";
 import {
     IconCoin,
@@ -20,40 +22,48 @@ import {
     IconChartBar,
     IconArrowUpRight,
     IconArrowDownRight,
+    IconMapPin,
 } from "@tabler/icons-react";
 import { AreaChart } from "@mantine/charts";
+import { useTranslations } from "next-intl";
 
 export function AdvertiserOverview() {
+    const t = useTranslations("sideBar.advertiser");
     const [timeRange, setTimeRange] = useState<string | null>("Weekly");
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Mock Data
     const stats = [
         {
-            title: "Total Ad Spend",
+            title: t("graphs.totalAdSpend"),
             value: "C$6,700",
             diff: 12,
-            period: "Compared to last week",
+            period: t("graphs.comparedToLastWeek"),
             icon: IconCoin,
         },
         {
-            title: "Active Campaigns",
+            title: t("graphs.activeCampaigns"),
             value: "3",
             diff: -1, // Negative for demo
-            period: "Compared to last week",
+            period: t("graphs.comparedToLastWeek"),
             icon: IconSpeakerphone,
         },
         {
-            title: "Estimated Impressions",
+            title: t("graphs.estimatedImpressions"),
             value: "1.4M",
             diff: 55,
-            period: "Compared to last week",
+            period: t("graphs.comparedToLastWeek"),
             icon: IconEye,
         },
         {
-            title: "Average CPM",
+            title: t("graphs.averageCPM"),
             value: "C$0.85",
             diff: 0.5,
-            period: "Compared to last week",
+            period: t("graphs.comparedToLastWeek"),
             icon: IconChartBar,
         },
     ];
@@ -108,7 +118,11 @@ export function AdvertiserOverview() {
                 <Select
                     value={timeRange}
                     onChange={setTimeRange}
-                    data={["Weekly", "Monthly", "Yearly"]}
+                    data={[
+                        { value: "Weekly", label: t("timeRanges.weekly") },
+                        { value: "Monthly", label: t("timeRanges.monthly") },
+                        { value: "Yearly", label: t("timeRanges.yearly") },
+                    ]}
                     w={150}
                     allowDeselect={false}
                 />
@@ -119,55 +133,109 @@ export function AdvertiserOverview() {
             <Grid gutter="xl">
                 <Grid.Col span={{ base: 12, md: 8 }}>
                     <Paper withBorder p="xl" radius="md">
-                        <Text size="lg" fw={600} mb="lg">
-                            Campaign Performance
-                        </Text>
-                        <AreaChart
-                            h={300}
-                            data={chartData}
-                            dataKey="date"
-                            series={[
-                                { name: "Impressions", color: "blue.6" },
-                                { name: "Spend", color: "cyan.6" },
-                            ]}
-                            curveType="monotone"
-                            gridAxis="xy"
-                            tickLine="y"
-                            withLegend
-                            withPointLabels
-                        />
+                        <Group justify="space-between" mb="md">
+                            <Text size="lg" fw={600}>
+                                {t("graphs.campaignPerformance")}
+                            </Text>
+                            <Group gap="md">
+                                <Group gap="xs">
+                                    <ThemeIcon variant="filled" color="blue.6" size={10} radius="xl" />
+                                    <Text size="sm" fw={600} c="dimmed">
+                                        {t("graphs.impressions")}
+                                    </Text>
+                                </Group>
+                                <Group gap="xs">
+                                    <ThemeIcon variant="filled" color="cyan.6" size={10} radius="xl" />
+                                    <Text size="sm" fw={600} c="dimmed">
+                                        {t("graphs.spent")}
+                                    </Text>
+                                </Group>
+                            </Group>
+                        </Group>
+                        <Box w="100%" h={370} style={{ minWidth: 0 }}>
+                            {mounted ? (
+                                <AreaChart
+                                    h={350}
+                                    data={chartData}
+                                    dataKey="date"
+                                    series={[
+                                        { name: "Impressions", label: t("graphs.impressions"), color: "blue.6" },
+                                        { name: "Spend", label: t("graphs.spent"), color: "cyan.6" },
+                                    ]}
+                                    curveType="monotone"
+                                    gridAxis="xy"
+                                    tickLine="y"
+                                    withLegend={false}
+                                    withDots={false}
+                                    withPointLabels={false}
+                                    areaProps={{ label: false }}
+                                    tooltipProps={{
+                                        content: ({ payload, label }) => {
+                                            if (!payload) return null;
+                                            return (
+                                                <Paper px="md" py="xs" withBorder shadow="md" radius="md">
+                                                    <Text fw={500} mb={5}>{label}</Text>
+                                                    {payload.map((item: any) => (
+                                                        <Group key={item.name} gap="xs" justify="space-between">
+                                                            <Group gap={5}>
+                                                                <ThemeIcon color={item.color} variant="filled" size={8} radius="xl" />
+                                                                <Text size="sm" c="dimmed">{item.name === "Spend" ? t("graphs.spent") : t("graphs.impressions")}</Text>
+                                                            </Group>
+                                                            <Text size="sm" fw={500}>
+                                                                {item.name === "Spend" ? `C$${item.value}` : item.value}
+                                                            </Text>
+                                                        </Group>
+                                                    ))}
+                                                </Paper>
+                                            );
+                                        }
+                                    }}
+                                />
+                            ) : (
+                                <Skeleton height={350} radius="md" />
+                            )}
+                        </Box>
                     </Paper>
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, md: 4 }}>
                     <Paper withBorder p="xl" radius="md" h="100%">
-                        <Text size="lg" fw={600} mb="lg">
-                            Device Distribution
+                        <Text size="xl" fw={700} mb="lg">
+                            {t("graphs.mediaDistribution")}
                         </Text>
                         <Center h={250}>
                             {/* Placeholder for a distribution chart or similar */}
-                            <Stack align="center">
+                            <Group align="center" justify="center" gap="xl">
                                 <RingProgress
-                                    size={180}
-                                    thickness={16}
+                                    size={200}
+                                    thickness={20}
                                     roundCaps
                                     sections={[
                                         { value: 40, color: 'blue' },
-                                        { value: 25, color: 'cyan' },
-                                        { value: 15, color: 'indigo' },
+                                        { value: 25, color: 'green' },
+                                        { value: 15, color: 'grape' },
                                     ]}
                                     label={
                                         <Center>
-                                            <IconChartBar size={30} />
+                                            <IconMapPin size={40} />
                                         </Center>
                                     }
                                 />
-                                <Group gap="xs">
-                                    <Text size="xs" c="blue" fw={700}>Mobile</Text>
-                                    <Text size="xs" c="cyan" fw={700}>Desktop</Text>
-                                    <Text size="xs" c="indigo" fw={700}>Tablet</Text>
-                                </Group>
-                            </Stack>
+                                <Stack gap="xs">
+                                    <Group gap="xs">
+                                        <ThemeIcon variant="filled" color="blue" size={10} radius="xl" />
+                                        <Text size="md" fw={700} c="dimmed">{t("graphs.gym")}</Text>
+                                    </Group>
+                                    <Group gap="xs">
+                                        <ThemeIcon variant="filled" color="green" size={10} radius="xl" />
+                                        <Text size="md" fw={700} c="dimmed">{t("graphs.barbershop")}</Text>
+                                    </Group>
+                                    <Group gap="xs">
+                                        <ThemeIcon variant="filled" color="grape" size={10} radius="xl" />
+                                        <Text size="md" fw={700} c="dimmed">{t("graphs.groceryStore")}</Text>
+                                    </Group>
+                                </Stack>
+                            </Group>
                         </Center>
                     </Paper>
                 </Grid.Col>

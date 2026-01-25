@@ -37,7 +37,26 @@
       "overview": "Overview",
       "metricOverview": "Metrics",
       "adRequests": "Ad requests",
-      "myAds": "My Campaigns"
+      "myAds": "My Campaigns",
+      "graphs": {
+        "totalAdSpend": "Total Ad Spend",
+        "activeCampaigns": "Active Campaigns",
+        "estimatedImpressions": "Estimated Impressions",
+        "averageCPM": "Average CPM",
+        "campaignPerformance": "Campaign Performance",
+        "mediaDistribution": "Media Distribution",
+        "comparedToLastWeek": "Compared to last week",
+        "impressions": "Impressions",
+        "spent": "Spent",
+        "gym": "Gym",
+        "barbershop": "Barbershop",
+        "groceryStore": "Grocery Store"
+      },
+      "timeRanges": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      }
     },
     "adminTitle": "Admin",
     "admin": {

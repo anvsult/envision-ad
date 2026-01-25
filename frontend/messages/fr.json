@@ -37,7 +37,26 @@
       "overview": "Aperçu",
       "metricOverview": "Métriques",
       "adRequests": "Demandes d'annonce",
-      "myAds": "Mes Campagnes"
+      "myAds": "Mes Campagnes",
+      "graphs": {
+        "totalAdSpend": "Dépenses publicitaires totales",
+        "activeCampaigns": "Campagnes actives",
+        "estimatedImpressions": "Impressions estimées",
+        "averageCPM": "CPM moyen",
+        "campaignPerformance": "Performance de la campagne",
+        "mediaDistribution": "Répartition des médias",
+        "comparedToLastWeek": "Par rapport à la semaine dernière",
+        "impressions": "Impressions",
+        "spent": "Dépenses",
+        "gym": "Gym",
+        "barbershop": "Barbier",
+        "groceryStore": "Épicerie"
+      },
+      "timeRanges": {
+        "weekly": "Hebdomadaire",
+        "monthly": "Mensuel",
+        "yearly": "Annuel"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
