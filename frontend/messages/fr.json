@@ -35,7 +35,7 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
-      "metricOverview": "Aperçu des métriques",
+      "metricOverview": "Métriques",
       "adRequests": "Demandes d'annonce",
       "myAds": "Mes Campagnes"
     },

@@ -76,8 +76,8 @@ export function AdvertiserOverview() {
         return (
             <Grid.Col span={{ base: 12, sm: 6, md: 3 }} key={stat.title}>
                 <Paper withBorder p="xl" radius="md" style={{ height: "100%" }}>
-                    <Group justify="space-between">
-                        <Text size="xs" c="dimmed" fw={700} tt="uppercase">
+                    <Group justify="space-between" wrap="nowrap">
+                        <Text size="md" c="blue" fw={700} tt="uppercase">
                             {stat.title}
                         </Text>
                         <ThemeIcon color="blue" variant="light" size={38} radius="md">
@@ -86,7 +86,7 @@ export function AdvertiserOverview() {
                     </Group>
 
                     <Group align="flex-end" gap="xs" mt={25}>
-                        <Text className="text-2xl font-bold">{stat.value}</Text>
+                        <Text className="text-4xl font-bold">{stat.value}</Text>
                         <Text c={diffColor} fw={700} size="sm" className="flex items-center">
                             <span>{stat.diff}%</span>
                             <DiffIcon size="1rem" stroke={1.5} />
