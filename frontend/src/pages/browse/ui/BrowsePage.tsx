@@ -15,6 +15,7 @@ import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
+import MapView from '@/widgets/Map/MapView';
 
 function BrowsePage() {
   const t = useTranslations('browse');
@@ -208,6 +209,7 @@ function BrowsePage() {
               />
             </Group>
           )}
+          {(location && sortBy === SpecialSort.nearest) && <MapView center={location}/>}
           
         </Stack>
       </Container>
