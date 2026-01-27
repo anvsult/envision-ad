@@ -6,9 +6,13 @@ import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundExce
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
-import com.envisionad.webservice.payment.businesslogiclayer.exceptions.*;
 import com.envisionad.webservice.payment.dataaccesslayer.*;
+import com.envisionad.webservice.payment.dataaccesslayer.Currency;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
+import com.envisionad.webservice.payment.exceptions.DuplicatePaymentException;
+import com.envisionad.webservice.payment.exceptions.InvalidPricingException;
+import com.envisionad.webservice.payment.exceptions.StripeAccountNotFoundException;
+import com.envisionad.webservice.payment.exceptions.StripeOnboardingIncompleteException;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;
@@ -18,15 +22,13 @@ import com.stripe.param.checkout.SessionCreateParams;
 import com.stripe.net.RequestOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -52,9 +54,15 @@ public class StripeServiceImpl implements StripeService {
         this.mediaRepository = mediaRepository;
         this.jwtUtils = jwtUtils;
     }
-    @Transactional
     @Override
-    public String createConnectedAccount(String businessId) {
+    public String createConnectedAccount(Jwt jwt, String businessId) {
+        // Ensure caller is an employee of the business before creating a connected account
+        if (jwt == null || jwt.getSubject() == null) {
+            throw new SecurityException("Invalid JWT token or subject");
+        }
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+
         // Check if account already exists
         return stripeAccountRepository.findByBusinessId(businessId)
                 .map(StripeAccount::getStripeAccountId)
@@ -93,6 +101,7 @@ public class StripeServiceImpl implements StripeService {
                 });
     }
 
+    @Override
     public String createAccountLink(String stripeAccountId, String returnUrl, String refreshUrl) throws StripeException {
         AccountLinkCreateParams params = AccountLinkCreateParams.builder()
                 .setAccount(stripeAccountId)
@@ -105,46 +114,27 @@ public class StripeServiceImpl implements StripeService {
         return accountLink.getUrl();
     }
 
-    @Transactional
     @Override
-    public Map<String, String> createPaymentIntent(String reservationId, BigDecimal amount,
-                                                   String connectedAccountId) throws StripeException {
-        long amountInCents = amount.multiply(BigDecimal.valueOf(100)).longValue();
-        long platformFee = (amountInCents * platformFeePercent) / 100;
-
-        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(amountInCents)
-                .setCurrency("usd")
-                .setApplicationFeeAmount(platformFee)
-                .setTransferData(
-                        PaymentIntentCreateParams.TransferData.builder()
-                                .setDestination(connectedAccountId)
-                                .build()
-                )
-                .putMetadata("reservationId", reservationId)
-                .build();
-
-        com.stripe.model.PaymentIntent stripeIntent = com.stripe.model.PaymentIntent.create(params);
-
-        // Save to database
-        PaymentIntent paymentIntent = new PaymentIntent();
-        paymentIntent.setStripePaymentIntentId(stripeIntent.getId());
-        paymentIntent.setReservationId(reservationId);
-        paymentIntent.setAmount(amount);
-        paymentIntent.setStatus(PaymentStatus.PENDING);
-        paymentIntent.setCreatedAt(LocalDateTime.now());
-        paymentIntentRepository.save(paymentIntent);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("clientSecret", stripeIntent.getClientSecret());
-        response.put("paymentIntentId", stripeIntent.getId());
-        return response;
+    public Map<String, String> createConnectedAccountAndLink(Jwt jwt, String businessId, String returnUrl, String refreshUrl) throws StripeException {
+        String accountId = createConnectedAccount(jwt, businessId);
+        String link = createAccountLink(accountId, returnUrl, refreshUrl);
+        Map<String, String> resp = new HashMap<>();
+        resp.put("accountId", accountId);
+        resp.put("onboardingUrl", link);
+        return resp;
     }
 
     /**
      * Get Stripe account status for a business
      */
-    public Map<String, Object> getAccountStatus(String businessId) {
+    @Override
+    public Map<String, Object> getAccountStatus(Jwt jwt, String businessId) {
+        if (jwt == null || jwt.getSubject() == null) {
+            throw new SecurityException("Invalid JWT token or subject");
+        }
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+
         Map<String, Object> status = new HashMap<>();
 
         Optional<StripeAccount> accountOpt = stripeAccountRepository.findByBusinessId(businessId);
@@ -191,8 +181,14 @@ public class StripeServiceImpl implements StripeService {
             throw new StripeOnboardingIncompleteException(businessId);
         }
 
-        long amountInCents = amount.multiply(BigDecimal.valueOf(100)).longValue();
-        long platformFee = (amountInCents * platformFeePercent) / 100;
+        // Round to 2 decimals (HALF_UP) and convert to cents
+        BigDecimal scaledAmount = amount.setScale(2, java.math.RoundingMode.HALF_UP);
+        long amountInCents = scaledAmount.multiply(BigDecimal.valueOf(100)).longValueExact();
+
+        long platformFee = BigDecimal.valueOf(amountInCents)
+                .multiply(BigDecimal.valueOf(platformFeePercent))
+                .divide(BigDecimal.valueOf(100), java.math.RoundingMode.HALF_UP)
+                .longValueExact();
 
         // Deterministic idempotency key: same reservation -> same key to prevent duplicate charges
         String idempotencyKey = reservationId + "-checkout";
@@ -214,7 +210,7 @@ public class StripeServiceImpl implements StripeService {
                     SessionCreateParams.LineItem.builder()
                         .setPriceData(
                             SessionCreateParams.LineItem.PriceData.builder()
-                                .setCurrency(Currency.CAD.toString())
+                                .setCurrency(Currency.CAD.toString().toLowerCase())
                                 .setUnitAmount(amountInCents)
                                 .setProductData(
                                     SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -251,6 +247,7 @@ public class StripeServiceImpl implements StripeService {
         PaymentIntent paymentIntent = new PaymentIntent();
         paymentIntent.setStripeSessionId(session.getId());
         paymentIntent.setReservationId(reservationId);
+        paymentIntent.setBusinessId(businessId);
         paymentIntent.setAmount(amount);
         paymentIntent.setStatus(PaymentStatus.PENDING);
         paymentIntent.setCreatedAt(LocalDateTime.now());
@@ -268,20 +265,23 @@ public class StripeServiceImpl implements StripeService {
 
     @Transactional
     @Override
-    public Map<String, String> createAuthorizedCheckoutSession(String userId, String campaignId,
-                                                               String mediaId, String reservationId,
+    public Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId, String reservationId,
                                                                LocalDateTime startDate, LocalDateTime endDate) throws StripeException {
         log.debug("Starting authorized checkout session creation for user: {}, campaign: {}, media: {}",
-                  userId, campaignId, mediaId);
+                  jwt != null ? jwt.getSubject() : null, campaignId, mediaId);
 
         // 1. Validate that the campaign exists
         AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (campaign == null) {
-            log.warn("Payment attempt for non-existent campaign: {} by user: {}", campaignId, userId);
+            log.warn("Payment attempt for non-existent campaign: {} by user: {}", campaignId, jwt != null ? jwt.getSubject() : null);
             throw new AdCampaignNotFoundException("Campaign not found: " + campaignId);
         }
 
         // 2. SECURITY: Validate that the user owns this campaign (is employee of the advertiser business)
+        if (jwt == null || jwt.getSubject() == null) {
+            throw new SecurityException("Invalid JWT token or subject");
+        }
+        String userId = jwtUtils.extractUserId(jwt);
         String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, advertiserBusinessId);
         log.info("User {} authorized to create payment for campaign {} (business: {})",
@@ -291,7 +291,7 @@ public class StripeServiceImpl implements StripeService {
         UUID mediaUuid = UUID.fromString(mediaId);
         Media media = mediaRepository.findById(mediaUuid)
                 .orElseThrow(() -> {
-                    log.warn("Payment attempt for non-existent media: {} by user: {}", mediaId, userId);
+                    log.warn("Payment attempt for non-existent media: {} by user: {}", mediaId, jwt.getSubject());
                     return new MediaNotFoundException("Media not found: " + mediaId);
                 });
 
@@ -351,5 +351,67 @@ public class StripeServiceImpl implements StripeService {
                  mediaPrice, totalDays, weeks, totalPrice);
 
         return totalPrice;
+    }
+
+    @Override
+    public Map<String, Object> getDashboardData(String businessId, String period) throws StripeException {
+        // Get the connected account
+        StripeAccount stripeAccount = stripeAccountRepository.findByBusinessId(businessId)
+                .orElseThrow(() -> new StripeAccountNotFoundException(businessId));
+
+        // Calculate date range based on period (weekly, monthly, yearly)
+        LocalDateTime startDate = calculateStartDate(period);
+
+        // Get all successful payments for this media owner
+        List<PaymentIntent> payments = paymentIntentRepository
+                .findSuccessfulPaymentsByBusinessIdAndDateRange(
+                        businessId,
+                        startDate,
+                        LocalDateTime.now()
+                );
+
+        // Calculate totals
+        BigDecimal totalEarnings = payments.stream()
+                .map(PaymentIntent::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Fetch payout history from Stripe
+        BalanceTransactionCollection payouts = BalanceTransaction.list(
+                BalanceTransactionListParams.builder()
+                        .setLimit(100L)
+                        .build(),
+                RequestOptions.builder()
+                        .setStripeAccount(stripeAccount.getStripeAccountId())
+                        .build()
+        );
+
+        Map<String, Object> dashboard = new HashMap<>();
+        dashboard.put("totalEarnings", totalEarnings);
+        dashboard.put("paymentCount", payments.size());
+        dashboard.put("payouts", payouts.getData());
+
+        return dashboard;
+    }
+
+    @Override
+    public Map<String, Object> getPaymentStatus(String paymentIntentId) {
+        PaymentIntent payment = paymentIntentRepository
+                .findByStripePaymentIntentId(paymentIntentId)
+                .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        Map<String, Object> status = new HashMap<>();
+        status.put("status", payment.getStatus().toString());
+        status.put("amount", payment.getAmount());
+        status.put("reservationId", payment.getReservationId());
+        return status;
+    }
+
+    private LocalDateTime calculateStartDate(String period) {
+        return switch (period.toLowerCase()) {
+            case "weekly" -> LocalDateTime.now().minusWeeks(1);
+            case "monthly" -> LocalDateTime.now().minusMonths(1);
+            case "yearly" -> LocalDateTime.now().minusYears(1);
+            default -> LocalDateTime.now().minusMonths(1);
+        };
     }
 }

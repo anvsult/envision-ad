@@ -185,6 +185,7 @@ CREATE TABLE payment_intents
     stripe_payment_intent_id VARCHAR(255) UNIQUE,
     stripe_session_id VARCHAR(255) UNIQUE,
     reservation_id VARCHAR(36),
+    business_id VARCHAR(36) NOT NULL, -- Which media owner/business is receiving the payment
     amount DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(3) DEFAULT 'CAD',
     status VARCHAR(20) NOT NULL,

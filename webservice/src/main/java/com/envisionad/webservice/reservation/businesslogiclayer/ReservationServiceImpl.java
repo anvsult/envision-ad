@@ -1,3 +1,4 @@
+// java
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
 import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
@@ -20,6 +21,8 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.utils.JwtUtils;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -101,17 +104,83 @@ public class ReservationServiceImpl implements ReservationService {
         int weeks = (int)Math.max(1, Math.ceil(days / 7.0));
         BigDecimal totalPrice = media.getPrice().multiply(BigDecimal.valueOf(weeks));
 
-        // Note: Payment is already handled by the frontend before calling this endpoint
-        // The frontend creates a PaymentIntent, collects payment, then creates the reservation
-        // We could add validation here to verify payment was successful via Stripe API if needed
+        // We do not expect the frontend to provide reservationId. If a PaymentIntent is provided below
+        // its metadata may contain a reservationId created earlier during payment initialization —
+        // we'll attempt to load that reservation once we retrieve the PaymentIntent.
+        Reservation reservation = null;
 
-        // Create and populate reservation
-        Reservation reservation = reservationRequestMapper.requestModelToEntity(requestModel);
-        reservation.setReservationId(UUID.randomUUID().toString());
-        reservation.setMediaId(media.getId());
-        reservation.setTotalPrice(totalPrice);
-        reservation.setStatus(ReservationStatus.CONFIRMED); // Payment already completed
-        reservation.setAdvertiserId(userId);
+        // Verify payment with Stripe before marking reservation as CONFIRMED when a paymentIntentId is provided.
+        boolean paymentVerified = false;
+        String paymentIntentId = requestModel.getPaymentIntentId();
+        try {
+            if (paymentIntentId != null && !paymentIntentId.isBlank()) {
+                try {
+                    PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId);
+
+                    // Check status
+                    if (!"succeeded".equals(intent.getStatus())) {
+                        log.warn("PaymentIntent {} has non-terminal status: {}", paymentIntentId, intent.getStatus());
+                    } else {
+                        // Verify amount and currency
+                        long expectedCents = totalPrice.setScale(2, java.math.RoundingMode.HALF_UP)
+                                .multiply(BigDecimal.valueOf(100)).longValueExact();
+
+                        Long intentAmount = intent.getAmount(); // already in cents
+                        String intentCurrency = intent.getCurrency();
+
+                        String metaReservationId = intent.getMetadata() != null ? intent.getMetadata().get("reservationId") : null;
+
+                        if (metaReservationId != null && !metaReservationId.isBlank()) {
+                            reservation = reservationRepository.findByReservationId(metaReservationId).orElse(null);
+                            if (reservation == null) {
+                                log.info("PaymentIntent metadata references reservationId={} but no DB reservation found; will create one.", metaReservationId);
+                            }
+                        }
+
+                        boolean amountMatches = intentAmount != null && intentAmount == expectedCents;
+                        boolean currencyMatches = intentCurrency != null && intentCurrency.equalsIgnoreCase("cad");
+
+                        // If we have a DB reservation loaded, ensure the metadata points to the same id
+                        boolean reservationMatches = true;
+                        if (reservation != null) {
+                            reservationMatches = metaReservationId.equals(reservation.getReservationId());
+                        }
+
+                        if (amountMatches && currencyMatches && reservationMatches) {
+                            paymentVerified = true;
+                        } else {
+                            log.warn("PaymentIntent verification failed for {}: amountMatches={}, currencyMatches={}, reservationMatches={}", paymentIntentId, amountMatches, currencyMatches, reservationMatches);
+                        }
+                    }
+                } catch (StripeException se) {
+                    log.error("Failed to retrieve PaymentIntent {}: {}", paymentIntentId, se.getMessage(), se);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Unexpected error during payment verification: {}", e.getMessage(), e);
+        }
+
+        // Create and populate reservation if it wasn't loaded from DB
+        if (reservation == null) {
+            reservation = reservationRequestMapper.requestModelToEntity(requestModel);
+            reservation.setReservationId(UUID.randomUUID().toString());
+            reservation.setMediaId(media.getId());
+            reservation.setTotalPrice(totalPrice);
+            reservation.setAdvertiserId(userId);
+        } else {
+            // Update total price in case calculation changed and ensure key fields are set
+            reservation.setTotalPrice(totalPrice);
+            reservation.setAdvertiserId(userId);
+            reservation.setMediaId(media.getId());
+        }
+
+        if (paymentVerified) {
+            reservation.setStatus(ReservationStatus.CONFIRMED);
+        } else {
+            // keep Pending until payment verified by webhook or manual reconciliation
+            if (reservation.getStatus() == null) reservation.setStatus(ReservationStatus.PENDING);
+            log.warn("Reservation created/left in PENDING state because payment could not be verified. reservationId={}", reservation.getReservationId());
+        }
 
         Reservation savedReservation = reservationRepository.save(reservation);
 
@@ -188,4 +257,3 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 }
-

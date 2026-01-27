@@ -3,11 +3,11 @@ package com.envisionad.webservice.payment.businesslogiclayer;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
 import com.stripe.model.checkout.Session;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +19,17 @@ import java.time.LocalDateTime;
  * Processes payment status updates and other Stripe events
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class StripeWebhookService {
 
     private final PaymentIntentRepository paymentIntentRepository;
+    private final StripeAccountRepository stripeAccountRepository;
+
+    public StripeWebhookService(PaymentIntentRepository paymentIntentRepository,
+                                  StripeAccountRepository stripeAccountRepository) {
+        this.paymentIntentRepository = paymentIntentRepository;
+        this.stripeAccountRepository = stripeAccountRepository;
+    }
 
     /**
      * Handle incoming Stripe webhook events
@@ -198,8 +204,36 @@ public class StripeWebhookService {
      * Handle Stripe account updates
      */
     private void handleAccountUpdated(Event event) {
-        // TODO: Implement account update logic if needed
-        log.info("Account updated event received - implement if needed");
+        try {
+            EventDataObjectDeserializer dataObjectDeserializer = event.getDataObjectDeserializer();
+
+            if (dataObjectDeserializer.getObject().isPresent()) {
+                StripeObject stripeObject = dataObjectDeserializer.getObject().get();
+
+                if (stripeObject instanceof com.stripe.model.Account account) {
+                    log.info("Processing account.updated for account: {}", account.getId());
+
+                    // Find the account in our database
+                    stripeAccountRepository.findByStripeAccountId(account.getId())
+                            .ifPresent(stripeAccount -> {
+                                // Update onboarding status
+                                stripeAccount.setOnboardingComplete(account.getDetailsSubmitted());
+                                stripeAccount.setChargesEnabled(account.getChargesEnabled());
+                                stripeAccount.setPayoutsEnabled(account.getPayoutsEnabled());
+
+                                stripeAccountRepository.save(stripeAccount);
+
+                                log.info("Updated Stripe account {}: onboarding={}, charges={}, payouts={}",
+                                        account.getId(),
+                                        account.getDetailsSubmitted(),
+                                        account.getChargesEnabled(),
+                                        account.getPayoutsEnabled());
+                            });
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error processing account.updated event", e);
+            throw new RuntimeException("Failed to process account update", e);
+        }
     }
 }
-

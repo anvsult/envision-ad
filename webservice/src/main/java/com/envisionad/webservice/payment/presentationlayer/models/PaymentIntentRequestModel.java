@@ -9,6 +9,7 @@ public class PaymentIntentRequestModel {
     private String reservationId;
     private String mediaId;
     private String campaignId;
+    private String businessId;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
 }

@@ -1,63 +1,48 @@
 package com.envisionad.webservice.payment.presentationlayer;
 
-import com.envisionad.webservice.payment.businesslogiclayer.StripeServiceImpl;
+import com.envisionad.webservice.payment.businesslogiclayer.StripeService;
 import com.envisionad.webservice.payment.presentationlayer.models.PaymentIntentRequestModel;
-import com.envisionad.webservice.utils.JwtUtils;
-import com.stripe.exception.StripeException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/payments")
 @CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class PaymentController {
-    private final StripeServiceImpl stripeService;
-    private final JwtUtils jwtUtils;
+    private final StripeService stripeService;
 
-    public PaymentController(StripeServiceImpl stripeService, JwtUtils jwtUtils) {
+    public PaymentController(StripeService stripeService) {
         this.stripeService = stripeService;
-        this.jwtUtils = jwtUtils;
     }
 
     @PostMapping("/connect-account")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> createConnectedAccount(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestBody Map<String, String> body) throws StripeException {
+            @RequestBody Map<String, String> body) throws Exception {
 
         String businessId = body.get("businessId");
-        jwtUtils.validateUserIsEmployeeOfBusiness(jwtUtils.extractUserId(jwt), businessId);
+        String returnUrl = body.get("returnUrl");
+        String refreshUrl = body.get("refreshUrl");
 
-        String accountId = stripeService.createConnectedAccount(businessId);
-
-        String accountLink = stripeService.createAccountLink(
-                accountId,
-                body.get("returnUrl"),
-                body.get("refreshUrl")
-        );
-
-        return ResponseEntity.ok(Map.of(
-                "accountId", accountId,
-                "onboardingUrl", accountLink
-        ));
+        // Delegate creation and onboarding link generation to the service layer
+        Map<String, String> resp = stripeService.createConnectedAccountAndLink(jwt, businessId, returnUrl, refreshUrl);
+        return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/create-payment-intent")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> createPaymentIntent(
             @AuthenticationPrincipal Jwt jwt,
-            @RequestBody PaymentIntentRequestModel request) throws StripeException {
+            @RequestBody PaymentIntentRequestModel request) throws Exception {
 
-        String userId = jwtUtils.extractUserId(jwt);
-
-        // Delegate all business logic to service layer
-        // Backend calculates price from media data based on dates (for security)
         Map<String, String> result = stripeService.createAuthorizedCheckoutSession(
-                userId,
+                jwt,
                 request.getCampaignId(),
                 request.getMediaId(),
                 request.getReservationId(),
@@ -69,13 +54,18 @@ public class PaymentController {
     }
 
     @GetMapping("/account-status")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getAccountStatus(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam String businessId) {
 
-        jwtUtils.validateUserIsEmployeeOfBusiness(jwtUtils.extractUserId(jwt), businessId);
-
-        Map<String, Object> status = stripeService.getAccountStatus(businessId);
+        Map<String, Object> status = stripeService.getAccountStatus(jwt, businessId);
         return ResponseEntity.ok(status);
+    }
+
+    @GetMapping("/status/{paymentIntentId}")
+    public ResponseEntity<Map<String, Object>> getPaymentStatus(@PathVariable String paymentIntentId) {
+
+        return ResponseEntity.ok(stripeService.getPaymentStatus(paymentIntentId));
     }
 }

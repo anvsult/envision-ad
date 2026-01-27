@@ -1,4 +1,4 @@
-package com.envisionad.webservice.payment.businesslogiclayer.exceptions;
+package com.envisionad.webservice.payment.exceptions;
 
 /**
  * Exception thrown when a business does not have a connected Stripe account.

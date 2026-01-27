@@ -1,4 +1,4 @@
-package com.envisionad.webservice.payment.businesslogiclayer.exceptions;
+package com.envisionad.webservice.payment.exceptions;
 
 import java.math.BigDecimal;
 

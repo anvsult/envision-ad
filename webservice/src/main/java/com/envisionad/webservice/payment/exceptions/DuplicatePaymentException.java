@@ -1,4 +1,4 @@
-package com.envisionad.webservice.payment.businesslogiclayer.exceptions;
+package com.envisionad.webservice.payment.exceptions;
 
 /**
  * Exception thrown when attempting to create a duplicate payment for the same reservation.

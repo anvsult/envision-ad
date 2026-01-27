@@ -25,15 +25,16 @@ import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
 import { createReservation } from "@/features/reservation-management/api";
 import { AdCampaign } from "@/entities/ad-campaign";
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import '@mantine/dates/styles.css';
 import {useLocale, useTranslations} from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import {loadStripe, Stripe} from '@stripe/stripe-js';
 import {createPaymentIntent} from "@/features/payment";
+import {checkPaymentStatus} from "@/features/payment/api/checkPaymentStatus";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -59,7 +60,20 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     // Payment states
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [paymentSucceeded, setPaymentSucceeded] = useState(false);
+    // Track the Stripe PaymentIntent id returned by the backend so we can pass it back when creating the reservation
+    const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
 
+    const [stripe, setStripe] = useState<Stripe | null>(null);
+    useEffect(() => {
+        let mounted = true;
+        loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '').then((s) => {
+            if (mounted) setStripe(s);
+        });
+        return () => {
+            mounted = false;
+        };
+    }, []);
+    const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
     useEffect(() => {
         if (!user?.sub) return;
 
@@ -190,13 +204,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     campaignId: selectedCampaignId,
                     startDate: dayjs(dateRange[0]),
                     endDate: dayjs(dateRange[1])
-                    // amount removed - server calculates price from media data for security
-                    // businessId removed - server derives it from media for security
                 });
 
                 // Set client secret for embedded checkout (no redirect)
                 if (data.clientSecret) {
                     setClientSecret(data.clientSecret);
+                    // store paymentIntentId returned by backend so we can include it when creating reservation
+                    if (data.paymentIntentId) setPaymentIntentId(data.paymentIntentId);
                     setActiveStep(2);
                 } else {
                     notifications.show({
@@ -244,6 +258,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 campaignId: selectedCampaignId,
                 startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
                 endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                // Include paymentIntentId so backend can verify the payment with Stripe
+                ...(paymentIntentId ? { paymentIntentId } : {})
             };
 
             await createReservation(media.id, payload);
@@ -300,6 +316,20 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         }
     };
 
+    function billingWeeks(start: Dayjs, end: Dayjs): number {
+        if (end.isBefore(start)) {
+            // swap so calculation still works if dates are reversed
+            [start, end] = [end, start];
+        }
+        const totalDays = end.diff(start, 'day') + 1; // inclusive end date
+        return Math.max(1, Math.ceil(totalDays / 7));
+    }
+
+    function billingWeeksLabel(start: Dayjs, end: Dayjs): string {
+        const weeks = billingWeeks(start, end);
+        return `${weeks} week${weeks > 1 ? 's' : ''}`;
+    }
+
     /**
      * Calculate total cost for UI display only.
      * NOTE: The actual payment amount is calculated and validated on the backend for security.
@@ -312,11 +342,71 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             return 0;
         }
 
-        const totalDays = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'days');
-        if (totalDays < 0) return 0;
-
-        const weeks = Math.max(1, Math.ceil(totalDays / 7.0));
+        const weeks = billingWeeks(dayjs(dateRange[0]), dayjs(dateRange[1]));
         return media.price * weeks;
+    };
+
+    const checkForPaymentConfirmation = async () => {
+        const maxAttempts = 10;
+        const pollInterval = 1000; // 1 second
+
+        // If we don't have a paymentIntentId yet, try to recover it from Stripe using the clientSecret
+        if (!paymentIntentId) {
+            try {
+                if (stripe && clientSecret) {
+                    // retrievePaymentIntent returns { paymentIntent, error }
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore - stripe types can vary by version; guard at runtime
+                    const resp = await stripe.retrievePaymentIntent(clientSecret);
+                    const pi = resp?.paymentIntent;
+                    if (pi?.id) {
+                        setPaymentIntentId(pi.id);
+                    } else {
+                        console.error('Unable to retrieve paymentIntent id from Stripe:', resp);
+                    }
+                } else {
+                    console.error('No stripe instance or clientSecret available to retrieve payment intent id');
+                }
+            } catch (err) {
+                console.error('Error while retrieving payment intent from Stripe:', err);
+            }
+        }
+
+        if (!paymentIntentId) {
+            // Still don't have an id - abort polling to avoid hitting /payments/status/null
+            console.error('No paymentIntentId available, aborting payment confirmation polling');
+            notifications.show({
+                title: 'Payment Processing',
+                message: 'Payment is being processed. If it completes successfully your reservation will be confirmed shortly.',
+                color: 'yellow'
+            });
+            return;
+        }
+
+        for (let i = 0; i < maxAttempts; i++) {
+            await new Promise(resolve => setTimeout(resolve, pollInterval));
+
+            try {
+                // Check if payment is confirmed in your backend
+                const status = await checkPaymentStatus(paymentIntentId);
+
+                if (status.data.status === 'SUCCEEDED') {
+                    // Now safe to create reservation
+                    await handleConfirmReservation();
+                    setActiveStep(3); // Success!
+                    return;
+                }
+            } catch (error) {
+                console.error('Polling error:', error);
+            }
+        }
+
+        // Timeout - webhook didn't arrive in time
+        notifications.show({
+            title: 'Payment Processing',
+            message: 'Payment is being processed. Your reservation will be confirmed shortly.',
+            color: 'yellow'
+        });
     };
 
     /**
@@ -370,6 +460,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                             setErrors({});
                                             setClientSecret(null);
                                             setPaymentSucceeded(false);
+                                            // reset stored payment intent id for next flow
+                                            setPaymentIntentId(null);
                                         }, 200);
                                     }}
                                 >
@@ -432,7 +524,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                             {t('dateSelection.selected', {
                                                 start: dayjs(dateRange[0]).format('MMM DD'),
                                                 end: dayjs(dateRange[1]).format('MMM DD'),
-                                                weeks: dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks')
+                                                weeks: billingWeeksLabel(dayjs(dateRange[1]), dayjs(dateRange[0]))
                                             })}
                                         </Text>
                                     )}
@@ -471,6 +563,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
                             {/* Step 3: Embedded Stripe Checkout */}
                             {activeStep === 2 && clientSecret && !paymentSucceeded && (
+                                missingKey ? (
+                                    <Text c="red">{t('errors.missingPaymentInfo')}</Text>
+                                    ) : stripe ? (
                                 <EmbeddedCheckoutProvider
                                     stripe={stripePromise}
                                     options={{
@@ -480,13 +575,48 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                             console.log('Payment completed, creating reservation...');
                                             setPaymentSucceeded(true);
 
-                                            // Create the reservation after successful payment
-                                            await handleConfirmReservation();
+                                            // Ensure we have a paymentIntentId before polling/creating reservation
+                                            if (!paymentIntentId) {
+                                                try {
+                                                    if (stripe && clientSecret) {
+                                                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                                        // @ts-ignore - stripe types can vary
+                                                        const resp = await stripe.retrievePaymentIntent(clientSecret);
+                                                        const pi = resp?.paymentIntent;
+                                                        if (pi?.id) {
+                                                            setPaymentIntentId(pi.id);
+                                                        } else {
+                                                            console.error('Unable to retrieve paymentIntent id from Stripe onComplete:', resp);
+                                                        }
+                                                    }
+                                                } catch (err) {
+                                                    console.error('Failed to retrieve paymentIntent in onComplete:', err);
+                                                }
+                                            }
+
+                                            await checkForPaymentConfirmation();
+
+                                            try {
+                                                // Create the reservation after successful payment (if webhook didn't already)
+                                                await handleConfirmReservation();
+                                                // Only mark payment as succeeded after reservation creation succeeds
+                                                setPaymentSucceeded(true);
+                                            } catch (error) {
+                                                console.error('Failed to create reservation after payment:', error);
+                                                notifications.show({
+                                                    color: 'red',
+                                                    title: t('errors.reservationCreationFailedTitle'),
+                                                    message: t('errors.reservationCreationFailedMessage'),
+                                                });
+                                            }
                                         }
                                     }}
                                 >
                                     <EmbeddedCheckout />
                                 </EmbeddedCheckoutProvider>
+                            ) : (
+                                <Center><Loader/></Center>
+                            )
                             )}
 
                             {/* Step 3: Processing after payment */}

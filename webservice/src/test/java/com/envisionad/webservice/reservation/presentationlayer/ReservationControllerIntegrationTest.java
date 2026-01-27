@@ -201,7 +201,7 @@ class ReservationControllerIntegrationTest {
                 .expectBody()
                 .jsonPath("$.reservationId").isNotEmpty()
                 .jsonPath("$.campaignId").isEqualTo(this.campaignId)
-                .jsonPath("$.status").isEqualTo("CONFIRMED")
+                .jsonPath("$.status").isEqualTo("PENDING")
                 .jsonPath("$.totalPrice").isNumber();
 
         // Verify reservation was saved
