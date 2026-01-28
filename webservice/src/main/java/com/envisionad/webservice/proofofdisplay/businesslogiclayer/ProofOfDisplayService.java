@@ -89,12 +89,8 @@ public class ProofOfDisplayService {
             body.append("Media location: ").append(media.getTitle()).append("\n\n");
 
             body.append("Proof images:\n");
-            if (request.getProofImageUrls() == null || request.getProofImageUrls().isEmpty()) {
-                body.append("- No images were provided.\n");
-            } else {
-                for (String url : request.getProofImageUrls()) {
-                    body.append("- ").append(url).append("\n");
-                }
+            for (String url : request.getProofImageUrls()) {
+                body.append("- ").append(url).append("\n");
             }
 
             body.append("\nThanks for advertising with Envision Ad!\n");
