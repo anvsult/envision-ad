@@ -333,27 +333,3 @@ VALUES
     ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
     ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 3);
-
-
--- =========================== RESERVATIONS DATA ===========================
---
--- INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, created_at, advertiser_id, campaign_id, media_id)
--- VALUES
---     -- Active reservations
---     ('r1111111-1111-1111-1111-111111111111', '2026-01-20 00:00:00', '2026-02-17 23:59:59', 'ACTIVE', 105.80, CURRENT_TIMESTAMP, 'auth0|6934e8515479d2b6d3cf7575', 'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001'),
---     ('r3333333-3333-3333-3333-333333333333', '2025-12-15 00:00:00', '2026-01-12 23:59:59', 'ACTIVE', 105.80, CURRENT_TIMESTAMP - INTERVAL '1 month', 'auth0|6934e8515479d2b6d3cf7575', 'f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380003'),
---     ('r4444444-4444-4444-4444-444444444444', '2026-01-13 00:00:00', '2026-02-10 23:59:59', 'ACTIVE', 22.60, CURRENT_TIMESTAMP, 'auth0|6934e8515479d2b6d3cf7575', 'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd382002'),
---     ('r6666666-6666-6666-6666-666666666666', '2026-01-06 00:00:00', '2026-02-03 23:59:59', 'ACTIVE', 105.80, CURRENT_TIMESTAMP - INTERVAL '12 days', 'auth0|6934e8515479d2b6d3cf7575', 'f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd382404'),
---     ('r7777777-7777-7777-7777-777777777777', '2026-01-20 00:00:00', '2026-02-17 23:59:59', 'ACTIVE', 10.20, CURRENT_TIMESTAMP, 'auth0|695d67069dadc99900c81a0f', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd382505'),
---     ('ra111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa', '2026-01-20 00:00:00', '2026-02-17 23:59:59', 'ACTIVE', 105.80, CURRENT_TIMESTAMP, 'auth0|695d67069dadc99900c81a0f', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001'),
---
---     -- Pending reservations
---     ('r2222222-2222-2222-2222-222222222222', '2026-02-01 00:00:00', '2026-02-28 23:59:59', 'PENDING', 105.80, CURRENT_TIMESTAMP, 'auth0|695d67069dadc99900c81a0f', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380002'),
---     ('r5555555-5555-5555-5555-555555555555', '2026-02-15 00:00:00', '2026-03-15 23:59:59', 'PENDING', 30.20, CURRENT_TIMESTAMP, 'auth0|695d67069dadc99900c81a0f', 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd382303'),
---     ('r9999999-9999-9999-9999-999999999999', '2026-03-01 00:00:00', '2026-03-29 23:59:59', 'PENDING', 105.80, CURRENT_TIMESTAMP, 'auth0|6934e8515479d2b6d3cf7575', 'f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001'),
---
---     -- Completed reservation
---     ('r8888888-8888-8888-8888-888888888888', '2025-11-25 00:00:00', '2025-12-23 23:59:59', 'COMPLETED', 105.80, CURRENT_TIMESTAMP - INTERVAL '2 months', 'auth0|6934e8515479d2b6d3cf7575', 'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd382606');
---
---
---

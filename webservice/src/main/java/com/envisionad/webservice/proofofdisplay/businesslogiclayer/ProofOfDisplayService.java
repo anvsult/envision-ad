@@ -1,5 +1,7 @@
 package com.envisionad.webservice.proofofdisplay.businesslogiclayer;
 
+import com.envisionad.webservice.utils.JwtUtils;
+import org.springframework.security.oauth2.jwt.Jwt;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
@@ -27,41 +29,55 @@ public class ProofOfDisplayService {
     private final EmployeeRepository employeeRepository;
     private final MediaRepository mediaRepository;
     private final AdCampaignRepository adCampaignRepository;
+    private final JwtUtils jwtUtils;
 
     public ProofOfDisplayService(
             EmailService emailService,
             EmployeeRepository employeeRepository,
             MediaRepository mediaRepository,
-            AdCampaignRepository adCampaignRepository
+            AdCampaignRepository adCampaignRepository,
+            JwtUtils jwtUtils
     ) {
         this.emailService = emailService;
         this.employeeRepository = employeeRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
+        this.jwtUtils = jwtUtils;
     }
 
-    public void sendProofEmail(ProofOfDisplayRequest request) {
+    public void sendProofEmail(Jwt jwt, ProofOfDisplayRequest request) {
         try {
+            if (jwt == null || jwt.getSubject() == null) {
+                throw new SecurityException("Invalid JWT token or subject");
+            }
+
+            String userId = jwtUtils.extractUserId(jwt);
+
             // Validate / fetch media
             Media media = mediaRepository.findById(UUID.fromString(request.getMediaId()))
                     .orElseThrow(() -> new MediaNotFoundException(request.getMediaId()));
 
-            // Validate / fetch campaign
+            //  Validate / fetch campaign
             AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(request.getCampaignId());
             if (campaign == null) {
                 throw new AdCampaignNotFoundException(request.getCampaignId());
             }
 
-            // Resolve advertiser email (same approach as reservation)
-            String businessId = campaign.getBusinessId().getBusinessId();
+            // AUTHORIZATION — user must belong to the media owner business
+            String mediaOwnerBusinessId = media.getBusinessId().toString();
+            jwtUtils.validateUserIsEmployeeOfBusiness(userId, mediaOwnerBusinessId);
 
-            List<Employee> advertiserEmployees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
+            // Resolve advertiser email (campaign's business)
+            String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
+
+            List<Employee> advertiserEmployees =
+                    employeeRepository.findAllByBusinessId_BusinessId(advertiserBusinessId);
 
             String advertiserEmail = advertiserEmployees.stream()
                     .map(Employee::getEmail)
                     .filter(email -> email != null && !email.isBlank())
                     .findFirst()
-                    .orElseThrow(() -> new AdvertiserEmailNotFoundException(businessId));
+                    .orElseThrow(() -> new AdvertiserEmailNotFoundException(advertiserBusinessId));
 
             //  Build email body
             String subject = "Your ad is live!";

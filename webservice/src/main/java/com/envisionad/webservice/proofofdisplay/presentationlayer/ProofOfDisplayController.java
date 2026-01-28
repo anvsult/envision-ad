@@ -1,6 +1,5 @@
 package com.envisionad.webservice.proofofdisplay.presentationlayer;
 
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.proofofdisplay.businesslogiclayer.ProofOfDisplayService;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
@@ -26,7 +25,7 @@ public class ProofOfDisplayController {
     @PostMapping("/email")
     public ResponseEntity<Void> sendProof(@AuthenticationPrincipal Jwt jwt, @RequestBody ProofOfDisplayRequest request) {
         try {
-            service.sendProofEmail(request);
+            service.sendProofEmail(jwt, request);
             return ResponseEntity.ok().build();
         } catch (AdvertiserEmailNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
