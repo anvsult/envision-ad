@@ -27,7 +27,7 @@ import { createReservation } from "@/features/reservation-management/api";
 import { AdCampaign } from "@/entities/ad-campaign";
 import dayjs, {Dayjs} from 'dayjs';
 import '@mantine/dates/styles.css';
-import {useLocale, useTranslations} from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
@@ -54,7 +54,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
-    const {user} = useUser();
+    const { user } = useUser();
 
     // Payment states
     const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -439,7 +439,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         value={selectedCampaignId}
                                         onChange={(val) => {
                                             setSelectedCampaignId(val);
-                                            if(val) setErrors(prev => ({...prev, campaign: undefined}));
+                                            if (val) setErrors(prev => ({ ...prev, campaign: undefined }));
                                         }}
                                         error={errors.campaign}
                                         style={{ width: '100%', maxWidth: 400 }}
@@ -503,7 +503,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                                 {dayjs(dateRange[0]).format('MMM D, YYYY')} - {dayjs(dateRange[1]).format('MMM D, YYYY')}
                                             </Text>
                                         </Group>
-                                        <Divider my="sm"/>
+                                        <Divider my="sm" />
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">

@@ -53,6 +53,7 @@ services:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_BASE_URL: "${APP_BASE_URL}"
+
 #     AUTH0
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
@@ -84,7 +85,7 @@ services:
 #     AUTH0
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-#     Database
+      # Spring datasource - local uses docker postgres container
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"

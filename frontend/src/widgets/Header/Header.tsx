@@ -55,7 +55,7 @@ export function Header({ }: HeaderProps) {
 
     useEffect(() => {
         closeDrawer();
-    }, [pathname]);
+    }, [pathname, closeDrawer]);
 
     const mobileItems = filteredLinks.map((link) => {
         if (link.link === "/dashboard") {

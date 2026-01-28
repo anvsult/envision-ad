@@ -190,7 +190,7 @@ test.describe('Media Creation', () => {
 
         try {
             await expect(page.getByText('Media created successfully')).toBeVisible({ timeout: 5000 });
-        } catch (e) {
+        } catch {
         }
     });
 });

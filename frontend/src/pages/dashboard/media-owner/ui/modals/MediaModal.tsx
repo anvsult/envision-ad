@@ -3,7 +3,7 @@
 import { Button, Modal, ScrollArea, Grid, Text } from "@mantine/core";
 import { useMemo } from "react";
 import { IconUpload } from "@tabler/icons-react";
-import { CldUploadWidget } from "next-cloudinary";
+import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { notifications } from "@mantine/notifications";
 import { MediaDetailsForm } from "./MediaDetailsForm";
 import { ScheduleSelector } from "./ScheduleSelector";
@@ -44,7 +44,7 @@ export function MediaModal({
         maxFileSize: 10000000,
     };
 
-    const handleUploadSuccess = (results: any) => {
+    const handleUploadSuccess = (results: CloudinaryUploadWidgetResults) => {
         if (typeof results.info === 'object' && results.info.secure_url) {
             const secureUrl: string = results.info.secure_url;
             if (secureUrl.startsWith("https://res.cloudinary.com/")) {

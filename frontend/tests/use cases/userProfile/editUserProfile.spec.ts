@@ -10,7 +10,9 @@ test('Edit User Profile', async ({ page, homePage, profilePage }) => {
     // Ensure we are logged in. Note: Display name (nickname) might differ from login username.
     // Use regex to match either initial state 'anv.sult' or updated state 'anvar' to allow re-runs.
     const displayName = /anv\.sult|anvar/i;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await homePage.assertUserLoggedIn(displayName as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await homePage.viewUserProfile(displayName as any);
 
     // 3. Verify initial state (optional, or just ensure we are on profile)
