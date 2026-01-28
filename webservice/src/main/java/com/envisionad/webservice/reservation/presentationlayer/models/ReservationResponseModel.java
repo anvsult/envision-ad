@@ -10,6 +10,7 @@ public class ReservationResponseModel {
     private String reservationId;
     private String mediaId;
     private String campaignId;
+    private String campaignName;
     private String status;
     private Double totalPrice;
     private LocalDateTime startDate;
