@@ -37,7 +37,7 @@ public class PaymentController {
 
     @PostMapping("/create-payment-intent")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(
+    public ResponseEntity<Map<String, String>> createCheckoutSession(
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody PaymentIntentRequestModel request) throws Exception {
 
@@ -53,6 +53,16 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("/dashboard")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Map<String, Object>> getDashboardData(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam String businessId,
+            @RequestParam String period) throws Exception {
+
+        return ResponseEntity.ok(stripeService.getDashboardData(jwt, businessId, period));
+    }
+
     @GetMapping("/account-status")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, Object>> getAccountStatus(
@@ -63,9 +73,4 @@ public class PaymentController {
         return ResponseEntity.ok(status);
     }
 
-    @GetMapping("/status/{paymentIntentId}")
-    public ResponseEntity<Map<String, Object>> getPaymentStatus(@PathVariable String paymentIntentId) {
-
-        return ResponseEntity.ok(stripeService.getPaymentStatus(paymentIntentId));
-    }
 }

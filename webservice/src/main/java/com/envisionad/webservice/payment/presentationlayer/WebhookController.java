@@ -1,24 +1,19 @@
-// java
 package com.envisionad.webservice.payment.presentationlayer;
 
 import com.envisionad.webservice.payment.businesslogiclayer.StripeWebhookService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.Collections;
-import java.util.UUID;
-
+@Slf4j
 @RestController
-@RequestMapping(value = "/api/v1/webhooks", produces = "application/json")
+@RequestMapping("/api/webhooks")
 public class WebhookController {
-    private static final Logger log = LoggerFactory.getLogger(WebhookController.class);
 
     private final StripeWebhookService webhookService;
 
@@ -29,25 +24,49 @@ public class WebhookController {
         this.webhookService = webhookService;
     }
 
-    @PostMapping(value = "/stripe", produces = "application/json")
-    public ResponseEntity<?> handleStripeWebhook(
+    @PostMapping("/stripe")
+    public ResponseEntity<String> handleStripeWebhook(
             @RequestBody String payload,
             @RequestHeader("Stripe-Signature") String sigHeader) {
 
+        Event event;
+
         try {
-            Event event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
-            webhookService.handleEvent(event);
-            return ResponseEntity.ok(Collections.singletonMap("status", "processed"));
+            // Verify webhook signature
+            event = Webhook.constructEvent(payload, sigHeader, webhookSecret);
         } catch (SignatureVerificationException e) {
-            String errorId = UUID.randomUUID().toString();
-            log.warn("Invalid Stripe signature (errorId={}): {}", errorId, e.getMessage());
-            ErrorResponse resp = new ErrorResponse(Instant.now(), "invalid_signature", "Invalid signature", errorId);
-            return ResponseEntity.status(400).body(resp);
+            log.error("Invalid webhook signature: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid signature");
+        }
+
+        log.info("Received Stripe webhook event: {}", event.getType());
+
+        try {
+            // Handle different event types
+            switch (event.getType()) {
+                case "checkout.session.completed":
+                    webhookService.handleCheckoutSessionCompleted(event);
+                    break;
+
+                case "payment_intent.succeeded":
+                    webhookService.handlePaymentIntentSucceeded(event);
+                    break;
+
+                case "payment_intent.payment_failed":
+                    webhookService.handlePaymentIntentFailed(event);
+                    break;
+
+                default:
+                    log.debug("Unhandled event type: {}", event.getType());
+            }
+
+            return ResponseEntity.ok("Webhook handled");
+
         } catch (Exception e) {
-            String errorId = UUID.randomUUID().toString();
-            log.error("Webhook processing failed (errorId={}): {}", errorId, e.getMessage(), e);
-            ErrorResponse resp = new ErrorResponse(Instant.now(), "internal_error", "Webhook processing failed", errorId);
-            return ResponseEntity.status(500).body(resp);
+            log.error("Error processing webhook: {}", e.getMessage(), e);
+            // Return 200 to acknowledge receipt even if processing failed
+            // This prevents Stripe from retrying unnecessarily
+            return ResponseEntity.ok("Webhook received but processing failed");
         }
     }
 }

@@ -57,9 +57,6 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public String createConnectedAccount(Jwt jwt, String businessId) {
         // Ensure caller is an employee of the business before creating a connected account
-        if (jwt == null || jwt.getSubject() == null) {
-            throw new SecurityException("Invalid JWT token or subject");
-        }
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -129,9 +126,7 @@ public class StripeServiceImpl implements StripeService {
      */
     @Override
     public Map<String, Object> getAccountStatus(Jwt jwt, String businessId) {
-        if (jwt == null || jwt.getSubject() == null) {
-            throw new SecurityException("Invalid JWT token or subject");
-        }
+        // Validate the user is an employee of the business
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -267,9 +262,6 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId, String reservationId,
                                                                LocalDateTime startDate, LocalDateTime endDate) throws StripeException {
-        log.debug("Starting authorized checkout session creation for user: {}, campaign: {}, media: {}",
-                  jwt != null ? jwt.getSubject() : null, campaignId, mediaId);
-
         // 1. Validate that the campaign exists
         AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (campaign == null) {
@@ -278,9 +270,6 @@ public class StripeServiceImpl implements StripeService {
         }
 
         // 2. SECURITY: Validate that the user owns this campaign (is employee of the advertiser business)
-        if (jwt == null || jwt.getSubject() == null) {
-            throw new SecurityException("Invalid JWT token or subject");
-        }
         String userId = jwtUtils.extractUserId(jwt);
         String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, advertiserBusinessId);
@@ -354,7 +343,11 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public Map<String, Object> getDashboardData(String businessId, String period) throws StripeException {
+    public Map<String, Object> getDashboardData(Jwt jwt, String businessId, String period) throws StripeException {
+        // Validate the user is an employee of the business
+        String userId = jwtUtils.extractUserId(jwt);
+        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+
         // Get the connected account
         StripeAccount stripeAccount = stripeAccountRepository.findByBusinessId(businessId)
                 .orElseThrow(() -> new StripeAccountNotFoundException(businessId));
@@ -370,10 +363,15 @@ public class StripeServiceImpl implements StripeService {
                         LocalDateTime.now()
                 );
 
-        // Calculate totals
-        BigDecimal totalEarnings = payments.stream()
+        // Calculate gross earnings (total before platform fee)
+        BigDecimal grossEarnings = payments.stream()
                 .map(PaymentIntent::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Calculate net earnings (after platform fee)
+        BigDecimal netEarnings = grossEarnings
+                .multiply(BigDecimal.valueOf(100 - platformFeePercent))
+                .divide(BigDecimal.valueOf(100), java.math.RoundingMode.HALF_UP);
 
         // Fetch payout history from Stripe
         BalanceTransactionCollection payouts = BalanceTransaction.list(
@@ -386,24 +384,13 @@ public class StripeServiceImpl implements StripeService {
         );
 
         Map<String, Object> dashboard = new HashMap<>();
-        dashboard.put("totalEarnings", totalEarnings);
+        dashboard.put("grossEarnings", grossEarnings);
+        dashboard.put("netEarnings", netEarnings);
+        dashboard.put("platformFee", grossEarnings.subtract(netEarnings));
         dashboard.put("paymentCount", payments.size());
         dashboard.put("payouts", payouts.getData());
 
         return dashboard;
-    }
-
-    @Override
-    public Map<String, Object> getPaymentStatus(String paymentIntentId) {
-        PaymentIntent payment = paymentIntentRepository
-                .findByStripePaymentIntentId(paymentIntentId)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
-
-        Map<String, Object> status = new HashMap<>();
-        status.put("status", payment.getStatus().toString());
-        status.put("amount", payment.getAmount());
-        status.put("reservationId", payment.getReservationId());
-        return status;
     }
 
     private LocalDateTime calculateStartDate(String period) {

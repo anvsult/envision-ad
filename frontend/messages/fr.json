@@ -762,7 +762,7 @@
     "confirmPayButton": "Confirmer & Payer",
     "reviewTitle": "Vérifier la réservation",
     "dateSelection": {
-      "selected": "Sélectionné : {start} à {end} ({weeks} semaines)"
+      "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
     },
     "labels": {
       "media": "Média",

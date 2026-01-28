@@ -184,7 +184,7 @@ CREATE TABLE payment_intents
     id BIGSERIAL PRIMARY KEY,
     stripe_payment_intent_id VARCHAR(255) UNIQUE,
     stripe_session_id VARCHAR(255) UNIQUE,
-    reservation_id VARCHAR(36),
+    reservation_id VARCHAR(36) UNIQUE,
     business_id VARCHAR(36) NOT NULL, -- Which media owner/business is receiving the payment
     amount DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(3) DEFAULT 'CAD',

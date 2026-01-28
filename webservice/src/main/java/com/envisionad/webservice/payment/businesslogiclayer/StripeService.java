@@ -28,7 +28,6 @@ public interface StripeService {
      */
     Map<String, Object> getAccountStatus(Jwt jwt, String businessId);
 
-    Map<String, Object> getDashboardData(String businessId, String period) throws StripeException;
+    Map<String, Object> getDashboardData(Jwt jwt, String businessId, String period) throws StripeException;
 
-    Map<String, Object> getPaymentStatus(String paymentIntentId);
 }

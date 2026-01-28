@@ -206,7 +206,6 @@ class ReservationControllerIntegrationTest {
 
         // Verify reservation was saved
         assertEquals(1, reservationRepository.count());
-        System.out.println("Reservations in DB: " + reservationRepository.findAll());
 
         // Verify email was sent
         verify(emailService, times(1)).sendSimpleEmail(anyString(), anyString(), anyString());
@@ -243,8 +242,6 @@ class ReservationControllerIntegrationTest {
         // Verify in database
         Reservation savedReservation = reservationRepository.findAll().getFirst();
         assertEquals(0, expectedPrice.compareTo(savedReservation.getTotalPrice()));
-        System.out.println("Reservations in DB: " + reservationRepository.findAll());
-
     }
 
     @Test
