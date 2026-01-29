@@ -34,6 +34,7 @@ import {useUser} from "@auth0/nextjs-auth0/client";
 import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
 import {loadStripe} from '@stripe/stripe-js';
 import {createPaymentIntent} from "@/features/payment";
+import {AdPreviewCarousel} from "@/widgets/Media/Modals/preview-step/AdPreviewCarousel";
 
 // Only initialize Stripe if the publishable key is present
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
@@ -53,6 +54,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
 
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
+    const [selectedCampaignAdsImages, setSelectedCampaignAdsImages] = useState<string[]>([]);
     const [dateRange, setDateRange] = useState<DatesRangeValue<string>>([null, null]);
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
@@ -73,6 +75,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 try {
                     const business = await getEmployeeOrganization(user.sub);
                     const data = await getAllAdCampaigns(business.businessId);
+                    setSelectedCampaignAdsImages(campaigns.find(c => c.campaignId === selectedCampaignId)?.ads.map(ad => ad.adUrl) || []);
                     setCampaigns(data);
                 } catch (e) {
                     console.error("Failed to load campaigns", e);
@@ -80,7 +83,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             };
             void load();
         }
-    }, [opened, user?.sub]);
+    }, [opened, user?.sub, selectedCampaignId]);
 
     const handleDateChange = (val: DatesRangeValue<string>) => {
         if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
@@ -435,7 +438,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         }}
                                         error={errors.campaign}
                                         style={{ width: '100%', maxWidth: 400 }}
-                                        searchable
                                     />
 
                                     <Text size="sm" c="dimmed" mt="sm">
@@ -481,6 +483,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
+
+                                        <AdPreviewCarousel selectedCampaignAdsImages={selectedCampaignAdsImages} mediaImageUrl={media.imageUrl} mediaImageCorners={media.previewConfiguration}/>
+
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
                                             <Text fw={500}>{media.title}</Text>
