@@ -10,7 +10,11 @@ export default class ReservationPage {
     // Locators - Step 1: Date and Campaign Selection
     startDateButton = (date: string) => this.page.getByRole('button', { name: date, exact: true });
     endDateButton = (date: string) => this.page.getByRole('button', { name: date, exact: true });
-    nextMonthButton = () => this.page.locator('div:nth-child(2) > .m_730a79ed > .mantine-focus-auto.m_2351eeb0');
+    // Support both desktop and mobile next month buttons
+    nextMonthButtons = () => [
+        this.page.locator('div:nth-child(2) > .m_730a79ed > .mantine-focus-auto.m_2351eeb0'), // mobile
+        this.page.locator('.m_730a79ed > button:nth-child(3)') // desktop
+    ];
 
     campaignSelect = () => this.page.getByRole('textbox', { name: 'Select Campaign' });
     campaignOption = (campaignName: string) => this.page.getByRole('option', { name: campaignName });
@@ -51,26 +55,29 @@ export default class ReservationPage {
     private async selectDateWithNavigation(date: string) {
         for (let i = 0; i < 12; i += 1) {
             const button = this.page.getByRole('button', { name: date, exact: true }).first();
-
             try {
-                await button.waitFor({ state: 'visible', timeout: 500 });
+                await button.waitFor({ state: 'visible', timeout: 1000 });
                 await button.click();
                 return;
             } catch {
-                // Date not visible in current month, try next month
-                const nextBtn = this.nextMonthButton();
-                try {
-                    await nextBtn.waitFor({ state: 'visible', timeout: 500 });
-                    await nextBtn.click();
-                    // Wait for calendar to update after clicking next month
-                    await this.page.waitForTimeout(300);
-                } catch {
-                    // If next month button is not visible, we've navigated all available months
+                // Try both next month buttons (mobile and desktop)
+                let clicked = false;
+                for (const nextBtn of this.nextMonthButtons()) {
+                    try {
+                        await nextBtn.waitFor({ state: 'visible', timeout: 1000 });
+                        await nextBtn.click();
+                        await this.page.waitForTimeout(800);
+                        clicked = true;
+                        break;
+                    } catch {
+                        // Try next selector
+                    }
+                }
+                if (!clicked) {
                     break;
                 }
             }
         }
-
         throw new Error(`Date button not found after navigating months: ${date}`);
     }
 

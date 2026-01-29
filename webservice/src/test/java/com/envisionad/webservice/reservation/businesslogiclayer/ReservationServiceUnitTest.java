@@ -3,7 +3,6 @@ package com.envisionad.webservice.reservation.businesslogiclayer;
 import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
-import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -15,7 +14,6 @@ import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
-import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
 import com.envisionad.webservice.reservation.exceptions.PaymentVerificationException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.utils.EmailService;
@@ -64,14 +62,12 @@ class ReservationServiceUnitTest {
     private AdCampaignService adCampaignService;
 
     @Mock
-    private JwtUtils jwtUtils;
-
-    @Mock
     private PaymentIntentRepository paymentIntentRepository;
 
     private static final String PAYMENT_INTENT_ID = "pi_3QfRBWHI4UD28XdL0H0YVZTa";
     private static final String RESERVATION_ID = "550e8400-e29b-41d4-a716-446655440000";
-    private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
+    private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"; // Media owner's business
+    private static final String ADVERTISER_BUSINESS_ID = "c1ffdcaa-ad1c-5fg9-cc7e-7cc0ce491c33"; // Advertiser's business (different from media owner)
     private static final String USER_ID = "auth0|696a88eb347945897ef17093";
     private static final String MEDIA_ID = "a1b2c3d4-e5f6-7890-abcd-ef1234567890";
     private static final String CAMPAIGN_ID = "camp_123456";
@@ -100,7 +96,7 @@ class ReservationServiceUnitTest {
         // Setup campaign
         campaign = new AdCampaign();
         campaign.setCampaignId(new AdCampaignIdentifier(CAMPAIGN_ID));
-        campaign.setBusinessId(new BusinessIdentifier(BUSINESS_ID));
+        campaign.setBusinessId(new BusinessIdentifier(ADVERTISER_BUSINESS_ID)); // Advertiser's business, not media owner's
         campaign.setName("Summer Sale Campaign");
 
         // Setup reservation
@@ -125,7 +121,7 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.empty());
@@ -159,7 +155,7 @@ class ReservationServiceUnitTest {
             PaymentIntent savedPayment = paymentCaptor.getValue();
             assertEquals(PAYMENT_INTENT_ID, savedPayment.getStripePaymentIntentId());
             assertEquals(RESERVATION_ID, savedPayment.getReservationId());
-            assertEquals(BUSINESS_ID, savedPayment.getBusinessId());
+            assertEquals(ADVERTISER_BUSINESS_ID, savedPayment.getBusinessId());
             assertEquals(TOTAL_PRICE, savedPayment.getAmount());
             assertEquals(PaymentStatus.SUCCEEDED, savedPayment.getStatus());
         }
@@ -234,7 +230,7 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.empty());
@@ -272,7 +268,7 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.empty());
@@ -308,13 +304,13 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID, not media owner's
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         PaymentIntent existingPayment = new PaymentIntent();
         existingPayment.setStripePaymentIntentId(PAYMENT_INTENT_ID);
         existingPayment.setReservationId(RESERVATION_ID);
-        existingPayment.setBusinessId(BUSINESS_ID);
+        existingPayment.setBusinessId(ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
 
         Reservation existingReservation = new Reservation();
         existingReservation.setReservationId(RESERVATION_ID);
@@ -357,13 +353,13 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         PaymentIntent existingPayment = new PaymentIntent();
         existingPayment.setStripePaymentIntentId(PAYMENT_INTENT_ID);
         existingPayment.setReservationId(RESERVATION_ID);
-        existingPayment.setBusinessId(BUSINESS_ID);
+        existingPayment.setBusinessId(ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID))
                 .thenReturn(Optional.of(existingPayment));
@@ -403,13 +399,13 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", differentReservationId);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         PaymentIntent existingPayment = new PaymentIntent();
         existingPayment.setStripePaymentIntentId(PAYMENT_INTENT_ID);
         existingPayment.setReservationId(RESERVATION_ID); // Already associated with another reservation
-        existingPayment.setBusinessId(BUSINESS_ID);
+        existingPayment.setBusinessId(ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID))
                 .thenReturn(Optional.of(existingPayment));
@@ -448,13 +444,13 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         PaymentIntent existingPayment = new PaymentIntent();
         existingPayment.setStripePaymentIntentId(PAYMENT_INTENT_ID);
         existingPayment.setReservationId(null); // No reservation ID yet
-        existingPayment.setBusinessId(BUSINESS_ID);
+        existingPayment.setBusinessId(ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID))
                 .thenReturn(Optional.of(existingPayment));
@@ -499,7 +495,7 @@ class ReservationServiceUnitTest {
 
         Map<String, String> metadata = new HashMap<>();
         metadata.put("reservationId", RESERVATION_ID);
-        metadata.put("businessId", BUSINESS_ID);
+        metadata.put("businessId", ADVERTISER_BUSINESS_ID); // Use advertiser's business ID
         when(stripeIntent.getMetadata()).thenReturn(metadata);
 
         Reservation existingReservation = new Reservation();
