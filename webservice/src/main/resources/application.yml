@@ -45,3 +45,10 @@ okta:
 app:
   base:
     url: ${APP_BASE_URL}
+
+stripe:
+  api-key: ${STRIPE_SECRET_KEY}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+  platform-fee-percent: 30
+  connect:
+    client-id: ${STRIPE_CONNECT_CLIENT_ID}

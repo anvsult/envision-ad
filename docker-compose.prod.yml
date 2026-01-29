@@ -8,10 +8,14 @@ services:
 #      We are injecting the secrets at runtime (into the javascript files)
 #      Those are the variables that CAN be seen by other people
       args:
+#       API URL
         NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
         NEXT_PUBLIC_APP_BASE_URL: "${APP_BASE_URL}"
+#       CLOUDINARY
         NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: "${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
         NEXT_PUBLIC_CLOUDINARY_API_KEY: "${NEXT_PUBLIC_CLOUDINARY_API_KEY}"
+#       STRIPE
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: "${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}"
       dockerfile: Dockerfile
     #   Here, I am listing the variables that Next.js will potentially need
     #   while it's running (runtime).
@@ -22,6 +26,7 @@ services:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_BASE_URL: "${APP_BASE_URL}"
+#     AUTH0
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       AUTH0_CLIENT_ID: "${AUTH0_CLIENT_ID}"
@@ -30,6 +35,7 @@ services:
       AUTH0_MGMT_DOMAIN: "${AUTH0_MGMT_DOMAIN}"
       AUTH0_MGMT_CLIENT_ID: "${AUTH0_MGMT_CLIENT_ID}"
       AUTH0_MGMT_CLIENT_SECRET: "${AUTH0_MGMT_CLIENT_SECRET}"
+#     CLOUDINARY
       CLOUDINARY_API_SECRET: "${CLOUDINARY_API_SECRET}"
     depends_on:
       webservice:
@@ -48,18 +54,24 @@ services:
       context: ./webservice
       dockerfile: Dockerfile
     environment:
-      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
-      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       APP_BASE_URL: "${APP_BASE_URL}"
       SPRING_PROFILES_ACTIVE: "prod"
-#      Pointing to the production database (RDS instance)
+#     AUTH0
+      AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
+      AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
+#     DATABASE - Pointing to the production database (RDS instance)
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+#     EMAIL
       SPRING_EMAIL_PORT: "${EMAIL_PORT}"
       SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
       SPRING_EMAIL_USER: "${EMAIL_USER}"
       SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+#     STRIPE
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET}"
+      STRIPE_CONNECT_CLIENT_ID: "${STRIPE_CONNECT_CLIENT_ID}"
     restart: unless-stopped
     networks:
       - appnet

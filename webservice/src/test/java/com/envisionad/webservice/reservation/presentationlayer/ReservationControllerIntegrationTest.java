@@ -143,6 +143,7 @@ class ReservationControllerIntegrationTest {
         // Create Media
         Media media = new Media();
         media.setMediaLocation(location);
+        media.setBusinessId(UUID.fromString(businessId));
         media.setTitle("Downtown Digital Board");
         media.setMediaOwnerName("MetroAds");
         media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
