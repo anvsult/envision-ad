@@ -2,7 +2,32 @@ import { Employee } from "@/entities/organization";
 import axiosInstance from "@/shared/api/axios/axios";
 
 export const getAllOrganizationEmployees = async (organizationId: string): Promise<Employee[]> => {
-    const response = await axiosInstance.get(`/businesses/${organizationId}/employees`);
-    return response.data;
+    const response = await axiosInstance.get<Array<{employeeId: string; userId: string}>>(`/businesses/${organizationId}/employees`);
+    return response.data.map((emp) => ({
+        employee_id: emp.employeeId,
+        user_id: emp.userId
+    }));
 };
 
+export const getAllOrganizationEmployeesServer = async (businessId: string, token: string): Promise<Employee[]> => {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/businesses/${businessId}/employees`,
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        }
+    );
+
+    if (!response.ok) {
+        console.error(response);
+        throw new Error(`Failed to fetch employees: ${response.statusText}`);
+    }
+
+    const data: Array<{employeeId: string; userId: string}> = await response.json();
+    return data.map((emp) => ({
+        employee_id: emp.employeeId,
+        user_id: emp.userId
+    }));
+}

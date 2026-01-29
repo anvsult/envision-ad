@@ -1,7 +1,7 @@
 "use client";
 
 import React, {useEffect, useState} from "react";
-import {Accordion, Button, Group, Stack, Title} from "@mantine/core";
+import {Accordion, Button, Group, Stack, Title, Loader, Center} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
 import {useUser} from "@auth0/nextjs-auth0/client";
@@ -14,16 +14,17 @@ import {
 } from "@/features/organization-management/api";
 import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
-import type {Employee} from "@/entities/organization";
+import type {Employee, OrganizationResponseDTO} from "@/entities/organization";
 import {InvitationResponse} from "@/entities/organization";
 import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
 import {notifications} from "@mantine/notifications";
+import {AUTH0_ROLES} from "@/shared/lib/auth/roles";
 
 export default function OrganizationEmployees() {
-    const [owner, setOwner] = useState<string | null>(null);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [invitations, setInvitations] = useState<InvitationResponse[]>([]);
-    const [organizationId, setOrganizationId] = useState<string | null>(null);
+    const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -35,6 +36,50 @@ export default function OrganizationEmployees() {
     const t = useTranslations("organization.employees");
     const {user} = useUser();
 
+    useEffect(() => {
+        if (!user?.sub) return;
+
+        const loadOrganization = async () => {
+            try {
+                setLoading(true);
+                const organization = await getEmployeeOrganization(user.sub);
+                setOrganization(organization);
+
+                if (organization?.businessId) {
+                    const [invitationsData, employeesData] = await Promise.all([
+                        getAllOrganizationInvitations(organization.businessId),
+                        getAllOrganizationEmployees(organization.businessId)
+                    ]);
+
+                    setInvitations(invitationsData);
+
+                    const employeeData: Employee[] = await Promise.all(
+                        employeesData.map(async (employee) => {
+                            const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.user_id)}`);
+                            const auth0Data = await res.json();
+                            return {
+                                ...employee,
+                                ...auth0Data
+                            };
+                        })
+                    );
+                    setEmployees(employeeData);
+                }
+            } catch (error) {
+                console.error("Failed to load organization", error);
+                notifications.show({
+                    title: t("errors.error"),
+                    message: t("errors.loadFailed"),
+                    color: "red",
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        void loadOrganization();
+    }, [user?.sub]);
+
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
@@ -42,8 +87,10 @@ export default function OrganizationEmployees() {
     const handleSuccess = async () => {
         setIsModalOpen(false);
 
-        if (organizationId)
-            setInvitations(await getAllOrganizationInvitations(organizationId));
+        if (organization?.businessId) {
+            const invitationsData = await getAllOrganizationInvitations(organization.businessId);
+            setInvitations(invitationsData);
+        }
     };
 
     const handleDeleteEmployee = (employee: Employee) => {
@@ -57,13 +104,23 @@ export default function OrganizationEmployees() {
     };
 
     const confirmEmployeeRemove = async () => {
-        if (!employeeToRemove || !organizationId) return;
+        if (!employeeToRemove || !organization?.businessId) return;
 
         try {
-            await removeEmployeeFromOrganization(organizationId, employeeToRemove.employeeId);
+            await removeEmployeeFromOrganization(organization.businessId, employeeToRemove.employee_id);
+
+            await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(employeeToRemove.user_id)}`, {
+                method: 'DELETE',
+                body: JSON.stringify({
+                    roles: [
+                        ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
+                        ...(organization.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : [])
+                    ]
+                })
+            });
 
             setEmployees((prev) =>
-                prev.filter((e) => e.employeeId !== employeeToRemove.employeeId)
+                prev.filter((e) => e.employee_id !== employeeToRemove.employee_id)
             );
 
             notifications.show({
@@ -86,10 +143,10 @@ export default function OrganizationEmployees() {
     };
 
     const confirmInviteRemove = async () => {
-        if (!invitationToRemove || !organizationId) return;
+        if (!invitationToRemove || !organization?.businessId) return;
 
         try {
-            await cancelInviteEmployeeToOrganization(organizationId, invitationToRemove.invitationId)
+            await cancelInviteEmployeeToOrganization(organization.businessId, invitationToRemove.invitationId)
 
             setInvitations((prev) =>
                 prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
@@ -114,38 +171,27 @@ export default function OrganizationEmployees() {
         }
     };
 
-    useEffect(() => {
-        if (!user?.sub) return;
+    if (loading) {
+        return (
+            <Center h={400}>
+                <Loader size="lg" />
+            </Center>
+        );
+    }
 
-        const loadOrganization = async () => {
-            const organization = await getEmployeeOrganization(user.sub);
-            setOwner(organization.ownerId);
-            setOrganizationId(organization.businessId);
-
-            setInvitations(await getAllOrganizationInvitations(organization.businessId))
-
-            const ep = await getAllOrganizationEmployees(organization.businessId)
-            const employeeData: Employee[] = await Promise.all(
-                ep.map(async (employee) => {
-                    const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.userId)}`);
-                    const user = await res.json() as Promise<Employee>;
-                    return {
-                        ...user,
-                        employee_id: employee.employeeId,
-                    }
-                })
-            );
-            setEmployees(employeeData);
-        };
-
-        loadOrganization();
-    }, [user?.sub]);
+    if (!organization) {
+        return (
+            <Stack gap="md" p="md">
+                <Title order={2}>{t("noOrganization")}</Title>
+            </Stack>
+        );
+    }
 
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
                 <Title order={2}>{t("title")}</Title>
-                {user?.sub === owner &&
+                {user?.sub === organization.ownerId &&
                     <Button
                         onClick={() => {
                             setIsModalOpen(true);
@@ -162,10 +208,10 @@ export default function OrganizationEmployees() {
                 onSuccess={handleSuccess}
                 employees={employees}
                 invitations={invitations}
-                organizationId={organizationId!}
+                organizationId={organization.businessId}
             />
 
-            {user?.sub && owner && (
+            {user?.sub && organization.ownerId && (
                 <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
                     <InvitationTable
                         invitations={invitations}
@@ -176,7 +222,7 @@ export default function OrganizationEmployees() {
                         employees={employees}
                         onDelete={handleDeleteEmployee}
                         currentUserId={user.sub}
-                        ownerId={owner}
+                        ownerId={organization.ownerId}
                     />
                 </Accordion>
             )}
@@ -187,7 +233,7 @@ export default function OrganizationEmployees() {
                 message={t.rich("modal.employeeMessage", {
                     name: employeeToRemove?.name || "",
                     bold: (chunks) => <strong>{chunks}</strong>
-                })}                                // message={`Are you sure you want to remove ${employeeToRemove?.name || ""} from your organization?`}
+                })}
                 cancelLabel={t("modal.cancel")}
                 confirmLabel={t("modal.confirm")}
                 confirmColor="red"
