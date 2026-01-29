@@ -13,7 +13,7 @@ export default function OrganizationInvitationPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, isLoading } = useUser();
-    const { refreshPermissions } = usePermissions()
+    const { refreshPermissions } = usePermissions();
 
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("");
@@ -36,6 +36,9 @@ export default function OrganizationInvitationPage() {
 
                 await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(user!.sub)}`, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({roles: [
                             ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
                             ...(organization.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : [])

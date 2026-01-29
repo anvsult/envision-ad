@@ -140,6 +140,9 @@ export default function OrganizationDashboard() {
                             if (roleChanges.toRemove.length > 0) {
                                 await fetch(`/api/auth0/update-user-roles/${encodedUserId}`, {
                                     method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
                                     body: JSON.stringify({ roles: roleChanges.toRemove })
                                 });
                             }
@@ -147,6 +150,9 @@ export default function OrganizationDashboard() {
                             if (roleChanges.toAdd.length > 0) {
                                 await fetch(`/api/auth0/update-user-roles/${encodedUserId}`, {
                                     method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
                                     body: JSON.stringify({ roles: roleChanges.toAdd })
                                 });
                             }
@@ -166,6 +172,9 @@ export default function OrganizationDashboard() {
 
                 await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(user!.sub)}`, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify({roles: [
                             AUTH0_ROLES.BUSINESS_OWNER,
                             ...(formState.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),

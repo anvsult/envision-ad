@@ -55,7 +55,7 @@ export default function OrganizationEmployees() {
 
                     const employeeData: Employee[] = await Promise.all(
                         employeesData.map(async (employee) => {
-                            const res = await fetch(`/api/auth0/get-user/${encodeURI(employee.user_id)}`);
+                            const res = await fetch(`/api/auth0/get-user/${encodeURIComponent(employee.user_id)}`);
                             const auth0Data = await res.json();
                             return {
                                 ...employee,
@@ -111,6 +111,9 @@ export default function OrganizationEmployees() {
 
             await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(employeeToRemove.user_id)}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify({
                     roles: [
                         ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),

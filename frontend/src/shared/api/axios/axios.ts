@@ -1,5 +1,4 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
-import {getAccessToken} from "@auth0/nextjs-auth0";
 
 declare module 'axios' {
     export interface AxiosRequestConfig {

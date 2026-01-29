@@ -50,6 +50,6 @@ export async function POST() {
         return NextResponse.json({ statusCode: 200 });
     } catch (error) {
         console.error('Error refreshing access token:', error);
-        return NextResponse.json({ status: 500 });
+        return NextResponse.json({ error: 'Error refreshing access token' }, { status: 500 });
     }
 }

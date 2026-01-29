@@ -4,8 +4,7 @@ import { Auth0ManagementService } from "@/shared/api/auth0/management";
 import {jwtDecode} from "jwt-decode";
 import {Token} from "@/entities/auth";
 import {
-    getAllOrganizationEmployees, getAllOrganizationEmployeesServer,
-    getEmployeeOrganization,
+    getAllOrganizationEmployeesServer,
     getEmployeeOrganizationServer
 } from "@/features/organization-management/api";
 

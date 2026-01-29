@@ -38,14 +38,14 @@ export async function POST(
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    if (roles.includes(AUTH0_ROLES.BUSINESS_OWNER) && (organization.ownerId != session.user.sub || organization.ownerId != decodedId || permissions.length != 0)){
+    if (roles.includes(AUTH0_ROLES.BUSINESS_OWNER) && (organization.ownerId !== session.user.sub || organization.ownerId !== decodedId || permissions.length !== 0)){
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     const hasAdvertiserRole = roles.includes(AUTH0_ROLES.ADVERTISER);
     const hasMediaOwnerRole = roles.includes(AUTH0_ROLES.MEDIA_OWNER);
 
-    if (decodedId == session.user.sub && permissions.length == 0 && (!hasAdvertiserRole || organization.roles.advertiser) && (!hasAdvertiserRole || organization.roles.advertiser)){
+    if (decodedId === session.user.sub && permissions.length === 0 && (!hasAdvertiserRole || organization.roles.advertiser) && (!hasMediaOwnerRole || organization.roles.mediaOwner)){
         await Auth0ManagementService.updateUserRole(decodedId, roles, 'POST');
         return Response.json({ success: true });
     }
@@ -95,15 +95,15 @@ export async function DELETE(
     const hasMediaOwnerRole = roles.includes(AUTH0_ROLES.MEDIA_OWNER);
 
     if (permissions.includes('delete:employee') && employees.some(employee => employee.user_id === decodedId) && (!organization.roles.mediaOwner || hasMediaOwnerRole) && (!organization.roles.advertiser || hasAdvertiserRole)){
-        await Auth0ManagementService.updateUserRole(id, roles, 'DELETE');
+        await Auth0ManagementService.updateUserRole(decodedId, roles, 'DELETE');
         return Response.json({ success: true });
     }
 
-    if (hasAdvertiserRole !== hasMediaOwnerRole && (!permissions.includes('update:business') || !employees.some(employee => employee.user_id === decodedId) || (hasAdvertiserRole && organization.roles.advertiser) || (hasMediaOwnerRole && organization.roles.mediaOwner)) && roles.length != 1){
+    if (hasAdvertiserRole !== hasMediaOwnerRole && (!permissions.includes('update:business') || !employees.some(employee => employee.user_id === decodedId) || (hasAdvertiserRole && organization.roles.advertiser) || (hasMediaOwnerRole && organization.roles.mediaOwner)) && roles.length !== 1){
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await Auth0ManagementService.updateUserRole(id, roles, 'DELETE');
+    await Auth0ManagementService.updateUserRole(decodedId, roles, 'DELETE');
 
     return Response.json({ success: true });
 }

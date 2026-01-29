@@ -38,7 +38,6 @@ export default async function RootLayout({
 }) {
     const {locale} = await params;
     const messages = await getMessages({locale});
-    const t = await getTranslations({locale, namespace: "metadata"});
 
     const session = await auth0.getSession();
     const user = session?.user;
@@ -56,7 +55,6 @@ export default async function RootLayout({
                     name="viewport"
                     content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
                 />
-                <title>{t("title")}</title>
             </head>
             <body
                 style={{minHeight: "100vh", display: "flex", flexDirection: "column"}}>

@@ -2,6 +2,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import {auth0} from "@/shared/api/auth0/auth0";
+import {jwtDecode} from "jwt-decode";
+import {Token} from "@/entities/auth";
 
 interface PermissionsContextType {
     permissions: string[];
@@ -14,7 +17,7 @@ const PermissionsContext = createContext<PermissionsContextType | undefined>(und
 export function PermissionsProvider({ children }: { children: ReactNode }) {
     const [permissions, setPermissions] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
-    const { user, isLoading } = useUser(); // Check if user is logged in
+    const { user, isLoading } = useUser();
 
     const fetchPermissions = useCallback(async () => {
         if (!user) {
@@ -24,14 +27,14 @@ export function PermissionsProvider({ children }: { children: ReactNode }) {
         }
 
         try {
-            const response = await fetch('/api/auth/permissions');
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch permissions');
+            const response = await fetch('/api/auth0/token');
+            if (response.ok) {
+                const { accessToken } = await response.json();
+                if (accessToken) {
+                    const permissions = jwtDecode<Token>(accessToken).permissions;
+                    setPermissions(permissions);
+                }
             }
-
-            const data = await response.json();
-            setPermissions(data.permissions);
         } catch (error) {
             console.error('Failed to fetch permissions:', error);
             setPermissions([]);
