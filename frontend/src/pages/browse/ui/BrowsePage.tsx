@@ -140,78 +140,80 @@ function BrowsePage() {
   }
 
   return (
-      <Container size="xl" py={20} px={80}>
-        <Stack gap="sm">
-          <Group grow>
-            <TextInput
-              placeholder={t('searchTitle')}
-              value={draftTitleFilter}
-              onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  setTitleFilter(draftTitleFilter);
+      <Container size={sortBy===SpecialSort.nearest ? "1700" : "xl"} py={20} px={80}>
+        <Group grow>
+          <Stack gap="sm">
+            <Group grow>
+              <TextInput
+                placeholder={t('searchTitle')}
+                value={draftTitleFilter}
+                onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    setTitleFilter(draftTitleFilter);
+                  }
+                }}
+                rightSection={
+                  <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
+                    <IconSearch size={16} />
+                  </ActionIcon>
                 }
-              }}
-              rightSection={
-                <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
-                  <IconSearch size={16} />
-                </ActionIcon>
-              }
-            />
-            <Autocomplete
-              placeholder={t('searchAddress')}
-              data={locationOptions.map((o) => o)}
-              
-              value={draftAddressSearch}
-              onChange={ setDraftAddressSearch }
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  setAddressSearch(draftAddressSearch);
-                  setSortBy(SpecialSort.nearest)
+              />
+              <Autocomplete
+                placeholder={t('searchAddress')}
+                data={locationOptions.map((o) => o)}
+                
+                value={draftAddressSearch}
+                onChange={ setDraftAddressSearch }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    setAddressSearch(draftAddressSearch);
+                    setSortBy(SpecialSort.nearest)
+                  }
+                }}
+                rightSection={
+                  <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
+                    <IconSearch size={16} />
+                  </ActionIcon>
                 }
-              }}
-              rightSection={
-                <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
-                  <IconSearch size={16} />
-                </ActionIcon>
-              }
-            />
-          </Group>
-          <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
-
-          {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
-            <Stack h="20em" justify="center" align="center">
-              <Loader />
-            </Stack>
-          ) : locationStatus === 'denied' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text>{t('nomedia.locationDenied')}</Text>
-            </Stack>
-          ) : mediaStatus === 'error' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text>{t('nomedia.failedToLoad')}</Text>
-            </Stack>
-          ) : mediaStatus === 'empty' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text size="32px">{t('nomedia.notfound')}</Text>
-              <Text>{t('nomedia.changefilters')}</Text>
-            </Stack>
-          ) : (
-            <MediaCardGrid medias={media} />
-          )}
-          {totalPages > 1 && (
-            <Group justify="center" mt="md">
-              <Pagination
-                total={totalPages}
-                value={activePage}
-                onChange={setActivePage}
-                size="md"
               />
             </Group>
-          )}
-          {(location && sortBy === SpecialSort.nearest) && <MapView center={location}/>}
-          
-        </Stack>
+            <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
+
+            {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
+              <Stack h="20em" justify="center" align="center">
+                <Loader />
+              </Stack>
+            ) : locationStatus === 'denied' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text>{t('nomedia.locationDenied')}</Text>
+              </Stack>
+            ) : mediaStatus === 'error' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text>{t('nomedia.failedToLoad')}</Text>
+              </Stack>
+            ) : mediaStatus === 'empty' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text size="32px">{t('nomedia.notfound')}</Text>
+                <Text>{t('nomedia.changefilters')}</Text>
+              </Stack>
+            ) : (
+              <MediaCardGrid medias={media} />
+            )}
+            {totalPages > 1 && (
+              <Group justify="center" mt="md">
+                <Pagination
+                  total={totalPages}
+                  value={activePage}
+                  onChange={setActivePage}
+                  size="md"
+                />
+              </Group>
+            )}
+          </Stack>
+        
+        {(location && sortBy === SpecialSort.nearest) && <MapView center={location}/>}
+        </Group>
       </Container>
   );
 }

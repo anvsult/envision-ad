@@ -11,7 +11,7 @@ interface MapViewProps {
 export default function MapView({center, markers}: MapViewProps){
 
     return(
-        <Paper w = "100%" h="600px" radius="lg" style={{overflow: "hidden"}}>
+        <Paper w="100%" h="100vh" radius="lg" style={{overflow: "hidden"}}>
             <MapContainer center={center} zoom={13} scrollWheelZoom={false} style={{height:"100%", width:"100%"}}>
                 <TileLayer
                     
