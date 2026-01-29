@@ -3,6 +3,16 @@
     "title": "Envision AD - Affordable Ads, Unforgettable Impact",
     "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your organization."
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "back": "Back to home"
+  },
+  "forbidden": {
+    "title": "Forbidden",
+    "description": "You do not have permission to access this page.",
+    "back": "Back to home"
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -331,6 +341,7 @@
     "verificationHistory": "Verification History",
     "requestVerification": "Request Verification",
     "verificationTable": {
+      "noHistory": "No verification request history found.",
       "requestDate": "Request Date",
       "status": "Status",
       "reason": "Reason"

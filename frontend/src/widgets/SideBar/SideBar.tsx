@@ -8,30 +8,15 @@ import {
     IconShieldCheck, IconDiscountCheck,
 } from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
-import {useUser} from "@auth0/nextjs-auth0/client";
-import {useEffect, useState} from "react";
-import {getAccessToken} from "@auth0/nextjs-auth0";
-import {jwtDecode} from "jwt-decode";
-import {Token} from "@/entities/auth";
+import {usePermissions} from "@/app/providers/PermissionProvider";
 
 export default function SideBar() {
+    const { permissions } = usePermissions();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
-    const { user } = useUser();
-    const [permissions, setPermissions] = useState<string[]>([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const token = await getAccessToken();
-            const decodedToken = jwtDecode<Token>(token);
-            setPermissions(decodedToken.permissions);
-        };
-
-        void fetchData();
-    }, [user?.sub]);
 
     const mediaOwnerNavItems = [
-        (permissions.includes('create:media') || permissions.includes('update:media')) && (
+        (permissions.includes('create:media')) && (
             <NavLink
                 key="media"
                 component={Link}
@@ -44,7 +29,7 @@ export default function SideBar() {
     ].filter(Boolean);
 
     const advertiserNavItems = [
-        (permissions.includes('create:campaign') || permissions.includes('update:campaign') || permissions.includes('read:campaign')) && (
+        (permissions.includes('read:campaign')) && (
                 <NavLink
                     key="campaigns"
                     component={Link}
@@ -123,7 +108,7 @@ export default function SideBar() {
                                 active={pathname?.endsWith("/organization/overview")}
                             />
 
-                            { (permissions.includes('read:employee') || permissions.includes('create:employee') || permissions.includes('delete:employee')) &&
+                            { (permissions.includes('read:employee')) &&
                                 <NavLink
                                     key="employees"
                                     component={Link}

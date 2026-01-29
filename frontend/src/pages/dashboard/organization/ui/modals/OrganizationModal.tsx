@@ -5,30 +5,26 @@ import {Alert, Button, Group, Modal, Stack} from "@mantine/core";
 import {useTranslations} from "next-intl";
 import {OrganizationDetailsForm} from "./OrganizationDetailsForm";
 import {OrganizationRequestDTO} from "@/entities/organization";
-import {createOrganization, updateOrganization} from "@/features/organization-management/api";
-import {notifications} from "@mantine/notifications";
 import {IconInfoCircle} from "@tabler/icons-react";
 
 interface OrganizationModalProps {
     opened: boolean;
     onClose: () => void;
-    onSuccess: () => void;
+    onSave: () => Promise<void>;
     formState: OrganizationRequestDTO;
     onFieldChange: <K extends keyof OrganizationRequestDTO>(
         field: K,
         value: OrganizationRequestDTO[K]
     ) => void;
-    resetForm: () => void;
     editingId: string | null;
 }
 
 export function OrganizationModal({
                                       opened,
                                       onClose,
-                                      onSuccess,
+                                      onSave,
                                       formState,
                                       onFieldChange,
-                                      resetForm,
                                       editingId,
                                   }: OrganizationModalProps) {
     const t = useTranslations("organization.form");
@@ -94,40 +90,7 @@ export function OrganizationModal({
 
         setSaving(true);
         try {
-            if (editingId) {
-                await updateOrganization(editingId, formState);
-                notifications.show({
-                    title: t("success.title"),
-                    message: t("success.update"),
-                    color: "green",
-                });
-            } else {
-                await createOrganization(formState);
-                notifications.show({
-                    title: t("success.title"),
-                    message: t("success.create"),
-                    color: "green",
-                });
-            }
-            onSuccess();
-            onClose();
-            resetForm();
-        } catch (error) {
-            if (editingId) {
-                console.error("Failed to update organization", error);
-                notifications.show({
-                    title: t("errors.error"),
-                    message: t("errors.updateFailed"),
-                    color: "red",
-                });
-            } else {
-                console.error("Failed to create organization", error);
-                notifications.show({
-                    title: t("errors.error"),
-                    message: t("errors.createFailed"),
-                    color: "red",
-                });
-            }
+            await onSave();
         } finally {
             setSaving(false);
         }

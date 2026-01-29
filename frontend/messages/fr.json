@@ -3,6 +3,16 @@
     "title": "Envision AD - Publicités Abordables, Impact Inoubliable",
     "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre organization."
   },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "La page que vous recherchez n'existe pas.",
+    "back": "Retour à l'accueil"
+  },
+  "forbidden": {
+    "title": "Accès interdit",
+    "description": "Vous n'avez pas l'autorisation d'accéder à cette page.",
+    "back": "Retour à l'accueil"
+  },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
@@ -332,6 +342,7 @@
     "verificationHistory": "Historique des vérifications",
     "requestVerification": "Demander une vérification",
     "verificationTable": {
+      "noHistory": "Aucun historique de demande de vérification trouvé.",
       "requestDate": "Date de la demande",
       "status": "Statut",
       "reason": "Raison"
