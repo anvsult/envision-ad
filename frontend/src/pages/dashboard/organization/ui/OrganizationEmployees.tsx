@@ -34,7 +34,7 @@ export default function OrganizationEmployees() {
     const [invitationToRemove, setInvitationToRemove] = useState<InvitationResponse | null>(null);
 
     const t = useTranslations("organization.employees");
-    const {user} = useUser();
+    const { user } = useUser();
 
     useEffect(() => {
         if (!user?.sub) return;

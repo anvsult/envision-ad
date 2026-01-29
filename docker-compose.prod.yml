@@ -52,7 +52,7 @@ services:
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
       APP_BASE_URL: "${APP_BASE_URL}"
       SPRING_PROFILES_ACTIVE: "prod"
-      # Point this directly to the variables injected by GitHub Actions
+#      Pointing to the production database (RDS instance)
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
@@ -101,6 +101,7 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
 networks:
   appnet:
     driver: bridge

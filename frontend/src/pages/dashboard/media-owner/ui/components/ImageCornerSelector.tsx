@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect, MouseEvent as ReactMouseEvent } from 'react';
 
+import { Image } from '@mantine/core';
+
 interface Point {
     x: number;
     y: number;
@@ -39,6 +41,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         // that causes the infinite loop and crash.
         if (dragging || !initialCorners) return;
 
+
         setCorners((prev) => {
             // Check for value equality to prevent infinite loops (since JSON.parse creates new refs)
             const isDifferent =
@@ -65,6 +68,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         if (!initialCorners && corners) {
             onChangeRef.current(corners);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const getMousePosition = (evt: ReactMouseEvent | globalThis.MouseEvent) => {
@@ -88,7 +92,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         if (!dragging || !svgRef.current) return;
         e.preventDefault();
 
-        const { x, y } = getMousePosition(e as any);
+        const { x, y } = getMousePosition(e);
 
         // Get SVG dimensions to convert pixel to percentage
         const { width, height } = svgRef.current.getBoundingClientRect();
@@ -108,7 +112,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
         setDragging(null);
     }, []);
 
-    const handleTouchStart = (key: keyof typeof corners) => (e: React.TouchEvent) => {
+    const handleTouchStart = (key: keyof typeof corners) => () => {
         setDragging(key);
     };
 
@@ -167,7 +171,7 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
 
     return (
         <div style={{ position: 'relative', width: '100%', height: 'auto', userSelect: 'none', display: 'flex', justifyContent: 'center' }}>
-            <img
+            <Image
                 src={imageUrl}
                 alt="Preview"
                 style={{

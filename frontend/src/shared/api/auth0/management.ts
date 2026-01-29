@@ -70,7 +70,7 @@ export class Auth0ManagementService {
         }
     }
 
-    private static userCache: Record<string, { data: any; expires: number }> = {};
+    private static userCache: Record<string, { data: unknown; expires: number }> = {};
     private static CACHE_DURATION = 300000; // 5 minutes in ms
 
     /**
@@ -78,7 +78,7 @@ export class Auth0ManagementService {
      * @param {string} userId - The unique identifier of the user (e.g., "auth0|123456").
      * @returns {Promise<any | null>} The user object if found, or null if not found or an error occurs.
      */
-    static async getUser(userId: string): Promise<{ data: any; isStale: boolean } | null> {
+    static async getUser(userId: string): Promise<{ data: unknown; isStale: boolean } | null> {
         // Return cached user if valid
         const cached = this.userCache[userId];
         if (cached && Date.now() < cached.expires) {
@@ -133,7 +133,7 @@ export class Auth0ManagementService {
      * @returns {Promise<any>} The updated user object.
      * @throws {Error} If the update fails.
      */
-    static async updateUser(userId: string, data: any) {
+    static async updateUser(userId: string, data: unknown) {
         const token = await this.getAccessToken();
         const res = await fetch(
             `https://${process.env.AUTH0_MGMT_DOMAIN}/api/v2/users/${userId}`,
@@ -152,7 +152,7 @@ export class Auth0ManagementService {
             try {
                 const errorBody = await res.json();
                 errorMsg = errorBody.message || errorBody.error_description || errorBody.error || errorMsg;
-            } catch (_) {
+            } catch {
                 // ignore JSON parse errors
             }
             throw new Error(errorMsg);
@@ -215,6 +215,7 @@ export class Auth0ManagementService {
      */
     static async getUserLanguage(userId: string): Promise<string | undefined> {
         const user = await this.getUser(userId);
-        return user?.data?.user_metadata?.preferred_language || undefined;
+        const data = user?.data as { user_metadata?: { preferred_language?: string } } | null;
+        return data?.user_metadata?.preferred_language || undefined;
     }
 }

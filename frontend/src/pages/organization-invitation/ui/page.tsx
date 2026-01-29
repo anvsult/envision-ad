@@ -51,8 +51,7 @@ export default function OrganizationInvitationPage() {
                     router.push("/dashboard/organization/overview");
                 }, 2000);
 
-            } catch (error) {
-                console.error("Failed to accept invitation", error);
+            } catch {
                 setStatus("error");
                 setMessage("An error occurred while accepting the invitation.");
             }

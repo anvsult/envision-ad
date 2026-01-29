@@ -1,4 +1,4 @@
-import {NextRequest, NextResponse} from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { auth0 } from "@/shared/api/auth0/auth0";
 import { Auth0ManagementService } from "@/shared/api/auth0/management";
 import {jwtDecode} from "jwt-decode";
