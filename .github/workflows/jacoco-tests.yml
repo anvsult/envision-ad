@@ -21,6 +21,7 @@ jobs:
       - name: Run Gradle build
         run: |
           cd webservice
+          doppler run -- project envision-ad-backend --config prd --token ${DOPPLER_BACKEND_TOKEN} -- \
           ./gradlew clean build --no-daemon
 
       - name: Upload JaCoCo HTML report

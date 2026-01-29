@@ -161,7 +161,7 @@ class WebhookControllerUnitTest {
     }
 
     @Test
-    void handleStripeWebhook_shouldReturnOk_whenProcessingFails() {
+    void handleStripeWebhook_shouldReturnInternalServerError_whenProcessingFails() {
         // Given
         String payload = "{\"type\":\"checkout.session.completed\"}";
         Event mockEvent = mock(Event.class);
@@ -180,8 +180,8 @@ class WebhookControllerUnitTest {
             // Then
             // Should return 200 OK to prevent Stripe from retrying
             assertNotNull(response);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals("Webhook received but processing failed", response.getBody());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertEquals("Webhook processing failed", response.getBody());
             verify(webhookService, times(1)).handleCheckoutSessionCompleted(mockEvent);
         }
     }
@@ -205,8 +205,8 @@ class WebhookControllerUnitTest {
 
             // Then
             assertNotNull(response);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals("Webhook received but processing failed", response.getBody());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+            assertEquals("Webhook processing failed", response.getBody());
         }
     }
 }
