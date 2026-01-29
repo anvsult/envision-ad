@@ -1,9 +1,9 @@
 package com.envisionad.webservice.proofofdisplay.presentationlayer.models;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import java.util.List;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 @Data
 public class ProofOfDisplayRequest {

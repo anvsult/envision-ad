@@ -132,45 +132,35 @@ class ProofOfDisplayServiceUnitTest {
         assertTrue(body.contains("- https://img2.example"));
     }
 
+
     @Test
-    void sendProofEmail_whenProofUrlsNull_stillSends_withNoImagesProvidedLine() {
+    void sendProofEmail_whenProofUrlsNull_throws_andDoesNotSendEmail() {
         // Arrange
         ProofOfDisplayRequest request = new ProofOfDisplayRequest();
         request.setMediaId(mediaUuid.toString());
         request.setCampaignId("camp-123");
         request.setProofImageUrls(null);
 
-        Jwt jwt = mockJwtPassingAuth();
+        Jwt jwt = mockJwtSubjectOnly();
 
-        Media media = mock(Media.class);
-        when(media.getTitle()).thenReturn("Lobby Screen");
-        when(media.getBusinessId()).thenReturn(UUID.randomUUID());
-        when(mediaRepository.findById(mediaUuid)).thenReturn(Optional.of(media));
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
+        verifyNoInteractions(emailService);
+    }
 
-        AdCampaign campaign = mock(AdCampaign.class);
-        when(campaign.getName()).thenReturn("Spring Launch");
+    @Test
+    void sendProofEmail_whenProofUrlsEmpty_throws_andDoesNotSendEmail() {
+        // Arrange
+        ProofOfDisplayRequest request = new ProofOfDisplayRequest();
+        request.setMediaId(mediaUuid.toString());
+        request.setCampaignId("camp-123");
+        request.setProofImageUrls(List.of());
 
-        BusinessIdentifier businessIdentifier = mock(BusinessIdentifier.class);
-        when(businessIdentifier.getBusinessId()).thenReturn("biz-1");
-        when(campaign.getBusinessId()).thenReturn(businessIdentifier);
+        Jwt jwt = mockJwtSubjectOnly();
 
-        when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
-
-        Employee emp = mock(Employee.class);
-        when(emp.getEmail()).thenReturn("a@b.com");
-        when(employeeRepository.findAllByBusinessId_BusinessId("biz-1")).thenReturn(List.of(emp));
-
-        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
-
-        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
-                .thenReturn(true);
-
-        // Act
-        proofOfDisplayService.sendProofEmail(jwt, request);
-
-        // Assert
-        verify(emailService).sendSimpleEmail(anyString(), anyString(), bodyCaptor.capture());
-        assertTrue(bodyCaptor.getValue().contains("- No images were provided."));
+        // Act + Assert
+        assertThrows(IllegalArgumentException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
+        verifyNoInteractions(emailService);
     }
 
     @Test

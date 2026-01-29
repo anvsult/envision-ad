@@ -8,7 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
+import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
+import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
@@ -96,6 +99,30 @@ public class GlobalControllerHandler {
     @ExceptionHandler(AdCampaignNotFoundException.class)
     public HttpErrorInfo handleAdCampaignNotFoundException(AdCampaignNotFoundException ex) {
         return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(MediaNotFoundException.class)
+    public HttpErrorInfo handleMediaNotFoundException(MediaNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public HttpErrorInfo handleReservationNotFoundException(ReservationNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(AdvertiserEmailNotFoundException.class)
+    public HttpErrorInfo handleAdvertiserEmailNotFoundException(AdvertiserEmailNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(FORBIDDEN)
+    @ExceptionHandler({ SecurityException.class, AccessDeniedException.class })
+    public HttpErrorInfo handleForbidden(Exception ex) {
+        return createHttpErrorInfo(FORBIDDEN, ex);
     }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {

@@ -55,6 +55,11 @@ public class ProofOfDisplayService {
             if (jwt == null || jwt.getSubject() == null) {
                 throw new SecurityException("Invalid JWT token or subject");
             }
+            // Proof images are required
+            List<String> urls = request.getProofImageUrls();
+            if (urls == null || urls.isEmpty()) {
+                throw new IllegalArgumentException("At least one proof image URL is required.");
+            }
 
             String userId = jwtUtils.extractUserId(jwt);
 
@@ -104,15 +109,9 @@ public class ProofOfDisplayService {
             body.append("Media location: ").append(media.getTitle()).append("\n\n");
 
             body.append("Proof images:\n");
-            List<String> urls = request.getProofImageUrls();
-            if (urls == null || urls.isEmpty()) {
-                body.append("- No images were provided.\n");
-            } else {
-                for (String url : urls) {
-                    body.append("- ").append(url).append("\n");
-                }
+            for (String url : urls) {
+                body.append("- ").append(url).append("\n");
             }
-
             body.append("\nThanks for advertising with Envision Ad!\n");
             body.append("— The Envision Ad Team");
 

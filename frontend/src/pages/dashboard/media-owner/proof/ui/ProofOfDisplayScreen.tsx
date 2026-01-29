@@ -58,7 +58,7 @@ export default function ProofOfDisplayScreen() {
 
                             const uniqueCampaigns = new Set(
                                 reservations
-                                    .filter((r: any) => r.status === "ACTIVE" || r.status === "PENDING")
+                                    .filter((r: any) => r.status === "CONFIRMED" || r.status === "PENDING")
                                     .map((r: any) => r.campaignId)
                                     .filter(Boolean)
                             );
