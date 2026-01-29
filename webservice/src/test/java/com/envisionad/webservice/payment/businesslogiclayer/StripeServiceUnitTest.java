@@ -251,6 +251,121 @@ class StripeServiceUnitTest {
     }
 
     @Test
+    void createCheckoutSession_shouldReusePaymentIntentRecord_whenRetryingFailedPayment() throws StripeException {
+        // Given: A failed payment attempt exists
+        String reservationId = "res-retry-failed";
+        BigDecimal amount = BigDecimal.valueOf(100.00);
+        String businessId = "biz-1";
+        Long existingPaymentIntentId = 123L;
+
+        PaymentIntent existingFailedPayment = new PaymentIntent();
+        existingFailedPayment.setId(existingPaymentIntentId);
+        existingFailedPayment.setReservationId(reservationId);
+        existingFailedPayment.setBusinessId(businessId);
+        existingFailedPayment.setAmount(BigDecimal.valueOf(100.00));
+        existingFailedPayment.setStatus(PaymentStatus.FAILED);
+        existingFailedPayment.setStripePaymentIntentId("pi_old_failed");
+        existingFailedPayment.setStripeSessionId("sess_old_failed");
+        existingFailedPayment.setCreatedAt(LocalDateTime.now().minusHours(1));
+
+        StripeAccount stripeAccount = new StripeAccount();
+        stripeAccount.setBusinessId(businessId);
+        stripeAccount.setStripeAccountId("acct_123");
+        stripeAccount.setOnboardingComplete(true);
+        stripeAccount.setChargesEnabled(true);
+
+        when(paymentIntentRepository.findByReservationId(reservationId))
+                .thenReturn(Optional.of(existingFailedPayment));
+        when(stripeAccountRepository.findByBusinessId(businessId))
+                .thenReturn(Optional.of(stripeAccount));
+
+        // Mock Stripe session creation
+        com.stripe.model.checkout.Session mockSession = mock(com.stripe.model.checkout.Session.class);
+        when(mockSession.getId()).thenReturn("sess_new_retry_123");
+        when(mockSession.getClientSecret()).thenReturn("cs_test_retry_secret");
+
+        try (MockedStatic<com.stripe.model.checkout.Session> sessionMock = mockStatic(com.stripe.model.checkout.Session.class)) {
+            sessionMock.when(() -> com.stripe.model.checkout.Session.create(
+                    any(com.stripe.param.checkout.SessionCreateParams.class),
+                    any(RequestOptions.class)))
+                    .thenReturn(mockSession);
+
+            // When: Retry payment for failed reservation
+            Map<String, String> result = stripeService.createCheckoutSession(reservationId, amount, businessId);
+
+            // Then: Should return new session details
+            assertNotNull(result);
+            assertEquals("cs_test_retry_secret", result.get("clientSecret"));
+            assertEquals("sess_new_retry_123", result.get("sessionId"));
+
+            // Verify that the existing PaymentIntent record was updated (not inserted as new)
+            verify(paymentIntentRepository).save(argThat(pi ->
+                    pi.getId().equals(existingPaymentIntentId) &&  // Same ID = UPDATE operation
+                    pi.getReservationId().equals(reservationId) &&
+                    pi.getStatus() == PaymentStatus.PENDING &&  // Status reset to PENDING
+                    pi.getStripeSessionId().equals("sess_new_retry_123") &&  // New session ID
+                    pi.getStripePaymentIntentId() == null  // Old Stripe PI ID cleared (will be set by webhook)
+            ));
+
+            // Verify no duplicate was created (save called only once)
+            verify(paymentIntentRepository, times(1)).save(any(PaymentIntent.class));
+        }
+    }
+
+    @Test
+    void createCheckoutSession_shouldReuseCanceledPaymentIntent_whenRetrying() throws StripeException {
+        // Given: A canceled payment attempt exists
+        String reservationId = "res-retry-canceled";
+        BigDecimal amount = BigDecimal.valueOf(150.00);
+        String businessId = "biz-1";
+        Long existingPaymentIntentId = 456L;
+
+        PaymentIntent existingCanceledPayment = new PaymentIntent();
+        existingCanceledPayment.setId(existingPaymentIntentId);
+        existingCanceledPayment.setReservationId(reservationId);
+        existingCanceledPayment.setBusinessId(businessId);
+        existingCanceledPayment.setAmount(BigDecimal.valueOf(150.00));
+        existingCanceledPayment.setStatus(PaymentStatus.CANCELED);
+        existingCanceledPayment.setStripePaymentIntentId("pi_old_canceled");
+        existingCanceledPayment.setStripeSessionId("sess_old_canceled");
+
+        StripeAccount stripeAccount = new StripeAccount();
+        stripeAccount.setBusinessId(businessId);
+        stripeAccount.setStripeAccountId("acct_456");
+        stripeAccount.setOnboardingComplete(true);
+
+        when(paymentIntentRepository.findByReservationId(reservationId))
+                .thenReturn(Optional.of(existingCanceledPayment));
+        when(stripeAccountRepository.findByBusinessId(businessId))
+                .thenReturn(Optional.of(stripeAccount));
+
+        com.stripe.model.checkout.Session mockSession = mock(com.stripe.model.checkout.Session.class);
+        when(mockSession.getId()).thenReturn("sess_new_after_cancel");
+        when(mockSession.getClientSecret()).thenReturn("cs_test_cancel_retry");
+
+        try (MockedStatic<com.stripe.model.checkout.Session> sessionMock = mockStatic(com.stripe.model.checkout.Session.class)) {
+            sessionMock.when(() -> com.stripe.model.checkout.Session.create(
+                    any(com.stripe.param.checkout.SessionCreateParams.class),
+                    any(RequestOptions.class)))
+                    .thenReturn(mockSession);
+
+            // When: Retry payment for canceled reservation
+            Map<String, String> result = stripeService.createCheckoutSession(reservationId, amount, businessId);
+
+            // Then: Should successfully reuse the existing record
+            assertNotNull(result);
+            assertEquals("cs_test_cancel_retry", result.get("clientSecret"));
+
+            // Verify UPDATE operation (same ID, status changed to PENDING)
+            verify(paymentIntentRepository).save(argThat(pi ->
+                    pi.getId().equals(existingPaymentIntentId) &&
+                    pi.getStatus() == PaymentStatus.PENDING &&
+                    pi.getStripePaymentIntentId() == null  // Cleared for webhook to set
+            ));
+        }
+    }
+
+    @Test
     void createAuthorizedCheckoutSession_throwsInvalidPricingException_whenMediaPriceIsNegative() {
         // Given
         String userId = "user-1";

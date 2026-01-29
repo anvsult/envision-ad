@@ -35,7 +35,10 @@ import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-j
 import {loadStripe} from '@stripe/stripe-js';
 import {createPaymentIntent} from "@/features/payment";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// Only initialize Stripe if the publishable key is present
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+    : null;
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -466,7 +469,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                             {t('dateSelection.selected', {
                                                 start: dayjs(dateRange[0]).format('MMM DD'),
                                                 end: dayjs(dateRange[1]).format('MMM DD'),
-                                                weeks: billingWeeks(dayjs(dateRange[1]), dayjs(dateRange[0]))
+                                                weeks: billingWeeks(dayjs(dateRange[0]), dayjs(dateRange[1]))
                                             })}
                                         </Text>
                                     )}

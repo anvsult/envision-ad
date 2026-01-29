@@ -238,15 +238,24 @@ public class StripeServiceImpl implements StripeService {
         // We'll track it via session ID and update via webhook
         log.info("Checkout session created: {}", session.getId());
 
-        // Save payment intent info to database with session ID
-        PaymentIntent paymentIntent = new PaymentIntent();
+        // Reuse existing PaymentIntent record or create new one
+        // This allows retrying FAILED/CANCELED payments while maintaining 1:1 relationship with reservationId
+        PaymentIntent paymentIntent = existingPayment.orElse(new PaymentIntent());
+
+        // Update/set fields for this payment attempt
         paymentIntent.setStripeSessionId(session.getId());
         paymentIntent.setReservationId(reservationId);
         paymentIntent.setBusinessId(businessId);
         paymentIntent.setAmount(amount);
         paymentIntent.setStatus(PaymentStatus.PENDING);
-        paymentIntent.setCreatedAt(LocalDateTime.now());
-        paymentIntentRepository.save(paymentIntent);
+
+        // Clear old Stripe payment intent ID if retrying (will be set by webhook)
+        if (paymentIntent.getId() != null) {
+            log.info("Reusing existing PaymentIntent record for retry: reservationId={}", reservationId);
+            paymentIntent.setStripePaymentIntentId(null);
+        }
+
+        paymentIntentRepository.save(paymentIntent); // INSERT or UPDATE based on ID presence
 
         log.info("Checkout session created successfully: {} for reservation: {}", session.getId(), reservationId);
 

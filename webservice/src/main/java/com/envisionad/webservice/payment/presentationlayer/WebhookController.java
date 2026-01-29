@@ -64,9 +64,9 @@ public class WebhookController {
 
         } catch (Exception e) {
             log.error("Error processing webhook: {}", e.getMessage(), e);
-            // Return 200 to acknowledge receipt even if processing failed
-            // This prevents Stripe from retrying unnecessarily
-            return ResponseEntity.ok("Webhook received but processing failed");
+            // Return 500 to trigger Stripe retry mechanism
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Webhook processing failed");
         }
     }
 }
