@@ -17,7 +17,7 @@ export interface Employee {
     last_login?: string;
     user_metadata?: {
         bio?: string;
-        [key: string]: any;
+        [key: string]: unknown;
     };
-    [key: string]: any; // Allow for other Auth0 properties
+    [key: string]: unknown; // Allow for other Auth0 properties
 }

@@ -85,8 +85,11 @@ function Row({
 }: {
   weekDay: string;
   formState: MediaFormState;
-  onFieldChange: any;
-  onDayTimeChange: any;
+  onFieldChange: <K extends keyof MediaFormState>(
+    field: K,
+    value: MediaFormState[K]
+  ) => void;
+  onDayTimeChange: (day: string, part: "start" | "end", value: string) => void;
 }) {
   const t = useTranslations("mediaModal");
   const isActive = !!formState.activeDaysOfWeek[weekDay];
@@ -94,7 +97,7 @@ function Row({
 
   const handleTimeChange = (type: "start" | "end", value: string) => {
     // Clean input and apply auto-colon heuristic for time entry (e.g., "12" -> "12:").
-    let cleaned = value.replace(/[^0-9:]/g, "");
+    const cleaned = value.replace(/[^0-9:]/g, "");
 
     // Clamping logic
     const colonCount = (cleaned.match(/:/g) || []).length;

@@ -9,13 +9,13 @@ import { EditProfileModal } from "@/pages/profile/ui/EditProfileModal";
 import { InfoRow } from "@/pages/profile/ui/InfoRow";
 import React from "react";
 import { Employee } from "@/entities/organization";
-import {redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 
 
 // Helper for safe string display
-const safeStr = (val: any, fallback = "-") => {
+const safeStr = (val: unknown, fallback = "-"): string => {
     if (typeof val === "string" && val.trim() !== "") return val;
-    return val || fallback;
+    return fallback;
 };
 
 interface ProfileContentProps {

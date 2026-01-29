@@ -101,10 +101,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
         }
     };
 
-    const typeOptions = [
-        { value: 'IMAGE', label: t('type.image') },
-        { value: 'VIDEO', label: t('type.video') },
-    ];
+
 
     const durationOptions = [
         { value: '10', label: t('duration.10') },
@@ -133,16 +130,16 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
 
                         {/* Duration select remains in place */}
                         <Select
-                             label={t('labels.duration')}
-                             data={durationOptions}
-                             required
-                             allowDeselect={false}
-                             {...form.getInputProps('adDurationSeconds')}
-                         />
+                            label={t('labels.duration')}
+                            data={durationOptions}
+                            required
+                            allowDeselect={false}
+                            {...form.getInputProps('adDurationSeconds')}
+                        />
 
-                         <Box>
+                        <Box>
                             <Text size="sm" fw={500} mb={4}>
-                                {t('labels.media')} <span style={{color: 'var(--mantine-color-red-text)'}}>*</span>
+                                {t('labels.media')} <span style={{ color: 'var(--mantine-color-red-text)' }}>*</span>
                             </Text>
 
                             <CldUploadWidget
@@ -154,7 +151,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                     <Group>
                                         <Button
                                             variant={uploadedFileUrl ? "default" : "filled"}
-                                            leftSection={<IconUpload size={14}/>}
+                                            leftSection={<IconUpload size={14} />}
                                             onClick={() => open()}
                                             disabled={submitting}
                                         >
@@ -174,9 +171,9 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                     </Group>
                                 )}
                             </CldUploadWidget>
-                             {!uploadedFileUrl && form.isTouched() && (
-                                 <Text c="red" size="xs" mt={4}>{t('validation.fileRequired')}</Text>
-                             )}
+                            {!uploadedFileUrl && form.isTouched() && (
+                                <Text c="red" size="xs" mt={4}>{t('validation.fileRequired')}</Text>
+                            )}
                             {/* Show detected media type under the upload widget as a non-interactive Badge */}
                             <Box mt="sm">
                                 <Text size="sm" fw={500} mb={4}>{t('labels.type')}</Text>
@@ -188,20 +185,20 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                 </Group>
                             </Box>
 
-                             {trimWarning && (
-                                 <Alert
-                                     variant="light"
-                                     color="orange"
-                                     title={t('alerts.croppingTitle')}
-                                     icon={<IconInfoCircle />}
-                                     mt="sm"
-                                 >
-                                     {trimWarning}
-                                 </Alert>
-                             )}
+                            {trimWarning && (
+                                <Alert
+                                    variant="light"
+                                    color="orange"
+                                    title={t('alerts.croppingTitle')}
+                                    icon={<IconInfoCircle />}
+                                    mt="sm"
+                                >
+                                    {trimWarning}
+                                </Alert>
+                            )}
 
 
-                         </Box>
+                        </Box>
 
                         <Group justify="flex-end" mt="md">
                             <Button variant="default" onClick={handleClose} disabled={submitting}>{t('buttons.cancel')}</Button>

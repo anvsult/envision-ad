@@ -47,7 +47,7 @@ export function EditProfileModal({ opened, onClose, user }: EditProfileModalProp
             });
         }
         setPrevOpened(opened);
-    }, [opened, user, prevOpened]);
+    }, [opened, user, prevOpened, form]);
 
     const handleSubmit = async (values: typeof form.values) => {
         setLoading(true);
