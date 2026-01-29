@@ -165,6 +165,18 @@ public class ReservationServiceImpl implements ReservationService {
             String metaReservationId = metadata.get("reservationId");
             String metaBusinessId = metadata.get("businessId");
 
+            // Prevent using a succeeded PaymentIntent created for a different destination
+            if (metaBusinessId == null || metaBusinessId.isBlank()) {
+                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
+            }
+
+            if (metaBusinessId.equals(media.getBusinessId().toString())) {
+                throw new PaymentVerificationException(
+                        String.format("PaymentIntent %s businessId metadata matches media owner businessId, cannot self-pay",
+                                paymentIntentId)
+                );
+            }
+
             // CRITICAL SECURITY CHECK: Verify this PaymentIntent hasn't been used before
             Optional<PaymentIntent> existingPayment = paymentIntentRepository.findByStripePaymentIntentId(paymentIntentId);
             if (existingPayment.isPresent()) {

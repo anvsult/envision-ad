@@ -32,7 +32,7 @@ import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
-import {loadStripe, Stripe} from '@stripe/stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
 import {createPaymentIntent} from "@/features/payment";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -59,17 +59,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     // Payment states
     const [clientSecret, setClientSecret] = useState<string | null>(null);
     const [isCreatingReservation, setIsCreatingReservation] = useState(false);
-
-    const [stripe, setStripe] = useState<Stripe | null>(null);
-    useEffect(() => {
-        let mounted = true;
-        loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '').then((s) => {
-            if (mounted) setStripe(s);
-        });
-        return () => {
-            mounted = false;
-        };
-    }, []);
 
     const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -518,7 +507,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                             {activeStep === 2 && clientSecret && !isCreatingReservation && (
                                 missingKey ? (
                                     <Text c="red">{t('errors.missingPaymentInfo')}</Text>
-                                ) : stripe ? (
+                                ) : stripePromise ? (
                                     <EmbeddedCheckoutProvider
                                         stripe={stripePromise}
                                         options={{
