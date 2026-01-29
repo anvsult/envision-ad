@@ -1,5 +1,7 @@
 package com.envisionad.webservice.proofofdisplay.businesslogiclayer;
 
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.springframework.security.oauth2.jwt.Jwt;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
@@ -30,19 +32,22 @@ public class ProofOfDisplayService {
     private final MediaRepository mediaRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final JwtUtils jwtUtils;
+    private final ReservationRepository reservationRepository;
 
     public ProofOfDisplayService(
             EmailService emailService,
             EmployeeRepository employeeRepository,
             MediaRepository mediaRepository,
             AdCampaignRepository adCampaignRepository,
-            JwtUtils jwtUtils
+            JwtUtils jwtUtils,
+            ReservationRepository reservationRepository
     ) {
         this.emailService = emailService;
         this.employeeRepository = employeeRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.jwtUtils = jwtUtils;
+        this.reservationRepository = reservationRepository;
     }
 
     public void sendProofEmail(Jwt jwt, ProofOfDisplayRequest request) {
@@ -53,19 +58,29 @@ public class ProofOfDisplayService {
 
             String userId = jwtUtils.extractUserId(jwt);
 
+            UUID mediaId = UUID.fromString(request.getMediaId());
+            String campaignId = request.getCampaignId();
+
             // Validate / fetch media
-            Media media = mediaRepository.findById(UUID.fromString(request.getMediaId()))
+            Media media = mediaRepository.findById(mediaId)
                     .orElseThrow(() -> new MediaNotFoundException(request.getMediaId()));
 
-            //  Validate / fetch campaign
-            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(request.getCampaignId());
+            // Validate / fetch campaign
+            AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
             if (campaign == null) {
-                throw new AdCampaignNotFoundException(request.getCampaignId());
+                throw new AdCampaignNotFoundException(campaignId);
             }
 
             // AUTHORIZATION — user must belong to the media owner business
             String mediaOwnerBusinessId = media.getBusinessId().toString();
             jwtUtils.validateUserIsEmployeeOfBusiness(userId, mediaOwnerBusinessId);
+
+            boolean hasReservation =
+                    reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaId, campaignId);
+
+            if (!hasReservation) {
+                throw new ReservationNotFoundException(mediaId.toString(), campaignId);
+            }
 
             // Resolve advertiser email (campaign's business)
             String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
@@ -89,8 +104,13 @@ public class ProofOfDisplayService {
             body.append("Media location: ").append(media.getTitle()).append("\n\n");
 
             body.append("Proof images:\n");
-            for (String url : request.getProofImageUrls()) {
-                body.append("- ").append(url).append("\n");
+            List<String> urls = request.getProofImageUrls();
+            if (urls == null || urls.isEmpty()) {
+                body.append("- No images were provided.\n");
+            } else {
+                for (String url : urls) {
+                    body.append("- ").append(url).append("\n");
+                }
             }
 
             body.append("\nThanks for advertising with Envision Ad!\n");

@@ -11,20 +11,46 @@ import {
     Group,
     Card,
     Stack,
+    Pagination,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 type Props = {
     rows: MediaRowData[];
     onAddProof: (row: MediaRowData) => void;
-
     activeAdsCounts?: Record<string, number>;
+    onVisibleRowsChange?: (ids: string[]) => void;
+    pageSize?: number;
 };
 
-export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {} }: Props) {
+export default function ProofMediaTable({
+                                            rows,
+                                            onAddProof,
+                                            activeAdsCounts = {},
+                                            onVisibleRowsChange,
+                                            pageSize = 10,
+                                        }: Props) {
     const isMobile = useMediaQuery("(max-width: 768px)");
     const t = useTranslations("proofOfDisplay");
+
+    // keep what the user clicked, but clamp what we actually use
+    const [rawPage, setRawPage] = useState(1);
+
+    const totalPages = Math.max(1, Math.ceil(rows.length / pageSize));
+    const page = Math.min(rawPage, totalPages);
+
+    const pagedRows = useMemo(() => {
+        const start = (page - 1) * pageSize;
+        return rows.slice(start, start + pageSize);
+    }, [rows, page, pageSize]);
+
+    // notify parent: only fetch counts for what is visible
+    useEffect(() => {
+        if (!onVisibleRowsChange) return;
+        onVisibleRowsChange(pagedRows.map((r) => String(r.id)));
+    }, [pagedRows, onVisibleRowsChange]);
 
     const getDisplayedCount = (row: MediaRowData) => {
         const id = String(row.id);
@@ -34,8 +60,8 @@ export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {}
     if (isMobile) {
         return (
             <Stack gap="md">
-                {rows.length ? (
-                    rows.map((row) => (
+                {pagedRows.length ? (
+                    pagedRows.map((row) => (
                         <Card key={String(row.id)} shadow="sm" radius="md" withBorder>
                             <Group justify="space-between" align="center" mb="sm">
                                 <Group gap="sm">
@@ -64,7 +90,6 @@ export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {}
                                     <Text size="xs" c="dimmed">
                                         {t("table.pending")}
                                     </Text>
-
                                     <Text fw={700} c="orange">
                                         {row.pending}
                                     </Text>
@@ -76,6 +101,12 @@ export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {}
                     <Text ta="center" c="dimmed" py="xl">
                         {t("table.noMedia")}
                     </Text>
+                )}
+
+                {rows.length > pageSize && (
+                    <Group justify="center">
+                        <Pagination total={totalPages} value={page} onChange={setRawPage} />
+                    </Group>
                 )}
             </Stack>
         );
@@ -102,8 +133,8 @@ export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {}
                     </Table.Thead>
 
                     <Table.Tbody>
-                        {rows.length ? (
-                            rows.map((row) => (
+                        {pagedRows.length ? (
+                            pagedRows.map((row) => (
                                 <Table.Tr key={String(row.id)}>
                                     <Table.Td w={80}>
                                         <Avatar src={row.image} alt={row.name} size="md" radius="md" />
@@ -146,6 +177,12 @@ export default function ProofMediaTable({ rows, onAddProof, activeAdsCounts = {}
                     </Table.Tbody>
                 </Table>
             </ScrollArea>
+
+            {rows.length > pageSize && (
+                <Group justify="flex-end" p="sm">
+                    <Pagination total={totalPages} value={page} onChange={setRawPage} />
+                </Group>
+            )}
         </Paper>
     );
 }

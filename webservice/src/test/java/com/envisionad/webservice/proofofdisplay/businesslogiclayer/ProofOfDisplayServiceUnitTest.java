@@ -11,6 +11,7 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -75,6 +76,8 @@ class ProofOfDisplayServiceUnitTest {
         return jwt;
     }
 
+    @Mock
+    private ReservationRepository reservationRepository;
 
     @Test
     void sendProofEmail_success_sendsEmailWithUrls() {
@@ -108,6 +111,9 @@ class ProofOfDisplayServiceUnitTest {
         ArgumentCaptor<String> toCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
+                .thenReturn(true);
 
         // Act
         proofOfDisplayService.sendProofEmail(jwt, request);
@@ -155,6 +161,9 @@ class ProofOfDisplayServiceUnitTest {
         when(employeeRepository.findAllByBusinessId_BusinessId("biz-1")).thenReturn(List.of(emp));
 
         ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+
+        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
+                .thenReturn(true);
 
         // Act
         proofOfDisplayService.sendProofEmail(jwt, request);
@@ -231,6 +240,9 @@ class ProofOfDisplayServiceUnitTest {
 
         when(employeeRepository.findAllByBusinessId_BusinessId("biz-999")).thenReturn(List.of(e1, e2));
 
+        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
+                .thenReturn(true);
+
         // Act + Assert
         assertThrows(AdvertiserEmailNotFoundException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
         verifyNoInteractions(emailService);
@@ -260,6 +272,9 @@ class ProofOfDisplayServiceUnitTest {
 
         when(employeeRepository.findAllByBusinessId_BusinessId("biz-999"))
                 .thenThrow(new RuntimeException("DB down"));
+
+        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
+                .thenReturn(true);
 
         // Act + Assert
         assertThrows(RuntimeException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
