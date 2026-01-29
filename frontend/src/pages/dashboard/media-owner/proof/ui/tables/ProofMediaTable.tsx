@@ -159,7 +159,8 @@ export default function ProofMediaTable({
                                     </Table.Td>
 
                                     <Table.Td w={160} ta="right">
-                                        <Button size="xs" variant="light" onClick={() => onAddProof(row)}>
+                                        <Button size="xs" variant="light" onClick={() => onAddProof(row)} disabled={getDisplayedCount(row) === 0}>
+
                                             {t("table.addProof")}
                                         </Button>
                                     </Table.Td>
