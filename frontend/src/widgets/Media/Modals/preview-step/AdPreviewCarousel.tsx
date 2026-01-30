@@ -1,97 +1,74 @@
 'use client'
 
-import {Carousel} from "@mantine/carousel";
-import {Image} from "@mantine/core";
-import {useEffect, useState} from "react";
+import { Carousel } from "@mantine/carousel";
+import { Image, Skeleton, Box } from "@mantine/core";
+import { useMemo, useState } from "react";
+import { Ad } from "@/entities/ad";
 
 interface AdPreviewCarouselProps {
-    selectedCampaignAdsImages: string[];
+    selectedCampaignAds: Ad[];
     mediaImageUrl: string;
     mediaImageCorners: string;
 }
 
-interface Corners {
-    bl: { x: number; y: number };
-    br: { x: number; y: number };
-    tl: { x: number; y: number };
-    tr: { x: number; y: number };
-}
+const getCloudinaryPreviewUrl = (baseUrl: string, overlayUrl: string, cornersStr: string) => {
+    try {
+        const corners = JSON.parse(cornersStr);
+        const cloudName = baseUrl.match(/cloudinary\.com\/([^/]+)\//)?.[1];
+        const baseId = baseUrl.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/)?.[1];
+        const overlayId = overlayUrl.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/)?.[1];
 
-// Helper function to extract cloud name from Cloudinary URL
-const extractCloudName = (url: string): string => {
-    const match = url.match(/cloudinary\.com\/([^\/]+)\//);
-    return match ? match[1] : '';
+        if (!cloudName || !baseId || !overlayId) return baseUrl;
+
+        const distort = `${corners.tl.x * 100}p:${corners.tl.y * 100}p:${corners.tr.x * 100}p:${corners.tr.y * 100}p:${corners.br.x * 100}p:${corners.br.y * 100}p:${corners.bl.x * 100}p:${corners.bl.y * 100}p`;
+
+        // c_scale: Stretches the ad to fit the corner coordinates exactly (might distort aspect ratio).
+        // c_pad: Adds padding if the ad doesn't match the aspect ratio of the target area.
+        // c_fill: Crops the ad to ensure the entire target area is covered.
+        const fillType = 'c_scale';
+        return `https://res.cloudinary.com/${cloudName}/image/upload/l_${overlayId.replace(/\//g, ':')},fl_relative,w_1.0,h_1.0,${fillType}/e_distort:${distort},fl_layer_apply,fl_relative/${baseId}`;
+    } catch {
+        return baseUrl;
+    }
 };
 
-// Helper function to extract public ID from Cloudinary URL
-const extractPublicId = (url: string): string => {
-    const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)(?:\.[^.]+)?$/);
-    return match ? match[1] : '';
-};
+const AdSlide = ({ ad, mediaImageUrl, mediaImageCorners }: { ad: Ad; mediaImageUrl: string; mediaImageCorners: string }) => {
+    const [loading, setLoading] = useState(true);
 
-export function AdPreviewCarousel({selectedCampaignAdsImages, mediaImageUrl, mediaImageCorners}: AdPreviewCarouselProps) {
-    const [mediaImageCornersExtracted, setMediaImageCornersExtracted] = useState<Corners | null>(null);
-    const [previewImageUrls, setPreviewImageUrls] = useState<string[]>([]);
-
-    // Extract corners from JSON string
-    useEffect(() => {
-        try {
-            const corners = JSON.parse(mediaImageCorners) as Corners;
-            setMediaImageCornersExtracted(corners);
-        } catch (error) {
-            console.error('Failed to parse mediaImageCorners:', error);
-        }
-    }, [mediaImageCorners]);
-
-    // Generate preview URLs with Cloudinary overlays
-    useEffect(() => {
-        if (!mediaImageCornersExtracted) return;
-
-        const generateCloudinaryUrl = (baseUrl: string, overlayUrl: string, corners: Corners): string => {
-            // Extract Cloudinary cloud name and public ID from the base URL
-            const basePublicId = extractPublicId(baseUrl);
-            const overlayPublicId = extractPublicId(overlayUrl);
-
-            if (!basePublicId || !overlayPublicId) {
-                console.error('Failed to extract public IDs');
-                return baseUrl;
-            }
-
-            // Get image dimensions (you might need to fetch these or pass them as props)
-            // For now, assuming we need to work with relative coordinates
-            const cloudName = extractCloudName(baseUrl);
-
-            // Cloudinary distort transformation uses absolute pixel coordinates
-            // Format: l_<overlay>,e_distort:<tl_x>:<tl_y>:<tr_x>:<tr_y>:<br_x>:<br_y>:<bl_x>:<bl_y>,fl_layer_apply
-
-            // Since we have relative coordinates, we need to convert them to a format Cloudinary understands
-            // We'll use the relative flag with percentages
-            const distortParams = `${corners.tl.x * 100}p:${corners.tl.y * 100}p:${corners.tr.x * 100}p:${corners.tr.y * 100}p:${corners.br.x * 100}p:${corners.br.y * 100}p:${corners.bl.x * 100}p:${corners.bl.y * 100}p`;
-
-            return `https://res.cloudinary.com/${cloudName}/image/upload/l_${overlayPublicId.replace(/\//g, ':')}/e_distort:${distortParams},fl_layer_apply,fl_relative/${basePublicId}`;
-        };
-
-        const urls = selectedCampaignAdsImages.map(adImageUrl =>
-            generateCloudinaryUrl(mediaImageUrl, adImageUrl, mediaImageCornersExtracted)
-        );
-
-        setPreviewImageUrls(urls);
-    }, [mediaImageCornersExtracted, selectedCampaignAdsImages, mediaImageUrl]);
+    const url = useMemo(() =>
+            ad.adType === "VIDEO" ? ad.adUrl : getCloudinaryPreviewUrl(mediaImageUrl, ad.adUrl, mediaImageCorners)
+        , [ad, mediaImageUrl, mediaImageCorners]);
 
     return (
-        <Carousel
-            slideSize="70%"
-            slideGap="md"
-            controlsOffset="sm"
-            controlSize={26}
-            withControls
-            withIndicators
-        >
-            {previewImageUrls.map((imageUrl, key) =>
-                <Carousel.Slide key={key}>
-                    <Image src={imageUrl} alt={`Ad preview ${key + 1}`} />
-                </Carousel.Slide>
-            )}
+        <Carousel.Slide>
+            {loading && <Skeleton height={300} radius="md" />}
+            <Box style={{ display: loading ? 'none' : 'block' }}>
+                {ad.adType === "VIDEO" ? (
+                    <video
+                        src={url}
+                        controls loop playsInline
+                        style={{ width: '100%', borderRadius: '8px' }}
+                        onLoadedData={() => setLoading(false)}
+                    />
+                ) : (
+                    <Image src={url} alt="Ad preview" onLoad={() => setLoading(false)} />
+                )}
+            </Box>
+        </Carousel.Slide>
+    );
+};
+
+export function AdPreviewCarousel({ selectedCampaignAds, mediaImageUrl, mediaImageCorners }: AdPreviewCarouselProps) {
+    return (
+        <Carousel withIndicators={selectedCampaignAds.length > 1}>
+            {selectedCampaignAds.map((ad, idx) => (
+                <AdSlide
+                    key={`${ad.adId}-${idx}`}
+                    ad={ad}
+                    mediaImageUrl={mediaImageUrl}
+                    mediaImageCorners={mediaImageCorners}
+                />
+            ))}
         </Carousel>
-    )
+    );
 }

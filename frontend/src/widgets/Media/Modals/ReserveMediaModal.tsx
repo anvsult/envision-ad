@@ -54,7 +54,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
 
     const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
-    const [selectedCampaignAdsImages, setSelectedCampaignAdsImages] = useState<string[]>([]);
     const [dateRange, setDateRange] = useState<DatesRangeValue<string>>([null, null]);
     const [errors, setErrors] = useState<{ campaign?: string; date?: string }>({});
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
@@ -75,7 +74,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 try {
                     const business = await getEmployeeOrganization(user.sub);
                     const data = await getAllAdCampaigns(business.businessId);
-                    setSelectedCampaignAdsImages(campaigns.find(c => c.campaignId === selectedCampaignId)?.ads.map(ad => ad.adUrl) || []);
                     setCampaigns(data);
                 } catch (e) {
                     console.error("Failed to load campaigns", e);
@@ -483,8 +481,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
-
-                                        <AdPreviewCarousel selectedCampaignAdsImages={selectedCampaignAdsImages} mediaImageUrl={media.imageUrl} mediaImageCorners={media.previewConfiguration}/>
+                                        {/* Previewing the ad campaign images on the media */}
+                                        <Box mb="lg">
+                                            <AdPreviewCarousel
+                                                selectedCampaignAds={campaigns.find(c => c.campaignId === selectedCampaignId)?.ads || []}
+                                                mediaImageUrl={media.imageUrl}
+                                                mediaImageCorners={media.previewConfiguration}/>
+                                        </Box>
 
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
