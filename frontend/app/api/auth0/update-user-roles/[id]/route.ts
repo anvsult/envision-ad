@@ -38,7 +38,7 @@ export async function POST(
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    if (roles.includes(AUTH0_ROLES.BUSINESS_OWNER) && (organization.ownerId !== session.user.sub || organization.ownerId !== decodedId || permissions.length !== 0)){
+    if (roles.includes(AUTH0_ROLES.BUSINESS_OWNER) && (decodedId !== session.user.sub || organization.ownerId !== decodedId || permissions.length !== 0)){
         return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -74,7 +74,7 @@ export async function DELETE(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!Array.isArray(roles) || roles.length === 0 || !roles.every(role => typeof role === 'string' && Object.values(AUTH0_ROLES).includes(role)) || roles.some(role => !ASSIGNABLE_ROLE_IDS.includes(role))) {
+    if (!Array.isArray(roles) || roles.length === 0 || !roles.every(role => typeof role === 'string' && ASSIGNABLE_ROLE_IDS.includes(role))) {
         return NextResponse.json({ error: 'Bad Request' }, { status: 400 });
     }
 

@@ -45,7 +45,10 @@ export default async function proxy(request: NextRequest) {
 
   if (routeKey) {
     const matchedProtection = Object.entries(ROUTE_PERMISSIONS)
-        .filter(([route]) => routeKey.startsWith(route) || routeKey === route)
+        .filter(([route]) => {
+          if (routeKey === route) return true;
+          return routeKey.startsWith(route + '/');
+        })
         .sort((a, b) => b[0].length - a[0].length)[0];
 
     if (matchedProtection) {

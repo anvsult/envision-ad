@@ -2,7 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import {auth0} from "@/shared/api/auth0/auth0";
 import {jwtDecode} from "jwt-decode";
 import {Token} from "@/entities/auth";
 
