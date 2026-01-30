@@ -3,6 +3,8 @@ package com.envisionad.webservice.proofofdisplay.businesslogiclayer;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
@@ -15,8 +17,6 @@ import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
 import com.envisionad.webservice.utils.EmailService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,8 +24,6 @@ import java.util.UUID;
 
 @Service
 public class ProofOfDisplayService {
-
-    private static final Logger log = LoggerFactory.getLogger(ProofOfDisplayService.class);
 
     private final EmailService emailService;
     private final EmployeeRepository employeeRepository;
@@ -51,8 +49,8 @@ public class ProofOfDisplayService {
     }
 
     public void sendProofEmail(Jwt jwt, ProofOfDisplayRequest request) {
-        try {
-            if (jwt == null || jwt.getSubject() == null) {
+
+        if (jwt == null || jwt.getSubject() == null) {
                 throw new SecurityException("Invalid JWT token or subject");
             }
             // Proof images are required
@@ -77,8 +75,13 @@ public class ProofOfDisplayService {
             }
 
             // AUTHORIZATION — user must belong to the media owner business
+            if (media.getBusinessId() == null) {
+                throw new IllegalStateException("Media has no associated business");
+            }
+
             String mediaOwnerBusinessId = media.getBusinessId().toString();
             jwtUtils.validateUserIsEmployeeOfBusiness(userId, mediaOwnerBusinessId);
+
 
             boolean hasReservation =
                     reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaId, campaignId);
@@ -116,11 +119,5 @@ public class ProofOfDisplayService {
             body.append("— The Envision Ad Team");
 
             emailService.sendSimpleEmail(advertiserEmail, subject, body.toString());
-
-        } catch (Exception e) {
-            log.error("Failed to send proof-of-display email. mediaId={} campaignId={}",
-                    request.getMediaId(), request.getCampaignId(), e);
-            throw e;
-        }
     }
 }

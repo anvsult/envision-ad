@@ -61,10 +61,10 @@ export default function SubmitProofStepperModal({
 
     const widgetOptions = {
         sources: ["local", "url"] as ("local" | "url")[],
-        resourceType: "image",
+        resourceType: "auto",
         multiple: true,
         maxFiles: 10,
-        maxFileSize: 10000000,
+        maxFileSize: 50000000,
     };
 
     const handleUploadSuccess = (results: any) => {

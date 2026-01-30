@@ -22,6 +22,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.oauth2.jwt.Jwt;
+import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.util.List;
 import java.util.Optional;
@@ -270,4 +272,84 @@ class ProofOfDisplayServiceUnitTest {
         assertThrows(RuntimeException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
         verifyNoInteractions(emailService);
     }
+
+    @Test
+    void sendProofEmail_noConfirmedReservation_throws_andDoesNotSendEmail() {
+        // Arrange
+        ProofOfDisplayRequest request = new ProofOfDisplayRequest();
+        request.setMediaId(mediaUuid.toString());
+        request.setCampaignId("camp-123");
+        request.setProofImageUrls(List.of("https://img1.example"));
+
+        Jwt jwt = mockJwtSubjectOnly();
+
+        Media media = mock(Media.class);
+        when(media.getBusinessId()).thenReturn(UUID.randomUUID());
+        when(mediaRepository.findById(mediaUuid)).thenReturn(Optional.of(media));
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
+
+        when(reservationRepository.existsConfirmedReservationForMediaAndCampaign(mediaUuid, "camp-123"))
+                .thenReturn(false);
+
+        // Act + Assert
+        assertThrows(ReservationNotFoundException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void sendProofEmail_userNotEmployee_throwsAccessDenied_andDoesNotSendEmail() {
+        ProofOfDisplayRequest request = new ProofOfDisplayRequest();
+        request.setMediaId(mediaUuid.toString());
+        request.setCampaignId("camp-123");
+        request.setProofImageUrls(List.of("https://img1.example"));
+
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        when(jwtUtils.extractUserId(jwt)).thenReturn("auth0|123");
+
+        Media media = mock(Media.class);
+        when(media.getBusinessId()).thenReturn(UUID.randomUUID());
+        when(mediaRepository.findById(mediaUuid)).thenReturn(Optional.of(media));
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
+
+        doThrow(new AccessDeniedException("Not an employee"))
+                .when(jwtUtils)
+                .validateUserIsEmployeeOfBusiness(anyString(), anyString());
+
+        assertThrows(AccessDeniedException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
+
+        verifyNoInteractions(emailService);
+        verifyNoInteractions(employeeRepository); // should be true if auth happens before advertiser lookup
+    }
+
+    @Test
+    void sendProofEmail_mediaHasNullBusinessId_throws_andDoesNotAuthorizeOrSendEmail() {
+        // Arrange
+        ProofOfDisplayRequest request = new ProofOfDisplayRequest();
+        request.setMediaId(mediaUuid.toString());
+        request.setCampaignId("camp-123");
+        request.setProofImageUrls(List.of("https://img.example/proof.png"));
+
+        Jwt jwt = mockJwtSubjectOnly();
+        when(jwtUtils.extractUserId(jwt)).thenReturn("user-123"); 
+
+        Media media = mock(Media.class);
+        when(media.getBusinessId()).thenReturn(null);
+        when(mediaRepository.findById(mediaUuid)).thenReturn(Optional.of(media));
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
+
+        // Act + Assert
+        assertThrows(IllegalStateException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
+
+        verify(jwtUtils, never()).validateUserIsEmployeeOfBusiness(any(), any());
+        verify(reservationRepository, never()).existsConfirmedReservationForMediaAndCampaign(any(), any());
+        verify(emailService, never()).sendSimpleEmail(any(), any(), any());
+    }
+
 }

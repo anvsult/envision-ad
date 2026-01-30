@@ -13,9 +13,13 @@ import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFou
 import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import static org.springframework.http.HttpStatus.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalControllerHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalControllerHandler.class);
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(BusinessNotFoundException.class)
@@ -125,6 +129,13 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(FORBIDDEN, ex);
     }
 
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public HttpErrorInfo handleUnexpectedException(Exception ex) {
+        log.error("Unhandled exception", ex);
+        return createHttpErrorInfo(INTERNAL_SERVER_ERROR, ex);
+
+    }
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();
 
