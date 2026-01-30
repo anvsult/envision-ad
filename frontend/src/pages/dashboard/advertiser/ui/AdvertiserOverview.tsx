@@ -68,7 +68,7 @@ export function AdvertiserOverview() {
         },
     ];
 
-    const chartData = [
+    const weeklyData = [
         { date: "Mon", Impressions: 2400, Spend: 1200 },
         { date: "Tue", Impressions: 1398, Spend: 900 },
         { date: "Wed", Impressions: 9800, Spend: 2100 },
@@ -77,6 +77,30 @@ export function AdvertiserOverview() {
         { date: "Sat", Impressions: 3800, Spend: 1000 },
         { date: "Sun", Impressions: 4300, Spend: 1500 },
     ];
+
+    const monthlyData = [
+        { date: "Week 1", Impressions: 15000, Spend: 5000 },
+        { date: "Week 2", Impressions: 18500, Spend: 6200 },
+        { date: "Week 3", Impressions: 22000, Spend: 7500 },
+        { date: "Week 4", Impressions: 19500, Spend: 6800 },
+    ];
+
+    const yearlyData = [
+        { date: "Jan", Impressions: 45000, Spend: 15000 },
+        { date: "Feb", Impressions: 52000, Spend: 18000 },
+        { date: "Mar", Impressions: 48000, Spend: 16500 },
+        { date: "Apr", Impressions: 61000, Spend: 21000 },
+        { date: "May", Impressions: 58000, Spend: 19500 },
+        { date: "Jun", Impressions: 65000, Spend: 23000 },
+        { date: "Jul", Impressions: 72000, Spend: 25000 },
+        { date: "Aug", Impressions: 68000, Spend: 24000 },
+        { date: "Sep", Impressions: 74000, Spend: 26000 },
+        { date: "Oct", Impressions: 81000, Spend: 29000 },
+        { date: "Nov", Impressions: 86000, Spend: 31000 },
+        { date: "Dec", Impressions: 92000, Spend: 35000 },
+    ];
+
+    const chartData = timeRange === "Monthly" ? monthlyData : timeRange === "Yearly" ? yearlyData : weeklyData;
 
     // Helper to render stats cards
     const items = stats.map((stat) => {
