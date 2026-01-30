@@ -1,5 +1,6 @@
-package com.envisionad.webservice.business.businesslogiclayer;
+package com.envisionad.webservice.reservation.businesslogiclayer;
 
+import com.envisionad.webservice.business.businesslogiclayer.BusinessServiceImpl;
 import com.envisionad.webservice.business.dataaccesslayer.*;
 import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
