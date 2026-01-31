@@ -28,13 +28,8 @@ jobs:
       - name: Check unused dependencies
         id: depcheck
         run: npx depcheck
-        continue-on-error: true
 
       - name: Security audit
         id: audit
+        if: always()
         run: npm audit --audit-level=low
-        continue-on-error: true
-
-      - name: Fail if any check failed
-        if: steps.depcheck.outcome == 'failure' || steps.audit.outcome == 'failure'
-        run: exit 1
