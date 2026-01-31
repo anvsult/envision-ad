@@ -18,9 +18,15 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
       - name: Run Gradle build
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
         run: |
           cd webservice
+          doppler run --project envision-ad-backend --config prd -- \
           ./gradlew clean build --no-daemon
 
       - name: Upload JaCoCo HTML report
