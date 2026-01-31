@@ -26,9 +26,15 @@ jobs:
       - run: npm ci
 
       - name: Check unused dependencies
-        run: npx depcheck || exit 1
+        id: depcheck
+        run: npx depcheck
         continue-on-error: true
 
       - name: Security audit
+        id: audit
         run: npm audit --audit-level=low
         continue-on-error: true
+
+      - name: Fail if any check failed
+        if: steps.depcheck.outcome == 'failure' || steps.audit.outcome == 'failure'
+        run: exit 1

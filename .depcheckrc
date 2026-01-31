@@ -1,0 +1,7 @@
+{
+    "ignores": [
+        "postcss-preset-mantine"
+        "@feature-sliced/steiger-plugin"
+        "steiger"
+    ]
+}
