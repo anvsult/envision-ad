@@ -1,12 +1,20 @@
 package com.envisionad.webservice.payment.presentationlayer;
 
+import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.payment.businesslogiclayer.StripeWebhookService;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.utils.EmailService;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
@@ -18,6 +26,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import java.util.UUID;
+
 
 import java.util.Optional;
 
@@ -36,6 +46,24 @@ class StripeWebhookServiceTest {
 
     @Mock
     private ReservationRepository reservationRepository;
+
+    @Mock
+    private MediaRepository mediaRepository;
+
+    @Mock
+    private AdCampaignRepository adCampaignRepository;
+
+    @Mock
+    private EmployeeRepository employeeRepository;
+
+    @Mock
+    private EmailService emailService;
+
+    @Mock
+    private AdCampaignService adCampaignService;
+    
+    @Mock
+    private StripeAccountRepository stripeAccountRepository;
 
     @Mock
     private Event event;
@@ -184,9 +212,17 @@ class StripeWebhookServiceTest {
 
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setMediaId(UUID.randomUUID());
+        reservation.setCampaignId("campaign123");
+
+        Media mockMedia = new Media();
+        mockMedia.setBusinessId(UUID.randomUUID());
+        AdCampaign mockCampaign = new AdCampaign();
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(mockMedia));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(mockCampaign);
 
         // Act
         stripeWebhookService.handlePaymentIntentSucceeded(event);
@@ -395,8 +431,16 @@ class StripeWebhookServiceTest {
         // Arrange
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setMediaId(UUID.randomUUID());
+        reservation.setCampaignId("campaign123");
+
+        Media mockMedia = new Media();
+        mockMedia.setBusinessId(UUID.randomUUID());
+        AdCampaign mockCampaign = new AdCampaign();
 
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(mockMedia));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(mockCampaign);
 
         // Act - call via handlePaymentIntentSucceeded to test updateReservationStatus
         com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);

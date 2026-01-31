@@ -6,9 +6,10 @@ export const createPaymentIntent = async (params: {
     campaignId: string;
     startDate: Dayjs;
     endDate: Dayjs;
+    reservationId: string;
 }) => {
     const response = await axiosInstance.post('/payments/create-payment-intent', {
-        reservationId: `temp-${Date.now()}`, // Temporary ID
+        reservationId: params.reservationId,
         mediaId: params.mediaId,
         campaignId: params.campaignId,
         startDate: params.startDate.toISOString(),

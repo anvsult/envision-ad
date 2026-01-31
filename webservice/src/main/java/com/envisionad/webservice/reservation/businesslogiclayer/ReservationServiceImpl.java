@@ -4,7 +4,6 @@ import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignServ
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -40,30 +39,23 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    private final EmailService emailService;
-    private final EmployeeRepository employeeRepository;
     private final ReservationRepository reservationRepository;
     private final MediaRepository mediaRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final ReservationRequestMapper reservationRequestMapper;
     private final ReservationResponseMapper reservationResponseMapper;
-    private final AdCampaignService adCampaignService;
     private final JwtUtils jwtUtils;
     private final PaymentIntentRepository paymentIntentRepository;
 
-    public ReservationServiceImpl(EmailService emailService, EmployeeRepository employeeRepository,
-                                  ReservationRepository reservationRepository, MediaRepository mediaRepository,
+    public ReservationServiceImpl(ReservationRepository reservationRepository, MediaRepository mediaRepository,
                                   AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper,
-                                  ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService,
-                                  JwtUtils jwtUtils, PaymentIntentRepository paymentIntentRepository) {
-        this.emailService = emailService;
-        this.employeeRepository = employeeRepository;
+                                  ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils,
+                                  PaymentIntentRepository paymentIntentRepository) {
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.reservationRequestMapper = reservationRequestMapper;
         this.reservationResponseMapper = reservationResponseMapper;
-        this.adCampaignService = adCampaignService;
         this.jwtUtils = jwtUtils;
         this.paymentIntentRepository = paymentIntentRepository;
     }
@@ -111,9 +103,6 @@ public class ReservationServiceImpl implements ReservationService {
         // 7. Save reservation
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Reservation {} created with status: {}", savedReservation.getReservationId(), savedReservation.getStatus());
-
-        // 8. Send notification emails
-        sendNotificationEmails(media, savedReservation, campaign, totalPrice);
 
         return reservationResponseMapper.entityToResponseModel(savedReservation);
     }
@@ -320,60 +309,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (media.getLoopDuration() <= totalReservedDuration) {
             throw new InsufficientLoopDurationException();
-        }
-    }
-
-    private void sendNotificationEmails(Media media, Reservation reservation,
-                                        AdCampaign campaign, BigDecimal totalPrice) {
-        String mediaOwnerBusinessId = media.getBusinessId().toString();
-        List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
-        List<String> mediaOwnerEmailAddresses = mediaOwners.stream()
-                .map(Employee::getEmail)
-                .filter(email -> email != null && !email.isEmpty())
-                .distinct()
-                .toList();
-
-        if (!mediaOwnerEmailAddresses.isEmpty()) {
-            for (String ownerEmailAddress : mediaOwnerEmailAddresses) {
-                sendReservationEmail(ownerEmailAddress, media, reservation, campaign, totalPrice);
-            }
-        } else {
-            log.warn("No email found for media owner in business: {}", mediaOwnerBusinessId);
-        }
-    }
-
-    private void sendReservationEmail(String ownerEmail, Media media, Reservation reservation,
-                                      AdCampaign campaign, BigDecimal totalPrice) {
-        try {
-            List<String> imageLinks = adCampaignService.getAllCampaignImageLinks(campaign.getCampaignId().getCampaignId());
-
-            String previewSection;
-            if (imageLinks == null || imageLinks.isEmpty()) {
-                previewSection = "No preview images available.";
-            } else {
-                StringBuilder sb = new StringBuilder("Preview Images:")
-                        .append(System.lineSeparator());
-                for (String link : imageLinks) {
-                    sb.append("- ")
-                            .append(link)
-                            .append(System.lineSeparator());
-                }
-                previewSection = sb.toString().trim();
-            }
-
-            String emailBody = String.format(
-                    "A new reservation has been created for your media%n" +
-                            "Media Name: %s%n" +
-                            "Ad Campaign Name: %s%n" +
-                            "Total Price: $%.2f%n" +
-                            "%s",
-                    media.getTitle(), campaign.getName(), totalPrice, previewSection
-            );
-            emailService.sendSimpleEmail(ownerEmail, "New Reservation Created", emailBody);
-        } catch (Exception e) {
-            // Log error instead of throwing exception to avoid failing reservation creation
-            log.error("Failed to send reservation notification email for reservation: {} to owner: {}",
-                    reservation.getReservationId(), ownerEmail, e);
         }
     }
 }
