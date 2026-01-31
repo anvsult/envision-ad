@@ -9,7 +9,10 @@ import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +31,7 @@ import java.math.BigDecimal;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
@@ -49,6 +53,9 @@ class MediaControllerIntegrationTest {
 
         @MockitoBean
         private BusinessService businessService;
+
+        @MockitoBean
+        private StripeAccountRepository stripeAccountRepository;
 
         @Autowired
         private MediaRepository mediaRepository;
@@ -74,7 +81,7 @@ class MediaControllerIntegrationTest {
                                                 "update:media"))
                                 .build();
 
-                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                when(jwtDecoder.decode("mock-token")).thenReturn(jwt);
 
                 BusinessResponseModel businessResponseModel = new BusinessResponseModel();
                 businessResponseModel.setBusinessId(BUSINESS_ID);
@@ -82,6 +89,13 @@ class MediaControllerIntegrationTest {
 
                 com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
                 location.setName("Downtown Billboard A");
+
+                // Mock StripeAccountRepository to prevent StripeAccountNotOnboardedException
+                StripeAccount mockStripeAccount = mock(StripeAccount.class);
+                when(mockStripeAccount.isOnboardingComplete()).thenReturn(true);
+                when(mockStripeAccount.isChargesEnabled()).thenReturn(true);
+                when(mockStripeAccount.isPayoutsEnabled()).thenReturn(true);
+                when(stripeAccountRepository.findByBusinessId(anyString())).thenReturn(Optional.of(mockStripeAccount));
                 location.setDescription("Large DIGITAL billboard");
                 location.setCountry("Canada");
                 location.setProvince("ON");
