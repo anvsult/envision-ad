@@ -1,11 +1,12 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
-import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.UUID;
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
@@ -37,6 +39,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 class MediaControllerIntegrationTest {
 
         private final String BASE_URI_MEDIA = "/api/v1/media";
+        private final String BUSINESS_ID = UUID.randomUUID().toString();
 
         @Autowired
         private WebTestClient webTestClient;
@@ -45,7 +48,7 @@ class MediaControllerIntegrationTest {
         private JwtDecoder jwtDecoder;
 
         @MockitoBean
-        private EmailService emailService;
+        private BusinessService businessService;
 
         @Autowired
         private MediaRepository mediaRepository;
@@ -72,6 +75,10 @@ class MediaControllerIntegrationTest {
                                 .build();
 
                 when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+
+                BusinessResponseModel businessResponseModel = new BusinessResponseModel();
+                businessResponseModel.setBusinessId(BUSINESS_ID);
+                when(businessService.getBusinessByUserId(any(), anyString())).thenReturn(businessResponseModel);
 
                 com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
                 location.setName("Downtown Billboard A");
@@ -232,7 +239,7 @@ class MediaControllerIntegrationTest {
         @Test
         void deleteMedia_ShouldRemoveMedia() {
                 // Arrange
-                Media media = mediaRepository.findAll().get(0);
+                Media media = mediaRepository.findAll().getFirst();
                 String mediaIdToDelete = media.getId().toString();
 
                 // Act & Assert

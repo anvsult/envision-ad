@@ -16,7 +16,6 @@ import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
-import com.envisionad.webservice.utils.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +55,6 @@ class ReservationControllerIntegrationTest {
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
-
-    @MockitoBean
-    private EmailService emailService;
 
     @Autowired
     private MediaRepository mediaRepository;
@@ -207,8 +203,6 @@ class ReservationControllerIntegrationTest {
         // Verify reservation was saved
         assertEquals(1, reservationRepository.count());
 
-        // Verify email was sent
-        verify(emailService, times(1)).sendSimpleEmail(anyString(), anyString(), anyString());
     }
 
     @Test

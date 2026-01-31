@@ -1,6 +1,6 @@
 package com.envisionad.webservice.payment.presentationlayer;
 
-import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
+import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
@@ -10,11 +10,9 @@ import com.envisionad.webservice.payment.businesslogiclayer.StripeWebhookService
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
-import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
-import com.envisionad.webservice.utils.EmailService;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
@@ -26,6 +24,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -55,15 +56,6 @@ class StripeWebhookServiceTest {
 
     @Mock
     private EmployeeRepository employeeRepository;
-
-    @Mock
-    private EmailService emailService;
-
-    @Mock
-    private AdCampaignService adCampaignService;
-    
-    @Mock
-    private StripeAccountRepository stripeAccountRepository;
 
     @Mock
     private Event event;
@@ -99,9 +91,15 @@ class StripeWebhookServiceTest {
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
 
+        Media media = new Media();
+        media.setBusinessId(UUID.randomUUID());
+        reservation.setMediaId(media.getId());
+
+
         when(paymentIntentRepository.findByStripeSessionId(SESSION_ID)).thenReturn(Optional.of(payment));
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
-
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(media));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(new AdCampaign());
         // Act
         stripeWebhookService.handleCheckoutSessionCompleted(event);
 
@@ -460,6 +458,46 @@ class StripeWebhookServiceTest {
         Reservation savedReservation = reservationCaptor.getValue();
         assertEquals(ReservationStatus.CONFIRMED, savedReservation.getStatus());
     }
+
+    @Test
+    void whenStatusIsConfirmed_thenStatusShouldBeConfirmed() {
+        // Arrange
+        PaymentIntent payment = createPaymentIntent();
+        Reservation reservation = createReservation();
+        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setMediaId(UUID.randomUUID());
+        reservation.setCampaignId("campaign123");
+        reservation.setTotalPrice(new BigDecimal("150.00"));
+
+        Media mockMedia = new Media();
+        mockMedia.setBusinessId(UUID.randomUUID());
+        mockMedia.setTitle("Test Media");
+
+        AdCampaign mockCampaign = new AdCampaign();
+        mockCampaign.setName("Test Campaign");
+
+        Employee mockEmployee = mock(Employee.class);
+        when(mockEmployee.getEmail()).thenReturn("owner@example.com");
+
+        com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
+        when(stripePaymentIntent.getId()).thenReturn(PAYMENT_INTENT_ID);
+
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripePaymentIntent));
+        when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
+        when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(mockMedia));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(mockCampaign);
+        when(employeeRepository.findAllByBusinessId_BusinessId(any())).thenReturn(List.of(mockEmployee));
+
+        // Act
+        stripeWebhookService.handlePaymentIntentSucceeded(event);
+
+        // Assert
+        assertEquals(ReservationStatus.CONFIRMED, reservation.getStatus());
+        verify(paymentIntentRepository).save(payment);
+        verify(reservationRepository).save(reservation);    }
+
 
     @Test
     void whenUpdateReservationStatus_withSameStatus_thenDoNotSave() {
