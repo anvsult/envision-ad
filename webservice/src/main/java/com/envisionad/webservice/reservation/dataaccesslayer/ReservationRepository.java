@@ -12,6 +12,19 @@ import java.util.UUID;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
+    @Query("""
+            SELECT (COUNT(r) > 0)
+            FROM Reservation r
+            WHERE r.mediaId = :mediaId
+              AND r.campaignId = :campaignId
+              AND r.status IN ('CONFIRMED', 'PENDING')
+        """)
+    boolean existsConfirmedReservationForMediaAndCampaign(
+            @Param("mediaId") UUID mediaId,
+            @Param("campaignId") String campaignId
+    );
+
+
     List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
     @Query("SELECT r FROM Reservation r WHERE r.mediaId = :mediaId " +
