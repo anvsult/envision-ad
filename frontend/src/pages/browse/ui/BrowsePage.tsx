@@ -1,6 +1,6 @@
 'use client'
 
-import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
+import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useEffect, useMemo, useState } from 'react';
@@ -10,14 +10,27 @@ import { useTranslations } from "next-intl";
 import { IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
-import { LatLngLiteral } from 'leaflet';
+import { LatLngLiteral, Map } from 'leaflet';
 import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 import MapView from '@/widgets/Map/MapView';
+import { useMediaQuery } from '@mantine/hooks';
+
+function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
+    const isMobile = useMediaQuery("(max-width: 575px)");
+    return(
+            isMobile ? 
+            <Stack>{children}</Stack>:
+            <Group grow>{children}</Group>
+    )
+}
 
 function BrowsePage() {
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   const t = useTranslations('browse');
   const sortNearest = t('browseactions.sort.nearest');
   const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
@@ -38,10 +51,11 @@ function BrowsePage() {
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
   const [sortBy, setSortBy] = useState<string>(SortOptions.priceAsc);
-
   
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
+
+  const [map, setMap] = useState<Map|null>(null);
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -82,6 +96,8 @@ function BrowsePage() {
           if (!cancelled) {
             setLocation(coords);
             setLocationStatus('success');
+            
+            
           }
         } else {
           const address = await GetAddressDetails(addressSearch, searchLanguage);
@@ -91,8 +107,12 @@ function BrowsePage() {
           }
 
           if (!cancelled) {
-            setLocation({ lat: address.lat, lng: address.lng });
+            const coords = { lat: address.lat, lng: address.lng }
+            setLocation(coords);
             setLocationStatus('success');
+            if (map) {
+              map.setView(coords, 13);
+            }  
           }
         }
       } catch (err: unknown) {
@@ -108,7 +128,7 @@ function BrowsePage() {
     }
     resolveLocation();
     return () => { cancelled = true };
-  }, [addressSearch, searchLanguage, sortBy, sortNearest]);
+  }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
 
 
   useEffect(() => {
@@ -139,46 +159,57 @@ function BrowsePage() {
     )
   }
 
+  
+
+
   return (
-      <Container size={sortBy===SpecialSort.nearest ? "1700" : "xl"} py={20} px={80}>
-        <Group grow>
-          <Stack gap="sm">
-            <Group grow>
-              <TextInput
-                placeholder={t('searchTitle')}
-                value={draftTitleFilter}
-                onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    setTitleFilter(draftTitleFilter);
+      <Container size={map ? "1600" : "xl"} w="100%" py={20} >
+        <Group grow h="100%" top="0" justify='flex-start'>
+          <Stack gap="sm" h="100%" top="0" justify='flex-start'>
+              
+              <SearchMobileViewer>
+                <Autocomplete
+                  placeholder={t('searchAddress')}
+                  data={locationOptions.map((o) => o)}
+                  
+                  value={draftAddressSearch}
+                  onChange={ setDraftAddressSearch }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      setAddressSearch(draftAddressSearch);
+                      setSortBy(SpecialSort.nearest)
+                    }
+                  }}
+                  rightSection={
+                    <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
+                      <IconSearch size={16} />
+                    </ActionIcon>
                   }
-                }}
-                rightSection={
-                  <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
-                    <IconSearch size={16} />
-                  </ActionIcon>
-                }
-              />
-              <Autocomplete
-                placeholder={t('searchAddress')}
-                data={locationOptions.map((o) => o)}
-                
-                value={draftAddressSearch}
-                onChange={ setDraftAddressSearch }
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    setAddressSearch(draftAddressSearch);
-                    setSortBy(SpecialSort.nearest)
+                />
+                <TextInput
+                  placeholder={t('searchTitle')}
+                  value={draftTitleFilter}
+                  onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      setTitleFilter(draftTitleFilter);
+                    }
+                  }}
+                  rightSection={
+                    <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
+                      <IconSearch size={16} />
+                    </ActionIcon>
                   }
-                }}
-                rightSection={
-                  <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
-                    <IconSearch size={16} />
-                  </ActionIcon>
+                />
+              </SearchMobileViewer>
+              <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
+              
+              
+                {(isMobile && location && sortBy === SpecialSort.nearest) && 
+                  <Container style={{position: "relative",  width: "100%"}} p="0">
+                    <MapView center={location} locationStatus={locationStatus} setMap={setMap} map={map} isMobile={isMobile}/>
+                  </Container>
                 }
-              />
-            </Group>
-            <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
 
             {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
               <Stack h="20em" justify="center" align="center">
@@ -198,7 +229,7 @@ function BrowsePage() {
                 <Text>{t('nomedia.changefilters')}</Text>
               </Stack>
             ) : (
-              <MediaCardGrid medias={media} />
+              <MediaCardGrid medias={media} size={(location && sortBy === SpecialSort.nearest && !isMobile)? 2 : 1} />
             )}
             {totalPages > 1 && (
               <Group justify="center" mt="md">
@@ -212,7 +243,13 @@ function BrowsePage() {
             )}
           </Stack>
         
-        {(location && sortBy === SpecialSort.nearest) && <MapView center={location}/>}
+
+        {(!isMobile && location && sortBy === SpecialSort.nearest) && 
+            <Container style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+              <MapView center={location} locationStatus={locationStatus} setMap={setMap} map={map} isMobile={isMobile}/>
+            </Container>
+        }
+        
         </Group>
       </Container>
   );

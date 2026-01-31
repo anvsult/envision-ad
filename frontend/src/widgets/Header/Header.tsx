@@ -163,7 +163,7 @@ export function Header({ }: HeaderProps) {
                     width: "100%",
                     background: "var(--mantine-color-body)",
                     borderBottom: "1px solid var(--mantine-color-gray-3)",
-                    padding: "12px 16px",
+                    padding: "12px 16px"
                 }}
             >
                 <Group justify="space-between" h="100%">

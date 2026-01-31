@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { getJoinedAddress, MediaLocation } from "@/entities/media";
 import { useEffect, useState } from "react";
 import { getOrganizationById } from "@/features/organization-management/api";
+import { useMediaQuery } from "@mantine/hooks";
+import { isMobileView } from "../../../tests/support/utils/viewUtils";
 
 export interface MediaCardProps {
     index: string;
@@ -22,8 +24,21 @@ export interface MediaCardProps {
 
 const ratio = 1/1
 
+
+
+function MobileViewer({children}: Readonly<{children: React.ReactNode;}>){
+    const isMobile = useMediaQuery("(max-width: 575px)");
+    return(
+            isMobile ? 
+            <Group gap={0} wrap="nowrap">{children}</Group>:
+            <Stack gap={0}>{children}</Stack>    
+    )
+
+}
+
 function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions}: MediaCardProps) {
-    // const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useMediaQuery("(max-width: 575px)");
+    
     const t = useTranslations("mediacard");
     const [organizationName, setOrganizationName] = useState<string>("");
     useEffect(() => {
@@ -42,6 +57,9 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
         
         fetchOrganizationDetails(organizationId)
     }, [organizationId]);
+
+    
+
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never" >
             <Paper 
@@ -50,8 +68,8 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
                 className={styles.paper}
                 h="100%"
             >   
-                <Stack gap={0} >
-                    <AspectRatio ratio={ratio}>
+                <MobileViewer >
+                    <AspectRatio ratio={ratio} w={isMobile?"35%": "100%"} >
                         <Paper className={styles.imagecontainer} radius="md" shadow="xs" >
                             {/* <StatusBadge status={MediaAdStatuses.DISPLAYING}/> */}
                             <AspectRatio ratio={ratio}>
@@ -93,7 +111,7 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
                             </Group>
                         </Stack>
                     </Stack>
-                </Stack>
+                </MobileViewer>
             </Paper>
         </Anchor>
     )
