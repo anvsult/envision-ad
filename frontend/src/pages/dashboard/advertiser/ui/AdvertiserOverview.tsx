@@ -26,14 +26,51 @@ import {
 } from "@tabler/icons-react";
 import { AreaChart } from "@mantine/charts";
 import { useTranslations } from "next-intl";
+import { getAccessToken } from "@auth0/nextjs-auth0";
+import { jwtDecode } from "jwt-decode";
 
 export function AdvertiserOverview() {
     const t = useTranslations("sideBar.advertiser");
     const [timeRange, setTimeRange] = useState<string | null>("Weekly");
     const [mounted, setMounted] = useState(false);
+    const [activeCampaignCount, setActiveCampaignCount] = useState<number | null>(null);
 
     useEffect(() => {
         setMounted(true);
+        const fetchData = async () => {
+            try {
+                const token = await getAccessToken();
+                const decodedToken = jwtDecode<any>(token);
+                // decodedToken actually provides accessToken info. We need the userId (sub).
+                // But wait, user ID is in the user object from useUser usually.
+                // However, let's use the token's sub if available, or fetch user profile.
+                // Actually the backend endpoint getBusinessByUserId takes the userId as path var.
+                // Wait, request to /api/v1/businesses/employee/{userId}
+
+                const userId = decodedToken.sub;
+
+                const businessResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/businesses/employee/${userId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (businessResponse.ok) {
+                    const business = await businessResponse.json();
+                    const businessId = business.businessId;
+
+                    const countResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/businesses/${businessId}/campaigns/active-count`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    if (countResponse.ok) {
+                        const count = await countResponse.json();
+                        setActiveCampaignCount(count);
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch dashboard data:", error);
+            }
+        };
+        fetchData();
     }, []);
 
     // Mock Data
@@ -47,7 +84,7 @@ export function AdvertiserOverview() {
         },
         {
             title: t("graphs.activeCampaigns"),
-            value: "3",
+            value: activeCampaignCount !== null ? activeCampaignCount.toString() : "-",
             diff: -1, // Negative for demo
             period: t("graphs.comparedToLastWeek"),
             icon: IconSpeakerphone,

@@ -14,12 +14,17 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
     List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
     @Query("SELECT r FROM Reservation r WHERE r.mediaId = :mediaId " +
-           "AND r.status = 'CONFIRMED' " +
-           "AND r.startDate < :endDate " +
-           "AND r.endDate > :startDate")
+            "AND r.status = 'CONFIRMED' " +
+            "AND r.startDate < :endDate " +
+            "AND r.endDate > :startDate")
     List<Reservation> findAllActiveReservationsByMediaIdAndDateRange(
             @Param("mediaId") UUID mediaId,
             @Param("startDate") @NotNull LocalDateTime startDate,
-            @Param("endDate") @NotNull LocalDateTime endDate
-    );
+            @Param("endDate") @NotNull LocalDateTime endDate);
+
+    @Query("SELECT COUNT(DISTINCT r.campaignId) FROM Reservation r WHERE r.advertiserId = :advertiserId " +
+            "AND r.status = 'CONFIRMED' " +
+            "AND r.startDate <= :now " +
+            "AND r.endDate >= :now")
+    int countActiveCampaignsByAdvertiserId(@Param("advertiserId") String advertiserId, @Param("now") LocalDateTime now);
 }
