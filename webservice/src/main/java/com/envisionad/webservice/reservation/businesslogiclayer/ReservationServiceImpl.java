@@ -70,8 +70,35 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public List<ReservationResponseModel> getAllReservationsByMediaId(String mediaId) {
-        List<Reservation> reservations = reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
-        return reservationResponseMapper.entitiesToResponseModelList(reservations);
+        List<Reservation> reservations =
+                reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
+
+        List<ReservationResponseModel> response =
+                reservationResponseMapper.entitiesToResponseModelList(reservations);
+
+        // collect unique campaignIds from reservations
+        List<String> campaignIds = reservations.stream()
+                .map(Reservation::getCampaignId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .toList();
+
+        if (campaignIds.isEmpty()) return response;
+
+        // batch fetch campaigns
+        var campaigns = adCampaignRepository.findAllByCampaignId_CampaignIdIn(campaignIds);
+
+        // map campaignId to campaignName
+        var campaignNameById = campaigns.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        c -> c.getCampaignId().getCampaignId(),
+                        AdCampaign::getName
+                ));
+
+        // fill campaignName in the response models
+        response.forEach(r -> r.setCampaignName(campaignNameById.get(r.getCampaignId())));
+
+        return response;
     }
 
     @Override
