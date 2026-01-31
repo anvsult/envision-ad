@@ -1,5 +1,7 @@
 package com.envisionad.webservice.payment.presentationlayer;
 
+import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
@@ -7,12 +9,12 @@ import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.payment.businesslogiclayer.StripeWebhookService;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
+import com.envisionad.webservice.payment.dataaccesslayer.*;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.utils.EmailService;
+import com.stripe.model.Account;
 import com.stripe.model.Event;
 import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.StripeObject;
@@ -58,6 +60,15 @@ class StripeWebhookServiceTest {
     private EmployeeRepository employeeRepository;
 
     @Mock
+    private EmailService emailService;
+
+    @Mock
+    private StripeAccountRepository stripeAccountRepository;
+
+    @Mock
+    private AdCampaignService adCampaignService;
+
+    @Mock
     private Event event;
 
     @Mock
@@ -69,7 +80,7 @@ class StripeWebhookServiceTest {
 
     @BeforeEach
     void setUp() {
-        reset(paymentIntentRepository, reservationRepository, event, deserializer);
+        reset(paymentIntentRepository, reservationRepository, mediaRepository, adCampaignRepository, employeeRepository, emailService, stripeAccountRepository, adCampaignService, event, deserializer);
     }
 
     // ==================== handleCheckoutSessionCompleted Tests ====================
@@ -496,7 +507,8 @@ class StripeWebhookServiceTest {
         // Assert
         assertEquals(ReservationStatus.CONFIRMED, reservation.getStatus());
         verify(paymentIntentRepository).save(payment);
-        verify(reservationRepository).save(reservation);    }
+        verify(reservationRepository).save(reservation);
+    }
 
 
     @Test
@@ -587,4 +599,274 @@ class StripeWebhookServiceTest {
         reservation.setStatus(ReservationStatus.PENDING);
         return reservation;
     }
+
+    // ==================== handleAccountUpdated Tests ====================
+    @Test
+    void whenHandleAccountUpdated_withValidAccountEvent_thenUpdateStripeAccount() {
+        // Arrange
+        String stripeAccountId = "acct_123Test";
+        Account stripeAccount = mock(Account.class);
+        when(stripeAccount.getId()).thenReturn(stripeAccountId);
+        when(stripeAccount.getDetailsSubmitted()).thenReturn(true);
+        when(stripeAccount.getChargesEnabled()).thenReturn(true);
+        when(stripeAccount.getPayoutsEnabled()).thenReturn(true);
+
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripeAccount));
+
+        StripeAccount localStripeAccount = new StripeAccount();
+        localStripeAccount.setStripeAccountId(stripeAccountId);
+        localStripeAccount.setOnboardingComplete(false); // Initial state
+        localStripeAccount.setChargesEnabled(false);
+        localStripeAccount.setPayoutsEnabled(false);
+
+        when(stripeAccountRepository.findByStripeAccountId(stripeAccountId)).thenReturn(Optional.of(localStripeAccount));
+
+        // Act
+        stripeWebhookService.handleAccountUpdated(event);
+
+        // Assert
+        ArgumentCaptor<StripeAccount> accountCaptor = ArgumentCaptor.forClass(StripeAccount.class);
+        verify(stripeAccountRepository).save(accountCaptor.capture());
+
+        StripeAccount savedAccount = accountCaptor.getValue();
+        assertTrue(savedAccount.isOnboardingComplete());
+        assertTrue(savedAccount.isChargesEnabled());
+        assertTrue(savedAccount.isPayoutsEnabled());
+    }
+
+    @Test
+    void whenHandleAccountUpdated_withNoLocalAccount_thenLogWarningAndDoNotSave() {
+        // Arrange
+        String stripeAccountId = "acct_unknown";
+        Account stripeAccount = mock(Account.class);
+        when(stripeAccount.getId()).thenReturn(stripeAccountId);
+
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripeAccount));
+        when(stripeAccountRepository.findByStripeAccountId(stripeAccountId)).thenReturn(Optional.empty());
+
+        // Act
+        stripeWebhookService.handleAccountUpdated(event);
+
+        // Assert
+        verify(stripeAccountRepository, never()).save(any(StripeAccount.class));
+    }
+
+    @Test
+    void whenHandleAccountUpdated_withEmptyDeserializer_thenReturnEarly() {
+        // Arrange
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+        when(deserializer.getObject()).thenReturn(Optional.empty());
+
+        // Act
+        stripeWebhookService.handleAccountUpdated(event);
+
+        // Assert
+        verify(stripeAccountRepository, never()).findByStripeAccountId(anyString());
+        verify(stripeAccountRepository, never()).save(any(StripeAccount.class));
+    }
+
+    @Test
+    void whenHandleAccountUpdated_withNonAccountObject_thenReturnEarly() {
+        // Arrange
+        StripeObject nonAccountObject = mock(Session.class);
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+        when(deserializer.getObject()).thenReturn(Optional.of(nonAccountObject));
+
+        // Act
+        stripeWebhookService.handleAccountUpdated(event);
+
+        // Assert
+        verify(stripeAccountRepository, never()).findByStripeAccountId(anyString());
+        verify(stripeAccountRepository, never()).save(any(StripeAccount.class));
+    }
+
+    // ==================== sendNotificationEmails (covers sendReservationEmail) Tests ====================
+
+    @Test
+    void whenSendNotificationEmails_withConfirmedReservation_thenEmailIsSent() {
+        // Arrange
+        UUID mediaId = UUID.randomUUID();
+        UUID businessId = UUID.randomUUID();
+        String campaignId = "campaign123";
+        String mediaOwnerEmail = "owner@example.com";
+        BigDecimal totalPrice = new BigDecimal("100.00");
+
+        Media media = mock(Media.class);
+        when(media.getTitle()).thenReturn("Test Media Title");
+        when(media.getBusinessId()).thenReturn(businessId);
+
+        Reservation reservation = createReservation();
+        reservation.setMediaId(mediaId);
+        reservation.setCampaignId(campaignId);
+        reservation.setTotalPrice(totalPrice);
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        when(campaign.getCampaignId()).thenReturn(new AdCampaignIdentifier(campaignId));
+        when(campaign.getName()).thenReturn("Test Campaign Name");
+
+        Employee employee = mock(Employee.class);
+        when(employee.getEmail()).thenReturn(mediaOwnerEmail);
+
+        List<String> imageLinks = List.of("http://example.com/ad1.jpg", "http://example.com/ad2.png");
+        when(adCampaignService.getAllCampaignImageLinks(campaignId)).thenReturn(imageLinks);
+        when(employeeRepository.findAllByBusinessId_BusinessId(businessId.toString()))
+                .thenReturn(List.of(employee));
+
+        when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(media));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
+
+        PaymentIntent payment = createPaymentIntent();
+        when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
+
+        // Mock the Event and Stripe PaymentIntent
+        com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
+        when(stripePaymentIntent.getId()).thenReturn(PAYMENT_INTENT_ID);
+
+        EventDataObjectDeserializer deserializer = mock(EventDataObjectDeserializer.class);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripePaymentIntent));
+
+        Event event = mock(Event.class);
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+
+        // Act
+        stripeWebhookService.handlePaymentIntentSucceeded(event);
+
+        // Assert
+        ArgumentCaptor<String> recipientCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+
+        verify(emailService, times(1)).sendSimpleEmail(
+                recipientCaptor.capture(),
+                subjectCaptor.capture(),
+                bodyCaptor.capture()
+        );
+
+        assertEquals(mediaOwnerEmail, recipientCaptor.getValue());
+        assertEquals("New Reservation Created", subjectCaptor.getValue());
+
+        String expectedBodyStart = String.format("A new reservation has been created for your media%n" +
+                "Media Name: %s%n" +
+                "Ad Campaign Name: %s%n" +
+                "Total Price: $%.2f%n", media.getTitle(), campaign.getName(), totalPrice);
+        String expectedPreviewSection = String.format("Preview Images:%n- %s%n- %s",
+                imageLinks.get(0), imageLinks.get(1));
+
+        assertTrue(bodyCaptor.getValue().startsWith(expectedBodyStart));
+        assertTrue(bodyCaptor.getValue().contains(expectedPreviewSection));
+    }
+
+    @Test
+    void whenSendNotificationEmails_withNoMediaOwnerEmail_thenNoEmailIsSent() {
+        // Arrange
+        UUID mediaId = UUID.randomUUID();
+        UUID businessId = UUID.randomUUID(); // ensure non-null businessId to avoid NPE
+        String campaignId = "campaign123";
+        BigDecimal totalPrice = new BigDecimal("100.00");
+
+        Media media = mock(Media.class);
+        when(media.getBusinessId()).thenReturn(businessId); // keep only the needed stubbing
+
+        Reservation reservation = new Reservation();
+        reservation.setMediaId(mediaId);
+        reservation.setCampaignId(campaignId);
+        reservation.setTotalPrice(totalPrice);
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        // removed unnecessary stubbing: when(campaign.getCampaignId()).thenReturn(...);
+
+        when(employeeRepository.findAllByBusinessId_BusinessId(anyString())).thenReturn(List.of()); // No employees/emails
+
+        // Setup for updateReservationStatus
+        when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(media));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
+
+        PaymentIntent payment = createPaymentIntent();
+        when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
+
+        // Mock the Event and Stripe PaymentIntent
+        com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
+        when(stripePaymentIntent.getId()).thenReturn(PAYMENT_INTENT_ID);
+
+        EventDataObjectDeserializer deserializer = mock(EventDataObjectDeserializer.class);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripePaymentIntent));
+
+        Event event = mock(Event.class);
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+
+        // Act
+        stripeWebhookService.handlePaymentIntentSucceeded(event);
+
+        // Assert
+        verify(emailService, never()).sendSimpleEmail(anyString(), anyString(), anyString());
+    }
+
+
+    @Test
+    void whenSendNotificationEmails_withNoImageLinks_thenEmailSentWithoutPreviewSection() {
+        // Arrange
+        UUID mediaId = UUID.randomUUID();
+        UUID businessId = UUID.randomUUID();
+        String campaignId = "campaign123";
+        String mediaOwnerEmail = "owner@example.com";
+        BigDecimal totalPrice = new BigDecimal("100.00");
+
+        Media media = mock(Media.class);
+        when(media.getTitle()).thenReturn("Test Media Title");
+        when(media.getBusinessId()).thenReturn(businessId);
+
+        Reservation reservation = createReservation();
+        reservation.setMediaId(mediaId);
+        reservation.setCampaignId(campaignId);
+        reservation.setTotalPrice(totalPrice);
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        when(campaign.getCampaignId()).thenReturn(new AdCampaignIdentifier(campaignId));
+        when(campaign.getName()).thenReturn("Test Campaign Name");
+
+        Employee employee = mock(Employee.class);
+        when(employee.getEmail()).thenReturn(mediaOwnerEmail);
+
+        when(adCampaignService.getAllCampaignImageLinks(campaignId)).thenReturn(List.of()); // No image links
+        when(employeeRepository.findAllByBusinessId_BusinessId(businessId.toString()))
+                .thenReturn(List.of(employee));
+
+        // Setup for updateReservationStatus
+        when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(media));
+        when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
+
+        PaymentIntent payment = createPaymentIntent();
+        when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
+
+        com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
+        when(stripePaymentIntent.getId()).thenReturn(PAYMENT_INTENT_ID);
+
+        EventDataObjectDeserializer deserializer = mock(EventDataObjectDeserializer.class);
+        when(deserializer.getObject()).thenReturn(Optional.of(stripePaymentIntent));
+
+        Event event = mock(Event.class);
+        when(event.getDataObjectDeserializer()).thenReturn(deserializer);
+
+        // Act
+        stripeWebhookService.handlePaymentIntentSucceeded(event);
+
+        // Assert
+        ArgumentCaptor<String> bodyCaptor = ArgumentCaptor.forClass(String.class);
+        verify(emailService, times(1)).sendSimpleEmail(anyString(), anyString(), bodyCaptor.capture());
+
+        String expectedBodyStart = String.format("A new reservation has been created for your media%n" +
+                "Media Name: %s%n" +
+                "Ad Campaign Name: %s%n" +
+                "Total Price: $%.2f%n", media.getTitle(), campaign.getName(), totalPrice);
+        String expectedPreviewSection = "No preview images available.";
+
+        assertTrue(bodyCaptor.getValue().startsWith(expectedBodyStart));
+        assertTrue(bodyCaptor.getValue().contains(expectedPreviewSection));
+    }
 }
+
