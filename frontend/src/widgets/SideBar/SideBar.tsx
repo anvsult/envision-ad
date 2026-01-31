@@ -5,7 +5,7 @@ import {
     IconDeviceTv,
     IconLayoutDashboard,
     IconUsers,
-    IconShieldCheck, IconDiscountCheck,
+    IconShieldCheck, IconDiscountCheck, IconFileDescription,
 } from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
 import {useUser} from "@auth0/nextjs-auth0/client";
@@ -41,18 +41,28 @@ export default function SideBar() {
                 active={pathname?.endsWith("/media-owner/media")}
             />
         ),
+        (permissions.includes("create:media") || permissions.includes("update:media")) && (
+            <NavLink
+                key="proof"
+                component={Link}
+                href="/dashboard/media-owner/proof"
+                label={t("media-owner.proof")}
+                leftSection={<IconFileDescription size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/media-owner/proof")}
+            />
+        ),
     ].filter(Boolean);
 
     const advertiserNavItems = [
         (permissions.includes('create:campaign') || permissions.includes('update:campaign') || permissions.includes('read:campaign')) && (
-                <NavLink
-                    key="campaigns"
-                    component={Link}
-                    href="/dashboard/advertiser/campaigns"
-                    label={t("advertiser.myAds")}
-                    leftSection={<IconAd size={20} stroke={1.5} />}
-                    active={pathname?.endsWith("/advertiser/campaigns")}
-                />
+            <NavLink
+                key="campaigns"
+                component={Link}
+                href="/dashboard/advertiser/campaigns"
+                label={t("advertiser.myAds")}
+                leftSection={<IconAd size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/campaigns")}
+            />
         )
     ].filter(Boolean);
 
