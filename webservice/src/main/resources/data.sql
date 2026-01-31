@@ -353,7 +353,8 @@ ON CONFLICT (reservation_id) DO NOTHING;
 INSERT INTO stripe_accounts (business_id, stripe_account_id, onboarding_complete, charges_enabled, payouts_enabled)
 VALUES
     -- Champlain College (your business - media owner and advertiser)
-    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'acct_1SqyOW1H9mbHrgki', true, true, true)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'acct_1SqyOW1H9mbHrgki', true, true, true),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'acct_1SvU8z0pzJzD5uc6', true, true, true)
 ON CONFLICT (business_id) DO UPDATE SET
     stripe_account_id = EXCLUDED.stripe_account_id,
     onboarding_complete = EXCLUDED.onboarding_complete,
