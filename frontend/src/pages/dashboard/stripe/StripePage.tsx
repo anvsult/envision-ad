@@ -49,9 +49,10 @@ export default function StripePage() {
                 } else {
                     setError(t('errors.noBusiness'));
                 }
-            } catch (e: any) {
+            } catch (e) {
                 console.error("Failed to fetch Stripe status", e);
-                setError(e.message || t('errors.fetchFailed'));
+                const errorMessage = e instanceof Error ? e.message : t('errors.fetchFailed');
+                setError(errorMessage);
             } finally {
                 setIsLoading(false);
             }
@@ -105,9 +106,17 @@ export default function StripePage() {
             } else {
                 setError(t('errors.noBusiness'));
             }
-        } catch (e: any) {
+        } catch (e) {
             console.error("Failed to connect to Stripe", e);
-            const errorMessage = e.response?.data?.message || e.message || t('errors.connectFailed');
+            let errorMessage = t('errors.connectFailed');
+
+            if (e && typeof e === 'object' && 'response' in e) {
+                const response = (e as { response?: { data?: { message?: string }}}).response;
+                errorMessage = response?.data?.message || errorMessage;
+            } else if (e instanceof Error) {
+                errorMessage = e.message;
+            }
+            
             setError(errorMessage);
         } finally {
             setIsConnecting(false);

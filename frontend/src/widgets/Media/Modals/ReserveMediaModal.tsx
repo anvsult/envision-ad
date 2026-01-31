@@ -61,7 +61,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
     // Payment states
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [reservationId, setReservationId] = useState<string | null>(null);
 
     const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -198,7 +197,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
                 };
                 const reservation = await createReservation(media.id, reservationPayload);
-                setReservationId(reservation.reservationId);
 
                 // 2. Create a payment intent with the new reservation ID
                 const paymentIntentPayload = {

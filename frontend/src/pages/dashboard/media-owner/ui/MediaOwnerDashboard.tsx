@@ -86,11 +86,18 @@ export default function MediaOwnerPage() {
             setIsModalOpen(false);
             resetForm();
             setEditingId(null);
-        } catch (error: any) {
+        } catch (error) {
             console.error("Failed to save media", error);
+            let errorMessage = t("errors.saveFailed");
+
+            if (error && typeof error === 'object' && 'response' in error) {
+                const response = (error as { response?: { data?: { message?: string } } }).response;
+                errorMessage = response?.data?.message || errorMessage;
+            }
+
             notifications.show({
                 title: t("errors.error"),
-                message: error.response?.data?.message || t("errors.saveFailed"),
+                message: errorMessage,
                 color: "red",
             });
         }
