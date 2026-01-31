@@ -10,6 +10,10 @@ jobs:
   analyze-packages:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: frontend
+
     steps:
       - uses: actions/checkout@v4
 
@@ -20,7 +24,6 @@ jobs:
           cache-dependency-path: 'frontend/package-lock.json'
 
       - run: npm ci
-        working-directory: frontend
 
       - name: Check unused dependencies
         run: npx depcheck || exit 1
