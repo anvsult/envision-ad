@@ -12,29 +12,22 @@ VALUES ('900 Rue Riverside', 'Saint-Lambert', 'QC', 'J4P 3P2', 'Canada'),
     ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO business (business_id, name, owner_id, organization_size, address_id, media_owner, advertiser, date_created)
-VALUES ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934e8515479d2b6d3cf7575', 'MEDIUM', 1, true, true, NOW()),
+VALUES
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'Visual Impact', 'auth0|6972cb215b943c997508c737', 'SMALL', 1, true, true, NOW()),
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Champlain College', 'auth0|6934e8515479d2b6d3cf7575', 'MEDIUM', 1, false, true, NOW()),
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'TechGiant Solutions', 'auth0|696a89137cfdb558ea4a4a4a', 'ENTERPRISE', 2, false, true, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'auth0|696a88eb347945897ef17093', 'LARGE', 3, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'Prairie Oil & Gas', null, 'ENTERPRISE', 4, true, false, NOW()),
-       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55', 'Capital Consulting', null, 'MEDIUM', 5, false, true, NOW()),
-       ('e515de7c-147d-4576-b769-f8c55bff8acc', 'Entrepôt en Folie', null, 'LARGE', 6, true, false, NOW()),
-       ('64e217e5-4973-40d1-87de-258b3cc915dd', 'Lola Salon', null, 'MEDIUM', 7, true, false, NOW()),
-       ('4742eb4d-f469-45b4-95cc-23c2cf1c2a3e', 'Ping Mo', null, 'MEDIUM', 8, true, false, NOW()),
-       ('2e4c69ea-d597-4c43-83c1-9af394b10162', 'ArenaMedia', null, 'LARGE', 9, true, false, NOW()),
-       ('92bc6a96-689b-41ac-b555-d3ff0e522f42', 'NorthernAds', null, 'MEDIUM', 9, true, false, NOW()),
-       ('a50eef7e-14af-4d91-a41c-97c324f7c816', 'AtlanticAds', null, 'LARGE', 10, true, false, NOW()),
-       ('9a190809-1597-440b-bf80-340f260d9d8e', 'Seaside Media', null, 'ENTERPRISE', 10, true, false, NOW())
+       ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'auth0|696a88eb347945897ef17093', 'LARGE', 3, false, true, NOW())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO employee (employee_id, user_id, business_id, email)
 VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
        ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
-       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'anv.sult@gmail.com')
-ON CONFLICT (employee_id) DO NOTHING;
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com')
+    ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
 VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', NOW(), NOW() + INTERVAL '1 hour')
-ON CONFLICT (invitation_id) DO NOTHING;
+    ON CONFLICT (invitation_id) DO NOTHING;
 
 INSERT INTO verification (verification_id, business_id, status, comments, date_created, date_modified)
 VALUES ('636e63e2-a3c0-4171-ac90-bfad8aeb6613', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'DENIED', 'Application denied due to invalid address entered', CURRENT_TIMESTAMP - INTERVAL '1 hour', CURRENT_TIMESTAMP),
@@ -75,248 +68,260 @@ INSERT INTO media (
     loop_duration, resolution, aspect_ratio,
     width, height, price, daily_impressions,
     schedule, status,
-    image_url
+    image_url, preview_configuration
 )
 VALUES (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
-       'Gym Hallway Digital Board', 'Champlain College', 'DIGITAL',
-       30, '2160x3840', '9:16',
-       2160, 3840, 26.45, 1200,
-       '{
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Gym Hallway Digital Board', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '9:16',
+           2160, 3840, 26.45, 1200,
+           '{
+               "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_3834_uagq7g.jpg',
+           '{"bl": {"x": 0.36904761904761907, "y": 0.5225}, "br": {"x": 0.6309523809523809, "y": 0.53}, "tl": {"x": 0.3541666666666667, "y": 0.095}, "tr": {"x": 0.6636904761904762, "y": 0.1075}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Main Entrance Digital Board ', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '9:16',
+           2160, 3840, 26.45, 1200,
+           '{
            "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_3834_uagq7g.jpg'
-   ),
-   (
-        'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
-        'Main Entrance Digital Board ', 'Champlain College', 'DIGITAL',
-        30, '2160x3840', '9:16',
-        2160, 3840, 26.45, 1200,
-        '{
-        "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768504494/IMG_3783_hkaz3g.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
-       'Student Lounge 1', 'Champlain College', 'DIGITAL',
-       30, '2160x3840', '9:16',
-       2160, 3840, 26.45, 1200,
-       '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407532/IMG_4963_ufrd4d.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
-       'e515de7c-147d-4576-b769-f8c55bff8acc',
-       'Entrepôt en Folie Main Entrance', 'Entrepôt en Folie', 'DIGITAL',
-       60, '2160x3840', '9:16',
-       2160, 3840, 5.65, 1875,
-       '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "22:00"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
-               {"dayOfWeek": "saturday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": "09:00", "endTime": "17:00"}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4934_iykhic.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
-       '4742eb4d-f469-45b4-95cc-23c2cf1c2a3e',
-       'Ping Mo Store Entrance', 'Ping Mo', 'DIGITAL',
-       60, '3840x2160', '16:9',
-       3840, 2160, 7.55, 1875,
-       '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": false, "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "tuesday",  "isActive": false, "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "saturday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
-               {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4736_emvnha.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
-       'Student Lounge 2', 'Champlain College', 'DIGITAL',
-       30, '3840x2160', '16:9',
-       3840, 2160, 26.45, 1200,
-       '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
-            "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407676/woiadydpsfax7aiajiee.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
-       '64e217e5-4973-40d1-87de-258b3cc915dd',
-       'Lola Salon Main Lobby', 'Lola Salon', 'DIGITAL',
-       30, '1440x2560', '9:16',
-       1440, 2560, 2.55, 56,
-       '{
-            "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday","isActive": false,"startTime": null,"endTime": null},
-               {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "17:00"},
-               {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
-               {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "17:00"},
-               {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "18:00"},
-               {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "16:00"},
-               {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407524/3e4af6aa-17a5-47cf-a388-bbf13f451703_v4czap.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
-       'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
-       'Cafeteria Entrance', 'Champlain College', 'DIGITAL',
-       30, '3840x2160', '16:9',
-       3840, 2160, 26.45, 1200,
-       '{
-          "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
-            "weeklySchedule": [
-               {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
-               {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
-               {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
-           ]
-       }'::jsonb,
-       'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768662804/Screenshot_2026-01-17_101221_dbsrlv.png'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-       '2e4c69ea-d597-4c43-83c1-9af394b10162',
-       'ICE District Arena Board', 'ArenaMedia', 'DIGITAL',
-       20, '1920x1080', '16:9',
-       1920, 1080, 250.00, 45000,
-       '{
-           "selectedMonths": ["January", "February"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-               {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-               {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-               {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"23:00"},
-               {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-               {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-               {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-           ]
-       }'::jsonb,
-       'PENDING','https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
-       '92bc6a96-689b-41ac-b555-d3ff0e522f42',
-       'ICE Plaza Outdoor Screen', 'NorthernAds', 'DIGITAL',
-       45, '3840x2160', '16:9',
-       3840, 2160, 320.00, 47000,
-       '{
-           "selectedMonths": ["April", "May", "June"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-               {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-               {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-               {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-               {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:00"},
-               {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
-               {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-           ]
-       }'::jsonb,
-       'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-       'a50eef7e-14af-4d91-a41c-97c324f7c816',
-       'Harbour Front Pier Screen', 'AtlanticAds', 'DIGITAL',
-       25, '1920x1080', '16:9',
-       1920, 1080, 140.00, 23000,
-       '{
-           "selectedMonths": ["September", "October"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-               {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-               {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-               {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"19:00"},
-               {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"22:00"},
-               {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
-               {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
-           ]
-       }'::jsonb,
-       'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-   ),
-   (
-       'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
-       '9a190809-1597-440b-bf80-340f260d9d8e',
-       'Harbour Front Market Screen', 'Seaside Media', 'DIGITAL',
-       35, '2560x1440', '16:9',
-       2560, 1440, 165.00, 21000,
-       '{
-           "selectedMonths": ["November", "December"],
-           "weeklySchedule": [
-               {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
-               {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-               {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-               {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"18:00"},
-               {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"20:00"},
-               {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
-               {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
-           ]
-       }'::jsonb,
-       'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg'
-   );
+              "weeklySchedule": [
+                  {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                  {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                  {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                  {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                  {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                  {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                  {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+              ]
+          }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768504494/IMG_3783_hkaz3g.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Student Lounge 1', 'Champlain College', 'DIGITAL',
+           30, '2160x3840', '9:16',
+           2160, 3840, 26.45, 1200,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407532/IMG_4963_ufrd4d.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Entrepôt en Folie Main Entrance', 'Entrepôt en Folie', 'DIGITAL',
+           60, '2160x3840', '9:16',
+           2160, 3840, 5.65, 1875,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "09:00", "endTime": "22:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "09:00", "endTime": "21:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "09:00", "endTime": "17:00"},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": "09:00", "endTime": "17:00"}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4934_iykhic.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Ping Mo Store Entrance', 'Ping Mo', 'DIGITAL',
+           60, '3840x2160', '16:9',
+           3840, 2160, 7.55, 1875,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": false, "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "tuesday",  "isActive": false, "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "saturday", "isActive": true,  "startTime": "07:00", "endTime": "23:00"},
+                   {"dayOfWeek": "sunday",   "isActive": true,  "startTime": "07:00", "endTime": "23:00"}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407525/IMG_4736_emvnha.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Student Lounge 2', 'Champlain College', 'DIGITAL',
+           30, '3840x2160', '16:9',
+           3840, 2160, 26.45, 1200,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+                "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407676/woiadydpsfax7aiajiee.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Lola Salon Main Lobby', 'Lola Salon', 'DIGITAL',
+           30, '1440x2560', '9:16',
+           1440, 2560, 2.55, 56,
+           '{
+                "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": false,"startTime": null,"endTime": null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime": "10:00","endTime": "17:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime": "09:00","endTime": "18:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime": "09:00","endTime": "17:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime": "08:00","endTime": "18:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime": "09:00","endTime": "16:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime": null,"endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407524/3e4af6aa-17a5-47cf-a388-bbf13f451703_v4czap.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Cafeteria Entrance', 'Champlain College', 'DIGITAL',
+           30, '3840x2160', '16:9',
+           3840, 2160, 26.45, 1200,
+           '{
+              "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
+                "weeklySchedule": [
+                   {"dayOfWeek": "monday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "tuesday",  "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "wednesday","isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "thursday", "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "friday",   "isActive": true,  "startTime": "07:30", "endTime": "18:30"},
+                   {"dayOfWeek": "saturday", "isActive": false, "startTime": null, "endTime": null},
+                   {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
+               ]
+           }'::jsonb,
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768662804/Screenshot_2026-01-17_101221_dbsrlv.png',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'ICE District Arena Board', 'ArenaMedia', 'DIGITAL',
+           20, '1920x1080', '16:9',
+           1920, 1080, 250.00, 45000,
+           '{
+               "selectedMonths": ["January", "February"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"11:00","endTime":"23:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'PENDING','https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'ICE Plaza Outdoor Screen', 'NorthernAds', 'DIGITAL',
+           45, '3840x2160', '16:9',
+           3840, 2160, 320.00, 47000,
+           '{
+               "selectedMonths": ["April", "May", "June"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"23:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"23:59"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'PENDING', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Harbour Front Pier Screen', 'AtlanticAds', 'DIGITAL',
+           25, '1920x1080', '16:9',
+           1920, 1080, 140.00, 23000,
+           '{
+               "selectedMonths": ["September", "October"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"08:00","endTime":"19:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"08:00","endTime":"22:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"09:00","endTime":"23:00"},
+                   {"dayOfWeek": "sunday","isActive": false,"startTime":null,"endTime":null}
+               ]
+           }'::jsonb,
+           'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       ),
+       (
+           'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010',
+           'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
+           'Harbour Front Market Screen', 'Seaside Media', 'DIGITAL',
+           35, '2560x1440', '16:9',
+           2560, 1440, 165.00, 21000,
+           '{
+               "selectedMonths": ["November", "December"],
+               "weeklySchedule": [
+                   {"dayOfWeek": "monday","isActive": false,"startTime":null,"endTime":null},
+                   {"dayOfWeek": "tuesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "wednesday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "thursday","isActive": true,"startTime":"10:00","endTime":"18:00"},
+                   {"dayOfWeek": "friday","isActive": true,"startTime":"10:00","endTime":"20:00"},
+                   {"dayOfWeek": "saturday","isActive": true,"startTime":"10:00","endTime":"22:00"},
+                   {"dayOfWeek": "sunday","isActive": true,"startTime":"10:00","endTime":"18:00"}
+               ]
+           }'::jsonb,
+           'REJECTED', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg',
+           '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
+       );
 
 -- =========================== ADS AND CAMPAIGNS DATA ===========================
 
@@ -324,12 +329,45 @@ VALUES (
 INSERT INTO ad_campaigns (campaign_id, business_id, name)
 VALUES
     ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Summer Sale 2025'),
-    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz'),
-    ('f1e2d3c4-b5a6-4978-8c9d-0e1f2a3b4c5f', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44', 'New Year Launch');
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz');
 
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
 VALUES
     ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 3);
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
+
+-- =========================== RESERVATIONS DATA ===========================
+
+-- Insert sample reservations for testing Stripe payments
+-- Note: media_id is NULL since media records have auto-generated UUIDs
+-- In production, these would be set when creating reservations through the API
+INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, advertiser_id, campaign_id, media_id)
+VALUES
+    ('r1111111-1111-1111-1111-111111111111',
+     '2026-02-01 00:00:00', '2026-02-28 23:59:59',
+     'CONFIRMED', 2645.00,
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+     NULL),
+    ('r2222222-2222-2222-2222-222222222222',
+     '2026-03-01 00:00:00', '2026-03-31 23:59:59',
+     'PENDING', 5100.00,
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+     NULL)
+ON CONFLICT (reservation_id) DO NOTHING;
+
+-- =========================== STRIPE DATA ===========================
+
+-- Insert Stripe accounts for all media owner businesses so they can receive payments
+INSERT INTO stripe_accounts (business_id, stripe_account_id, onboarding_complete, charges_enabled, payouts_enabled)
+VALUES
+    -- Champlain College (your business - media owner and advertiser)
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'acct_1SqyOW1H9mbHrgki', true, true, true)
+ON CONFLICT (business_id) DO UPDATE SET
+    stripe_account_id = EXCLUDED.stripe_account_id,
+    onboarding_complete = EXCLUDED.onboarding_complete,
+    charges_enabled = EXCLUDED.charges_enabled,
+    payouts_enabled = EXCLUDED.payouts_enabled;

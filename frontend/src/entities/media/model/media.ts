@@ -15,8 +15,8 @@ export interface Media {
     schedule: MonthlyScheduleModel;
     status: string | null;
     typeOfDisplay: string;
-    imageUrl?: string | null;
-    previewConfiguration?: string | null;
+    imageUrl: string;
+    previewConfiguration: string;
     businessId: string;
 }
 

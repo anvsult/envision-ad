@@ -21,6 +21,8 @@
     "@mantine/modals": "^8.3.9",
     "@mantine/notifications": "^8.3.9",
     "@mantine/nprogress": "^8.3.9",
+    "@stripe/react-stripe-js": "^5.4.1",
+    "@stripe/stripe-js": "^8.6.3",
     "@tabler/icons-react": "^3.35.0",
     "axios": "^1.13.2",
     "cloudinary": "^2.8.0",

@@ -34,6 +34,10 @@ export default defineConfig({
     /* Run tests in headless mode */
     headless: true,
 
+    /* Grant geolocation permission to avoid browser prompt */
+    permissions: ['geolocation'],
+    geolocation: { latitude: 45.5017, longitude: -73.5673 },
+
   },
 
   /* Configure projects for major browsers */

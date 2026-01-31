@@ -61,3 +61,9 @@ app:
   base:
     url: ${APP_BASE_URL:http://localhost:8080}
 
+stripe:
+  api-key: ${STRIPE_SECRET_KEY:test_stripe_secret_key}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:test_webhook_secret}
+  platform-fee-percent: 30
+  connect:
+    client-id: ${STRIPE_CONNECT_CLIENT_ID:test_client_id}

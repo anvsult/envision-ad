@@ -3,7 +3,10 @@ services:
     image: postgres:15
     container_name: envision_ad_postgres
     restart: unless-stopped
-    env_file: .env
+    environment:
+      POSTGRES_DB: ${SPRING_DATASOURCE_DBNAME}
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -39,17 +42,23 @@ services:
       - "8080:8080"
     environment:
       APP_BASE_URL: "${APP_BASE_URL}"
+      SPRING_PROFILES_ACTIVE: "local"
+      #     AUTH0
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"
       AUTH0_AUDIENCE: "${AUTH0_AUDIENCE}"
-      SPRING_PROFILES_ACTIVE: "prod"
-      # Spring datasource
+      #     Database
       SPRING_DATASOURCE_URL: "${SPRING_DATASOURCE_URL}"
       SPRING_DATASOURCE_USERNAME: "${SPRING_DATASOURCE_USERNAME}"
       SPRING_DATASOURCE_PASSWORD: "${SPRING_DATASOURCE_PASSWORD}"
+      #     EMAIL
       SPRING_EMAIL_SMTP: "${EMAIL_SMTP}"
       SPRING_EMAIL_PORT: "${EMAIL_PORT}"
-      SPRING_EMAIL_USERNAME: "${EMAIL_USER}"
+      SPRING_EMAIL_USER: "${EMAIL_USER}"
       SPRING_EMAIL_PASSWORD: "${EMAIL_PASSWORD}"
+      #     STRIPE
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET}"
+      STRIPE_CONNECT_CLIENT_ID: "${STRIPE_CONNECT_CLIENT_ID}"
     depends_on:
       postgres:
         condition: service_healthy
