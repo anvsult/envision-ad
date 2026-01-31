@@ -476,7 +476,7 @@ class ReservationControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(requestModel))
                 .exchange()
-                .expectStatus().isUnauthorized();
+                .expectStatus().isForbidden();
 
         // Verify no reservation was saved
         assertEquals(0, reservationRepository.count());
