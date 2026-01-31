@@ -10,6 +10,11 @@ import { useTranslations } from "next-intl";
 
 type CountsMap = Record<string, number>;
 
+interface Reservation {
+    status?: string;
+    campaignId?: string;
+}
+
 function chunk<T>(arr: T[], size: number): T[][] {
     const res: T[][] = [];
     for (let i = 0; i < arr.length; i += size) res.push(arr.slice(i, i + size));
@@ -54,12 +59,12 @@ export default function ProofOfDisplayScreen() {
                 const results = await Promise.all(
                     batch.map(async (id) => {
                         try {
-                            const reservations = await getMediaReservations(id);
+                            const reservations = await getMediaReservations(id) as Reservation[];
 
                             const uniqueCampaigns = new Set(
                                 reservations
-                                    .filter((r: any) => r.status === "CONFIRMED" || r.status === "PENDING")
-                                    .map((r: any) => r.campaignId)
+                                    .filter((r) => r.status === "CONFIRMED" || r.status === "PENDING")
+                                    .map((r) => r.campaignId)
                                     .filter(Boolean)
                             );
 

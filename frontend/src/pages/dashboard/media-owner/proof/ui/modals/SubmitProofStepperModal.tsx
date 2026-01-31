@@ -67,18 +67,23 @@ export default function SubmitProofStepperModal({
         maxFileSize: 50000000,
     };
 
-    const handleUploadSuccess = (results: any) => {
+    const handleUploadSuccess = (results: unknown) => {
         // next-cloudinary gives an object for each uploaded asset
-        const info = results?.info;
+        if (!results || typeof results !== "object") return;
+
+        const resultsObj = results as { info?: unknown };
+        const info = resultsObj.info;
         if (!info || typeof info !== "object") return;
 
-        const secureUrl: string | undefined = info.secure_url;
-        if (!secureUrl?.startsWith("https://res.cloudinary.com/")) return;
+        const infoObj = info as { secure_url?: unknown; original_filename?: unknown; format?: unknown };
+        const secureUrl = infoObj.secure_url;
+
+        if (typeof secureUrl !== "string" || !secureUrl.startsWith("https://res.cloudinary.com/")) return;
 
         // Prefer original_filename if present, otherwise fallback
-        const originalFilename: string =
-            info.original_filename
-                ? `${info.original_filename}.${info.format ?? "jpg"}`
+        const originalFilename =
+            typeof infoObj.original_filename === "string"
+                ? `${infoObj.original_filename}.${typeof infoObj.format === "string" ? infoObj.format : "jpg"}`
                 : secureUrl.split("/").pop() ?? "upload";
 
         setUploaded((prev) => {
