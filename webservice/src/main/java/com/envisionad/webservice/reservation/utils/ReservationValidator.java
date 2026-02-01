@@ -1,6 +1,6 @@
 package com.envisionad.webservice.reservation.utils;
 
-import com.envisionad.webservice.reservation.exceptions.InvalidReservationException;
+import com.envisionad.webservice.reservation.exceptions.BadReservationRequestException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 
 import java.time.LocalDate;
@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class ReservationValidator {
     public static void validateReservation(ReservationRequestModel requestModel, String mediaId) {
         if (requestModel == null || !validateStartDate(requestModel) || !validateEndDate(requestModel) || !validateMediaId(mediaId) || !validateCampaignId(requestModel))
-            throw new InvalidReservationException();
+            throw new BadReservationRequestException();
     }
 
     /**

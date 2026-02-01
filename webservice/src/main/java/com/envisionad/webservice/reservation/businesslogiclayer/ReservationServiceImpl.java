@@ -14,8 +14,7 @@ import com.envisionad.webservice.reservation.dataaccesslayer.ReservationReposito
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
-import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
-import com.envisionad.webservice.reservation.exceptions.PaymentVerificationException;
+import com.envisionad.webservice.reservation.exceptions.*;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
@@ -58,7 +57,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<ReservationResponseModel> getAllReservationsByMediaId(String mediaId) {
+    public List<ReservationResponseModel> getAllReservationsByMediaId(Jwt jwt, String mediaId) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
+
         List<Reservation> reservations =
                 reservationRepository.findAllReservationsByMediaId(UUID.fromString(mediaId));
 
@@ -135,6 +136,38 @@ public class ReservationServiceImpl implements ReservationService {
         log.info("Reservation {} created with status: {}", savedReservation.getReservationId(), savedReservation.getStatus());
 
         return reservationResponseMapper.entityToResponseModel(savedReservation);
+    }
+
+    @Override
+    public ReservationResponseModel updateReservationStatus(Jwt jwt, String mediaId, String reservationId, ReservationStatus reservationStatus) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
+
+        Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
+
+        if (!reservation.getStatus().equals(ReservationStatus.PENDING)){
+            throw new BadReservationRequestException();
+        }
+
+        if (!reservationStatus.equals(ReservationStatus.APPROVED) && !reservationStatus.equals(ReservationStatus.DENIED)){
+            throw new ReservationAlreadyProcessedException();
+        }
+
+        reservation.setStatus(reservationStatus);
+        reservationRepository.save(reservation);
+
+        return reservationResponseMapper.entityToResponseModel(reservation);
+    }
+
+    @Override
+    public List<ReservationResponseModel> getAllReservationBySeller(Jwt jwt, String businessId) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
+        return reservationRepository.findAll().stream().filter(reservation -> mediaRepository.findById(reservation.getMediaId()).stream().anyMatch(media -> media.getBusinessId().equals(UUID.fromString(businessId)))).map(reservationResponseMapper::entityToResponseModel).toList();
+    }
+
+    @Override
+    public List<ReservationResponseModel> getAllReservationByBuyer(Jwt jwt, String businessId) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
+        return reservationRepository.findAll().stream().filter(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()).getBusinessId().getBusinessId().equals(businessId)).map(reservationResponseMapper::entityToResponseModel).toList();
     }
 
     private Media loadAndValidateMedia(String mediaId) {

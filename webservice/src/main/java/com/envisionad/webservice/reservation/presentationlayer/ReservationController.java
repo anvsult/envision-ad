@@ -1,6 +1,7 @@
 package com.envisionad.webservice.reservation.presentationlayer;
 
 import com.envisionad.webservice.reservation.businesslogiclayer.ReservationService;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/media/{mediaId}/reservations")
+@RequestMapping("/api/v1/media")
 @CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class ReservationController {
     private final ReservationService reservationService;
@@ -22,15 +23,33 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping()
+    @GetMapping("/{mediaId}/reservations")
     @PreAuthorize("hasAuthority('readAll:reservation')")
-    public ResponseEntity<List<ReservationResponseModel>> getAllMediaReservations(@PathVariable String mediaId) {
-        return ResponseEntity.ok().body(reservationService.getAllReservationsByMediaId(mediaId));
+    public ResponseEntity<List<ReservationResponseModel>> getAllMediaReservations(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId) {
+        return ResponseEntity.ok(reservationService.getAllReservationsByMediaId(jwt, mediaId));
     }
 
-    @PostMapping()
+    @PostMapping("/{mediaId}/reservations")
     @PreAuthorize("hasAuthority('create:reservation')")
     public ResponseEntity<ReservationResponseModel> createReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @RequestBody ReservationRequestModel requestModel) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(jwt, mediaId, requestModel));
+    }
+
+    @PatchMapping("/{mediaId}/reservations/{reservationId}")
+    @PreAuthorize("hasAuthority('update:reservation')")
+    public ResponseEntity<ReservationResponseModel> updateReservationStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @PathVariable String reservationId, @RequestParam ReservationStatus status){
+        return ResponseEntity.ok(reservationService.updateReservationStatus(jwt, mediaId, reservationId, status));
+    }
+
+    @GetMapping("/reservations")
+    @PreAuthorize("hasAuthority('readAll:reservation')")
+    public ResponseEntity<List<ReservationResponseModel>> getAllReservationBySeller(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
+        return ResponseEntity.ok(reservationService.getAllReservationBySeller(jwt, businessId));
+    }
+
+    @GetMapping("/reservations")
+    @PreAuthorize("hasAuthority('readAll:reservation')")
+    public ResponseEntity<List<ReservationResponseModel>> getAllReservationByBuyer(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
+        return ResponseEntity.ok(reservationService.getAllReservationByBuyer(jwt, businessId));
     }
 }
