@@ -64,7 +64,7 @@ public class MediaController {
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
-            @RequestParam(required = false) Double[] bounds,
+            @RequestParam(required = false) List<Double> bounds,
             @RequestParam(required = false) String excludedId
             ) {
 
@@ -81,9 +81,11 @@ public class MediaController {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
 
-        if (bounds.length != 4) {
+        if (bounds != null && bounds.size() != 4) {
             throw new IllegalArgumentException("bounds must have a length of exactly 4.");
         }
+
+        System.out.println("bounds = " + bounds);
 
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,

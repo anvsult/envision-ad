@@ -1,4 +1,4 @@
-import { LatLngLiteral } from "leaflet";
+import { LatLngBounds, LatLngLiteral } from "leaflet";
 
 export interface Media {
     id?: string;
@@ -71,6 +71,7 @@ export interface FilteredActiveMediaProps{
     minDailyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
+    bounds?: LatLngBounds | null,
     excludedId?: string | null,
     page?: number,
     size?: number

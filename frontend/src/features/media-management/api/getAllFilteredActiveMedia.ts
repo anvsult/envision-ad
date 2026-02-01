@@ -26,7 +26,7 @@ function escapeLike(input: string): string {
 
 
 export async function getAllFilteredActiveMedia(
-    {title, businessId, minPrice, maxPrice, minDailyImpressions, sort, latLng, excludedId, page, size}: FilteredActiveMediaProps
+    {title, businessId, minPrice, maxPrice, minDailyImpressions, sort, latLng, bounds, excludedId, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
@@ -62,6 +62,11 @@ export async function getAllFilteredActiveMedia(
     if (latLng && latLng.lat != null && latLng.lng != null) {
         params.append("userLat", latLng.lat.toString());
         params.append("userLng", latLng.lng.toString());
+    }
+
+    if (bounds){
+        const boundArray = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
+        boundArray.forEach(bound => params.append("bounds", bound.toString()));
     }
 
     if (excludedId) {

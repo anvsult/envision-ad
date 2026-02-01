@@ -22,7 +22,7 @@ public interface MediaService {
             String specialSort,
             Double userLat,
             Double userLng,
-            Double[] bounds,
+            List<Double> bounds,
             String excludedId
     );
 

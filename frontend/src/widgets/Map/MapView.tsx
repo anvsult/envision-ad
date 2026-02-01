@@ -14,7 +14,6 @@ const default_zoom = 10;
 interface MapViewProps {
   center: LatLngLiteral;
   medias?: MediaCardProps[];
-  map: Map|null;
   setMap: React.Dispatch<React.SetStateAction<Map|null>>;
   isMobile: boolean;
   
@@ -41,7 +40,7 @@ function MediaMarker({media}: MediaMarkerProps){
   )
 }
 
-export default function MapView({center, map, setMap,  medias, isMobile}: MapViewProps){
+export default function MapView({center, setMap,  medias, isMobile}: MapViewProps){
 
   const displayMap = useMemo(
     () => (

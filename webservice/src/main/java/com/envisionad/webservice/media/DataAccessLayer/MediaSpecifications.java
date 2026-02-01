@@ -60,29 +60,29 @@ public class MediaSpecifications {
                 : cb.notEqual(root.get("id"), excludedId);
     }
 
-    public static Specification<Media> latBetween(Double[] bounds) {
+    public static Specification<Media> withinBounds(List<Double> bounds) {
         return (root, query, cb) -> {
-            if (bounds == null)  {
-                 return null;
-            }
-
-            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.LEFT);
-            return (cb.between(location.get("lat"), bounds[0], bounds[1])) ;
-
-        };
-    }
-
-    public static Specification<Media> lngBetween(Double[] bounds) {
-        return (root, query, cb) -> {
-            if (bounds == null)  {
+            if (bounds == null || bounds.size() != 4) {
                 return null;
             }
 
-            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.LEFT);
-            return (cb.between(location.get("lng"), bounds[2], bounds[3])) ;
+            double minLat = Math.min(bounds.get(0), bounds.get(1));
+            double maxLat = Math.max(bounds.get(0), bounds.get(1));
+            double minLng = Math.min(bounds.get(2), bounds.get(3));
+            double maxLng = Math.max(bounds.get(2), bounds.get(3));
 
+            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.INNER);
+
+            Predicate latPredicate =
+                cb.between(location.get("latitude"), minLat, maxLat);
+
+            Predicate lngPredicate =
+                cb.between(location.get("longitude"), minLng, maxLng);
+
+            return cb.and(latPredicate, lngPredicate);
         };
     }
+
 
     // public static Specification<Media> locationContains(String locationName) {
     // return (root, query, cb) -> {
