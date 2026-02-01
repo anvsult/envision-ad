@@ -1,0 +1,1 @@
+export { ForbiddenPage as default } from "@/pages/errors"

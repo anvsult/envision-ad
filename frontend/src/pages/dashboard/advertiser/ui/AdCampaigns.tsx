@@ -65,6 +65,9 @@ export default function AdCampaigns() {
         const fetchBusinessId = async () => {
             try {
                 const business = await getEmployeeOrganization(user.sub);
+                if (!business) {
+                    throw new Error('Business not found');
+                }
                 setBusinessId(business.businessId);
             } catch (error) {
                 console.error('Failed to load business info', error);
