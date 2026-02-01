@@ -7,31 +7,16 @@ import {
     IconUsers,
     IconShieldCheck, IconDiscountCheck, IconChartDots, IconFileDescription
 } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
-import { useUser } from "@auth0/nextjs-auth0/client";
-import { useEffect, useState } from "react";
-import { getAccessToken } from "@auth0/nextjs-auth0";
-import { jwtDecode } from "jwt-decode";
-import { Token } from "@/entities/auth";
+import {useTranslations} from "next-intl";
+import {usePermissions} from "@/app/providers/PermissionProvider";
 
 export default function SideBar() {
+    const { permissions } = usePermissions();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
-    const { user } = useUser();
-    const [permissions, setPermissions] = useState<string[]>([]);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            const token = await getAccessToken();
-            const decodedToken = jwtDecode<Token>(token);
-            setPermissions(decodedToken.permissions);
-        };
-
-        void fetchData();
-    }, [user?.sub]);
 
     const mediaOwnerNavItems = [
-        (permissions.includes('create:media') || permissions.includes('update:media')) && (
+        (permissions.includes('create:media')) && (
             <NavLink
                 key="media"
                 component={Link}
@@ -41,7 +26,7 @@ export default function SideBar() {
                 active={pathname?.endsWith("/media-owner/media")}
             />
         ),
-        (permissions.includes("create:media") || permissions.includes("update:media")) && (
+        (permissions.includes("create:media")) && (
             <NavLink
                 key="proof"
                 component={Link}
@@ -50,11 +35,11 @@ export default function SideBar() {
                 leftSection={<IconFileDescription size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/media-owner/proof")}
             />
-        ),
+        )
     ].filter(Boolean);
 
     const advertiserNavItems = [
-        (permissions.includes('create:campaign') || permissions.includes('update:campaign') || permissions.includes('read:campaign')) && (
+        (permissions.includes('create:campaign') && (
             <>
                 <NavLink
                     key="metricOverview"
@@ -73,7 +58,7 @@ export default function SideBar() {
                     active={pathname?.endsWith("/advertiser/campaigns")}
                 />
             </>
-        )
+        ))
     ].filter(Boolean);
 
     const adminNavItems = [
@@ -107,7 +92,7 @@ export default function SideBar() {
 
             defaultValue={["organization", "media-owner", "advertiser", "admin"]}
         >
-            {advertiserNavItems.length > 0 &&
+            { advertiserNavItems.length > 0 &&
                 <Accordion.Item value="advertiser">
                     <Accordion.Control>{t("advertiserTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -118,7 +103,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {mediaOwnerNavItems.length > 0 &&
+            { mediaOwnerNavItems.length > 0 &&
                 <Accordion.Item value="media-owner">
                     <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -129,7 +114,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {adminNavItems.length == 0 &&
+            { adminNavItems.length == 0 &&
                 <Accordion.Item value="organization">
                     <Accordion.Control>{t("organizationTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -143,7 +128,7 @@ export default function SideBar() {
                                 active={pathname?.endsWith("/organization/overview")}
                             />
 
-                            {(permissions.includes('read:employee') || permissions.includes('create:employee') || permissions.includes('delete:employee')) &&
+                            { (permissions.includes('read:employee')) &&
                                 <NavLink
                                     key="employees"
                                     component={Link}
@@ -158,7 +143,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {adminNavItems.length > 0 &&
+            { adminNavItems.length > 0 &&
                 <Accordion.Item value="admin">
                     <Accordion.Control>{t("adminTitle")}</Accordion.Control>
                     <Accordion.Panel>

@@ -71,6 +71,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             const load = async () => {
                 try {
                     const business = await getEmployeeOrganization(user.sub);
+                    if (!business) {
+                        throw new Error('Business not found');
+                    }
                     const data = await getAllAdCampaigns(business.businessId);
                     setCampaigns(data);
                 } catch (e) {

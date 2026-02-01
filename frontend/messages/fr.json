@@ -3,6 +3,16 @@
     "title": "Envision AD - Publicités Abordables, Impact Inoubliable",
     "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre organization."
   },
+  "notFound": {
+    "title": "Page non trouvée",
+    "description": "La page que vous recherchez n'existe pas.",
+    "back": "Retour à l'accueil"
+  },
+  "forbidden": {
+    "title": "Accès interdit",
+    "description": "Vous n'avez pas l'autorisation d'accéder à cette page.",
+    "back": "Retour à l'accueil"
+  },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
@@ -280,14 +290,7 @@
         "stateRequired": "La province ou l’État de l’organisation est requis.",
         "zipRequired": "Le code postal de l’organisation est requis.",
         "countryRequired": "Le pays de l’organisation est requis.",
-        "roleRequired": "Au moins un rôle est requis.",
-        "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
-        "createFailed": "Échec de la création de l’organisation."
-      },
-      "success": {
-        "title": "Succès",
-        "update": "Les informations de l’organisation ont été mises à jour.",
-        "create": "L’organisation a été créée."
+        "roleRequired": "Au moins un rôle est requis."
       }
     },
     "sizes": {
@@ -346,13 +349,13 @@
       },
       "errors": {
         "title": "Erreur",
-        "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
         "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
       }
     },
     "verificationHistory": "Historique des vérifications",
     "requestVerification": "Demander une vérification",
     "verificationTable": {
+      "noHistory": "Aucun historique de demande de vérification trouvé.",
       "requestDate": "Date de la demande",
       "status": "Statut",
       "reason": "Raison"
@@ -370,12 +373,16 @@
     },
     "success": {
       "title": "Succès",
-      "verificationRequest": "La demande de vérification a été envoyée."
+      "verificationRequest": "La demande de vérification a été envoyée.",
+      "update": "Les informations de l’organisation ont été mises à jour.",
+      "create": "L’organisation a été créée."
     },
     "errors": {
       "title": "Erreur",
       "loadFailed": "Échec du chargement de l’organisation pour modification.",
-      "verificationRequestFailed": "Échec de la demande de vérification."
+      "verificationRequestFailed": "Échec de la demande de vérification.",
+      "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
+      "createFailed": "Échec de la création de l’organisation."
     }
   },
   "media": {
