@@ -80,6 +80,7 @@ class StripeWebhookServiceTest {
     private static final String SESSION_ID = "sess_123456";
     private static final String PAYMENT_INTENT_ID = "pi_3QfRBWHI4UD28XdL0H0YVZTa";
     private static final String RESERVATION_ID = "res_550e8400-e29b-41d4-a716-446655440000";
+    private static final String BUSINESS_ID = "550e8400-e29b-41d4-a716-446655440000";
 
     @BeforeEach
     void setUp() {
@@ -106,7 +107,7 @@ class StripeWebhookServiceTest {
         reservation.setStatus(ReservationStatus.PENDING);
 
         Media media = new Media();
-        media.setBusinessId(UUID.randomUUID());
+        media.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
         reservation.setMediaId(media.getId());
 
 
@@ -224,11 +225,11 @@ class StripeWebhookServiceTest {
 
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setMediaId(UUID.randomUUID());
-        reservation.setCampaignId("campaign123");
 
         Media mockMedia = new Media();
-        mockMedia.setBusinessId(UUID.randomUUID());
+        mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
+        reservation.setMediaId(mockMedia.getId());
+        
         AdCampaign mockCampaign = new AdCampaign();
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
@@ -443,11 +444,11 @@ class StripeWebhookServiceTest {
         // Arrange
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setMediaId(UUID.randomUUID());
-        reservation.setCampaignId("campaign123");
 
         Media mockMedia = new Media();
-        mockMedia.setBusinessId(UUID.randomUUID());
+        mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
+        reservation.setMediaId(mockMedia.getId());
+        
         AdCampaign mockCampaign = new AdCampaign();
 
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
@@ -479,13 +480,11 @@ class StripeWebhookServiceTest {
         PaymentIntent payment = createPaymentIntent();
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.PENDING);
-        reservation.setMediaId(UUID.randomUUID());
-        reservation.setCampaignId("campaign123");
-        reservation.setTotalPrice(new BigDecimal("150.00"));
 
         Media mockMedia = new Media();
-        mockMedia.setBusinessId(UUID.randomUUID());
+        mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
         mockMedia.setTitle("Test Media");
+        reservation.setMediaId(mockMedia.getId());
 
         AdCampaign mockCampaign = new AdCampaign();
         mockCampaign.setName("Test Campaign");
@@ -520,7 +519,12 @@ class StripeWebhookServiceTest {
         Reservation reservation = createReservation();
         reservation.setStatus(ReservationStatus.CONFIRMED);  // Already confirmed
 
+        Media mockMedia = new Media();
+        mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
+        reservation.setMediaId(mockMedia.getId());
+
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
+        when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(mockMedia));
 
         // Act - call via handlePaymentIntentSucceeded to test updateReservationStatus
         com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
@@ -593,6 +597,8 @@ class StripeWebhookServiceTest {
         payment.setStripePaymentIntentId(PAYMENT_INTENT_ID);
         payment.setReservationId(RESERVATION_ID);
         payment.setStatus(PaymentStatus.PENDING);
+        payment.setAmount(new BigDecimal("100.00")); // Set matching amount
+        payment.setBusinessId(BUSINESS_ID); // Set business ID
         return payment;
     }
 
@@ -600,6 +606,9 @@ class StripeWebhookServiceTest {
         Reservation reservation = new Reservation();
         reservation.setReservationId(RESERVATION_ID);
         reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setTotalPrice(new BigDecimal("100.00")); // Set matching amount
+        reservation.setMediaId(UUID.randomUUID()); // Set media ID
+        reservation.setCampaignId("campaign-123"); // Set campaign ID
         return reservation;
     }
 
@@ -691,7 +700,7 @@ class StripeWebhookServiceTest {
     void whenSendNotificationEmails_withConfirmedReservation_thenEmailIsSent() {
         // Arrange
         UUID mediaId = UUID.randomUUID();
-        UUID businessId = UUID.randomUUID();
+        UUID businessId = UUID.fromString(BUSINESS_ID); // Use consistent business ID
         String campaignId = "campaign123";
         String mediaOwnerEmail = "owner@example.com";
         BigDecimal totalPrice = new BigDecimal("100.00");
@@ -722,6 +731,7 @@ class StripeWebhookServiceTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
 
         PaymentIntent payment = createPaymentIntent();
+        payment.setBusinessId(businessId.toString()); // Match media business ID
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
 
         // Mock the Event and Stripe PaymentIntent
@@ -766,7 +776,7 @@ class StripeWebhookServiceTest {
     void whenSendNotificationEmails_withNoMediaOwnerEmail_thenNoEmailIsSent() {
         // Arrange
         UUID mediaId = UUID.randomUUID();
-        UUID businessId = UUID.randomUUID(); // ensure non-null businessId to avoid NPE
+        UUID businessId = UUID.fromString(BUSINESS_ID); // Use consistent business ID
         String campaignId = "campaign123";
         BigDecimal totalPrice = new BigDecimal("100.00");
 
@@ -774,9 +784,11 @@ class StripeWebhookServiceTest {
         when(media.getBusinessId()).thenReturn(businessId); // keep only the needed stubbing
 
         Reservation reservation = new Reservation();
+        reservation.setReservationId(RESERVATION_ID);
         reservation.setMediaId(mediaId);
         reservation.setCampaignId(campaignId);
         reservation.setTotalPrice(totalPrice);
+        reservation.setStatus(ReservationStatus.PENDING);
 
         AdCampaign campaign = mock(AdCampaign.class);
         // removed unnecessary stubbing: when(campaign.getCampaignId()).thenReturn(...);
@@ -789,6 +801,7 @@ class StripeWebhookServiceTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
 
         PaymentIntent payment = createPaymentIntent();
+        payment.setBusinessId(businessId.toString()); // Match media business ID
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
 
         // Mock the Event and Stripe PaymentIntent
@@ -813,7 +826,7 @@ class StripeWebhookServiceTest {
     void whenSendNotificationEmails_withNoImageLinks_thenEmailSentWithoutPreviewSection() {
         // Arrange
         UUID mediaId = UUID.randomUUID();
-        UUID businessId = UUID.randomUUID();
+        UUID businessId = UUID.fromString(BUSINESS_ID); // Use consistent business ID
         String campaignId = "campaign123";
         String mediaOwnerEmail = "owner@example.com";
         BigDecimal totalPrice = new BigDecimal("100.00");
@@ -844,6 +857,7 @@ class StripeWebhookServiceTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(campaign);
 
         PaymentIntent payment = createPaymentIntent();
+        payment.setBusinessId(businessId.toString()); // Match media business ID
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
 
         com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);

@@ -96,8 +96,9 @@ public class StripeWebhookService {
         log.info("Updated payment record: reservationId={}, status=SUCCEEDED",
                 payment.getReservationId());
 
-        // Update reservation status to CONFIRMED
-        updateReservationStatus(payment.getReservationId(), ReservationStatus.CONFIRMED);
+        // SECURITY: Validate payment before confirming reservation
+        // Update reservation status to CONFIRMED only if payment is valid
+        updateReservationStatusWithValidation(payment, ReservationStatus.CONFIRMED);
     }
 
     @Transactional
@@ -131,8 +132,9 @@ public class StripeWebhookService {
             log.info("Updated payment record from webhook: reservationId={}",
                     payment.getReservationId());
 
-            // Update reservation status to CONFIRMED
-            updateReservationStatus(payment.getReservationId(), ReservationStatus.CONFIRMED);
+            // SECURITY: Validate payment before confirming reservation
+            // Update reservation status to CONFIRMED only if payment is valid
+            updateReservationStatusWithValidation(payment, ReservationStatus.CONFIRMED);
         } else {
             log.warn("No payment record found for PaymentIntent: {}", paymentIntentId);
         }
@@ -168,8 +170,8 @@ public class StripeWebhookService {
 
             log.info("Marked payment as failed: reservationId={}", payment.getReservationId());
 
-            // Update reservation status to FAILED
-            updateReservationStatus(payment.getReservationId(), ReservationStatus.CANCELLED);
+            // Update reservation status to CANCELLED (no validation needed for failures)
+            updateReservationStatusWithoutValidation(payment.getReservationId(), ReservationStatus.CANCELLED);
         } else {
             log.warn("No payment record found for PaymentIntent: {}", paymentIntentId);
         }
@@ -222,7 +224,73 @@ public class StripeWebhookService {
         }
     }
 
-    private void updateReservationStatus(String reservationId, ReservationStatus newStatus) {
+    /**
+     * SECURITY: Validate payment against reservation before updating status.
+     * This prevents an attacker from manipulating the payment to confirm a different reservation.
+     * 
+     * Validates:
+     * 1. Payment amount matches reservation total_price
+     * 2. Payment business_id matches the media owner's business
+     * 3. Reservation exists and is in valid state for confirmation
+     */
+    private void updateReservationStatusWithValidation(PaymentIntent payment, ReservationStatus newStatus) {
+        String reservationId = payment.getReservationId();
+        Optional<Reservation> reservationOpt = reservationRepository.findByReservationId(reservationId);
+
+        if (reservationOpt.isEmpty()) {
+            log.error("SECURITY: Payment {} references non-existent reservation: {}", 
+                    payment.getStripePaymentIntentId(), reservationId);
+            return;
+        }
+
+        Reservation reservation = reservationOpt.get();
+
+        // SECURITY CHECK 1: Validate payment amount matches reservation total price
+        BigDecimal paymentAmount = payment.getAmount();
+        BigDecimal reservationPrice = reservation.getTotalPrice();
+        
+        if (paymentAmount == null || reservationPrice == null) {
+            log.error("SECURITY: Missing price data - payment: {}, reservation: {}", 
+                    paymentAmount, reservationPrice);
+            return;
+        }
+
+        // Compare with tolerance for rounding (1 cent difference allowed)
+        BigDecimal difference = paymentAmount.subtract(reservationPrice).abs();
+        BigDecimal tolerance = new BigDecimal("0.01");
+        
+        if (difference.compareTo(tolerance) > 0) {
+            log.error("SECURITY: Payment amount mismatch! Payment: ${} for reservation: {} (expected: ${}). " +
+                    "Possible price manipulation attempt.", 
+                    paymentAmount, reservationId, reservationPrice);
+            return;
+        }
+
+        // SECURITY CHECK 2: Validate payment business_id matches media owner
+        Media media = mediaRepository.findById(reservation.getMediaId())
+                .orElseThrow(() -> new MediaNotFoundException(reservation.getMediaId().toString()));
+        
+        String mediaOwnerBusinessId = media.getBusinessId().toString();
+        String paymentBusinessId = payment.getBusinessId();
+        
+        if (!mediaOwnerBusinessId.equals(paymentBusinessId)) {
+            log.error("SECURITY: Payment business_id mismatch! Payment for business: {}, but media owned by: {}. " +
+                    "Possible payment hijacking attempt.", 
+                    paymentBusinessId, mediaOwnerBusinessId);
+            return;
+        }
+
+        log.info("SECURITY: Payment validation passed for reservation: {}", reservationId);
+
+        // Validation passed - update reservation status
+        updateReservationStatusWithoutValidation(reservationId, newStatus);
+    }
+
+    /**
+     * Update reservation status without payment validation.
+     * Only use when validation is not required (e.g., payment failures).
+     */
+    private void updateReservationStatusWithoutValidation(String reservationId, ReservationStatus newStatus) {
         Optional<Reservation> reservationOpt = reservationRepository.findByReservationId(reservationId);
 
         if (reservationOpt.isEmpty()) {
