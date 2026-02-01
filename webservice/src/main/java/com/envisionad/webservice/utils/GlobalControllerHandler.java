@@ -1,6 +1,7 @@
 package com.envisionad.webservice.utils;
 
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
 import com.envisionad.webservice.business.exceptions.*;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
+import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
+import com.envisionad.webservice.reservation.exceptions.InvalidReservationException; // New import
 import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import static org.springframework.http.HttpStatus.*;
@@ -82,6 +85,18 @@ public class GlobalControllerHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(InvalidReservationException.class)
+    public HttpErrorInfo handleInvalidReservationException(InvalidReservationException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(InsufficientLoopDurationException.class)
+    public HttpErrorInfo handleInsufficientLoopDurationException(InsufficientLoopDurationException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public HttpErrorInfo handleIllegalArgumentException(IllegalArgumentException ex) {
         return createHttpErrorInfo(BAD_REQUEST, ex);
@@ -102,6 +117,12 @@ public class GlobalControllerHandler {
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(AdCampaignNotFoundException.class)
     public HttpErrorInfo handleAdCampaignNotFoundException(AdCampaignNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(AdNotFoundException.class)
+    public HttpErrorInfo handleAdNotFoundException(AdNotFoundException ex) {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 

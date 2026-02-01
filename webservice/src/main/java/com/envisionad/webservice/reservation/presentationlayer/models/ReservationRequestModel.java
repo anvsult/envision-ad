@@ -10,11 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ReservationRequestModel {
     @NotBlank
-    private String mediaId;
-    @NotBlank
     private String campaignId;
     @NotNull
     private LocalDateTime startDate;
     @NotNull
     private LocalDateTime endDate;
+
+    // Optional: frontend may include a Stripe PaymentIntent id when payment completed
+    private String paymentIntentId;
 }

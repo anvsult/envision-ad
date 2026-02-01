@@ -15,21 +15,30 @@ import {
     Divider,
     ThemeIcon,
     Title,
-    Input
+    Input,
+    Loader
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import { IconCheck, IconCalendar, IconCreditCard, IconEye } from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconCreditCard, IconEye} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
 import { createReservation } from "@/features/reservation-management/api";
 import { AdCampaign } from "@/entities/ad-campaign";
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 import '@mantine/dates/styles.css';
 import { useLocale, useTranslations } from "next-intl";
 import 'dayjs/locale/fr';
-import { getEmployeeOrganization } from "@/features/organization-management/api";
-import { useUser } from "@auth0/nextjs-auth0/client";
+import {getEmployeeOrganization} from "@/features/organization-management/api";
+import {useUser} from "@auth0/nextjs-auth0/client";
+import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+import {createPaymentIntent} from "@/features/payment";
+
+// Only initialize Stripe if the publishable key is present
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+    : null;
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -49,6 +58,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
     const { user } = useUser();
+
+    // Payment states
+    const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+    const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
     useEffect(() => {
         if (!user?.sub) return;
@@ -97,9 +111,10 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         const d = dayjs(date);
         const startDateStr = dateRange[0];
         const endDateStr = dateRange[1];
+        const today = dayjs();
 
-        // 1. Disable Past Dates
-        if (d.isBefore(dayjs(), 'day')) {
+        // 1. Disable Today and Past Dates
+        if (d.isBefore(today, 'day') || d.isSame(today, 'day')) {
             return { disabled: true };
         }
 
@@ -129,7 +144,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
         return {};
     };
 
-    const nextStep = () => {
+    const nextStep = async () => {
+        // Step 0: Campaign & Dates selection -> Step 1: Review
         if (activeStep === 0) {
             const newErrors: { campaign?: string; date?: string } = {};
             let hasError = false;
@@ -147,101 +163,143 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 setErrors(newErrors);
                 return;
             }
+
+            if (!media.id || !media.businessId || !selectedCampaignId) {
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.missingPaymentInfo'),
+                    color: 'red'
+                });
+                return;
+            }
+
+            // Move to review step
+            setErrors({});
+            setActiveStep(1);
+            return;
         }
-        setErrors({});
-        setActiveStep((current) => (current < 3 ? current + 1 : current));
+
+        // Step 1: Review -> Step 2: Payment (create checkout session)
+        if (activeStep === 1) {
+            if (!media.id || !selectedCampaignId || !dateRange[0] || !dateRange[1]) {
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.missingPaymentInfo'),
+                    color: 'red'
+                });
+                return;
+            }
+
+            setLoading(true);
+            try {
+                // 1. Create a pending reservation
+                const reservationPayload = {
+                    campaignId: selectedCampaignId,
+                    startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                    endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                };
+                const reservation = await createReservation(media.id, reservationPayload);
+
+                // 2. Create a payment intent with the new reservation ID
+                const paymentIntentPayload = {
+                    mediaId: media.id,
+                    campaignId: selectedCampaignId,
+                    startDate: dayjs(dateRange[0]),
+                    endDate: dayjs(dateRange[1]),
+                    reservationId: reservation.reservationId, // Pass reservationId to payment intent
+                };
+                const data = await createPaymentIntent(paymentIntentPayload);
+
+
+                // Set client secret for embedded checkout
+                if (data.clientSecret) {
+                    setClientSecret(data.clientSecret);
+                    setActiveStep(2);
+                } else {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('errors.paymentInitFailed'),
+                        color: 'red'
+                    });
+                }
+            } catch (error) {
+                console.error('Payment init error:', error);
+                notifications.show({
+                    title: t('errorTitle'),
+                    message: t('errors.paymentInitFailed'),
+                    color: 'red'
+                });
+            } finally {
+                setLoading(false);
+            }
+            return;
+        }
     };
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-    const handleConfirmReservation = async () => {
-        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) {
-            notifications.show({
-                title: t('errorTitle'),
-                message: t('errors.selectCampaign') + ' & ' + t('errors.selectDate'),
-                color: 'red'
-            });
-            return;
+    /**
+     * Create the reservation after payment is confirmed.
+     * This is called ONCE after Stripe confirms payment completion.
+     */
+
+
+    function billingWeeks(start: Dayjs, end: Dayjs): number {
+        if (end.isBefore(start)) {
+            // swap so calculation still works if dates are reversed
+            [start, end] = [end, start];
+        }
+        const totalDays = end.diff(start, 'day');
+        return Math.max(1, Math.ceil(totalDays / 7));
+    }
+
+    /**
+     * Calculate total cost for UI display only.
+     * NOTE: The actual payment amount is calculated and validated on the backend for security.
+     * This is just an estimate for the user to see what they'll pay.
+     *
+     * @returns Estimated total cost in dollars
+     */
+    const calculateTotalCost = (): number => {
+        if (!dateRange[0] || !dateRange[1] || !media.price || media.price <= 0) {
+            return 0;
         }
 
-        if (!media.id) {
-            notifications.show({ title: t('errorTitle'), message: t('mediaIdMissing'), color: 'red' });
-            return;
-        }
-
-        setLoading(true);
-        try {
-            const payload = {
-                mediaId: media.id,
-                campaignId: selectedCampaignId,
-                startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-                endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-            };
-
-            await createReservation(media.id, payload);
-
-            setActiveStep(3); // Move to completion step
-
-            notifications.show({
-                title: t('successTitle'),
-                message: t('successMessage'),
-                color: 'green'
-            });
-
-        } catch (error: unknown) {
-            console.error('Failed to create reservation:', error);
-
-            if (error && typeof error === 'object' && 'response' in error) {
-                const axiosError = error as { response?: { status: number; data?: { message?: string } } };
-
-                if (axiosError.response?.status === 409) {
-                    notifications.show({
-                        title: t('duplicateTitle'),
-                        message: t('duplicateMessage'),
-                        color: 'orange'
-                    });
-                } else if (axiosError.response?.status === 403) {
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: t('missingPermissionErrorMessage'),
-                        color: 'red'
-                    });
-                } else if (axiosError.response?.status === 404) {
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: t('campaignNotFoundErrorMessage'),
-                        color: 'red'
-                    });
-                } else {
-                    const errorMessage = axiosError.response?.data?.message || t('failedReserve');
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: errorMessage,
-                        color: 'red'
-                    });
-                }
-            } else {
-                notifications.show({
-                    title: t('errorTitle'),
-                    message: t('networkError'),
-                    color: 'red'
-                });
-            }
-        } finally {
-            setLoading(false);
-        }
+        const weeks = billingWeeks(dayjs(dateRange[0]), dayjs(dateRange[1]));
+        return media.price * weeks;
     };
 
-    const calculateTotalCost = () => {
-        if (!dateRange[0] || !dateRange[1]) return 0;
-        const weeks = dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks') || 1;
-        return Math.round((media.price || 100) * weeks * 100) / 100;
+    /**
+     * Format currency for display
+     * @param amount - Amount in dollars
+     * @returns Formatted currency string (e.g., "123.45")
+     */
+    const formatCurrency = (amount: number): string => {
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'CAD',
+        }).format(amount);
+    };
+
+    /**
+     * Reset all state when modal closes
+     */
+    const handleModalClose = () => {
+        onClose();
+        // Small delay to let the modal close animation complete
+        setTimeout(() => {
+            setActiveStep(0);
+            setDateRange([null, null]);
+            setSelectedCampaignId(null);
+            setErrors({});
+            setClientSecret(null);
+        }, 200);
     };
 
     return (
         <Modal
             opened={opened}
-            onClose={onClose}
+            onClose={handleModalClose}
             size="lg"
             title={<Text fw={700}>{t('title', { title: media.title })}</Text>}
             centered
@@ -254,9 +312,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     // Only allow going back, not forward
                     if (step < activeStep) setActiveStep(step);
                 }} allowNextStepsSelect={false}>
-                    <Stepper.Step icon={<IconCalendar size={18} />} />
-                    <Stepper.Step icon={<IconCreditCard size={18} />} />
-                    <Stepper.Step icon={<IconEye size={18} />} />
+                    <Stepper.Step  icon={<IconCalendar size={18} />} />
+                    <Stepper.Step  icon={<IconEye size={18} />} />
+                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -271,15 +329,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 <Button
                                     mt="md"
                                     color="green"
-                                    onClick={() => {
-                                        onClose();
-                                        setTimeout(() => {
-                                            setActiveStep(0);
-                                            setDateRange([null, null]);
-                                            setSelectedCampaignId(null);
-                                            setErrors({});
-                                        }, 200);
-                                    }}
+                                    onClick={handleModalClose}
                                 >
                                     {t('doneButton')}
                                 </Button>
@@ -337,37 +387,18 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
                                     {dateRange[0] && dateRange[1] && (
                                         <Text c="blue" fw={500}>
-                                            Selected: {dayjs(dateRange[0]).format('MMM DD')} to {dayjs(dateRange[1]).format('MMM DD')}
-                                            {' '}({dayjs(dateRange[1]).diff(dayjs(dateRange[0]), 'weeks')} weeks)
+                                            {t('dateSelection.selected', {
+                                                start: dayjs(dateRange[0]).format('MMM DD'),
+                                                end: dayjs(dateRange[1]).format('MMM DD'),
+                                                weeks: billingWeeks(dayjs(dateRange[0]), dayjs(dateRange[1]))
+                                            })}
                                         </Text>
                                     )}
                                 </Stack>
                             )}
 
-                            {/* Step 2: Payment Method (Stripe integration - to be implemented) */}
+                            {/* Step 2: Review & Confirm */}
                             {activeStep === 1 && (
-                                <Stack align="center" gap="lg">
-
-                                    {/* TODO: Implement Stripe Payment Element here */}
-                                    {/*<Stack w="100%" maw={500}>*/}
-                                    {/*    <Text fw={500}>{t('selectPaymentMethod')}</Text>*/}
-                                    {/*    <StripePaymentElement*/}
-                                    {/*        onPaymentMethodChange={setPaymentMethod}*/}
-                                    {/*    />*/}
-                                    {/*</Stack>*/}
-
-                                    <Paper withBorder p="xl" w="100%" maw={500} ta="center">
-                                        <IconCreditCard size={48} color="gray" style={{ opacity: 0.3 }} />
-                                        <Text c="dimmed" mt="md">
-                                            {"THIS IS A PLACEHOLDER FOR STRIPE PAYMENT INTEGRATION. PAYMENT FUNCTIONALITY WILL BE IMPLEMENTED IN THE FUTURE."}
-                                        </Text>
-                                    </Paper>
-                                </Stack>
-                            )}
-
-
-                            {/* Step 3: Review */}
-                            {activeStep === 2 && (
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
@@ -389,11 +420,34 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                ${calculateTotalCost()}
+
+                                                {formatCurrency(calculateTotalCost())}
                                             </Text>
                                         </Group>
                                     </Paper>
                                 </Stack>
+                            )}
+
+                            {/* Step 3: Embedded Stripe Checkout */}
+                            {activeStep === 2 && clientSecret && (
+                                missingKey ? (
+                                    <Text c="red">{t('errors.missingPaymentInfo')}</Text>
+                                ) : stripePromise ? (
+                                    <EmbeddedCheckoutProvider
+                                        stripe={stripePromise}
+                                        options={{
+                                            clientSecret,
+                                            onComplete: () => {
+                                                console.log('Payment completed, moving to success screen...');
+                                                setActiveStep(3);
+                                            }
+                                        }}
+                                    >
+                                        <EmbeddedCheckout />
+                                    </EmbeddedCheckoutProvider>
+                                ) : (
+                                    <Center><Loader/></Center>
+                                )
                             )}
                         </Box>
                     </>
@@ -401,15 +455,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
                 {activeStep < 3 && (
                     <Group justify="center">
-                        <Button variant="default" onClick={activeStep === 0 ? onClose : prevStep}>
+                        <Button variant="default" onClick={activeStep === 0 ? handleModalClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
 
-                        {activeStep < 2 ? (
-                            <Button onClick={nextStep}>{t('nextStepButton')}</Button>
-                        ) : (
-                            <Button onClick={handleConfirmReservation} loading={loading} color="green">
-                                {t('confirmPayButton')}
+                        {activeStep <= 1 && (
+                            <Button onClick={nextStep} loading={loading}>
+                                {t('nextStepButton')}
                             </Button>
                         )}
                     </Group>

@@ -17,7 +17,7 @@ export default class HomePage {
     signupLink = () => this.page.getByRole('button', { name: 'Register' });
     languageButton = () => this.page.getByRole('button', { name: 'Switch language' });
     homeLink = () => this.page.getByRole('link', { name: 'Home' });
-    browseLink = () => this.page.getByRole('link', { name: 'Browse' });
+    browseLink = () => this.page.getByRole('banner').getByRole('link', { name: 'Browse' });
 
     usernameTextbox = () => this.page.getByRole('textbox', { name: 'Username or Email address' });
     passwordTextbox = () => this.page.getByRole('textbox', { name: 'Password' });
