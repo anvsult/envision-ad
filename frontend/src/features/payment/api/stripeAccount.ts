@@ -6,13 +6,3 @@ export const getStripeAccountStatus = async (businessId: string) => {
     });
     return response.data;
 };
-
-export const connectStripeAccount = async (businessId: string, returnUrl: string, refreshUrl: string) => {
-    const response = await axiosInstance.post('/payments/connect-account', {
-        businessId,
-        returnUrl,
-        refreshUrl
-    });
-    return response.data;
-};
-
