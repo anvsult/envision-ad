@@ -488,8 +488,6 @@ public class StripeServiceImpl implements StripeService {
             dashboard.put("advertiserPaymentCount", advertiserPayments.size());
             dashboard.put("isMediaOwner", true);
 
-            dashboard.put("netEarnings", BigDecimal.ZERO);
-            dashboard.put("paymentCount", advertiserPayments.size());
         }
 
         // Finalize CPM
