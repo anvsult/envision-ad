@@ -1,6 +1,7 @@
 import { OrganizationResponseDTO } from "@/entities/organization";
 import axiosInstance from "@/shared/api/axios/axios";
 import axios from "axios";
+import {log} from "node:util";
 
 export const getEmployeeOrganization = async (id: string): Promise<OrganizationResponseDTO | null> => {
     try {
@@ -15,8 +16,9 @@ export const getEmployeeOrganization = async (id: string): Promise<OrganizationR
 };
 
 export const getEmployeeOrganizationServer = async (id: string, token: string): Promise<OrganizationResponseDTO | null> => {
+    const baseUrl = process.env.WEBSERVICE_API_URL || process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/businesses/employee/${encodeURIComponent(id)}`,
+        `${baseUrl}/businesses/employee/${encodeURIComponent(id)}`,
         {
             headers: {
                 'Authorization': `Bearer ${token}`,

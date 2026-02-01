@@ -10,8 +10,9 @@ export const getAllOrganizationEmployees = async (organizationId: string): Promi
 };
 
 export const getAllOrganizationEmployeesServer = async (businessId: string, token: string): Promise<Employee[]> => {
+    const baseUrl = process.env.WEBSERVICE_API_URL || process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/businesses/${businessId}/employees`,
+        `${baseUrl}/businesses/${businessId}/employees`,
         {
             headers: {
                 'Authorization': `Bearer ${token}`,
