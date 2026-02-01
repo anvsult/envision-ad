@@ -14,6 +14,7 @@ import {
     Center,
     Box,
     Skeleton,
+    Button,
 } from "@mantine/core";
 import {
     IconCoin,
@@ -34,6 +35,12 @@ export function AdvertiserOverview() {
     const [timeRange, setTimeRange] = useState<string | null>("Weekly");
     const [mounted, setMounted] = useState(false);
     const [activeCampaignCount, setActiveCampaignCount] = useState<number | null>(null);
+    const [totalSpend, setTotalSpend] = useState<number>(0);
+    const [grossEarnings, setGrossEarnings] = useState<number>(0);
+    const [estimatedImpressions, setEstimatedImpressions] = useState<number>(0);
+    const [averageCPM, setAverageCPM] = useState<number>(0);
+    const [chartData, setChartData] = useState<any[]>([]);
+    const [isMediaOwner, setIsMediaOwner] = useState(false);
 
     useEffect(() => {
         setMounted(true);
@@ -41,15 +48,10 @@ export function AdvertiserOverview() {
             try {
                 const token = await getAccessToken();
                 const decodedToken = jwtDecode<any>(token);
-                // decodedToken actually provides accessToken info. We need the userId (sub).
-                // But wait, user ID is in the user object from useUser usually.
-                // However, let's use the token's sub if available, or fetch user profile.
-                // Actually the backend endpoint getBusinessByUserId takes the userId as path var.
-                // Wait, request to /api/v1/businesses/employee/{userId}
-
                 const userId = decodedToken.sub;
 
-                const businessResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/businesses/employee/${userId}`, {
+                // 1. Get Business ID
+                const businessResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/businesses/employee/${encodeURIComponent(userId)}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
 
@@ -57,7 +59,8 @@ export function AdvertiserOverview() {
                     const business = await businessResponse.json();
                     const businessId = business.businessId;
 
-                    const countResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/businesses/${businessId}/campaigns/active-count`, {
+                    // 2. Get Active Campaign Count
+                    const countResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/businesses/${businessId}/campaigns/active-count`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
 
@@ -65,79 +68,150 @@ export function AdvertiserOverview() {
                         const count = await countResponse.json();
                         setActiveCampaignCount(count);
                     }
+
+                    // 3. Get Dashboard Data (Spend & Payments)
+                    // The backend automatically determines based on businessId if it's Advertiser or Media Owner
+                    // If no connected Stripe account, it returns "payments" list and "totalSpend" for Advertiser
+                    const dashboardResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/dashboard?businessId=${businessId}&period=${timeRange || "Weekly"}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+
+                    const data = await dashboardResponse.json();
+
+                    let calculatedTotal = 0;
+
+                    // Process Chart Data
+                    const paymentsByDate: Record<string, { spend: number }> = {};
+
+                    // Process Spend (Outgoing)
+                    if (data.payments && Array.isArray(data.payments)) {
+                        data.payments.forEach((payment: any) => {
+                            const date = new Date(payment.created * 1000);
+                            let dateKey = "";
+                            if (timeRange === "Weekly") {
+                                dateKey = date.toLocaleDateString('en-US', { weekday: 'short' });
+                            } else if (timeRange === "Monthly") {
+                                const day = date.getDate();
+                                const weekNum = Math.ceil(day / 7);
+                                dateKey = `Week ${weekNum}`;
+                            } else {
+                                dateKey = date.toLocaleDateString('en-US', { month: 'short' });
+                            }
+                            if (!paymentsByDate[dateKey]) paymentsByDate[dateKey] = { spend: 0 };
+                            paymentsByDate[dateKey].spend += payment.amount;
+                            calculatedTotal += payment.amount;
+                        });
+                    }
+
+                    // Process Earnings (Incoming Payouts) -> MERGE INTO SPEND
+                    // Reverting to use 'payouts' (Stripe Data) as requested.
+                    if (data.payouts && Array.isArray(data.payouts)) {
+                        data.payouts.forEach((payout: any) => {
+                            // Payouts (BalanceTransactions) also have 'created' and 'amount'
+                            const date = new Date(payout.created * 1000);
+                            let dateKey = "";
+                            if (timeRange === "Weekly") {
+                                dateKey = date.toLocaleDateString('en-US', { weekday: 'short' });
+                            } else if (timeRange === "Monthly") {
+                                const day = date.getDate();
+                                const weekNum = Math.ceil(day / 7);
+                                dateKey = `Week ${weekNum}`;
+                            } else {
+                                dateKey = date.toLocaleDateString('en-US', { month: 'short' });
+                            }
+                            if (!paymentsByDate[dateKey]) paymentsByDate[dateKey] = { spend: 0 };
+                            paymentsByDate[dateKey].spend += payout.amount; // Treating Earnings as Spend
+                            calculatedTotal += payout.amount;
+                        });
+                    }
+
+                    // Set Total Spend from manual calculation of all transactions
+                    // Set Total Spend from manual calculation of all transactions
+                    setTotalSpend(calculatedTotal);
+
+                    if (data.estimatedImpressions !== undefined) setEstimatedImpressions(data.estimatedImpressions);
+                    if (data.averageCPM !== undefined) setAverageCPM(data.averageCPM);
+
+                    // We can still track isMediaOwner if needed, but for the graph we merge.
+                    if (data.isMediaOwner !== undefined) setIsMediaOwner(data.isMediaOwner);
+
+                    // Transform to Chart Data Array
+                    let templateData = [];
+                    if (timeRange === "Weekly") {
+                        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+                        templateData = days.map(d => ({ date: d, Spend: 0 }));
+                    } else if (timeRange === "Monthly") {
+                        templateData = [
+                            { date: "Week 1", Spend: 0 },
+                            { date: "Week 2", Spend: 0 },
+                            { date: "Week 3", Spend: 0 },
+                            { date: "Week 4", Spend: 0 },
+                            { date: "Week 5", Spend: 0 }
+                        ];
+                    } else {
+                        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                        templateData = months.map(m => ({ date: m, Spend: 0 }));
+                    }
+
+                    // Fill template with real data
+                    const filledData = templateData.map(item => ({
+                        ...item,
+                        Spend: (paymentsByDate[item.date]?.spend || 0) / 100, // Convert cents to dollars
+                    }));
+
+                    setChartData(filledData);
                 }
             } catch (error) {
                 console.error("Failed to fetch dashboard data:", error);
             }
         };
         fetchData();
-    }, []);
+    }, [timeRange]);
 
-    // Mock Data
+    const getComparisonLabel = () => {
+        switch (timeRange) {
+            case "Weekly":
+                return t("graphs.comparedToLastWeek");
+            case "Monthly":
+                return t("graphs.comparedToLastMonth");
+            case "Yearly":
+                return t("graphs.comparedToLastYear");
+            default:
+                return t("graphs.comparedToLastMonth");
+        }
+    };
+
+    // Stats
     const stats = [
         {
             title: t("graphs.totalAdSpend"),
-            value: "C$6,700",
-            diff: 12,
-            period: t("graphs.comparedToLastWeek"),
+            value: `C$${(totalSpend / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            diff: 0, // No diff logic for now
+            period: getComparisonLabel(),
             icon: IconCoin,
         },
         {
             title: t("graphs.activeCampaigns"),
             value: activeCampaignCount !== null ? activeCampaignCount.toString() : "-",
-            diff: -1, // Negative for demo
-            period: t("graphs.comparedToLastWeek"),
+            diff: 0,
+            period: getComparisonLabel(),
             icon: IconSpeakerphone,
         },
         {
             title: t("graphs.estimatedImpressions"),
-            value: "1.4M",
-            diff: 55,
-            period: t("graphs.comparedToLastWeek"),
+            value: estimatedImpressions.toLocaleString(),
+            diff: 0,
+            period: getComparisonLabel(),
             icon: IconEye,
         },
         {
             title: t("graphs.averageCPM"),
-            value: "C$0.85",
-            diff: 0.5,
-            period: t("graphs.comparedToLastWeek"),
+            value: `C$${averageCPM.toFixed(2)}`,
+            diff: 0,
+            period: getComparisonLabel(),
             icon: IconChartBar,
         },
     ];
-
-    const weeklyData = [
-        { date: "Mon", Impressions: 2400, Spend: 1200 },
-        { date: "Tue", Impressions: 1398, Spend: 900 },
-        { date: "Wed", Impressions: 9800, Spend: 2100 },
-        { date: "Thu", Impressions: 3908, Spend: 1400 },
-        { date: "Fri", Impressions: 4800, Spend: 1800 },
-        { date: "Sat", Impressions: 3800, Spend: 1000 },
-        { date: "Sun", Impressions: 4300, Spend: 1500 },
-    ];
-
-    const monthlyData = [
-        { date: "Week 1", Impressions: 15000, Spend: 5000 },
-        { date: "Week 2", Impressions: 18500, Spend: 6200 },
-        { date: "Week 3", Impressions: 22000, Spend: 7500 },
-        { date: "Week 4", Impressions: 19500, Spend: 6800 },
-    ];
-
-    const yearlyData = [
-        { date: "Jan", Impressions: 45000, Spend: 15000 },
-        { date: "Feb", Impressions: 52000, Spend: 18000 },
-        { date: "Mar", Impressions: 48000, Spend: 16500 },
-        { date: "Apr", Impressions: 61000, Spend: 21000 },
-        { date: "May", Impressions: 58000, Spend: 19500 },
-        { date: "Jun", Impressions: 65000, Spend: 23000 },
-        { date: "Jul", Impressions: 72000, Spend: 25000 },
-        { date: "Aug", Impressions: 68000, Spend: 24000 },
-        { date: "Sep", Impressions: 74000, Spend: 26000 },
-        { date: "Oct", Impressions: 81000, Spend: 29000 },
-        { date: "Nov", Impressions: 86000, Spend: 31000 },
-        { date: "Dec", Impressions: 92000, Spend: 35000 },
-    ];
-
-    const chartData = timeRange === "Monthly" ? monthlyData : timeRange === "Yearly" ? yearlyData : weeklyData;
 
     // Helper to render stats cards
     const items = stats.map((stat) => {
@@ -176,17 +250,20 @@ export function AdvertiserOverview() {
         <Stack gap="xl" p="xl">
             <Group justify="space-between" align="center" mb="lg">
                 <Title order={2}>Dashboard Overview</Title>
-                <Select
-                    value={timeRange}
-                    onChange={setTimeRange}
-                    data={[
-                        { value: "Weekly", label: t("timeRanges.weekly") },
-                        { value: "Monthly", label: t("timeRanges.monthly") },
-                        { value: "Yearly", label: t("timeRanges.yearly") },
-                    ]}
-                    w={150}
-                    allowDeselect={false}
-                />
+                <Group>
+                    <Select
+                        value={timeRange}
+                        onChange={setTimeRange}
+                        data={[
+                            { value: "Weekly", label: t("timeRanges.weekly") },
+                            { value: "Monthly", label: t("timeRanges.monthly") },
+                            { value: "Yearly", label: t("timeRanges.yearly") },
+                        ]}
+                        w={150}
+                        allowDeselect={false}
+                    />
+
+                </Group>
             </Group>
 
             <Grid gutter="xl">{items}</Grid>
@@ -220,7 +297,7 @@ export function AdvertiserOverview() {
                                     data={chartData}
                                     dataKey="date"
                                     series={[
-                                        { name: "Impressions", label: t("graphs.impressions"), color: "blue.6" },
+                                        // Always show Spend series (which now includes Earnings/Payouts if applicable)
                                         { name: "Spend", label: t("graphs.spent"), color: "cyan.6" },
                                     ]}
                                     curveType="monotone"
@@ -243,7 +320,7 @@ export function AdvertiserOverview() {
                                                                 <Text size="sm" c="dimmed">{item.name === "Spend" ? t("graphs.spent") : t("graphs.impressions")}</Text>
                                                             </Group>
                                                             <Text size="sm" fw={500}>
-                                                                {item.name === "Spend" ? `C$${item.value}` : item.value}
+                                                                {item.name === "Spend" ? `C$${item.value}` : item.name === "Earnings" ? `C$${item.value}` : item.value}
                                                             </Text>
                                                         </Group>
                                                     ))}

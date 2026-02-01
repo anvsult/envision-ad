@@ -15,13 +15,15 @@ public interface StripeService {
     /**
      * Create connected account and return onboarding url and account id in a map
      */
-    Map<String, String> createConnectedAccountAndLink(Jwt jwt, String businessId, String returnUrl, String refreshUrl) throws StripeException;
+    Map<String, String> createConnectedAccountAndLink(Jwt jwt, String businessId, String returnUrl, String refreshUrl)
+            throws StripeException;
 
+    Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId)
+            throws StripeException;
 
-    Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId) throws StripeException;
-
-    Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId, String reservationId,
-                                                        LocalDateTime startDate, LocalDateTime endDate) throws StripeException;
+    Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId,
+            String reservationId,
+            LocalDateTime startDate, LocalDateTime endDate) throws StripeException;
 
     /**
      * Get Stripe account status for a business

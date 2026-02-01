@@ -47,6 +47,8 @@
         "campaignPerformance": "Campaign Performance",
         "mediaDistribution": "Media Distribution",
         "comparedToLastWeek": "Compared to last week",
+        "comparedToLastMonth": "Compared to last month",
+        "comparedToLastYear": "Compared to last year",
         "impressions": "Impressions",
         "spent": "Spent",
         "gym": "Gym",
@@ -476,7 +478,9 @@
       "description": "The advertiser was notified by email for this campaign.",
       "uploadedFiles": "Uploaded: {count} file(s)"
     },
-    "page": { "title": "Proof of Display" },
+    "page": {
+      "title": "Proof of Display"
+    },
     "table": {
       "image": "Image",
       "name": "Name",
@@ -881,14 +885,14 @@
       "continueOnboarding": "Continue Onboarding"
     },
     "notifications": {
-        "success": {
-            "title": "Onboarding Complete!",
-            "message": "Your account is ready. We're just confirming the final details with Stripe."
-        },
-        "refresh": {
-            "title": "Onboarding Session Expired",
-            "message": "Your session expired. Please try connecting again."
-        }
+      "success": {
+        "title": "Onboarding Complete!",
+        "message": "Your account is ready. We're just confirming the final details with Stripe."
+      },
+      "refresh": {
+        "title": "Onboarding Session Expired",
+        "message": "Your session expired. Please try connecting again."
+      }
     }
   },
   "invitation": {

@@ -28,7 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 
 @Slf4j
 @Service
@@ -37,26 +44,30 @@ public class StripeServiceImpl implements StripeService {
     private final PaymentIntentRepository paymentIntentRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final MediaRepository mediaRepository;
+    private final ReservationRepository reservationRepository;
     private final JwtUtils jwtUtils;
-
 
     @Value("${stripe.platform-fee-percent}")
     private int platformFeePercent;
 
     public StripeServiceImpl(StripeAccountRepository stripeAccountRepository,
-                             PaymentIntentRepository paymentIntentRepository,
-                             AdCampaignRepository adCampaignRepository,
-                             MediaRepository mediaRepository,
-                             JwtUtils jwtUtils) {
+            PaymentIntentRepository paymentIntentRepository,
+            AdCampaignRepository adCampaignRepository,
+            MediaRepository mediaRepository,
+            ReservationRepository reservationRepository,
+            JwtUtils jwtUtils) {
         this.stripeAccountRepository = stripeAccountRepository;
         this.paymentIntentRepository = paymentIntentRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.mediaRepository = mediaRepository;
+        this.reservationRepository = reservationRepository;
         this.jwtUtils = jwtUtils;
     }
+
     @Override
     public String createConnectedAccount(Jwt jwt, String businessId) {
-        // Ensure caller is an employee of the business before creating a connected account
+        // Ensure caller is an employee of the business before creating a connected
+        // account
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -72,15 +83,12 @@ public class StripeServiceImpl implements StripeService {
                                                 .setCardPayments(
                                                         AccountCreateParams.Capabilities.CardPayments.builder()
                                                                 .setRequested(true)
-                                                                .build()
-                                                )
+                                                                .build())
                                                 .setTransfers(
                                                         AccountCreateParams.Capabilities.Transfers.builder()
                                                                 .setRequested(true)
-                                                                .build()
-                                                )
-                                                .build()
-                                )
+                                                                .build())
+                                                .build())
                                 .build();
 
                         Account account = Account.create(params);
@@ -99,7 +107,8 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public String createAccountLink(String stripeAccountId, String returnUrl, String refreshUrl) throws StripeException {
+    public String createAccountLink(String stripeAccountId, String returnUrl, String refreshUrl)
+            throws StripeException {
         AccountLinkCreateParams params = AccountLinkCreateParams.builder()
                 .setAccount(stripeAccountId)
                 .setRefreshUrl(refreshUrl)
@@ -112,7 +121,8 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public Map<String, String> createConnectedAccountAndLink(Jwt jwt, String businessId, String returnUrl, String refreshUrl) throws StripeException {
+    public Map<String, String> createConnectedAccountAndLink(Jwt jwt, String businessId, String returnUrl,
+            String refreshUrl) throws StripeException {
         String accountId = createConnectedAccount(jwt, businessId);
         String link = createAccountLink(accountId, returnUrl, refreshUrl);
         Map<String, String> resp = new HashMap<>();
@@ -153,7 +163,8 @@ public class StripeServiceImpl implements StripeService {
 
     @Transactional
     @Override
-    public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId) throws StripeException {
+    public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId)
+            throws StripeException {
         // Validate amount
         if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidPricingException(amount);
@@ -162,8 +173,8 @@ public class StripeServiceImpl implements StripeService {
         // Check for duplicate payment attempt (idempotency check)
         Optional<PaymentIntent> existingPayment = paymentIntentRepository.findByReservationId(reservationId);
         if (existingPayment.isPresent() &&
-            (existingPayment.get().getStatus() == PaymentStatus.PENDING ||
-             existingPayment.get().getStatus() == PaymentStatus.SUCCEEDED)) {
+                (existingPayment.get().getStatus() == PaymentStatus.PENDING ||
+                        existingPayment.get().getStatus() == PaymentStatus.SUCCEEDED)) {
             log.warn("Duplicate payment attempt detected for reservation: {}", reservationId);
             throw new DuplicatePaymentException(reservationId);
         }
@@ -185,51 +196,48 @@ public class StripeServiceImpl implements StripeService {
                 .divide(BigDecimal.valueOf(100), java.math.RoundingMode.HALF_UP)
                 .longValueExact();
 
-        // Deterministic idempotency key: same reservation -> same key to prevent duplicate charges
+        // Deterministic idempotency key: same reservation -> same key to prevent
+        // duplicate charges
         String idempotencyKey = reservationId + "-checkout";
         RequestOptions requestOptions = RequestOptions.builder()
                 .setIdempotencyKey(idempotencyKey)
                 .build();
 
         log.info("Creating checkout session for reservation: {}, amount: ${}, business: {}",
-                 reservationId, amount, businessId);
+                reservationId, amount, businessId);
 
         // Create Checkout Session in Embedded Mode (renders in your frontend)
-        // Note: redirect_on_completion: never allows us to use onComplete callback instead of redirect
-        SessionCreateParams params =
-            SessionCreateParams.builder()
+        // Note: redirect_on_completion: never allows us to use onComplete callback
+        // instead of redirect
+        SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setUiMode(SessionCreateParams.UiMode.EMBEDDED) // Embedded mode
-                .setRedirectOnCompletion(SessionCreateParams.RedirectOnCompletion.NEVER) // Stay in modal, use onComplete callback
+                .setRedirectOnCompletion(SessionCreateParams.RedirectOnCompletion.NEVER) // Stay in modal, use
+                                                                                         // onComplete callback
                 .addLineItem(
-                    SessionCreateParams.LineItem.builder()
-                        .setPriceData(
-                            SessionCreateParams.LineItem.PriceData.builder()
-                                .setCurrency(Currency.CAD.toString().toLowerCase())
-                                .setUnitAmount(amountInCents)
-                                .setProductData(
-                                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                        .setName("Media Reservation")
-                                        .setDescription("Reservation ID: " + reservationId)
-                                        .build()
-                                )
-                                .build()
-                        )
-                        .setQuantity(1L)
-                        .build()
-                )
+                        SessionCreateParams.LineItem.builder()
+                                .setPriceData(
+                                        SessionCreateParams.LineItem.PriceData.builder()
+                                                .setCurrency(Currency.CAD.toString().toLowerCase())
+                                                .setUnitAmount(amountInCents)
+                                                .setProductData(
+                                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                                .setName("Media Reservation")
+                                                                .setDescription("Reservation ID: " + reservationId)
+                                                                .build())
+                                                .build())
+                                .setQuantity(1L)
+                                .build())
                 .setPaymentIntentData(
-                    SessionCreateParams.PaymentIntentData.builder()
-                        .setApplicationFeeAmount(platformFee)
-                        .setTransferData(
-                            SessionCreateParams.PaymentIntentData.TransferData.builder()
-                                .setDestination(stripeAccount.getStripeAccountId())
-                                .build()
-                        )
-                        .putMetadata("reservationId", reservationId)
-                        .putMetadata("businessId", businessId)
-                        .build()
-                )
+                        SessionCreateParams.PaymentIntentData.builder()
+                                .setApplicationFeeAmount(platformFee)
+                                .setTransferData(
+                                        SessionCreateParams.PaymentIntentData.TransferData.builder()
+                                                .setDestination(stripeAccount.getStripeAccountId())
+                                                .build())
+                                .putMetadata("reservationId", reservationId)
+                                .putMetadata("businessId", businessId)
+                                .build())
                 .build();
 
         Session session = Session.create(params, requestOptions);
@@ -239,7 +247,8 @@ public class StripeServiceImpl implements StripeService {
         log.info("Checkout session created: {}", session.getId());
 
         // Reuse existing PaymentIntent record or create new one
-        // This allows retrying FAILED/CANCELED payments while maintaining 1:1 relationship with reservationId
+        // This allows retrying FAILED/CANCELED payments while maintaining 1:1
+        // relationship with reservationId
         PaymentIntent paymentIntent = existingPayment.orElse(new PaymentIntent());
 
         // Update/set fields for this payment attempt
@@ -266,27 +275,31 @@ public class StripeServiceImpl implements StripeService {
         return response;
     }
 
-
     @Transactional
     @Override
-    public Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId, String reservationId,
-                                                               LocalDateTime startDate, LocalDateTime endDate) throws StripeException {
+    public Map<String, String> createAuthorizedCheckoutSession(Jwt jwt, String campaignId, String mediaId,
+            String reservationId,
+            LocalDateTime startDate, LocalDateTime endDate) throws StripeException {
         // 1. Validate that the campaign exists
         AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (campaign == null) {
-            log.warn("Payment attempt for non-existent campaign: {} by user: {}", campaignId, jwt != null ? jwt.getSubject() : null);
-            // Pass the raw campaignId so the exception formats its own message (avoids duplicated wording)
+            log.warn("Payment attempt for non-existent campaign: {} by user: {}", campaignId,
+                    jwt != null ? jwt.getSubject() : null);
+            // Pass the raw campaignId so the exception formats its own message (avoids
+            // duplicated wording)
             throw new AdCampaignNotFoundException(campaignId);
         }
 
-        // 2. SECURITY: Validate that the user owns this campaign (is employee of the advertiser business)
+        // 2. SECURITY: Validate that the user owns this campaign (is employee of the
+        // advertiser business)
         String userId = jwtUtils.extractUserId(jwt);
         String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, advertiserBusinessId);
         log.info("User {} authorized to create payment for campaign {} (business: {})",
-                 userId, campaignId, advertiserBusinessId);
+                userId, campaignId, advertiserBusinessId);
 
-        // 3. Validate that the media exists and get its business ID and price (don't trust frontend)
+        // 3. Validate that the media exists and get its business ID and price (don't
+        // trust frontend)
         UUID mediaUuid = UUID.fromString(mediaId);
         Media media = mediaRepository.findById(mediaUuid)
                 .orElseThrow(() -> {
@@ -294,15 +307,17 @@ public class StripeServiceImpl implements StripeService {
                     return new MediaNotFoundException("Media not found: " + mediaId);
                 });
 
-        // 4. Get the media owner's business ID from the database (server-side source of truth)
+        // 4. Get the media owner's business ID from the database (server-side source of
+        // truth)
         String mediaOwnerBusinessId = media.getBusinessId().toString();
         log.info("Creating payment for media {} (owner: {}) from advertiser business: {}",
-                 mediaId, mediaOwnerBusinessId, advertiserBusinessId);
+                mediaId, mediaOwnerBusinessId, advertiserBusinessId);
 
-        // 5. SECURITY: Calculate price on the backend based on media data (not frontend)
+        // 5. SECURITY: Calculate price on the backend based on media data (not
+        // frontend)
         BigDecimal calculatedAmount = calculatePriceFromDates(media.getPrice(), startDate, endDate);
         log.info("Calculated payment amount: ${} for media: {} (duration: {} to {})",
-                 calculatedAmount, mediaId, startDate, endDate);
+                calculatedAmount, mediaId, startDate, endDate);
 
         // 6. Create the checkout session with server-calculated price
         return createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId);
@@ -310,11 +325,12 @@ public class StripeServiceImpl implements StripeService {
 
     /**
      * Calculate price based on media price and reservation date range.
-     * Uses the same logic as frontend for consistency but executed server-side for security.
+     * Uses the same logic as frontend for consistency but executed server-side for
+     * security.
      *
      * @param mediaPrice The base price of the media
-     * @param startDate The reservation start date
-     * @param endDate The reservation end date
+     * @param startDate  The reservation start date
+     * @param endDate    The reservation end date
      * @return Calculated total price
      */
     private BigDecimal calculatePriceFromDates(BigDecimal mediaPrice, LocalDateTime startDate, LocalDateTime endDate) {
@@ -331,9 +347,8 @@ public class StripeServiceImpl implements StripeService {
 
         // Calculate duration in days using Java time API
         long totalDays = java.time.temporal.ChronoUnit.DAYS.between(
-            startDate.toLocalDate(),
-            endDate.toLocalDate()
-        );
+                startDate.toLocalDate(),
+                endDate.toLocalDate());
 
         if (totalDays < 0) {
             log.error("Invalid date range: end date is before start date");
@@ -347,7 +362,7 @@ public class StripeServiceImpl implements StripeService {
         BigDecimal totalPrice = mediaPrice.multiply(BigDecimal.valueOf(weeks));
 
         log.info("Price calculation: mediaPrice={}, days={}, weeks={}, total={}",
-                 mediaPrice, totalDays, weeks, totalPrice);
+                mediaPrice, totalDays, weeks, totalPrice);
 
         return totalPrice;
     }
@@ -358,47 +373,145 @@ public class StripeServiceImpl implements StripeService {
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
-        // Get the connected account
-        StripeAccount stripeAccount = stripeAccountRepository.findByBusinessId(businessId)
-                .orElseThrow(() -> new StripeAccountNotFoundException(businessId));
+        // Check if the business has a connected Stripe account (likely a Media Owner)
+        Optional<StripeAccount> accountOpt = stripeAccountRepository.findByBusinessId(businessId);
+        Map<String, Object> dashboard = new HashMap<>();
 
-        // Calculate date range based on period (weekly, monthly, yearly)
+        // 2. Determine Date Range
         LocalDateTime startDate = calculateStartDate(period);
+        LocalDateTime endDate = LocalDateTime.now();
 
-        // Get all successful payments for this media owner
-        List<PaymentIntent> payments = paymentIntentRepository
-                .findSuccessfulPaymentsByBusinessIdAndDateRange(
+        // 3. Calculate Estimated Impressions and CPM
+        List<Reservation> reservations = reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
+                businessId, startDate, endDate);
+
+        long totalImpressions = 0;
+        for (Reservation reservation : reservations) {
+            // Calculate intersection of reservation duration and selected period
+            LocalDateTime effectiveStart = reservation.getStartDate().isAfter(startDate) ? reservation.getStartDate()
+                    : startDate;
+            LocalDateTime effectiveEnd = reservation.getEndDate().isBefore(endDate) ? reservation.getEndDate()
+                    : endDate;
+
+            if (effectiveEnd.isAfter(effectiveStart)) {
+                long days = java.time.Duration.between(effectiveStart, effectiveEnd).toDays();
+                if (days == 0 && java.time.Duration.between(effectiveStart, effectiveEnd).toHours() > 0) {
+                    days = 1;
+                }
+
+                // Fetch Media for impressions
+                Optional<Media> mediaOpt = mediaRepository.findById(reservation.getMediaId());
+                if (mediaOpt.isPresent()) {
+                    Integer dailyImpressions = mediaOpt.get().getDailyImpressions();
+                    if (dailyImpressions != null) {
+                        totalImpressions += (days * dailyImpressions);
+                    }
+                }
+            }
+        }
+
+        dashboard.put("estimatedImpressions", totalImpressions);
+
+        // 1. Always calculate Advertiser Spend (Outgoing Payments)
+        List<PaymentIntent> advertiserPayments = paymentIntentRepository
+                .findSuccessfulPaymentsByAdvertiserIdAndDateRange(
                         businessId,
                         startDate,
-                        LocalDateTime.now()
-                );
+                        LocalDateTime.now());
 
-        // Calculate gross earnings (total before platform fee)
-        BigDecimal grossEarnings = payments.stream()
+        BigDecimal totalSpend = advertiserPayments.stream()
                 .map(PaymentIntent::getAmount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Calculate net earnings (after platform fee)
-        BigDecimal netEarnings = grossEarnings
-                .multiply(BigDecimal.valueOf(100 - platformFeePercent))
-                .divide(BigDecimal.valueOf(100), java.math.RoundingMode.HALF_UP);
+        List<Map<String, Object>> advertiserPaymentList = advertiserPayments.stream().map(p -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("amount", p.getAmount());
+            map.put("created", p.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond());
+            map.put("currency", p.getCurrency());
+            return map;
+        }).toList();
 
-        // Fetch payout history from Stripe
-        BalanceTransactionCollection payouts = BalanceTransaction.list(
-                BalanceTransactionListParams.builder()
-                        .setLimit(100L)
-                        .build(),
-                RequestOptions.builder()
-                        .setStripeAccount(stripeAccount.getStripeAccountId())
-                        .build()
-        );
+        dashboard.put("totalSpend", totalSpend);
+        dashboard.put("payments", advertiserPaymentList);
+        // Default to not media owner unless found below
+        dashboard.put("isMediaOwner", false);
 
-        Map<String, Object> dashboard = new HashMap<>();
-        dashboard.put("grossEarnings", grossEarnings);
-        dashboard.put("netEarnings", netEarnings);
-        dashboard.put("platformFee", grossEarnings.subtract(netEarnings));
-        dashboard.put("paymentCount", payments.size());
-        dashboard.put("payouts", payouts.getData());
+        if (accountOpt.isPresent()) {
+            // SCENARIO: Media Owner - Show Earnings and Payouts
+            StripeAccount stripeAccount = accountOpt.get();
+
+            // Get all successful payments REVENUE for this media owner
+            List<PaymentIntent> revenuePayments = paymentIntentRepository
+                    .findSuccessfulPaymentsByBusinessIdAndDateRange(
+                            businessId,
+                            startDate,
+                            LocalDateTime.now());
+
+            // Calculate gross earnings (total before platform fee)
+            BigDecimal grossEarnings = revenuePayments.stream()
+                    .map(PaymentIntent::getAmount)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // Calculate net earnings (after platform fee)
+            BigDecimal netEarnings = grossEarnings
+                    .multiply(BigDecimal.valueOf(100 - platformFeePercent))
+                    .divide(BigDecimal.valueOf(100), java.math.RoundingMode.HALF_UP);
+
+            List<Map<String, Object>> revenuePaymentList = revenuePayments.stream().map(p -> {
+                Map<String, Object> map = new HashMap<>();
+                map.put("amount", p.getAmount());
+                map.put("created", p.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond());
+                map.put("currency", p.getCurrency());
+                return map;
+            }).toList();
+            dashboard.put("revenuePayments", revenuePaymentList);
+
+            // Fetch payout history from Stripe
+            try {
+                BalanceTransactionCollection payouts = BalanceTransaction.list(
+                        BalanceTransactionListParams.builder()
+                                .setLimit(100L)
+                                .build(),
+                        RequestOptions.builder()
+                                .setStripeAccount(stripeAccount.getStripeAccountId())
+                                .build());
+                dashboard.put("payouts", payouts.getData());
+            } catch (StripeException e) {
+                log.warn("Failed to fetch payouts for business {}: {}", businessId, e.getMessage());
+                dashboard.put("payouts", Collections.emptyList());
+            }
+
+            dashboard.put("grossEarnings", grossEarnings);
+            dashboard.put("netEarnings", netEarnings);
+            dashboard.put("platformFee", grossEarnings.subtract(netEarnings));
+            dashboard.put("paymentCount", revenuePayments.size());
+            dashboard.put("advertiserPaymentCount", advertiserPayments.size());
+            dashboard.put("isMediaOwner", true);
+
+            dashboard.put("netEarnings", BigDecimal.ZERO);
+            dashboard.put("paymentCount", advertiserPayments.size());
+        }
+
+        // Finalize CPM
+        BigDecimal totalSpendVal = (BigDecimal) dashboard.getOrDefault("totalSpend", BigDecimal.ZERO);
+        BigDecimal cpm = BigDecimal.ZERO;
+        if (totalImpressions > 0 && totalSpendVal.compareTo(BigDecimal.ZERO) > 0) {
+            // CPM = (Spend / Impressions) * 1000
+            // Spend in cents? No, usually Spend in currency.
+            // totalSpendVal is in cents here (from Stripe Amount).
+            // So we need to be careful.
+            // CPM is usually "Cost per 1000 impressions".
+            // Cost in dollars = totalSpendVal / 100
+            // CPM = ((totalSpendVal / 100) / totalImpressions) * 1000
+            // = (totalSpendVal * 10) / totalImpressions
+            try {
+                cpm = totalSpendVal.multiply(BigDecimal.TEN)
+                        .divide(BigDecimal.valueOf(totalImpressions), 2, java.math.RoundingMode.HALF_UP);
+            } catch (Exception e) {
+                log.error("Error calculating CPM", e);
+            }
+        }
+        dashboard.put("averageCPM", cpm);
 
         return dashboard;
     }
@@ -411,4 +524,5 @@ public class StripeServiceImpl implements StripeService {
             default -> LocalDateTime.now().minusMonths(1);
         };
     }
+
 }
