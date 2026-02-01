@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/webhooks")
+@RequestMapping("/api/v1/webhooks")
 public class WebhookController {
 
     private final StripeWebhookService webhookService;
@@ -54,6 +54,10 @@ public class WebhookController {
 
                 case "payment_intent.payment_failed":
                     webhookService.handlePaymentIntentFailed(event);
+                    break;
+
+                case "account.updated":
+                    webhookService.handleAccountUpdated(event);
                     break;
 
                 default:

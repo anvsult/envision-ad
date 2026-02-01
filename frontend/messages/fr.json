@@ -130,7 +130,7 @@
     "hoursTitle": "Heures",
     "reserveButton": "Réserver",
     "reserveNote": "Vous ne serez pas facturé maintenant.",
-    "pricePerWeek": "{price} $CAD par semaine",
+    "pricePerWeek": "{price} par semaine",
     "priceUnavailable": "Prix non disponible",
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
@@ -172,7 +172,7 @@
     }
   },
   "mediacard": {
-    "perWeek": "CAD${price} par semaine",
+    "perWeek": "{price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
@@ -185,7 +185,7 @@
     "browseactions": {
       "filters": {
         "actionName": "Filtres:",
-        "price": "Prix ($CAD)",
+        "price": "Prix ($CA)",
         "impressions": "Impressions minimum",
         "from": "Minimum",
         "to": "Maximum",
@@ -415,6 +415,11 @@
       "delete": "Média supprimé",
       "active": "Média activé",
       "inactive": "Média désactivé"
+    },
+    "stripe": {
+      "requiredTitle": "Compte Stripe requis",
+      "requiredMessage": "Pour créer des médias et recevoir des paiements, vous devez d'abord configurer votre compte Stripe. ",
+      "requiredLink": "Complétez votre intégration Stripe ici."
     }
   },
   "proofOfDisplay": {
@@ -508,7 +513,7 @@
       "aspectRatioHeight": "Ex. 9",
       "width": "Ex. 80",
       "height": "Ex. 200",
-      "price": "50,00 $CAD",
+      "price": "50,00 $CA",
       "dailyImpressions": "Impressions quotidiennes",
       "timeOpen": "00:00",
       "timeClosed": "Fermé"
@@ -823,12 +828,51 @@
   },
   "paymentForm": {
     "enterPaymentDetails": "Entrer les détails de paiement",
-    "total": "Total : {amount} $CAD",
-    "payButton": "Payer {amount} $CAD",
+    "total": "Total : {amount}",
+    "payButton": "Payer {amount}",
     "back": "Retour",
     "paymentFailed": "Paiement échoué",
     "paymentError": "Une erreur s'est produite lors du paiement",
     "unexpectedError": "Une erreur inattendue s'est produite"
+  },
+  "stripe": {
+    "title": "Compte Stripe",
+    "errors": {
+      "noBusiness": "Aucune entreprise trouvée pour votre utilisateur.",
+      "fetchFailed": "Échec de la récupération du statut du compte Stripe.",
+      "connectFailed": "Échec de l'initialisation de la connexion Stripe."
+    },
+    "noStatus": "Impossible de récupérer le statut du compte Stripe.",
+    "status": {
+      "connected": {
+        "title": "Compte Stripe connecté",
+        "description": "Votre compte est entièrement configuré et prêt à recevoir les paiements des annonceurs.",
+        "accountId": "Votre identifiant de compte Stripe"
+      },
+      "incomplete": {
+        "title": "Terminez la configuration de vos paiements",
+        "description": "Pour afficher des médias et recevoir des paiements, vous devez terminer la configuration de votre compte Stripe.",
+        "checks": {
+          "onboarding": "Processus d'intégration",
+          "charges": "Peut accepter les paiements",
+          "payouts": "Peut recevoir des paiements"
+        }
+      }
+    },
+    "buttons": {
+      "connect": "Se connecter avec Stripe",
+      "continueOnboarding": "Continuer l'intégration"
+    },
+    "notifications": {
+      "success": {
+        "title": "Intégration terminée !",
+        "message": "Votre compte est prêt. Nous confirmons juste les derniers détails avec Stripe."
+      },
+      "refresh": {
+        "title": "Session d'intégration expirée",
+        "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
+      }
+    }
   },
   "invitation": {
     "loading": "Chargement...",

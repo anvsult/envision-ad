@@ -1,3 +1,3 @@
 export { createPaymentIntent } from './api/createPaymentIntent';
-export { getStripeAccountStatus, connectStripeAccount } from './api/stripeAccount';
-
+export { getStripeAccountStatus } from './api/getStripeAccountStatus';
+export { createStripeConnection } from './api/createStripeConnection';

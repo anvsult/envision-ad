@@ -62,7 +62,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
     // Payment states
     const [clientSecret, setClientSecret] = useState<string | null>(null);
-    const [isCreatingReservation, setIsCreatingReservation] = useState(false);
 
     const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -81,7 +80,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             };
             void load();
         }
-    }, [opened, user?.sub, selectedCampaignId]);
+    }, [opened, user?.sub]);
 
     const handleDateChange = (val: DatesRangeValue<string>) => {
         if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
@@ -191,12 +190,24 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
             setLoading(true);
             try {
-                const data = await createPaymentIntent({
+                // 1. Create a pending reservation
+                const reservationPayload = {
+                    campaignId: selectedCampaignId,
+                    startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                    endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
+                };
+                const reservation = await createReservation(media.id, reservationPayload);
+
+                // 2. Create a payment intent with the new reservation ID
+                const paymentIntentPayload = {
                     mediaId: media.id,
                     campaignId: selectedCampaignId,
                     startDate: dayjs(dateRange[0]),
-                    endDate: dayjs(dateRange[1])
-                });
+                    endDate: dayjs(dateRange[1]),
+                    reservationId: reservation.reservationId, // Pass reservationId to payment intent
+                };
+                const data = await createPaymentIntent(paymentIntentPayload);
+
 
                 // Set client secret for embedded checkout
                 if (data.clientSecret) {
@@ -229,102 +240,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
      * Create the reservation after payment is confirmed.
      * This is called ONCE after Stripe confirms payment completion.
      */
-    const handleCreateReservationAfterPayment = async () => {
-        // Prevent duplicate calls
-        if (isCreatingReservation) {
-            console.log('Already creating reservation, skipping duplicate call');
-            return;
-        }
 
-        if (!selectedCampaignId || !dateRange[0] || !dateRange[1]) {
-            notifications.show({
-                title: t('errorTitle'),
-                message: t('errors.selectCampaign') + ' & ' + t('errors.selectDate'),
-                color: 'red'
-            });
-            return;
-        }
-
-        if (!media.id) {
-            notifications.show({ title: t('errorTitle'), message: t('mediaIdMissing'), color: 'red' });
-            return;
-        }
-
-        // For embedded checkout, the PaymentIntent is not immediately available
-        // We need to retrieve it via the session API endpoint on our backend
-        // Or we can just proceed without the PaymentIntent ID and let the webhook handle it
-
-        // Option 1: Let webhook handle confirmation (recommended)
-        // Create reservation as PENDING, webhook will update to CONFIRMED
-        setIsCreatingReservation(true);
-
-        try {
-            const payload = {
-                mediaId: media.id,
-                campaignId: selectedCampaignId,
-                startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-                endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
-                // Don't send paymentIntentId - let the webhook handle payment verification
-                // The session metadata contains the reservationId which webhook will use
-            };
-
-            await createReservation(media.id, payload);
-
-            // Move to completion step
-            setActiveStep(3);
-
-            notifications.show({
-                title: t('successTitle'),
-                message: t('successMessage'),
-                color: 'green'
-            });
-
-        } catch (error: unknown) {
-            console.error('Failed to create reservation:', error);
-
-            if (error && typeof error === 'object' && 'response' in error) {
-                const axiosError = error as { response?: { status: number; data?: { message?: string } } };
-
-                if (axiosError.response?.status === 409) {
-                    // Reservation already exists - this is OK (idempotency)
-                    console.log('Reservation already exists (409), treating as success');
-                    setActiveStep(3);
-                    notifications.show({
-                        title: t('successTitle'),
-                        message: t('successMessage'),
-                        color: 'green'
-                    });
-                } else if (axiosError.response?.status === 403) {
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: t('missingPermissionErrorMessage'),
-                        color: 'red'
-                    });
-                } else if (axiosError.response?.status === 404) {
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: t('campaignNotFoundErrorMessage'),
-                        color: 'red'
-                    });
-                } else {
-                    const errorMessage = axiosError.response?.data?.message || t('failedReserve');
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: errorMessage,
-                        color: 'red'
-                    });
-                }
-            } else {
-                notifications.show({
-                    title: t('errorTitle'),
-                    message: t('networkError'),
-                    color: 'red'
-                });
-            }
-        } finally {
-            setIsCreatingReservation(false);
-        }
-    };
 
     function billingWeeks(start: Dayjs, end: Dayjs): number {
         if (end.isBefore(start)) {
@@ -357,7 +273,10 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
      * @returns Formatted currency string (e.g., "123.45")
      */
     const formatCurrency = (amount: number): string => {
-        return amount.toFixed(2);
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'CAD',
+        }).format(amount);
     };
 
     /**
@@ -372,7 +291,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             setSelectedCampaignId(null);
             setErrors({});
             setClientSecret(null);
-            setIsCreatingReservation(false);
         }, 200);
     };
 
@@ -436,6 +354,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         }}
                                         error={errors.campaign}
                                         style={{ width: '100%', maxWidth: 400 }}
+                                        searchable
                                     />
 
                                     <Text size="sm" c="dimmed" mt="sm">
@@ -488,7 +407,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                                 mediaImageUrl={media.imageUrl}
                                                 mediaImageCorners={media.previewConfiguration}/>
                                         </Box>
-
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
                                             <Text fw={500}>{media.title}</Text>
@@ -507,7 +425,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                ${formatCurrency(calculateTotalCost())}
+
+                                                {formatCurrency(calculateTotalCost())}
                                             </Text>
                                         </Group>
                                     </Paper>
@@ -515,7 +434,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                             )}
 
                             {/* Step 3: Embedded Stripe Checkout */}
-                            {activeStep === 2 && clientSecret && !isCreatingReservation && (
+                            {activeStep === 2 && clientSecret && (
                                 missingKey ? (
                                     <Text c="red">{t('errors.missingPaymentInfo')}</Text>
                                 ) : stripePromise ? (
@@ -523,11 +442,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         stripe={stripePromise}
                                         options={{
                                             clientSecret,
-                                            onComplete: async () => {
-                                                // Payment succeeded in Stripe
-                                                // Now create the reservation ONCE
-                                                console.log('Payment completed, creating reservation...');
-                                                await handleCreateReservationAfterPayment();
+                                            onComplete: () => {
+                                                console.log('Payment completed, moving to success screen...');
+                                                setActiveStep(3);
                                             }
                                         }}
                                     >
@@ -537,22 +454,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                     <Center><Loader/></Center>
                                 )
                             )}
-
-                            {/* Step 2: Processing after payment */}
-                            {activeStep === 2 && isCreatingReservation && (
-                                <Center py="xl">
-                                    <Stack align="center" gap="md">
-                                        <Loader size="lg" />
-                                        <Text size="lg" fw={500}>{t('processingPayment')}</Text>
-                                        <Text size="sm" c="dimmed">{t('pleaseWait')}</Text>
-                                    </Stack>
-                                </Center>
-                            )}
                         </Box>
                     </>
                 )}
 
-                {activeStep < 3 && !isCreatingReservation && (
+                {activeStep < 3 && (
                     <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? handleModalClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}

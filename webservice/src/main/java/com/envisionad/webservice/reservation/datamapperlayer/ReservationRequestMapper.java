@@ -3,16 +3,10 @@ import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReservationRequestMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "reservationId", ignore = true)
-
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "totalPrice", ignore = true)
-    @Mapping(target = "advertiserId", ignore = true)
-
     @Mapping(source = "campaignId", target = "campaignId")
     Reservation requestModelToEntity(ReservationRequestModel reservationRequestModel);
 }

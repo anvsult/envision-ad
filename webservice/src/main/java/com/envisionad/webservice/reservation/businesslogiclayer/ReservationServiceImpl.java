@@ -1,11 +1,8 @@
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
-import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.business.dataaccesslayer.Employee;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -22,7 +19,6 @@ import com.envisionad.webservice.reservation.exceptions.PaymentVerificationExcep
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
-import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
@@ -40,30 +36,23 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class ReservationServiceImpl implements ReservationService {
-    private final EmailService emailService;
-    private final EmployeeRepository employeeRepository;
     private final ReservationRepository reservationRepository;
     private final MediaRepository mediaRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final ReservationRequestMapper reservationRequestMapper;
     private final ReservationResponseMapper reservationResponseMapper;
-    private final AdCampaignService adCampaignService;
     private final JwtUtils jwtUtils;
     private final PaymentIntentRepository paymentIntentRepository;
 
-    public ReservationServiceImpl(EmailService emailService, EmployeeRepository employeeRepository,
-                                  ReservationRepository reservationRepository, MediaRepository mediaRepository,
+    public ReservationServiceImpl(ReservationRepository reservationRepository, MediaRepository mediaRepository,
                                   AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper,
-                                  ReservationResponseMapper reservationResponseMapper, AdCampaignService adCampaignService,
-                                  JwtUtils jwtUtils, PaymentIntentRepository paymentIntentRepository) {
-        this.emailService = emailService;
-        this.employeeRepository = employeeRepository;
+                                  ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils,
+                                  PaymentIntentRepository paymentIntentRepository) {
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.reservationRequestMapper = reservationRequestMapper;
         this.reservationResponseMapper = reservationResponseMapper;
-        this.adCampaignService = adCampaignService;
         this.jwtUtils = jwtUtils;
         this.paymentIntentRepository = paymentIntentRepository;
     }
@@ -105,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
         // 1. Validate input and authentication
-        ReservationValidator.validateReservation(requestModel);
+        ReservationValidator.validateReservation(requestModel, mediaId);
         String userId = jwtUtils.extractUserId(jwt);
 
         // 2. Load and validate entities
@@ -116,6 +105,12 @@ public class ReservationServiceImpl implements ReservationService {
         String businessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
         jwtUtils.validateBusinessOwnsCampaign(businessId, campaign);
+
+//        // Prevent a business from reserving their own media
+//        String mediaOwnerBusinessId = media.getBusinessId().toString();
+//        if (businessId.equals(mediaOwnerBusinessId)) {
+//            throw new IllegalStateException("A business cannot reserve its own media");
+//        }
 
         // 4. Validate media availability
         validateMediaHasLoopDurationLeft(media, requestModel);
@@ -138,9 +133,6 @@ public class ReservationServiceImpl implements ReservationService {
         // 7. Save reservation
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Reservation {} created with status: {}", savedReservation.getReservationId(), savedReservation.getStatus());
-
-        // 8. Send notification emails
-        sendNotificationEmails(media, savedReservation, campaign, totalPrice);
 
         return reservationResponseMapper.entityToResponseModel(savedReservation);
     }
@@ -192,17 +184,11 @@ public class ReservationServiceImpl implements ReservationService {
             String metaReservationId = metadata.get("reservationId");
             String metaBusinessId = metadata.get("businessId");
 
-            // Prevent using a succeeded PaymentIntent created for a different destination
-            if (metaBusinessId == null || metaBusinessId.isBlank()) {
-                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
-            }
+//            // Ensure the PaymentIntent was created for the media owner (destination)
+//            if (metaBusinessId == null || metaBusinessId.isBlank()) {
+//                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
+//            }
 
-            if (metaBusinessId.equals(media.getBusinessId().toString())) {
-                throw new PaymentVerificationException(
-                        String.format("PaymentIntent %s businessId metadata matches media owner businessId, cannot self-pay",
-                                paymentIntentId)
-                );
-            }
 
             // CRITICAL SECURITY CHECK: Verify this PaymentIntent hasn't been used before
             Optional<PaymentIntent> existingPayment = paymentIntentRepository.findByStripePaymentIntentId(paymentIntentId);
@@ -349,58 +335,5 @@ public class ReservationServiceImpl implements ReservationService {
             throw new InsufficientLoopDurationException();
         }
     }
-
-    private void sendNotificationEmails(Media media, Reservation reservation,
-                                        AdCampaign campaign, BigDecimal totalPrice) {
-        String mediaOwnerBusinessId = media.getBusinessId().toString();
-        List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
-        List<String> mediaOwnerEmailAddresses = mediaOwners.stream()
-                .map(Employee::getEmail)
-                .filter(email -> email != null && !email.isEmpty())
-                .distinct()
-                .toList();
-
-        if (!mediaOwnerEmailAddresses.isEmpty()) {
-            for (String ownerEmailAddress : mediaOwnerEmailAddresses) {
-                sendReservationEmail(ownerEmailAddress, media, reservation, campaign, totalPrice);
-            }
-        } else {
-            log.warn("No email found for media owner in business: {}", mediaOwnerBusinessId);
-        }
-    }
-
-    private void sendReservationEmail(String ownerEmail, Media media, Reservation reservation,
-                                      AdCampaign campaign, BigDecimal totalPrice) {
-        try {
-            List<String> imageLinks = adCampaignService.getAllCampaignImageLinks(campaign.getCampaignId().getCampaignId());
-
-            String previewSection;
-            if (imageLinks == null || imageLinks.isEmpty()) {
-                previewSection = "No preview images available.";
-            } else {
-                StringBuilder sb = new StringBuilder("Preview Images:")
-                        .append(System.lineSeparator());
-                for (String link : imageLinks) {
-                    sb.append("- ")
-                            .append(link)
-                            .append(System.lineSeparator());
-                }
-                previewSection = sb.toString().trim();
-            }
-
-            String emailBody = String.format(
-                    "A new reservation has been created for your media%n" +
-                            "Media Name: %s%n" +
-                            "Ad Campaign Name: %s%n" +
-                            "Total Price: $%.2f%n" +
-                            "%s",
-                    media.getTitle(), campaign.getName(), totalPrice, previewSection
-            );
-            emailService.sendSimpleEmail(ownerEmail, "New Reservation Created", emailBody);
-        } catch (Exception e) {
-            // Log error instead of throwing exception to avoid failing reservation creation
-            log.error("Failed to send reservation notification email for reservation: {} to owner: {}",
-                    reservation.getReservationId(), ownerEmail, e);
-        }
-    }
 }
+

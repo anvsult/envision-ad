@@ -1,16 +1,19 @@
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
-import com.envisionad.webservice.business.businesslogiclayer.BusinessServiceImpl;
-import com.envisionad.webservice.business.dataaccesslayer.*;
-import com.envisionad.webservice.business.exceptions.*;
-import com.envisionad.webservice.business.mappinglayer.BusinessMapper;
-import com.envisionad.webservice.business.mappinglayer.EmployeeMapper;
-import com.envisionad.webservice.business.mappinglayer.InvitationMapper;
-import com.envisionad.webservice.business.mappinglayer.VerificationMapper;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
-import com.envisionad.webservice.business.presentationlayer.models.InvitationRequestModel;
-import com.envisionad.webservice.utils.EmailService;
-import com.envisionad.webservice.utils.JwtUtils;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
+import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
+import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
+import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
+import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
+import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
+import com.envisionad.webservice.reservation.exceptions.PaymentVerificationException;
+import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.stripe.exception.StripeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,12 +40,6 @@ class ReservationServiceUnitTest {
     private ReservationServiceImpl reservationService;
 
     @Mock
-    private EmailService emailService;
-
-    @Mock
-    private EmployeeRepository employeeRepository;
-
-    @Mock
     private ReservationRepository reservationRepository;
 
     @Mock
@@ -50,9 +47,6 @@ class ReservationServiceUnitTest {
 
     @Mock
     private ReservationRequestMapper reservationRequestMapper;
-
-    @Mock
-    private AdCampaignService adCampaignService;
 
     @Mock
     private PaymentIntentRepository paymentIntentRepository;
@@ -68,14 +62,12 @@ class ReservationServiceUnitTest {
 
     private ReservationRequestModel requestModel;
     private Media media;
-    private AdCampaign campaign;
     private Reservation reservation;
 
     @BeforeEach
     void setUp() {
         // Setup request model
         requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(MEDIA_ID);
         requestModel.setCampaignId(CAMPAIGN_ID);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
@@ -87,7 +79,7 @@ class ReservationServiceUnitTest {
         media.setBusinessId(UUID.fromString(BUSINESS_ID));
 
         // Setup campaign
-        campaign = new AdCampaign();
+        AdCampaign campaign = new AdCampaign();
         campaign.setCampaignId(new AdCampaignIdentifier(CAMPAIGN_ID));
         campaign.setBusinessId(new BusinessIdentifier(ADVERTISER_BUSINESS_ID)); // Advertiser's business, not media owner's
         campaign.setName("Summer Sale Campaign");
@@ -546,145 +538,6 @@ class ReservationServiceUnitTest {
         }
     }
 
-    // ==================== sendReservationEmail Tests ====================
-
-    @Test
-    void whenSendReservationEmail_withImageLinks_thenSendEmailWithPreview() throws Exception {
-        // Arrange
-        String ownerEmail = "owner@example.com";
-        List<String> imageLinks = Arrays.asList(
-                "https://example.com/image1.jpg",
-                "https://example.com/image2.jpg"
-        );
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID)).thenReturn(imageLinks);
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendReservationEmail", String.class, Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-        method.invoke(reservationService, ownerEmail, media, reservation, campaign, TOTAL_PRICE);
-
-        // Assert
-        ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
-        verify(emailService).sendSimpleEmail(
-                eq(ownerEmail),
-                eq("New Reservation Created"),
-                emailCaptor.capture()
-        );
-
-        String emailBody = emailCaptor.getValue();
-        assertTrue(emailBody.contains("Downtown Digital Billboard"));
-        assertTrue(emailBody.contains("Summer Sale Campaign"));
-        assertTrue(emailBody.contains("$150.00"));
-        assertTrue(emailBody.contains("Preview Images:"));
-        assertTrue(emailBody.contains("https://example.com/image1.jpg"));
-        assertTrue(emailBody.contains("https://example.com/image2.jpg"));
-    }
-
-    @Test
-    void whenSendReservationEmail_withNoImageLinks_thenSendEmailWithoutPreview() throws Exception {
-        // Arrange
-        String ownerEmail = "owner@example.com";
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID)).thenReturn(Collections.emptyList());
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendReservationEmail", String.class, Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-        method.invoke(reservationService, ownerEmail, media, reservation, campaign, TOTAL_PRICE);
-
-        // Assert
-        ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
-        verify(emailService).sendSimpleEmail(
-                eq(ownerEmail),
-                eq("New Reservation Created"),
-                emailCaptor.capture()
-        );
-
-        String emailBody = emailCaptor.getValue();
-        assertTrue(emailBody.contains("Downtown Digital Billboard"));
-        assertTrue(emailBody.contains("Summer Sale Campaign"));
-        assertTrue(emailBody.contains("$150.00"));
-        assertTrue(emailBody.contains("No preview images available."));
-        assertFalse(emailBody.contains("Preview Images:"));
-    }
-
-    @Test
-    void whenSendReservationEmail_withNullImageLinks_thenSendEmailWithoutPreview() throws Exception {
-        // Arrange
-        String ownerEmail = "owner@example.com";
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID)).thenReturn(null);
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendReservationEmail", String.class, Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-        method.invoke(reservationService, ownerEmail, media, reservation, campaign, TOTAL_PRICE);
-
-        // Assert
-        ArgumentCaptor<String> emailCaptor = ArgumentCaptor.forClass(String.class);
-        verify(emailService).sendSimpleEmail(
-                eq(ownerEmail),
-                eq("New Reservation Created"),
-                emailCaptor.capture()
-        );
-
-        String emailBody = emailCaptor.getValue();
-        assertTrue(emailBody.contains("No preview images available."));
-    }
-
-    @Test
-    void whenSendReservationEmail_withEmailServiceException_thenLogErrorAndNotThrow() throws Exception {
-        // Arrange
-        String ownerEmail = "owner@example.com";
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID))
-                .thenThrow(new RuntimeException("Service error"));
-
-        // Act - Should not throw exception
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendReservationEmail", String.class, Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, ownerEmail, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - email service should not be called since exception occurred before
-        verify(emailService, never()).sendSimpleEmail(anyString(), anyString(), anyString());
-    }
-
-    @Test
-    void whenSendReservationEmail_withSendEmailFailure_thenLogErrorAndNotThrow() throws Exception {
-        // Arrange
-        String ownerEmail = "owner@example.com";
-        List<String> imageLinks = List.of("https://example.com/image.jpg");
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID)).thenReturn(imageLinks);
-        doThrow(new RuntimeException("SMTP error")).when(emailService)
-                .sendSimpleEmail(anyString(), anyString(), anyString());
-
-        // Act - Should not throw exception
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendReservationEmail", String.class, Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, ownerEmail, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - verify email service was called but exception was caught
-        verify(emailService).sendSimpleEmail(eq(ownerEmail), anyString(), anyString());
-    }
-
     // ==================== createPendingReservation Tests ====================
 
     @Test
@@ -798,123 +651,4 @@ class ReservationServiceUnitTest {
         assertTrue(result.getPrice().compareTo(BigDecimal.ZERO) > 0);
     }
 
-    // ==================== sendNotificationEmails Tests ====================
-
-    @Test
-    void whenSendNotificationEmails_withNoEmailAddresses_thenLogWarning() throws Exception {
-        // Arrange
-        when(employeeRepository.findAllByBusinessId_BusinessId(BUSINESS_ID))
-                .thenReturn(List.of()); // No employees found
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendNotificationEmails", Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - email service should not be called
-        verify(emailService, never()).sendSimpleEmail(anyString(), anyString(), anyString());
-        verify(adCampaignService, never()).getAllCampaignImageLinks(anyString());
-    }
-
-    @Test
-    void whenSendNotificationEmails_withEmployeesButNoEmails_thenLogWarning() throws Exception {
-        // Arrange
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee1 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee1.getEmail()).thenReturn(null);
-
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee2 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee2.getEmail()).thenReturn("");
-
-        when(employeeRepository.findAllByBusinessId_BusinessId(BUSINESS_ID))
-                .thenReturn(List.of(employee1, employee2));
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendNotificationEmails", Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - email service should not be called
-        verify(emailService, never()).sendSimpleEmail(anyString(), anyString(), anyString());
-    }
-
-    @Test
-    void whenSendNotificationEmails_withMultipleEmployees_thenSendEmailToAll() throws Exception {
-        // Arrange
-        String email1 = "owner1@example.com";
-        String email2 = "owner2@example.com";
-
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee1 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee1.getEmail()).thenReturn(email1);
-
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee2 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee2.getEmail()).thenReturn(email2);
-
-        when(employeeRepository.findAllByBusinessId_BusinessId(BUSINESS_ID))
-                .thenReturn(List.of(employee1, employee2));
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID))
-                .thenReturn(List.of("https://example.com/image.jpg"));
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendNotificationEmails", Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - email service should be called twice
-        verify(emailService, times(2)).sendSimpleEmail(anyString(), eq("New Reservation Created"), anyString());
-        verify(emailService).sendSimpleEmail(eq(email1), anyString(), anyString());
-        verify(emailService).sendSimpleEmail(eq(email2), anyString(), anyString());
-    }
-
-    @Test
-    void whenSendNotificationEmails_withDuplicateEmails_thenSendOnlyOnce() throws Exception {
-        // Arrange
-        String duplicateEmail = "owner@example.com";
-
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee1 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee1.getEmail()).thenReturn(duplicateEmail);
-
-        com.envisionad.webservice.business.dataaccesslayer.Employee employee2 =
-                mock(com.envisionad.webservice.business.dataaccesslayer.Employee.class);
-        when(employee2.getEmail()).thenReturn(duplicateEmail);
-
-        when(employeeRepository.findAllByBusinessId_BusinessId(BUSINESS_ID))
-                .thenReturn(List.of(employee1, employee2));
-
-        when(adCampaignService.getAllCampaignImageLinks(CAMPAIGN_ID))
-                .thenReturn(List.of("https://example.com/image.jpg"));
-
-        // Act
-        Method method = ReservationServiceImpl.class.getDeclaredMethod(
-                "sendNotificationEmails", Media.class, Reservation.class,
-                AdCampaign.class, BigDecimal.class);
-        method.setAccessible(true);
-
-        assertDoesNotThrow(() -> {
-            method.invoke(reservationService, media, reservation, campaign, TOTAL_PRICE);
-        });
-
-        // Assert - email service should be called only once due to distinct()
-        verify(emailService, times(1)).sendSimpleEmail(eq(duplicateEmail), anyString(), anyString());
-    }
 }
