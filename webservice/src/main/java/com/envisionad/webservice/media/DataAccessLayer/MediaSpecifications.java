@@ -60,6 +60,30 @@ public class MediaSpecifications {
                 : cb.notEqual(root.get("id"), excludedId);
     }
 
+    public static Specification<Media> latBetween(Double[] bounds) {
+        return (root, query, cb) -> {
+            if (bounds == null)  {
+                 return null;
+            }
+
+            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.LEFT);
+            return (cb.between(location.get("lat"), bounds[0], bounds[1])) ;
+
+        };
+    }
+
+    public static Specification<Media> lngBetween(Double[] bounds) {
+        return (root, query, cb) -> {
+            if (bounds == null)  {
+                return null;
+            }
+
+            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.LEFT);
+            return (cb.between(location.get("lng"), bounds[2], bounds[3])) ;
+
+        };
+    }
+
     // public static Specification<Media> locationContains(String locationName) {
     // return (root, query, cb) -> {
     //

@@ -64,6 +64,7 @@ public class MediaController {
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
+            @RequestParam(required = false) Double[] bounds,
             @RequestParam(required = false) String excludedId
             ) {
 
@@ -80,6 +81,10 @@ public class MediaController {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
 
+        if (bounds.length != 4) {
+            throw new IllegalArgumentException("bounds must have a length of exactly 4.");
+        }
+
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,
                 title,
@@ -90,6 +95,7 @@ public class MediaController {
                 specialSort,
                 userLat,
                 userLng,
+                bounds,
                 excludedId
                 ).map(responseMapper::entityToResponseModel);
 

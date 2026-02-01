@@ -39,7 +39,7 @@ INSERT INTO media_location (media_location_id, name, description, country, provi
 VALUES
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Champlain College', 'A college campus where many students and teachers congregate to learn.',
      'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
-     45.501600, -73.554600),
+     45.516476848520064, -73.52053208741675),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Entrepôt en Folie', 'Digital screen installed at the store’s main entrance, visible to all incoming customers. This placement delivers immediate brand exposure at the start of the shopping experience and benefits from consistent foot traffic.',
      'Canada', 'QC', 'Longueuil', '2685 Ch. de Chambly', 'J4L 1M3',

@@ -1,15 +1,19 @@
-import { MapContainer, TileLayer, useMap} from 'react-leaflet';
-import {  Paper } from '@mantine/core';
+import { MapContainer, Marker, TileLayer, useMap} from 'react-leaflet';
+import {  Badge, Paper } from '@mantine/core';
 import 'leaflet/dist/leaflet.css';
-import { LatLngLiteral, Map } from 'leaflet';
+import L, { LatLngLiteral, Map } from 'leaflet';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { MediaCardProps } from '../Cards/MediaCard';
+import { MediaLocation } from '@/entities/media';
+import './MapView.css';
 
-const default_zoom = 13;
+const default_zoom = 10;
+
+
 
 interface MapViewProps {
   center: LatLngLiteral;
-  locationStatus: string;
-  markers?: LatLngLiteral[];
+  medias?: MediaCardProps[];
   map: Map|null;
   setMap: React.Dispatch<React.SetStateAction<Map|null>>;
   isMobile: boolean;
@@ -17,34 +21,27 @@ interface MapViewProps {
 }
 
 
-function SetPosition(map : Map, center: LatLngLiteral) {
-  const [position, setPosition] = useState(() => map.getCenter())
-
-  const onReset = useCallback(() => {
-    map.setView(center, default_zoom)
-  }, [center, map])
-
-  const onMove = useCallback(() => {
-    setPosition(map.getCenter())
-  }, [map])
-
-  useEffect(() => {
-    map.on('move', onMove)
-    return () => {
-      map.off('move', onMove)
-    }
-  }, [map, onMove])
-
-  return (
-    null
-  )
+interface MediaMarkerProps{
+  media: MediaCardProps;
 }
 
 
+function MediaMarker({media}: MediaMarkerProps){
 
-export default function MapView({center, map, setMap, locationStatus, markers, isMobile}: MapViewProps){
+  const mediaMarkerIcon = L.divIcon({
+    className: 'media-marker',
+    html: `<span>$${media.price.toString()}</span>`,
+    iconSize: [200, 30],
+    iconAnchor: [100, 15]
+  });
 
 
+  return (
+    <Marker position={{lat: media.mediaLocation.latitude, lng: media.mediaLocation.longitude}} icon={mediaMarkerIcon}/>
+  )
+}
+
+export default function MapView({center, map, setMap,  medias, isMobile}: MapViewProps){
 
   const displayMap = useMemo(
     () => (
@@ -58,9 +55,13 @@ export default function MapView({center, map, setMap, locationStatus, markers, i
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+          {medias?.map((media: MediaCardProps) => (
+            <MediaMarker key={media.index} media={media}/>
+          ))
+          }
         </MapContainer>
       ) ,
-    [center, setMap],
+    [center, medias, setMap],
   )
 
     return(

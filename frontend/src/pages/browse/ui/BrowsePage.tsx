@@ -3,14 +3,14 @@
 import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
-import { IconSearch } from '@tabler/icons-react';
+import { IconMap, IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
-import { LatLngLiteral, Map } from 'leaflet';
+import { LatLngBounds, LatLngLiteral, Map } from 'leaflet';
 import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
@@ -30,6 +30,7 @@ function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
 function BrowsePage() {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const defaultPos = {lat: 45.516476848520064, lng: -73.52053208741675};
 
   const t = useTranslations('browse');
   const sortNearest = t('browseactions.sort.nearest');
@@ -55,7 +56,12 @@ function BrowsePage() {
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
 
+  const [mapVisible, setMapVisible] = useState<boolean>(false);
   const [map, setMap] = useState<Map|null>(null);
+  const [bbox, setBbox] = useState<LatLngBounds | null>();
+  
+  
+  
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -81,13 +87,20 @@ function BrowsePage() {
     loadingLocation: locationStatus === 'loading',
     setMediaStatus});
 
+  const onMove = useCallback(() => {
+    setBbox(map ? map.getBounds(): null)
+    console.log()
+  }, [map])
+
   useEffect(() => {
     let cancelled = false;
 
     async function resolveLocation() {
+      
       setLocationStatus('loading');
 
       try {
+        
         if (
           sortBy === SpecialSort.nearest &&
           (!addressSearch || addressSearch === sortNearest)
@@ -96,8 +109,6 @@ function BrowsePage() {
           if (!cancelled) {
             setLocation(coords);
             setLocationStatus('success');
-            
-            
           }
         } else {
           const address = await GetAddressDetails(addressSearch, searchLanguage);
@@ -110,9 +121,7 @@ function BrowsePage() {
             const coords = { lat: address.lat, lng: address.lng }
             setLocation(coords);
             setLocationStatus('success');
-            if (map) {
-              map.setView(coords, 13);
-            }  
+            map?.setView(coords, 13);
           }
         }
       } catch (err: unknown) {
@@ -123,12 +132,19 @@ function BrowsePage() {
           setSortBy(SortOptions.priceAsc);
         } else {
           setLocationStatus('error');
+          setSortBy(SortOptions.priceAsc);
         }
       }
     }
     resolveLocation();
     return () => { cancelled = true };
   }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
+
+  useEffect(() => {
+    if (addressSearch) {
+      setMapVisible(true);
+    }
+  }, [addressSearch]);
 
 
   useEffect(() => {
@@ -149,6 +165,12 @@ function BrowsePage() {
       return () => clearTimeout(timeout);
   }, [draftAddressSearch, searchLanguage, sortNearest]);
 
+  
+  
+  useEffect(() => {
+    map?.on('moveend', onMove)
+    map?.on('load', onMove)
+  }, [map, onMove])
 
   function filters(){
     return(
@@ -159,14 +181,15 @@ function BrowsePage() {
     )
   }
 
-  
-
 
   return (
       <Container size={map ? "1600" : "xl"} w="100%" py={20} >
         <Group grow h="100%" top="0" justify='flex-start'>
           <Stack gap="sm" h="100%" top="0" justify='flex-start'>
-              
+              <div>N: {bbox?.getNorth().toString()}</div>
+              <div>W: {bbox?.getWest().toString()}</div>
+              <div>E: {bbox?.getEast().toString()}</div>
+              <div>S: {bbox?.getSouth().toString()}</div>
               <SearchMobileViewer>
                 <Autocomplete
                   placeholder={t('searchAddress')}
@@ -177,7 +200,6 @@ function BrowsePage() {
                   onKeyDown={(event) => {
                     if (event.key === "Enter") {
                       setAddressSearch(draftAddressSearch);
-                      setSortBy(SpecialSort.nearest)
                     }
                   }}
                   rightSection={
@@ -201,13 +223,16 @@ function BrowsePage() {
                     </ActionIcon>
                   }
                 />
+                
               </SearchMobileViewer>
               <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
-              
+              <ActionIcon onClick={() => setMapVisible(!mapVisible)}>
+                  <IconMap size={20} />
+                </ActionIcon>
               
                 {(isMobile && location && sortBy === SpecialSort.nearest) && 
                   <Container style={{position: "relative",  width: "100%"}} p="0">
-                    <MapView center={location} locationStatus={locationStatus} setMap={setMap} map={map} isMobile={isMobile}/>
+                    <MapView center={location} medias={media} setMap={setMap} map={map} isMobile={isMobile}/>
                   </Container>
                 }
 
@@ -229,7 +254,7 @@ function BrowsePage() {
                 <Text>{t('nomedia.changefilters')}</Text>
               </Stack>
             ) : (
-              <MediaCardGrid medias={media} size={(location && sortBy === SpecialSort.nearest && !isMobile)? 2 : 1} />
+              <MediaCardGrid medias={media} size={(mapVisible)? 2 : 1} />
             )}
             {totalPages > 1 && (
               <Group justify="center" mt="md">
@@ -244,10 +269,12 @@ function BrowsePage() {
           </Stack>
         
 
-        {(!isMobile && location && sortBy === SpecialSort.nearest) && 
-            <Container style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-              <MapView center={location} locationStatus={locationStatus} setMap={setMap} map={map} isMobile={isMobile}/>
-            </Container>
+        {(!isMobile && mapVisible) && 
+            
+              <Container style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+                <MapView center={location ?? defaultPos} medias={media} setMap={setMap} map={map} isMobile={isMobile}/>
+              </Container>
+            
         }
         
         </Group>

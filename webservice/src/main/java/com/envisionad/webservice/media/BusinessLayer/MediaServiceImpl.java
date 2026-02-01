@@ -47,6 +47,7 @@ public class MediaServiceImpl implements MediaService {
             String specialSort,
             Double userLat,
             Double userLng,
+            Double[] bounds,
             String excludedId
             ) {
 
@@ -71,6 +72,11 @@ public class MediaServiceImpl implements MediaService {
 
         if (excludedId != null) {
             spec = spec.and(MediaSpecifications.mediaIdIsNotEqual(UUID.fromString(excludedId)));
+        }
+
+        if (bounds != null) {
+            spec = spec.and(MediaSpecifications.latBetween(bounds));
+            spec = spec.and(MediaSpecifications.lngBetween(bounds));
         }
 
         // Sort by Nearest
