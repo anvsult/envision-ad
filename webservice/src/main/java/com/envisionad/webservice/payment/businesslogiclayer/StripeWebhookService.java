@@ -168,7 +168,7 @@ public class StripeWebhookService {
 
             log.info("Marked payment as failed: reservationId={}", payment.getReservationId());
 
-            // Update reservation status to FAILED
+            // Update reservation status to CANCELLED due to payment failure
             updateReservationStatus(payment.getReservationId(), ReservationStatus.CANCELLED);
         } else {
             log.warn("No payment record found for PaymentIntent: {}", paymentIntentId);
