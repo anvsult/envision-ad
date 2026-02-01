@@ -44,9 +44,9 @@ export const routing = defineRouting({
     },
 
     //advertiser dashboard
-    '/dashboard/advertiser': {
-      'en': '/dashboard/advertiser',
-      'fr': '/tableau-de-bord/annonceur'
+    '/dashboard/advertiser/metrics': {
+      'en': '/dashboard/advertiser/metrics',
+      'fr': '/tableau-de-bord/annonceur/metriques'
     },
     '/dashboard/advertiser/overview': {
       'en': '/dashboard/advertiser/overview',

@@ -4,6 +4,7 @@ export const ROUTE_PERMISSIONS: Record<string, string | undefined> = {
 
     '/dashboard/media-owner/media': undefined,
 
+    '/dashboard/advertiser/metrics': 'read:campaign',
     '/dashboard/advertiser/campaigns': 'read:campaign',
 
     '/dashboard/admin/media/pending': 'update:verification',

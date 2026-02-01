@@ -336,13 +336,12 @@ export function AdvertiserOverview() {
                     </Paper>
                 </Grid.Col>
 
-                <Grid.Col span={{ base: 12, md: 4 }}>
+                {/*                <Grid.Col span={{ base: 12, md: 4 }}>
                     <Paper withBorder p="xl" radius="md" h="100%">
                         <Text size="xl" fw={700} mb="lg">
                             {t("graphs.mediaDistribution")}
                         </Text>
                         <Center h={250}>
-                            {/* Placeholder for a distribution chart or similar */}
                             <Group align="center" justify="center" gap="xl">
                                 <RingProgress
                                     size={200}
@@ -376,7 +375,7 @@ export function AdvertiserOverview() {
                             </Group>
                         </Center>
                     </Paper>
-                </Grid.Col>
+                </Grid.Col> */}
             </Grid>
         </Stack>
     );

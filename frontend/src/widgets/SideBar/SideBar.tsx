@@ -7,8 +7,8 @@ import {
     IconUsers,
     IconShieldCheck, IconDiscountCheck, IconChartDots, IconFileDescription
 } from "@tabler/icons-react";
-import {useTranslations} from "next-intl";
-import {usePermissions} from "@/app/providers/PermissionProvider";
+import { useTranslations } from "next-intl";
+import { usePermissions } from "@/app/providers/PermissionProvider";
 
 export default function SideBar() {
     const { permissions } = usePermissions();
@@ -44,10 +44,10 @@ export default function SideBar() {
                 <NavLink
                     key="metricOverview"
                     component={Link}
-                    href="/dashboard/advertiser"
+                    href="/dashboard/advertiser/metrics"
                     label={t("advertiser.metricOverview")}
                     leftSection={<IconChartDots size={20} stroke={1.5} />}
-                    active={pathname === "/dashboard/advertiser"}
+                    active={pathname === "/dashboard/advertiser/metrics"}
                 />
                 <NavLink
                     key="campaigns"
@@ -92,7 +92,7 @@ export default function SideBar() {
 
             defaultValue={["organization", "media-owner", "advertiser", "admin"]}
         >
-            { advertiserNavItems.length > 0 &&
+            {advertiserNavItems.length > 0 &&
                 <Accordion.Item value="advertiser">
                     <Accordion.Control>{t("advertiserTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -103,7 +103,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            { mediaOwnerNavItems.length > 0 &&
+            {mediaOwnerNavItems.length > 0 &&
                 <Accordion.Item value="media-owner">
                     <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -114,7 +114,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            { adminNavItems.length == 0 &&
+            {adminNavItems.length == 0 &&
                 <Accordion.Item value="organization">
                     <Accordion.Control>{t("organizationTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -128,7 +128,7 @@ export default function SideBar() {
                                 active={pathname?.endsWith("/organization/overview")}
                             />
 
-                            { (permissions.includes('read:employee')) &&
+                            {(permissions.includes('read:employee')) &&
                                 <NavLink
                                     key="employees"
                                     component={Link}
@@ -143,7 +143,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            { adminNavItems.length > 0 &&
+            {adminNavItems.length > 0 &&
                 <Accordion.Item value="admin">
                     <Accordion.Control>{t("adminTitle")}</Accordion.Control>
                     <Accordion.Panel>
