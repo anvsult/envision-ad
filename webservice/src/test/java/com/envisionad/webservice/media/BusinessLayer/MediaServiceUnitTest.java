@@ -542,7 +542,7 @@ class MediaServiceUnitTest {
     }
 
     private MediaLocation createMediaLocation(String name, String description,
-                                               Double latitude, Double longitude) {
+                                              Double latitude, Double longitude) {
         MediaLocation location = new MediaLocation();
         location.setId(UUID.randomUUID());
         location.setName(name);

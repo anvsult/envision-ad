@@ -5,6 +5,8 @@ import DashboardPage from '../support/page-object/pages/dashboard.page';
 import BrowsePage from '../support/page-object/pages/browse.page';
 import MediaDashboardPage from '../support/page-object/pages/mediaDashboard.page';
 import ProfilePage from '../support/page-object/pages/profile.page';
+import MediaDetailsPage from '../support/page-object/pages/mediaDetails.page';
+import ReservationPage from '../support/page-object/pages/advertiser/reservation.page';
 
 type MyFixtures = {
     homePage: HomePage;
@@ -13,6 +15,8 @@ type MyFixtures = {
     mediaDashboardPage: MediaDashboardPage;
     campaignsPage: CampaignsPage;
     profilePage: ProfilePage;
+    mediaDetailsPage: MediaDetailsPage;
+    reservationPage: ReservationPage;
 };
 
 export const test = base.extend<MyFixtures>({
@@ -33,6 +37,12 @@ export const test = base.extend<MyFixtures>({
     },
     profilePage: async ({ page }, run) => {
         await run(new ProfilePage(page));
+    },
+    mediaDetailsPage: async ({ page }, run) => {
+        await run(new MediaDetailsPage(page));
+    },
+    reservationPage: async ({ page }, run) => {
+        await run(new ReservationPage(page));
     }
 });
 

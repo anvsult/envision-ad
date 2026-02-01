@@ -1,6 +1,7 @@
 package com.envisionad.webservice.utils;
 
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
 import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
 import com.envisionad.webservice.business.exceptions.*;
@@ -8,11 +9,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
+import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
+import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
+import com.envisionad.webservice.reservation.exceptions.InvalidReservationException; // New import
+import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
+import org.springframework.security.access.AccessDeniedException;
 import static org.springframework.http.HttpStatus.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalControllerHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalControllerHandler.class);
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(BusinessNotFoundException.class)
@@ -75,6 +85,18 @@ public class GlobalControllerHandler {
     }
 
     @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(InvalidReservationException.class)
+    public HttpErrorInfo handleInvalidReservationException(InvalidReservationException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(InsufficientLoopDurationException.class)
+    public HttpErrorInfo handleInsufficientLoopDurationException(InsufficientLoopDurationException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public HttpErrorInfo handleIllegalArgumentException(IllegalArgumentException ex) {
         return createHttpErrorInfo(BAD_REQUEST, ex);
@@ -98,6 +120,43 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(AdNotFoundException.class)
+    public HttpErrorInfo handleAdNotFoundException(AdNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(MediaNotFoundException.class)
+    public HttpErrorInfo handleMediaNotFoundException(MediaNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public HttpErrorInfo handleReservationNotFoundException(ReservationNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(AdvertiserEmailNotFoundException.class)
+    public HttpErrorInfo handleAdvertiserEmailNotFoundException(AdvertiserEmailNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(FORBIDDEN)
+    @ExceptionHandler({ SecurityException.class, AccessDeniedException.class })
+    public HttpErrorInfo handleForbidden(Exception ex) {
+        return createHttpErrorInfo(FORBIDDEN, ex);
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Exception.class)
+    public HttpErrorInfo handleUnexpectedException(Exception ex) {
+        log.error("Unhandled exception", ex);
+        return createHttpErrorInfo(INTERNAL_SERVER_ERROR, ex);
+
+    }
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();
 

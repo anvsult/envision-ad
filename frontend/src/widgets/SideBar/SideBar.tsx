@@ -41,6 +41,16 @@ export default function SideBar() {
                 active={pathname?.endsWith("/media-owner/media")}
             />
         ),
+        (permissions.includes("create:media") || permissions.includes("update:media")) && (
+            <NavLink
+                key="proof"
+                component={Link}
+                href="/dashboard/media-owner/proof"
+                label={t("media-owner.proof")}
+                leftSection={<IconFileDescription size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/media-owner/proof")}
+            />
+        ),
     ].filter(Boolean);
 
     const advertiserNavItems = [
@@ -108,7 +118,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {mediaOwnerNavItems.length > 0 &&
+            { mediaOwnerNavItems.length > 0 &&
                 <Accordion.Item value="media-owner">
                     <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -119,7 +129,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {adminNavItems.length == 0 &&
+            { adminNavItems.length == 0 &&
                 <Accordion.Item value="organization">
                     <Accordion.Control>{t("organizationTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -133,7 +143,7 @@ export default function SideBar() {
                                 active={pathname?.endsWith("/organization/overview")}
                             />
 
-                            {(permissions.includes('read:employee') || permissions.includes('create:employee') || permissions.includes('delete:employee')) &&
+                            { (permissions.includes('read:employee') || permissions.includes('create:employee') || permissions.includes('delete:employee')) &&
                                 <NavLink
                                     key="employees"
                                     component={Link}
@@ -148,7 +158,7 @@ export default function SideBar() {
                 </Accordion.Item>
             }
 
-            {adminNavItems.length > 0 &&
+            { adminNavItems.length > 0 &&
                 <Accordion.Item value="admin">
                     <Accordion.Control>{t("adminTitle")}</Accordion.Control>
                     <Accordion.Panel>

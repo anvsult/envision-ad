@@ -1,18 +1,29 @@
 "use client";
 
-import React, {useMemo, useState} from "react";
+import React, {useMemo, useState, useEffect, useCallback} from "react";
 import {MediaModal} from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
 import {MediaTable} from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
 import {useMediaList} from "@/pages/dashboard/media-owner/hooks/useMediaList";
 import {useMediaForm} from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import {useTranslations} from "next-intl";
-import {Button, Group, Pagination, Stack,} from "@mantine/core";
+import {Alert, Button, Group, Loader, Pagination, Stack,} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
 import {WeeklyScheduleModel} from "@/entities/media";
-import {IconCheck} from "@tabler/icons-react";
+import {IconCheck, IconAlertTriangle} from "@tabler/icons-react";
+import {getStripeAccountStatus} from "@/features/payment";
+import {useUser} from "@auth0/nextjs-auth0/client";
+import {getEmployeeOrganization} from "@/features/organization-management/api";
+import Link from "next/link";
 
 const ITEMS_PER_PAGE = 20;
+
+interface StripeStatus {
+    connected: boolean;
+    onboardingComplete: boolean;
+    chargesEnabled: boolean;
+    payoutsEnabled: boolean;
+}
 
 export default function MediaOwnerPage() {
     const {media, addNewMedia, editMedia, deleteMediaById, fetchMediaById, toggleMediaStatus} =
@@ -23,6 +34,35 @@ export default function MediaOwnerPage() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [activePage, setActivePage] = useState(1);
     const t = useTranslations("media");
+    const { user, isLoading: isUserLoading } = useUser();
+
+    const [stripeStatus, setStripeStatus] = useState<StripeStatus | null>(null);
+    const [isStripeLoading, setIsStripeLoading] = useState(true);
+
+    const fetchStripeStatus = useCallback(async () => {
+        if (user?.sub) {
+            try {
+                setIsStripeLoading(true);
+                const org = await getEmployeeOrganization(user.sub);
+                if (org && org.businessId) {
+                    const status = await getStripeAccountStatus(org.businessId);
+                    setStripeStatus(status);
+                }
+            } catch (e) {
+                console.error("Failed to fetch Stripe status", e);
+            } finally {
+                setIsStripeLoading(false);
+            }
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (!isUserLoading) {
+            void fetchStripeStatus();
+        }
+    }, [user, isUserLoading, fetchStripeStatus]);
+
+    const isStripeOnboarded = stripeStatus && stripeStatus.onboardingComplete && stripeStatus.chargesEnabled && stripeStatus.payoutsEnabled;
 
     const handleSave = async () => {
         try {
@@ -48,9 +88,16 @@ export default function MediaOwnerPage() {
             setEditingId(null);
         } catch (error) {
             console.error("Failed to save media", error);
+            let errorMessage = t("errors.saveFailed");
+
+            if (error && typeof error === 'object' && 'response' in error) {
+                const response = (error as { response?: { data?: { message?: string } } }).response;
+                errorMessage = response?.data?.message || errorMessage;
+            }
+
             notifications.show({
                 title: t("errors.error"),
-                message: t("errors.saveFailed"),
+                message: errorMessage,
                 color: "red",
             });
         }
@@ -222,15 +269,32 @@ export default function MediaOwnerPage() {
     return (
         <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
             <Group justify="flex-start">
-                <Button
-                    onClick={() => {
-                        setEditingId(null);
-                        resetForm();
-                        setIsModalOpen(true);
-                    }}
-                >
-                    {t('newMedia')}
-                </Button>
+                {isStripeLoading ? (
+                    <Loader/>
+                ) : isStripeOnboarded ? (
+                    <Button
+                        onClick={() => {
+                            setEditingId(null);
+                            resetForm();
+                            setIsModalOpen(true);
+                        }}
+                    >
+                        {t('newMedia')}
+                    </Button>
+                ) : (
+                    <Stack gap="xs" style={{ width: '100%' }}>
+                        <Alert
+                            icon={<IconAlertTriangle size="1rem" />}
+                            title={t('stripe.requiredTitle')}
+                            color="orange"
+                        >
+                            {t('stripe.requiredMessage')}
+                           <Link href="/dashboard/stripe" style={{ color: 'var(--mantine-color-orange-7)', textDecoration: 'underline' }}>
+                             {t('stripe.requiredLink')}
+                           </Link>
+                        </Alert>
+                    </Stack>
+                )}
             </Group>
             <MediaModal
                 opened={isModalOpen}

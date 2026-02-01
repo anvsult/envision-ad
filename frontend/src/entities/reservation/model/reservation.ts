@@ -1,5 +1,4 @@
 export interface ReservationRequestDTO {
-    mediaId: string;  // Still needed in request body per backend ReservationRequestModel
     campaignId: string;
     startDate: string;  // ISO 8601 format: YYYY-MM-DDTHH:mm:ss
     endDate: string;    // ISO 8601 format: YYYY-MM-DDTHH:mm:ss
@@ -8,6 +7,7 @@ export interface ReservationRequestDTO {
 export interface ReservationResponseDTO {
     reservationId: string;
     campaignId: string;
+    campaignName?: string;
     status: string;
     totalPrice: number;
     startDate: string;

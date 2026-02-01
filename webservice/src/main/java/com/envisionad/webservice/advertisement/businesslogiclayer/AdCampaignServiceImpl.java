@@ -16,7 +16,6 @@ import com.envisionad.webservice.advertisement.presentationlayer.models.AdRespon
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
 
@@ -30,7 +29,6 @@ import com.envisionad.webservice.reservation.dataaccesslayer.ReservationReposito
 @Service
 public class AdCampaignServiceImpl implements AdCampaignService {
     private final BusinessRepository businessRepository;
-    private final EmployeeRepository employeeRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final AdCampaignRequestMapper adCampaignRequestMapper;
     private final AdCampaignResponseMapper adCampaignResponseMapper;
@@ -39,17 +37,13 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     private final JwtUtils jwtUtils;
     private final ReservationRepository reservationRepository;
 
-    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository,
-            AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper,
-            AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository,
-            EmployeeRepository employeeRepository, JwtUtils jwtUtils, ReservationRepository reservationRepository) {
+    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils, ReservationRepository reservationRepository) {
         this.businessRepository = businessRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignRequestMapper = adCampaignRequestMapper;
         this.adCampaignResponseMapper = adCampaignResponseMapper;
         this.adRequestMapper = adRequestMapper;
         this.adResponseMapper = adResponseMapper;
-        this.employeeRepository = employeeRepository;
         this.jwtUtils = jwtUtils;
         this.reservationRepository = reservationRepository;
     }
