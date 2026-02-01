@@ -25,7 +25,8 @@
       "overview": "Overview",
       "media": "Media",
       "displayedAds": "Displayed ads",
-      "adRequests": "Ad requests"
+      "adRequests": "Ad requests",
+      "proof": "Submit Proof"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -129,7 +130,7 @@
     "hoursTitle": "Hours",
     "reserveButton": "Reserve",
     "reserveNote": "You won’t be charged yet.",
-    "pricePerWeek": "${price} per week",
+    "pricePerWeek": "{price} per week",
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "dailyImpressionPerDay": "~{count} daily impressions",
@@ -170,7 +171,7 @@
     }
   },
   "mediacard": {
-    "perWeek": "${price} per week",
+    "perWeek": "{price} per week",
     "dailyImpressions": "~{dailyImpressions} daily impressions"
   },
   "browse": {
@@ -183,7 +184,7 @@
     "browseactions": {
       "filters": {
         "actionName": "Filter:",
-        "price": "Price ($)",
+        "price": "Price (CAD$)",
         "impressions": "Minimum impressions",
         "from": "From",
         "to": "To",
@@ -413,6 +414,58 @@
       "delete": "Media deleted",
       "active": "Media activated",
       "inactive": "Media deactivated"
+    },
+    "stripe": {
+      "requiredTitle": "Stripe Account Required",
+      "requiredMessage": "To create media and receive payments, you must first set up your Stripe account. ",
+      "requiredLink": "Complete your Stripe onboarding here."
+    }
+  },
+  "proofOfDisplay": {
+    "modal": {
+      "title": "Add proof for {mediaName}"
+    },
+    "stepper": {
+      "campaign": {
+        "label": "Campaign",
+        "description": "Select campaign"
+      },
+      "upload": {
+        "label": "Upload",
+        "description": "Upload proof images"
+      }
+    },
+    "campaignSelect": {
+      "label": "Campaign",
+      "placeholder": "Select campaign"
+    },
+    "upload": {
+      "helperText": "Upload one or more photos showing the ad display.",
+      "uploadedCount": "Uploaded ({count})"
+    },
+    "buttons": {
+      "next": "Next",
+      "back": "Back",
+      "uploadProofImages": "Upload proof images",
+      "clear": "Clear",
+      "submitProof": "Submit proof",
+      "close": "Close"
+    },
+    "completed": {
+      "title": "Proof submitted",
+      "description": "The advertiser was notified by email for this campaign.",
+      "uploadedFiles": "Uploaded: {count} file(s)"
+    },
+    "page": { "title": "Proof of Display" },
+    "table": {
+      "image": "Image",
+      "name": "Name",
+      "adsDisplayed": "Ads displayed",
+      "pending": "Pending",
+      "displayed": "Displayed",
+      "action": "Action",
+      "addProof": "Add proof",
+      "noMedia": "No media found"
     }
   },
   "mediaModal": {
@@ -457,7 +510,7 @@
       "aspectRatioHeight": "Ex. 9",
       "width": "Ex. 80",
       "height": "Ex. 200",
-      "price": "$50.00",
+      "price": "CAD$50.00",
       "dailyImpressions": "Daily impressions",
       "timeOpen": "00:00",
       "timeClosed": "Closed"
@@ -734,11 +787,17 @@
     "chooseCampaign": "Choose one of your campaigns",
     "selectStartDateNote": "Select a Start Date. End dates are restricted to weekly intervals.",
     "endDateWeekday": "End date must be on the same weekday as start date.",
+    "processingPayment": "Processing your payment...",
+    "pleaseWait": "Please wait while we complete your reservation",
     "errors": {
       "selectCampaign": "Please select a campaign to proceed",
-      "selectDate": "Please select a valid start and end date"
+      "selectDate": "Please select a valid start and end date",
+      "missingPaymentInfo": "Missing required payment information",
+      "paymentInitFailed": "Failed to initialize payment",
+      "paymentRequired": "Payment must be completed first"
     },
     "errorTitle": "Error",
+    "mediaIdMissing": "Media ID is missing",
     "missingPermissionErrorMessage": "You do not have permission to create reservations for this campaign",
     "campaignNotFoundErrorMessage": "Media or campaign not found",
     "successTitle": "Reservation Successful!",
@@ -754,11 +813,62 @@
     "nextStepButton": "Next step",
     "confirmPayButton": "Confirm & Pay",
     "reviewTitle": "Review Reservation",
+    "dateSelection": {
+      "selected": "Selected: {start} to {end} ({weeks} weeks)"
+    },
     "labels": {
       "media": "Media",
       "campaign": "Campaign",
       "dates": "Dates",
       "totalCost": "Total Cost"
+    }
+  },
+  "paymentForm": {
+    "enterPaymentDetails": "Enter Payment Details",
+    "total": "Total: {amount}",
+    "payButton": "Pay {amount}",
+    "back": "Back",
+    "paymentFailed": "Payment Failed",
+    "paymentError": "An error occurred during payment",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "stripe": {
+    "title": "Stripe Account",
+    "errors": {
+      "noBusiness": "No business found for your user.",
+      "fetchFailed": "Failed to fetch Stripe account status.",
+      "connectFailed": "Failed to initiate Stripe connection."
+    },
+    "noStatus": "Could not retrieve Stripe account status.",
+    "status": {
+      "connected": {
+        "title": "Stripe Account Connected",
+        "description": "Your account is fully configured and ready to receive payments from advertisers.",
+        "accountId": "Your Stripe Account ID"
+      },
+      "incomplete": {
+        "title": "Finish Setting Up Your Payments",
+        "description": "To list media and receive payments, you need to complete your Stripe account setup.",
+        "checks": {
+          "onboarding": "Onboarding process",
+          "charges": "Can accept payments",
+          "payouts": "Can receive payouts"
+        }
+      }
+    },
+    "buttons": {
+      "connect": "Connect with Stripe",
+      "continueOnboarding": "Continue Onboarding"
+    },
+    "notifications": {
+        "success": {
+            "title": "Onboarding Complete!",
+            "message": "Your account is ready. We're just confirming the final details with Stripe."
+        },
+        "refresh": {
+            "title": "Onboarding Session Expired",
+            "message": "Your session expired. Please try connecting again."
+        }
     }
   },
   "invitation": {
@@ -772,6 +882,34 @@
     "error": "An error occurred while accepting the invitation.",
     "redirecting": "Redirecting to dashboard...",
     "goHome": "Go Home"
+  },
+  "stripeOnboarding": {
+    "title": "Connect Your Payment Account",
+    "description": "Set up your Stripe account to receive payments from advertisers.",
+    "setupTitle": "Connect Stripe Account",
+    "setupDescription": "You need to connect a Stripe account to receive payments when advertisers book your media.",
+    "requiredTitle": "Required to Receive Payments",
+    "requiredMessage": "Without a connected Stripe account, advertisers cannot book your media.",
+    "whatYouNeed": "What you'll need:",
+    "requirement1": "Business information (legal name, address)",
+    "requirement2": "Bank account details for payouts",
+    "requirement3": "Tax identification number",
+    "requirement4": "Personal identification (for verification)",
+    "connectStripe": "Connect Stripe Account",
+    "continueOnboarding": "Continue Onboarding",
+    "securityNote": "Your information is securely transmitted to Stripe and never stored on our servers.",
+    "connectedTitle": "Payment Account Connected",
+    "connectedMessage": "Your Stripe account is fully set up and ready to receive payments!",
+    "statusTitle": "Account Status",
+    "onboardingStatus": "Onboarding",
+    "chargesStatus": "Accept Payments",
+    "payoutsStatus": "Receive Payouts",
+    "complete": "Complete",
+    "incomplete": "Incomplete",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "checkingStatus": "Checking account status...",
+    "errorTitle": "Connection Error",
+    "connectionError": "Failed to connect Stripe account. Please try again."
   }
-
 }

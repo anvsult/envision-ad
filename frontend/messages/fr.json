@@ -25,7 +25,8 @@
       "overview": "Aperçu",
       "media": "Médias",
       "displayedAds": "Annonces affichées",
-      "adRequests": "Demandes d'annonce"
+      "adRequests": "Demandes d'annonce",
+      "proof": "Soumettre Une Preuve"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -129,7 +130,7 @@
     "hoursTitle": "Heures",
     "reserveButton": "Réserver",
     "reserveNote": "Vous ne serez pas facturé maintenant.",
-    "pricePerWeek": "{price} $ par semaine",
+    "pricePerWeek": "{price} par semaine",
     "priceUnavailable": "Prix non disponible",
     "loopDurationSeconds": "{seconds} secondes",
     "estimatedViewsValue": "300 par jour",
@@ -171,7 +172,7 @@
     }
   },
   "mediacard": {
-    "perWeek": "${price} par semaine",
+    "perWeek": "{price} par semaine",
     "dailyImpressions": "~{dailyImpressions} impressions par jour"
   },
   "browse": {
@@ -184,7 +185,7 @@
     "browseactions": {
       "filters": {
         "actionName": "Filtres:",
-        "price": "Prix ($)",
+        "price": "Prix ($CA)",
         "impressions": "Impressions minimum",
         "from": "Minimum",
         "to": "Maximum",
@@ -414,6 +415,60 @@
       "delete": "Média supprimé",
       "active": "Média activé",
       "inactive": "Média désactivé"
+    },
+    "stripe": {
+      "requiredTitle": "Compte Stripe requis",
+      "requiredMessage": "Pour créer des médias et recevoir des paiements, vous devez d'abord configurer votre compte Stripe. ",
+      "requiredLink": "Complétez votre intégration Stripe ici."
+    }
+  },
+  "proofOfDisplay": {
+    "modal": {
+      "title": "Ajouter une preuve pour {mediaName}"
+    },
+    "stepper": {
+      "campaign": {
+        "label": "Campagne",
+        "description": "Sélectionner une campagne"
+      },
+      "upload": {
+        "label": "Téléversement",
+        "description": "Téléverser des images de preuve"
+      }
+    },
+    "campaignSelect": {
+      "label": "Campagne",
+      "placeholder": "Sélectionner une campagne"
+    },
+    "upload": {
+      "helperText": "Téléversez une ou plusieurs photos montrant l’affichage de la publicité.",
+      "uploadedCount": "Téléversé(s) ({count})"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "back": "Retour",
+      "uploadProofImages": "Téléverser des images de preuve",
+      "clear": "Effacer",
+      "submitProof": "Soumettre la preuve",
+      "close": "Fermer"
+    },
+    "completed": {
+      "title": "Preuve soumise",
+      "description": "L’annonceur a été informé par e-mail pour cette campagne.",
+      "uploadedFiles": "Téléversé(s) : {count} fichier(s)"
+    },
+    "page": {
+      "title": "Preuve d’affichage"
+    },
+    "table": {
+      "image": "Image",
+      "name": "Nom",
+      "adsDisplayed": "Publicités affichées",
+      "pending": "En attente",
+      "displayed": "Affichée",
+      "action": "Action",
+      "addProof": "Ajouter une preuve",
+      "noMedia": "Aucun média trouvé"
     }
   },
   "mediaModal": {
@@ -458,7 +513,7 @@
       "aspectRatioHeight": "Ex. 9",
       "width": "Ex. 80",
       "height": "Ex. 200",
-      "price": "50,00 $",
+      "price": "50,00 $CA",
       "dailyImpressions": "Impressions quotidiennes",
       "timeOpen": "00:00",
       "timeClosed": "Fermé"
@@ -735,9 +790,14 @@
     "chooseCampaign": "Choisissez une de vos campagnes",
     "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
     "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
+    "processingPayment": "Traitement de votre paiement...",
+    "pleaseWait": "Veuillez patienter pendant que nous finalisons votre réservation",
     "errors": {
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
-      "selectDate": "Veuillez sélectionner une date de début et de fin valides"
+      "selectDate": "Veuillez sélectionner une date de début et de fin valides",
+      "missingPaymentInfo": "Informations de paiement requises manquantes",
+      "paymentInitFailed": "Échec de l'initialisation du paiement",
+      "paymentRequired": "Le paiement doit être complété en premier"
     },
     "errorTitle": "Erreur de réservation",
     "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
@@ -756,11 +816,62 @@
     "nextStepButton": "Étape suivante",
     "confirmPayButton": "Confirmer & Payer",
     "reviewTitle": "Vérifier la réservation",
+    "dateSelection": {
+      "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
+    },
     "labels": {
       "media": "Média",
       "campaign": "Campagne",
       "dates": "Dates",
       "totalCost": "Coût total"
+    }
+  },
+  "paymentForm": {
+    "enterPaymentDetails": "Entrer les détails de paiement",
+    "total": "Total : {amount}",
+    "payButton": "Payer {amount}",
+    "back": "Retour",
+    "paymentFailed": "Paiement échoué",
+    "paymentError": "Une erreur s'est produite lors du paiement",
+    "unexpectedError": "Une erreur inattendue s'est produite"
+  },
+  "stripe": {
+    "title": "Compte Stripe",
+    "errors": {
+      "noBusiness": "Aucune entreprise trouvée pour votre utilisateur.",
+      "fetchFailed": "Échec de la récupération du statut du compte Stripe.",
+      "connectFailed": "Échec de l'initialisation de la connexion Stripe."
+    },
+    "noStatus": "Impossible de récupérer le statut du compte Stripe.",
+    "status": {
+      "connected": {
+        "title": "Compte Stripe connecté",
+        "description": "Votre compte est entièrement configuré et prêt à recevoir les paiements des annonceurs.",
+        "accountId": "Votre identifiant de compte Stripe"
+      },
+      "incomplete": {
+        "title": "Terminez la configuration de vos paiements",
+        "description": "Pour afficher des médias et recevoir des paiements, vous devez terminer la configuration de votre compte Stripe.",
+        "checks": {
+          "onboarding": "Processus d'intégration",
+          "charges": "Peut accepter les paiements",
+          "payouts": "Peut recevoir des paiements"
+        }
+      }
+    },
+    "buttons": {
+      "connect": "Se connecter avec Stripe",
+      "continueOnboarding": "Continuer l'intégration"
+    },
+    "notifications": {
+      "success": {
+        "title": "Intégration terminée !",
+        "message": "Votre compte est prêt. Nous confirmons juste les derniers détails avec Stripe."
+      },
+      "refresh": {
+        "title": "Session d'intégration expirée",
+        "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
+      }
     }
   },
   "invitation": {
@@ -774,5 +885,34 @@
     "error": "Une erreur s'est produite lors de l'acceptation de l'invitation.",
     "redirecting": "Redirection vers le tableau de bord...",
     "goHome": "Retour à l'accueil"
+  },
+  "stripeOnboarding": {
+    "title": "Connecter votre compte de paiement",
+    "description": "Configurez votre compte Stripe pour recevoir des paiements des annonceurs.",
+    "setupTitle": "Connecter un compte Stripe",
+    "setupDescription": "Vous devez connecter un compte Stripe pour recevoir des paiements lorsque les annonceurs réservent vos médias.",
+    "requiredTitle": "Requis pour recevoir des paiements",
+    "requiredMessage": "Sans un compte Stripe connecté, les annonceurs ne peuvent pas réserver vos médias.",
+    "whatYouNeed": "Ce dont vous aurez besoin :",
+    "requirement1": "Informations sur l'entreprise (nom légal, adresse)",
+    "requirement2": "Coordonnées bancaires pour les paiements",
+    "requirement3": "Numéro d'identification fiscale",
+    "requirement4": "Pièce d'identité personnelle (pour vérification)",
+    "connectStripe": "Connecter le compte Stripe",
+    "continueOnboarding": "Continuer l'intégration",
+    "securityNote": "Vos informations sont transmises en toute sécurité à Stripe et ne sont jamais stockées sur nos serveurs.",
+    "connectedTitle": "Compte de paiement connecté",
+    "connectedMessage": "Votre compte Stripe est entièrement configuré et prêt à recevoir des paiements !",
+    "statusTitle": "État du compte",
+    "onboardingStatus": "Intégration",
+    "chargesStatus": "Accepter les paiements",
+    "payoutsStatus": "Recevoir les paiements",
+    "complete": "Terminé",
+    "incomplete": "Incomplet",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "checkingStatus": "Vérification de l'état du compte...",
+    "errorTitle": "Erreur de connexion",
+    "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
   }
 }

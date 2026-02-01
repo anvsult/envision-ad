@@ -1,6 +1,6 @@
 import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { getJoinedAddress, MediaLocation } from "@/entities/media";
 import { useEffect, useState } from "react";
 import { getOrganizationById } from "@/features/organization-management/api";
@@ -41,6 +41,15 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
     
     const t = useTranslations("mediacard");
     const [organizationName, setOrganizationName] = useState<string>("");
+    const locale = useLocale();
+
+    const formatCurrency = (amount: number): string => {
+        return new Intl.NumberFormat(locale, {
+            style: 'currency',
+            currency: 'CAD',
+        }).format(amount);
+    };
+
     useEffect(() => {
         if (!organizationId){
         return
@@ -89,7 +98,7 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
                             
                         </Stack>
                         <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1}>
-                                    {t('perWeek', {price: price})}
+                                    {t('perWeek', {price: formatCurrency(price)})}
                             </Text>
                         <Stack gap="3px">
                             <Text id={"MediaCardAddress" + index} size="xs" lineClamp={1}>

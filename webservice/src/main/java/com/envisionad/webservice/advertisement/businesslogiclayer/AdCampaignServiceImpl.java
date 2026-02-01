@@ -16,10 +16,8 @@ import com.envisionad.webservice.advertisement.presentationlayer.models.AdRespon
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +26,6 @@ import java.util.List;
 @Service
 public class AdCampaignServiceImpl implements AdCampaignService {
     private final BusinessRepository businessRepository;
-    private final EmployeeRepository employeeRepository;
     private final AdCampaignRepository adCampaignRepository;
     private final AdCampaignRequestMapper adCampaignRequestMapper;
     private final AdCampaignResponseMapper adCampaignResponseMapper;
@@ -36,14 +33,13 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     private final AdResponseMapper adResponseMapper;
     private final JwtUtils jwtUtils;
 
-    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, EmployeeRepository employeeRepository, JwtUtils jwtUtils) {
+    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.businessRepository = businessRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignRequestMapper = adCampaignRequestMapper;
         this.adCampaignResponseMapper = adCampaignResponseMapper;
         this.adRequestMapper = adRequestMapper;
         this.adResponseMapper = adResponseMapper;
-        this.employeeRepository = employeeRepository;
         this.jwtUtils = jwtUtils;
     }
 

@@ -7,9 +7,23 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
+
+    @Query("""
+            SELECT (COUNT(r) > 0)
+            FROM Reservation r
+            WHERE r.mediaId = :mediaId
+              AND r.campaignId = :campaignId
+              AND r.status IN ('CONFIRMED', 'PENDING')
+        """)
+    boolean existsConfirmedReservationForMediaAndCampaign(
+            @Param("mediaId") UUID mediaId,
+            @Param("campaignId") String campaignId
+    );
+
 
     List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
@@ -22,4 +36,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
             @Param("startDate") @NotNull LocalDateTime startDate,
             @Param("endDate") @NotNull LocalDateTime endDate
     );
+
+    Optional<Reservation> findByReservationId(String reservationId);
 }

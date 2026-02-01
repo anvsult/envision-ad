@@ -1,13 +1,11 @@
 package com.envisionad.webservice.media.PresentationLayer.Models;
 
-import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor

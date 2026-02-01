@@ -41,6 +41,7 @@ export default class BrowsePage {
     searchAddressEnter = () => this.page.getByRole('button').nth(4)
 
 
+    mediaLink = (title: string) => this.page.getByRole('link', { name: title })
     mediaCard = (index: string) => this.page.locator('#MediaCard' + index)
     noLocation = () => this.page.getByText('Could not get nearest media.')
     noMediaFound = () => this.page.getByText('No media found')
@@ -84,6 +85,10 @@ export default class BrowsePage {
     public async searchAddress(address: string) {
         await this.searchAddressBar().fill(address);
         await this.searchAddressEnter().click();
+    }
+
+    public async selectMedia(title: TestMediaTitles | string) {
+        await this.mediaLink(title).click();
     }
 
     // Assert
