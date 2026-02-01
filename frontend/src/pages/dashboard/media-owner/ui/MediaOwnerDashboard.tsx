@@ -11,7 +11,7 @@ import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
 import {WeeklyScheduleModel} from "@/entities/media";
 import {IconCheck, IconAlertTriangle} from "@tabler/icons-react";
-import {getStripeAccountStatus} from "@/features/payment/api";
+import {getStripeAccountStatus} from "@/features/payment";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import Link from "next/link";

@@ -106,6 +106,12 @@ public class ReservationServiceImpl implements ReservationService {
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
         jwtUtils.validateBusinessOwnsCampaign(businessId, campaign);
 
+//        // Prevent a business from reserving their own media
+//        String mediaOwnerBusinessId = media.getBusinessId().toString();
+//        if (businessId.equals(mediaOwnerBusinessId)) {
+//            throw new IllegalStateException("A business cannot reserve its own media");
+//        }
+
         // 4. Validate media availability
         validateMediaHasLoopDurationLeft(media, requestModel);
 
@@ -178,17 +184,11 @@ public class ReservationServiceImpl implements ReservationService {
             String metaReservationId = metadata.get("reservationId");
             String metaBusinessId = metadata.get("businessId");
 
-            // Prevent using a succeeded PaymentIntent created for a different destination
-            if (metaBusinessId == null || metaBusinessId.isBlank()) {
-                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
-            }
+//            // Ensure the PaymentIntent was created for the media owner (destination)
+//            if (metaBusinessId == null || metaBusinessId.isBlank()) {
+//                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
+//            }
 
-            if (metaBusinessId.equals(media.getBusinessId().toString())) {
-                throw new PaymentVerificationException(
-                        String.format("PaymentIntent %s businessId metadata matches media owner businessId, cannot self-pay",
-                                paymentIntentId)
-                );
-            }
 
             // CRITICAL SECURITY CHECK: Verify this PaymentIntent hasn't been used before
             Optional<PaymentIntent> existingPayment = paymentIntentRepository.findByStripePaymentIntentId(paymentIntentId);
@@ -336,3 +336,4 @@ public class ReservationServiceImpl implements ReservationService {
         }
     }
 }
+
