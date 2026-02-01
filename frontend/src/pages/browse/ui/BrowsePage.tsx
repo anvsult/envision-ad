@@ -3,7 +3,7 @@
 import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
@@ -59,6 +59,7 @@ function BrowsePage() {
   const [mapVisible, setMapVisible] = useState<boolean>(false);
   const [map, setMap] = useState<Map|null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
+  const [draftBbox, setDraftBbox] = useState<LatLngBounds | null>(null);
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -148,9 +149,35 @@ function BrowsePage() {
       return () => clearTimeout(timeout);
   }, [draftAddressSearch, searchLanguage, sortNearest]);
 
+
+
   const onMove = useCallback(() => {
-    setBbox(map ? map.getBounds(): null)
+    setDraftBbox(map ? map.getBounds(): null)
   }, [map])
+
+  
+  const lastCall = useRef(0);
+
+  useEffect(() => {
+    if (!draftBbox) {
+      setBbox(null);
+      return;
+    }
+    
+
+    const timeout = setTimeout(async () => {
+      const now = new Date().getTime();
+      if (now - lastCall.current <= 400) {
+          return;
+      }
+      lastCall.current = now;
+      setBbox(draftBbox);
+    }, 400);
+
+    return () => clearTimeout(timeout);
+
+  }, [draftBbox])
+  
   
   useEffect(() => {
     map?.on('moveend', onMove);
@@ -158,7 +185,7 @@ function BrowsePage() {
     if (mapVisible) {
       onMove();
     } else {
-      setBbox(null);
+      setDraftBbox(null);
     }
   }, [map, mapVisible, onMove])
 
