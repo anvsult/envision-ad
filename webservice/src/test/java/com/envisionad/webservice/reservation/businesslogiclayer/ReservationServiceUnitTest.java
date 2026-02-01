@@ -68,7 +68,6 @@ class ReservationServiceUnitTest {
     void setUp() {
         // Setup request model
         requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(MEDIA_ID);
         requestModel.setCampaignId(CAMPAIGN_ID);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));

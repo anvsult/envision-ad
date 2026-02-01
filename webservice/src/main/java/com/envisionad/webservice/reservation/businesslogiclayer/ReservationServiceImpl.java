@@ -1,10 +1,8 @@
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
-import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -21,7 +19,6 @@ import com.envisionad.webservice.reservation.exceptions.PaymentVerificationExcep
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
-import com.envisionad.webservice.utils.EmailService;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +94,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel) {
         // 1. Validate input and authentication
-        ReservationValidator.validateReservation(requestModel);
+        ReservationValidator.validateReservation(requestModel, mediaId);
         String userId = jwtUtils.extractUserId(jwt);
 
         // 2. Load and validate entities

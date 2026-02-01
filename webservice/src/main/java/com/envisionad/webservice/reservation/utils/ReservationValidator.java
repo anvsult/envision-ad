@@ -6,8 +6,8 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import java.time.LocalDate;
 
 public class ReservationValidator {
-    public static void validateReservation(ReservationRequestModel requestModel) {
-        if (requestModel == null || !validateStartDate(requestModel) || !validateEndDate(requestModel) || !validateMediaId(requestModel) || !validateCampaignId(requestModel))
+    public static void validateReservation(ReservationRequestModel requestModel, String mediaId) {
+        if (requestModel == null || !validateStartDate(requestModel) || !validateEndDate(requestModel) || !validateMediaId(mediaId) || !validateCampaignId(requestModel))
             throw new InvalidReservationException();
     }
 
@@ -26,8 +26,8 @@ public class ReservationValidator {
                 requestModel.getEndDate().getDayOfWeek().equals(requestModel.getStartDate().getDayOfWeek());
     }
 
-    public static boolean validateMediaId(ReservationRequestModel requestModel) {
-        return requestModel.getMediaId() != null && !requestModel.getMediaId().trim().isEmpty();
+    public static boolean validateMediaId(String mediaId) {
+        return mediaId != null && !mediaId.trim().isEmpty();
     }
 
     public static boolean validateCampaignId(ReservationRequestModel requestModel) {

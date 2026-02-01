@@ -191,7 +191,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             try {
                 // 1. Create a pending reservation
                 const reservationPayload = {
-                    mediaId: media.id,
                     campaignId: selectedCampaignId,
                     startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
                     endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),

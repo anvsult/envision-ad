@@ -179,7 +179,6 @@ class ReservationControllerIntegrationTest {
     void createReservation_ShouldPersistAndReturnReservation() {
         // Arrange
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
@@ -212,7 +211,6 @@ class ReservationControllerIntegrationTest {
         LocalDateTime endDate = LocalDateTime.now().plusDays(22); // 3 weeks
 
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(startDate);
         requestModel.setEndDate(endDate);
@@ -244,7 +242,6 @@ class ReservationControllerIntegrationTest {
         String nonExistentMediaId = UUID.randomUUID().toString();
 
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(nonExistentMediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
@@ -269,7 +266,6 @@ class ReservationControllerIntegrationTest {
         String nonExistentCampaignId = UUID.randomUUID().toString();
 
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(nonExistentCampaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
@@ -292,7 +288,6 @@ class ReservationControllerIntegrationTest {
     void createReservation_WithEndDateBeforeStartDate_ShouldReturn400() {
         // Arrange
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(8));
         requestModel.setEndDate(LocalDateTime.now().plusDays(1)); // Before start date
@@ -315,7 +310,6 @@ class ReservationControllerIntegrationTest {
     void createReservation_WithPastStartDate_ShouldReturn400() {
         // Arrange
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().minusDays(1)); // Past date
         requestModel.setEndDate(LocalDateTime.now().plusDays(7));
@@ -347,7 +341,6 @@ class ReservationControllerIntegrationTest {
         when(jwtDecoder.decode("unauthorized-token")).thenReturn(unauthorizedJwt);
 
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
@@ -402,7 +395,6 @@ class ReservationControllerIntegrationTest {
 
         // Try to create a new reservation with the second campaign during overlapping dates
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(secondCampaign.getCampaignId().getCampaignId());
         requestModel.setStartDate(LocalDateTime.now().plusDays(2));
         requestModel.setEndDate(LocalDateTime.now().plusDays(9));
@@ -464,7 +456,6 @@ class ReservationControllerIntegrationTest {
     void createReservation_WithoutAuthentication_ShouldReturn401() {
         // Arrange
         ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setMediaId(this.mediaId);
         requestModel.setCampaignId(this.campaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(1));
         requestModel.setEndDate(LocalDateTime.now().plusDays(8));
