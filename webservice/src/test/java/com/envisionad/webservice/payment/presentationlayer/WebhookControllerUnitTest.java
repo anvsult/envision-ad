@@ -178,7 +178,6 @@ class WebhookControllerUnitTest {
             ResponseEntity<String> response = webhookController.handleStripeWebhook(payload, VALID_SIGNATURE);
 
             // Then
-            // Should return 200 OK to prevent Stripe from retrying
             assertNotNull(response);
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
             assertEquals("Webhook processing failed", response.getBody());

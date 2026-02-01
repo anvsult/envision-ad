@@ -275,7 +275,8 @@ public class StripeServiceImpl implements StripeService {
         AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (campaign == null) {
             log.warn("Payment attempt for non-existent campaign: {} by user: {}", campaignId, jwt != null ? jwt.getSubject() : null);
-            throw new AdCampaignNotFoundException("Campaign not found: " + campaignId);
+            // Pass the raw campaignId so the exception formats its own message (avoids duplicated wording)
+            throw new AdCampaignNotFoundException(campaignId);
         }
 
         // 2. SECURITY: Validate that the user owns this campaign (is employee of the advertiser business)
