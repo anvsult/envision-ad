@@ -4,6 +4,9 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
+import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
+import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -14,15 +17,18 @@ import java.math.BigDecimal;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class MediaServiceImpl implements MediaService {
 
     private final MediaRepository mediaRepository;
+    private final StripeAccountRepository stripeAccountRepository;
 
-    public MediaServiceImpl(MediaRepository mediaRepository) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository) {
         this.mediaRepository = mediaRepository;
+        this.stripeAccountRepository = stripeAccountRepository;
     }
 
     @Override
@@ -106,6 +112,18 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public Media addMedia(Media media) {
+        // Check if the business has a fully onboarded Stripe account
+        UUID businessId = media.getBusinessId();
+        if (businessId == null) {
+            throw new IllegalArgumentException("Business ID is required to create media.");
+        }
+
+        Optional<StripeAccount> stripeAccountOpt = stripeAccountRepository.findByBusinessId(businessId.toString());
+
+        if (stripeAccountOpt.isEmpty() || !stripeAccountOpt.get().isOnboardingComplete() || !stripeAccountOpt.get().isChargesEnabled() || !stripeAccountOpt.get().isPayoutsEnabled()) {
+            throw new StripeAccountNotOnboardedException("Your business must have a fully configured Stripe account to create media. Please complete your Stripe onboarding.");
+        }
+
         return mediaRepository.save(media);
     }
 

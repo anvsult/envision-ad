@@ -1,18 +1,12 @@
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
-import com.envisionad.webservice.advertisement.businesslogiclayer.AdCampaignService;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
-import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
-import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
-import com.envisionad.webservice.utils.EmailService;
-import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -29,15 +23,9 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceImplUnitTest {
 
-    @Mock private EmailService emailService;
-    @Mock private EmployeeRepository employeeRepository;
     @Mock private ReservationRepository reservationRepository;
-    @Mock private MediaRepository mediaRepository;
     @Mock private AdCampaignRepository adCampaignRepository;
-    @Mock private ReservationRequestMapper reservationRequestMapper;
     @Mock private ReservationResponseMapper reservationResponseMapper;
-    @Mock private AdCampaignService adCampaignService;
-    @Mock private JwtUtils jwtUtils;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -128,6 +116,7 @@ class ReservationServiceImplUnitTest {
         assertNull(result.get(2).getCampaignName());
         assertEquals("Only Valid Campaign", result.get(3).getCampaignName());
 
+        @SuppressWarnings("unchecked")
         ArgumentCaptor<List<String>> captor = ArgumentCaptor.forClass(List.class);
         verify(adCampaignRepository).findAllByCampaignId_CampaignIdIn(captor.capture());
         assertEquals(List.of("camp-1"), captor.getValue());

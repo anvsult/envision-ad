@@ -24,7 +24,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getMediaById, SpecialSort } from "@/features/media-management/api";
 import { getMediaReservations } from "@/features/reservation-management/api";
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
 import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
@@ -50,6 +50,7 @@ const monthDefs = [
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
+  const locale = useLocale();
 
   const params = useParams();
   const id = params?.id as string | undefined;
@@ -116,6 +117,13 @@ export default function MediaDetailsPage() {
     fetchOrganizationDetails(media?.businessId)
   }, [media?.businessId]);
 
+  const formatCurrency = (amount: number): string => {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'CAD',
+    }).format(amount);
+  };
+
   const latlng: LatLngLiteral = useMemo(() => ({
     lat: media?.mediaLocation.latitude ?? 0,
     lng: media?.mediaLocation.longitude ?? 0,
@@ -180,7 +188,7 @@ export default function MediaDetailsPage() {
 
   const priceLabel =
     media.price != null
-      ? t("pricePerWeek", { price: media.price.toFixed(2) })
+      ? t("pricePerWeek", { price: formatCurrency(media.price) })
       : t("priceUnavailable");
 
   const imageSrc = media.imageUrl || "/sample-screen.jpg";

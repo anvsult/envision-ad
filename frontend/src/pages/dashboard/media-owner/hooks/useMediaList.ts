@@ -26,7 +26,7 @@ export function useMediaList() {
                     pending: 0,
                     status: m.status ?? "PENDING",
                     timeUntil: "-",
-                    price: m.price ? `$${Number(m.price).toFixed(2)}` : "$0.00",
+                    price: `${Number(m.price)}`
                 }));
                 setMedia(mapped);
             })
