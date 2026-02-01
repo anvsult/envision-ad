@@ -36,6 +36,9 @@ import java.util.Optional;
 @Service
 public class StripeWebhookService {
 
+    // SECURITY: Maximum allowed difference between payment amount and reservation price (for rounding tolerance)
+    private static final BigDecimal PAYMENT_AMOUNT_TOLERANCE = new BigDecimal("0.01");
+
     private final PaymentIntentRepository paymentIntentRepository;
     private final ReservationRepository reservationRepository;
     private final EmailService emailService;
@@ -257,9 +260,8 @@ public class StripeWebhookService {
 
         // Compare with tolerance for rounding (1 cent difference allowed)
         BigDecimal difference = paymentAmount.subtract(reservationPrice).abs();
-        BigDecimal tolerance = new BigDecimal("0.01");
         
-        if (difference.compareTo(tolerance) > 0) {
+        if (difference.compareTo(PAYMENT_AMOUNT_TOLERANCE) > 0) {
             log.error("SECURITY: Payment amount mismatch! Payment: ${} for reservation: {} (expected: ${}). " +
                     "Possible price manipulation attempt.", 
                     paymentAmount, reservationId, reservationPrice);

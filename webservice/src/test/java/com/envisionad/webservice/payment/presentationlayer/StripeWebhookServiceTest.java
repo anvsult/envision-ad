@@ -229,7 +229,7 @@ class StripeWebhookServiceTest {
         Media mockMedia = new Media();
         mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
         reservation.setMediaId(mockMedia.getId());
-        
+
         AdCampaign mockCampaign = new AdCampaign();
 
         when(paymentIntentRepository.findByStripePaymentIntentId(PAYMENT_INTENT_ID)).thenReturn(Optional.of(payment));
@@ -448,7 +448,7 @@ class StripeWebhookServiceTest {
         Media mockMedia = new Media();
         mockMedia.setBusinessId(UUID.fromString(BUSINESS_ID)); // Match payment business ID
         reservation.setMediaId(mockMedia.getId());
-        
+
         AdCampaign mockCampaign = new AdCampaign();
 
         when(reservationRepository.findByReservationId(RESERVATION_ID)).thenReturn(Optional.of(reservation));
