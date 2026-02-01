@@ -5,7 +5,7 @@ import {
     IconDeviceTv,
     IconLayoutDashboard,
     IconUsers,
-    IconShieldCheck, IconDiscountCheck,
+    IconShieldCheck, IconDiscountCheck, IconFileDescription,
 } from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
 import {usePermissions} from "@/app/providers/PermissionProvider";
@@ -26,6 +26,16 @@ export default function SideBar() {
                 active={pathname?.endsWith("/media-owner/media")}
             />
         ),
+        (permissions.includes("create:media")) && (
+            <NavLink
+                key="proof"
+                component={Link}
+                href="/dashboard/media-owner/proof"
+                label={t("media-owner.proof")}
+                leftSection={<IconFileDescription size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/media-owner/proof")}
+            />
+        )
     ].filter(Boolean);
 
     const advertiserNavItems = [
