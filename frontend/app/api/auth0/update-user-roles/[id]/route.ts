@@ -21,7 +21,7 @@ export async function POST(
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (!Array.isArray(roles) || roles.length === 0 || roles.some(role => typeof role !== 'string') || roles.some(role => !ASSIGNABLE_ROLE_IDS.includes(role))) {
+    if (!Array.isArray(roles) || roles.length === 0 || !roles.every(role => typeof role === 'string' && ASSIGNABLE_ROLE_IDS.includes(role))) {
         return NextResponse.json({ error: 'Bad Request' }, { status: 400 });
     }
 

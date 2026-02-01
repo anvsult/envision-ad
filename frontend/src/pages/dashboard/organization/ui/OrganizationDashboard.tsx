@@ -37,7 +37,6 @@ export default function OrganizationDashboard() {
     const [editingId, setEditingId] = useState<string | null>(null);
 
     const t = useTranslations("organization");
-    const tForm = useTranslations("organization.form"); //TODO move the translations
 
     useEffect(() => {
         if (!user?.sub) return;
@@ -163,8 +162,8 @@ export default function OrganizationDashboard() {
                 }
 
                 notifications.show({
-                    title: tForm("success.title"),
-                    message: tForm("success.update"),
+                    title: t("success.title"),
+                    message: t("success.update"),
                     color: "green",
                 });
             } else {
@@ -185,8 +184,8 @@ export default function OrganizationDashboard() {
                 await refreshPermissions();
 
                 notifications.show({
-                    title: tForm("success.title"),
-                    message: tForm("success.create"),
+                    title: t("success.title"),
+                    message: t("success.create"),
                     color: "green",
                 });
             }
@@ -198,15 +197,15 @@ export default function OrganizationDashboard() {
             if (editingId) {
                 console.error("Failed to update organization", error);
                 notifications.show({
-                    title: tForm("errors.error"),
-                    message: tForm("errors.updateFailed"),
+                    title: t("errors.error"),
+                    message: t("errors.updateFailed"),
                     color: "red",
                 });
             } else {
                 console.error("Failed to create organization", error);
                 notifications.show({
-                    title: tForm("errors.error"),
-                    message: tForm("errors.createFailed"),
+                    title: t("errors.error"),
+                    message: t("errors.createFailed"),
                     color: "red",
                 });
             }

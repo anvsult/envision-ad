@@ -52,7 +52,7 @@ export default async function proxy(request: NextRequest) {
         .sort((a, b) => b[0].length - a[0].length)[0];
 
     if (matchedProtection) {
-      const [_, requiredPermission] = matchedProtection;
+      const [, requiredPermission] = matchedProtection;
 
       if (!session?.user) {
         const loginUrl = new URL(`/auth/login`, request.url);

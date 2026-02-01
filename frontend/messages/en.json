@@ -269,14 +269,7 @@
         "stateRequired": "Organization state/Province is required.",
         "zipRequired": "Organization zip/postal code is required.",
         "countryRequired": "Organization country is required.",
-        "roleRequired": "At least one role is required.",
-        "updateFailed": "Failed to update organization details.",
-        "createFailed": "Failed to create organization."
-      },
-      "success": {
-        "title": "Success",
-        "update": "Organization details has been updated.",
-        "create": "Organization has been created."
+        "roleRequired": "At least one role is required."
       }
     },
     "sizes": {
@@ -335,7 +328,6 @@
       },
       "errors": {
         "title": "Error",
-        "deleteEmployeeFailed": "Failed to remove employee.",
         "deleteInvitationFailed": "Failed to cancel invitation."
       }
     },
@@ -360,12 +352,16 @@
     },
     "success": {
       "title": "Success",
-      "verificationRequest": "Verification request has been sent."
+      "verificationRequest": "Verification request has been sent.",
+      "update": "Organization details has been updated.",
+      "create": "Organization has been created."
     },
     "errors": {
       "title": "Error",
       "loadFailed": "Failed to load organization for editing.",
-      "verificationRequestFailed": "Failed to request verification."
+      "verificationRequestFailed": "Failed to request verification.",
+      "updateFailed": "Failed to update organization details.",
+      "createFailed": "Failed to create organization."
     }
   },
   "media": {

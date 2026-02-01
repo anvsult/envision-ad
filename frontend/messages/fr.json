@@ -270,14 +270,7 @@
         "stateRequired": "La province ou l’État de l’organisation est requis.",
         "zipRequired": "Le code postal de l’organisation est requis.",
         "countryRequired": "Le pays de l’organisation est requis.",
-        "roleRequired": "Au moins un rôle est requis.",
-        "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
-        "createFailed": "Échec de la création de l’organisation."
-      },
-      "success": {
-        "title": "Succès",
-        "update": "Les informations de l’organisation ont été mises à jour.",
-        "create": "L’organisation a été créée."
+        "roleRequired": "Au moins un rôle est requis."
       }
     },
     "sizes": {
@@ -336,7 +329,6 @@
       },
       "errors": {
         "title": "Erreur",
-        "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
         "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
       }
     },
@@ -361,12 +353,16 @@
     },
     "success": {
       "title": "Succès",
-      "verificationRequest": "La demande de vérification a été envoyée."
+      "verificationRequest": "La demande de vérification a été envoyée.",
+      "update": "Les informations de l’organisation ont été mises à jour.",
+      "create": "L’organisation a été créée."
     },
     "errors": {
       "title": "Erreur",
       "loadFailed": "Échec du chargement de l’organisation pour modification.",
-      "verificationRequestFailed": "Échec de la demande de vérification."
+      "verificationRequestFailed": "Échec de la demande de vérification.",
+      "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
+      "createFailed": "Échec de la création de l’organisation."
     }
   },
   "media": {

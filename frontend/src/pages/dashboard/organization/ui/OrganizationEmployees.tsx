@@ -67,11 +67,6 @@ export default function OrganizationEmployees() {
                 }
             } catch (error) {
                 console.error("Failed to load organization", error);
-                notifications.show({
-                    title: t("errors.error"),
-                    message: t("errors.loadFailed"),
-                    color: "red",
-                });
             } finally {
                 setLoading(false);
             }
