@@ -8,6 +8,7 @@ services:
 #      We are injecting the secrets at runtime (into the javascript files)
 #      Those are the variables that CAN be seen by other people
       args:
+        NODE_OPTIONS: "--max-old-space-size=3072"
 #       API URL
         NEXT_PUBLIC_API_URL: "${NEXT_PUBLIC_API_URL}"
         NEXT_PUBLIC_APP_BASE_URL: "${APP_BASE_URL}"
@@ -23,6 +24,7 @@ services:
     #   still be accessed by anyone with access to the EC2 instance or container
     #   and must be protected at the infrastructure level.
     environment:
+      NODE_OPTIONS: "--max-old-space-size=3072"
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_BASE_URL: "${APP_BASE_URL}"
