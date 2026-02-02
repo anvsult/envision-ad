@@ -753,9 +753,9 @@ class StripeServiceUnitTest {
                 when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
                                 eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
                                 .thenReturn(new ArrayList<>());
-                when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
-                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
-                                .thenReturn(new ArrayList<>());
+                // when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
+                // eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                // .thenReturn(new ArrayList<>());
 
                 BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
                 when(mockPayouts.getData()).thenReturn(new ArrayList<>());
@@ -813,6 +813,12 @@ class StripeServiceUnitTest {
                 when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
                 when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(
                                 eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+
+                                .thenReturn(Collections.emptyList());
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(Collections.emptyList());
+                when(paymentIntentRepository.findPendingPaymentsByAdvertiserId(businessId))
                                 .thenReturn(Collections.emptyList());
 
                 BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
@@ -859,6 +865,12 @@ class StripeServiceUnitTest {
                 when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
                 when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(
                                 eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+
+                                .thenReturn(Collections.emptyList());
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(Collections.emptyList());
+                when(paymentIntentRepository.findPendingPaymentsByAdvertiserId(businessId))
                                 .thenReturn(Collections.emptyList());
 
                 BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
@@ -948,9 +960,9 @@ class StripeServiceUnitTest {
                 when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
                                 eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
                                 .thenReturn(Collections.emptyList());
-                when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
-                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
-                                .thenReturn(Collections.emptyList());
+                // when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
+                // eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                // .thenReturn(Collections.emptyList());
 
                 // When
                 Map<String, Object> dashboard = stripeService.getDashboardData(jwt, businessId, period);
@@ -1005,4 +1017,217 @@ class StripeServiceUnitTest {
                 }
         }
 
+        @Test
+        void createAuthorizedCheckoutSession_shouldCalculateTwoWeeksPrice_whenDurationIsEightDays() throws Exception {
+                // Given
+                String userId = "user-1";
+                String campaignId = "camp-1";
+                String mediaId = UUID.randomUUID().toString();
+                String reservationId = "res-2weeks";
+                LocalDateTime start = LocalDateTime.of(2026, 1, 1, 0, 0);
+                LocalDateTime end = LocalDateTime.of(2026, 1, 9, 0, 0); // 8 days -> 2 weeks
+
+                org.springframework.security.oauth2.jwt.Jwt jwt = org.springframework.security.oauth2.jwt.Jwt
+                                .withTokenValue("token")
+                                .header("alg", "none")
+                                .claim("sub", userId)
+                                .build();
+
+                AdCampaign campaign = new AdCampaign();
+                campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+                campaign.setBusinessId(
+                                new com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier("biz-1"));
+
+                Media media = new Media();
+                media.setId(UUID.fromString(mediaId));
+                media.setPrice(BigDecimal.valueOf(100)); // $100 per week
+                // Media owner business ID (the one receiving payment)
+                media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+
+                when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
+
+                // Spy on service to verify the calculated amount passed to
+                // createCheckoutSession
+                StripeServiceImpl spyService = spy(stripeService);
+                // Stub createCheckoutSession to do nothing/return dummy map, so we don't hit
+                // Stripe or real DB logic there
+                doReturn(Map.of("clientSecret", "cs_test", "sessionId", "sess_123"))
+                                .when(spyService)
+                                .createCheckoutSession(anyString(), any(BigDecimal.class), anyString());
+
+                // When
+                spyService.createAuthorizedCheckoutSession(jwt, campaignId, mediaId, reservationId, start, end);
+
+                // Then
+                // 8 days = 2 weeks. Price = 100 * 2 = 200.
+                verify(spyService).createCheckoutSession(eq(reservationId), eq(BigDecimal.valueOf(200)), anyString());
+        }
+
+        @Test
+        void createAuthorizedCheckoutSession_shouldThrowException_whenEndDateBeforeStartDate() {
+                // Given
+                String userId = "user-1";
+                String campaignId = "camp-1";
+                String mediaId = UUID.randomUUID().toString();
+                String reservationId = "res-invalid-dates";
+                LocalDateTime start = LocalDateTime.of(2026, 1, 10, 0, 0);
+                LocalDateTime end = LocalDateTime.of(2026, 1, 1, 0, 0); // End before start
+
+                org.springframework.security.oauth2.jwt.Jwt jwt = org.springframework.security.oauth2.jwt.Jwt
+                                .withTokenValue("token")
+                                .header("alg", "none")
+                                .claim("sub", userId)
+                                .build();
+
+                AdCampaign campaign = new AdCampaign();
+                campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+                campaign.setBusinessId(
+                                new com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier("biz-1"));
+
+                Media media = new Media();
+                media.setId(UUID.fromString(mediaId));
+                media.setPrice(BigDecimal.valueOf(100));
+                media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
+
+                when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
+
+                // When & Then
+                assertThrows(InvalidPricingException.class, () -> stripeService.createAuthorizedCheckoutSession(jwt,
+                                campaignId, mediaId, reservationId, start, end));
+        }
+
+        @Test
+        void syncPendingPayments_shouldUpdateStatus_whenSessionIsComplete() throws StripeException {
+                // Given
+                String businessId = "biz-1";
+                String userId = "user-1";
+                String period = "monthly";
+
+                org.springframework.security.oauth2.jwt.Jwt jwt = org.springframework.security.oauth2.jwt.Jwt
+                                .withTokenValue("token")
+                                .header("alg", "none")
+                                .claim("sub", userId)
+                                .build();
+
+                StripeAccount account = new StripeAccount();
+                account.setBusinessId(businessId);
+                account.setStripeAccountId("acct_123");
+
+                PaymentIntent pendingPayment = new PaymentIntent();
+                pendingPayment.setId(1L);
+                pendingPayment.setBusinessId(businessId);
+                pendingPayment.setStatus(PaymentStatus.PENDING);
+                pendingPayment.setStripeSessionId("sess_complete");
+
+                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(userId, businessId);
+                when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
+
+                // Return our pending payment
+                when(paymentIntentRepository.findPendingPaymentsByAdvertiserId(businessId))
+                                .thenReturn(List.of(pendingPayment));
+
+                // Other repository calls for getDashboardData flow
+                when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(anyString(), any(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(anyString(), any(),
+                                any()))
+                                .thenReturn(Collections.emptyList());
+
+                // Mock Session.retrieve("sess_complete")
+                com.stripe.model.checkout.Session mockSession = mock(com.stripe.model.checkout.Session.class);
+                when(mockSession.getStatus()).thenReturn("complete");
+                when(mockSession.getPaymentIntent()).thenReturn("pi_new_123");
+
+                // Mock BalanceTransaction.list for the getDashboardData flow
+                BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
+                when(mockPayouts.getData()).thenReturn(new ArrayList<>());
+
+                try (MockedStatic<com.stripe.model.checkout.Session> sessionMock = mockStatic(
+                                com.stripe.model.checkout.Session.class);
+                                MockedStatic<BalanceTransaction> btMock = mockStatic(BalanceTransaction.class)) {
+
+                        sessionMock.when(() -> com.stripe.model.checkout.Session.retrieve("sess_complete"))
+                                        .thenReturn(mockSession);
+
+                        btMock.when(() -> BalanceTransaction.list(any(BalanceTransactionListParams.class),
+                                        any(RequestOptions.class)))
+                                        .thenReturn(mockPayouts);
+
+                        // When
+                        // We call getDashboardData, which triggers syncPendingPayments internally
+                        stripeService.getDashboardData(jwt, businessId, period);
+
+                        // Then
+                        // Verify pendingPayment status was updated to SUCCEEDED and saved
+                        assertEquals(PaymentStatus.SUCCEEDED, pendingPayment.getStatus());
+                        assertEquals("pi_new_123", pendingPayment.getStripePaymentIntentId());
+                        verify(paymentIntentRepository).save(pendingPayment);
+                }
+        }
+
+        @Test
+        void syncPendingPayments_shouldUpdateStatus_whenSessionIsExpired() throws StripeException {
+                // Given
+                String businessId = "biz-1";
+                String userId = "user-1";
+
+                org.springframework.security.oauth2.jwt.Jwt jwt = org.springframework.security.oauth2.jwt.Jwt
+                                .withTokenValue("token")
+                                .header("alg", "none")
+                                .claim("sub", userId)
+                                .build();
+
+                StripeAccount account = new StripeAccount();
+                account.setBusinessId(businessId);
+
+                PaymentIntent pendingPayment = new PaymentIntent();
+                pendingPayment.setId(2L);
+                pendingPayment.setBusinessId(businessId);
+                pendingPayment.setStatus(PaymentStatus.PENDING);
+                pendingPayment.setStripeSessionId("sess_expired");
+
+                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
+                when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
+                // Return our pending payment
+                when(paymentIntentRepository.findPendingPaymentsByAdvertiserId(businessId))
+                                .thenReturn(List.of(pendingPayment));
+                // Other calls
+                when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(anyString(), any(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(anyString(), any(),
+                                any()))
+                                .thenReturn(Collections.emptyList());
+
+                // Mock session
+                com.stripe.model.checkout.Session mockSession = mock(com.stripe.model.checkout.Session.class);
+                when(mockSession.getStatus()).thenReturn("expired");
+
+                BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
+                when(mockPayouts.getData()).thenReturn(new ArrayList<>());
+
+                try (MockedStatic<com.stripe.model.checkout.Session> sessionMock = mockStatic(
+                                com.stripe.model.checkout.Session.class);
+                                MockedStatic<BalanceTransaction> btMock = mockStatic(BalanceTransaction.class)) {
+
+                        sessionMock.when(() -> com.stripe.model.checkout.Session.retrieve("sess_expired"))
+                                        .thenReturn(mockSession);
+                        btMock.when(() -> BalanceTransaction.list(any(BalanceTransactionListParams.class),
+                                        any(RequestOptions.class)))
+                                        .thenReturn(mockPayouts);
+
+                        // When
+                        stripeService.getDashboardData(jwt, businessId, "monthly");
+
+                        // Then
+                        assertEquals(PaymentStatus.FAILED, pendingPayment.getStatus());
+                        verify(paymentIntentRepository).save(pendingPayment);
+                }
+        }
 }

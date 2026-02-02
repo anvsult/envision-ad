@@ -18,12 +18,10 @@ import {
     IconSpeakerphone,
     IconEye,
     IconChartBar,
-    IconArrowUpRight,
-    IconArrowDownRight,
 } from "@tabler/icons-react";
 import { AreaChart } from "@mantine/charts";
 import { useTranslations } from "next-intl";
-import { getAccessToken } from "@auth0/nextjs-auth0";
+
 import { jwtDecode } from "jwt-decode";
 
 
@@ -45,11 +43,6 @@ interface DecodedToken {
 }
 
 interface Payment {
-    created: number;
-    amount: number;
-}
-
-interface Payout {
     created: number;
     amount: number;
 }
@@ -85,7 +78,9 @@ export function AdvertiserOverview() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const token = await getAccessToken();
+                const response = await fetch('/api/auth0/token');
+                const { accessToken } = await response.json();
+                const token = accessToken;
                 const decodedToken = jwtDecode<DecodedToken>(token);
                 const userId = decodedToken.sub;
 
@@ -139,10 +134,6 @@ export function AdvertiserOverview() {
                             calculatedTotal += payment.amount;
                         });
                     }
-
-
-
-
 
                     // Set Total Spend from manual calculation of all transactions
                     setTotalSpend(calculatedTotal);
@@ -232,8 +223,6 @@ export function AdvertiserOverview() {
 
     // Helper to render stats cards
     const items = stats.map((stat) => {
-        const DiffIcon = stat.diff > 0 ? IconArrowUpRight : IconArrowDownRight;
-        const diffColor = stat.diff > 0 ? "teal" : "red";
 
         return (
             <Grid.Col span={{ base: 12, sm: 6, md: 3 }} key={stat.title}>

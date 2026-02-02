@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/media")
 @Slf4j
-@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
+@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
 public class MediaController {
 
     private final MediaService mediaService;
@@ -64,8 +64,7 @@ public class MediaController {
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
-            @RequestParam(required = false) String excludedId
-            ) {
+            @RequestParam(required = false) String excludedId) {
 
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
@@ -90,8 +89,7 @@ public class MediaController {
                 specialSort,
                 userLat,
                 userLng,
-                excludedId
-                ).map(responseMapper::entityToResponseModel);
+                excludedId).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }

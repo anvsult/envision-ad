@@ -369,10 +369,6 @@ public class StripeServiceImpl implements StripeService {
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
-        // SYNC: Check for pending payments that might have succeeded (since webhooks
-        // don't work locally)
-        syncPendingPayments(businessId);
-
         // Check if the business has a connected Stripe account (likely a Media Owner)
         Optional<StripeAccount> accountOpt = stripeAccountRepository.findByBusinessId(businessId);
         Map<String, Object> dashboard = new HashMap<>();
@@ -428,12 +424,12 @@ public class StripeServiceImpl implements StripeService {
         dashboard.put("estimatedImpressions", totalImpressions);
 
         // 3. Always calculate Advertiser Spend (Outgoing Payments)
-        // 3. Always calculate Advertiser Spend (Outgoing Payments)
         // REPLACEMENT: Use Reservations instead of PaymentIntents per user request
 
         // Filter reservations that "started" in this period (Booking Basis)
         List<Reservation> newReservations = reservations.stream()
-                .filter(r -> !r.getStartDate().isBefore(startDate) && !r.getStartDate().isAfter(endDate))
+                // Inclusive check: startDate <= r.startDate <= endDate
+                .filter(r -> r.getStartDate().compareTo(startDate) >= 0 && r.getStartDate().compareTo(endDate) <= 0)
                 .toList();
 
         BigDecimal totalSpend = newReservations.stream()
@@ -517,12 +513,10 @@ public class StripeServiceImpl implements StripeService {
         BigDecimal totalSpendVal = (BigDecimal) dashboard.getOrDefault("totalSpend", BigDecimal.ZERO);
         BigDecimal cpm = BigDecimal.ZERO;
         if (totalImpressions > 0 && totalSpendVal.compareTo(BigDecimal.ZERO) > 0) {
-            // CPM (cost per 1000 impressions) with spend in cents:
+            // CPM (cost per 1000 impressions) with spend in dollars:
             // CPM = (spendInDollars / impressions) * 1000
-            // = ((totalSpendVal / 100) / totalImpressions) * 1000
-            // = (totalSpendVal * 10) / totalImpressions
             try {
-                cpm = totalSpendVal.multiply(BigDecimal.TEN)
+                cpm = totalSpendVal.multiply(BigDecimal.valueOf(1000))
                         .divide(BigDecimal.valueOf(totalImpressions), 2, java.math.RoundingMode.HALF_UP);
             } catch (Exception e) {
                 log.error("Error calculating CPM", e);
@@ -576,8 +570,7 @@ public class StripeServiceImpl implements StripeService {
                 }
             }
         } catch (Exception e) {
-            log.warn("Error verifying pending payments for business {}: {}", businessId, e.getMessage());
-            e.printStackTrace();
+            log.error("Error verifying pending payments for business {}:", businessId, e);
         }
     }
 }
