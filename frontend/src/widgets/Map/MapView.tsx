@@ -1,10 +1,9 @@
-import { MapContainer, Marker, TileLayer, useMap} from 'react-leaflet';
-import {  Badge, Paper } from '@mantine/core';
+import { MapContainer, Marker, TileLayer} from 'react-leaflet';
+import {  Paper } from '@mantine/core';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngLiteral, Map } from 'leaflet';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { MediaCardProps } from '../Cards/MediaCard';
-import { MediaLocation } from '@/entities/media';
 import './MapView.css';
 
 const default_zoom = 10;

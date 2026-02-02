@@ -1,6 +1,6 @@
 'use client'
 
-import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
+import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -192,8 +192,8 @@ function BrowsePage() {
   function filters(){
     return(
       <>
-        <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-        <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
+        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+        <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
       </>
     )
   }
@@ -206,6 +206,7 @@ function BrowsePage() {
               <SearchMobileViewer>
                 <Autocomplete
                   placeholder={t('searchAddress')}
+                  id='AddressSearch'
                   data={locationOptions.map((o) => o)}
                   
                   value={draftAddressSearch}
@@ -216,13 +217,14 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
+                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)}>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
                 />
                 <TextInput
                   placeholder={t('searchTitle')}
+                  id='TitleSearch'
                   value={draftTitleFilter}
                   onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
                   onKeyDown={(event) => {
@@ -231,7 +233,7 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
+                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)}>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
