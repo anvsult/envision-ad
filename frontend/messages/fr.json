@@ -449,6 +449,9 @@
       "requiredTitle": "Compte Stripe requis",
       "requiredMessage": "Pour créer des médias et recevoir des paiements, vous devez d'abord configurer votre compte Stripe. ",
       "requiredLink": "Complétez votre intégration Stripe ici."
+    },
+    "page": {
+      "title": "Mes Médias"
     }
   },
   "proofOfDisplay": {
@@ -720,7 +723,9 @@
       "types": {
         "video": "Vidéo",
         "image": "Image"
-      }
+      },
+      "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
+      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer."
     },
     "notifications": {
       "loadFailed": {
