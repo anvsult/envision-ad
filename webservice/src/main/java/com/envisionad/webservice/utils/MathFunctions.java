@@ -1,6 +1,10 @@
 package com.envisionad.webservice.utils;
 
 public class MathFunctions {
+
+    private MathFunctions() {
+        // Prevent instantiation
+    }
     /**
      * Calculates the great-circle distance between two points on the Earth's surface
      * using the Haversine formula.
