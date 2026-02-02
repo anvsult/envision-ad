@@ -46,8 +46,30 @@
     "advertiserTitle": "Advertiser",
     "advertiser": {
       "overview": "Overview",
+      "metricOverview": "Metrics",
       "adRequests": "Ad requests",
-      "myAds": "My Campaigns"
+      "myAds": "My Campaigns",
+      "graphs": {
+        "totalAdSpend": "Total Ad Spend",
+        "activeCampaigns": "Active Campaigns",
+        "estimatedImpressions": "Estimated Impressions",
+        "averageCPM": "Average CPM",
+        "campaignPerformance": "Campaign Performance",
+        "mediaDistribution": "Media Distribution",
+        "comparedToLastWeek": "Compared to last week",
+        "comparedToLastMonth": "Compared to last month",
+        "comparedToLastYear": "Compared to last year",
+        "impressions": "Impressions",
+        "spent": "Spent",
+        "gym": "Gym",
+        "barbershop": "Barbershop",
+        "groceryStore": "Grocery Store"
+      },
+      "timeRanges": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
@@ -173,7 +195,7 @@
       "approve": "Media has been approved",
       "deny": "Media has been denied"
     },
-    "otherMediaBy":"Other medias from ",
+    "otherMediaBy": "Other medias from ",
     "errors": {
       "error": "Error",
       "approveFailed": "Media approval has failed",
@@ -463,7 +485,9 @@
       "description": "The advertiser was notified by email for this campaign.",
       "uploadedFiles": "Uploaded: {count} file(s)"
     },
-    "page": { "title": "Proof of Display" },
+    "page": {
+      "title": "Proof of Display"
+    },
     "table": {
       "image": "Image",
       "name": "Name",
@@ -868,14 +892,14 @@
       "continueOnboarding": "Continue Onboarding"
     },
     "notifications": {
-        "success": {
-            "title": "Onboarding Complete!",
-            "message": "Your account is ready. We're just confirming the final details with Stripe."
-        },
-        "refresh": {
-            "title": "Onboarding Session Expired",
-            "message": "Your session expired. Please try connecting again."
-        }
+      "success": {
+        "title": "Onboarding Complete!",
+        "message": "Your account is ready. We're just confirming the final details with Stripe."
+      },
+      "refresh": {
+        "title": "Onboarding Session Expired",
+        "message": "Your session expired. Please try connecting again."
+      }
     }
   },
   "invitation": {

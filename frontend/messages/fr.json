@@ -46,8 +46,30 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
+      "metricOverview": "Métriques",
       "adRequests": "Demandes d'annonce",
-      "myAds": "Mes Campagnes"
+      "myAds": "Mes Campagnes",
+      "graphs": {
+        "totalAdSpend": "Dépenses publicitaires totales",
+        "activeCampaigns": "Campagnes actives",
+        "estimatedImpressions": "Impressions estimées",
+        "averageCPM": "CPM moyen",
+        "campaignPerformance": "Performance de la campagne",
+        "mediaDistribution": "Répartition des médias",
+        "comparedToLastWeek": "Par rapport à la semaine dernière",
+        "impressions": "Impressions",
+        "spent": "Dépenses",
+        "gym": "Gym",
+        "barbershop": "Barbier",
+        "groceryStore": "Épicerie",
+        "comparedToLastMonth": "Par rapport au mois dernier",
+        "comparedToLastYear": "Par rapport à l'année dernière"
+      },
+      "timeRanges": {
+        "weekly": "Hebdomadaire",
+        "monthly": "Mensuel",
+        "yearly": "Annuel"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
@@ -174,7 +196,7 @@
       "approve": "Le média a été approuvé",
       "deny": "Le média a été refusé"
     },
-    "otherMediaBy":"Autres médias par ",
+    "otherMediaBy": "Autres médias par ",
     "errors": {
       "error": "Erreur",
       "approveFailed": "L’approbation du média a échoué",
