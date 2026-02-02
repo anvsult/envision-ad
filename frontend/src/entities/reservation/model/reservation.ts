@@ -6,10 +6,18 @@ export interface ReservationRequestDTO {
 
 export interface ReservationResponseDTO {
     reservationId: string;
+    mediaId: string;
     campaignId: string;
     campaignName?: string;
-    status: string;
+    status: ReservationStatus;
     totalPrice: number;
     startDate: string;
     endDate: string;
+}
+
+export enum ReservationStatus {
+    PENDING = "PENDING",
+    APPROVED = "APPROVED",
+    DENIED = "DENIED",
+    CONFIRMED = "CONFIRMED"
 }

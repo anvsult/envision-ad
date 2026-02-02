@@ -16,6 +16,8 @@ public interface AdCampaignService {
 
     List<AdCampaignResponseModel> getAllAdCampaignsByBusinessId(String businessId);
 
+    AdCampaignResponseModel getAdCampaignByCampaignId(String campaignId);
+
     AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel);
 
     List<String> getAllCampaignImageLinks(String campaignId);

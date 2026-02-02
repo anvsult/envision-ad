@@ -658,6 +658,61 @@
       "fileRequired": "Le fichier est requis"
     }
   },
+  "adRequests": {
+    "page": {
+      "title": "Demandes de publicité",
+      "requestCount": {
+        "singular": "demande en attente",
+        "plural": "demandes en attente"
+      },
+      "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
+      "pending": "En attente",
+      "unknownCampaign": "Nom de campagne inconnue"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Impossible de charger les demandes de publicité"
+      },
+      "approve": {
+        "success": {
+          "title": "Approuvée",
+          "message": "La demande de publicité a été approuvée avec succès"
+        }
+      },
+      "deny": {
+        "success": {
+          "title": "Refusée",
+          "message": "La demande de publicité a été refusée"
+        }
+      },
+      "updateFailed": {
+        "title": "Erreur",
+        "message": "Impossible de mettre à jour le statut de la demande"
+      }
+    },
+    "detail": {
+      "errorTitle": "Erreur",
+      "errorNotFound": "Demande de publicité introuvable",
+      "reviewUnavailable": "Révision non disponible",
+      "alreadyActioned": "Cette demande a déjà été {status}",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "duration": "Durée",
+      "oneWeek": "1 semaine",
+      "weeks": "{count} semaines",
+      "totalPrice": "Prix total",
+      "approve": "Approuver",
+      "deny": "Refuser",
+      "cancel": "Annuler",
+      "confirmApproveTitle": "Approuver la demande",
+      "confirmApproveText": "Êtes-vous sûr de vouloir approuver cette demande de publicité ?",
+      "confirmApprove": "Approuver",
+      "confirmDenyTitle": "Refuser la demande",
+      "confirmDenyText": "Êtes-vous sûr de vouloir refuser cette demande de publicité ?",
+      "confirmDeny": "Refuser"
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "Mes campagnes",

@@ -615,6 +615,61 @@
       "fileRequired": "File is required"
     }
   },
+  "adRequests": {
+    "page": {
+      "title": "Ad Requests",
+      "requestCount": {
+        "singular": "pending request",
+        "plural": "pending requests"
+      },
+      "noRequests": "You have no pending ad requests.",
+      "pending": "Pending",
+      "unknownCampaign": "Unknown Campaign name"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Error",
+        "message": "Failed to load ad requests"
+      },
+      "approve": {
+        "success": {
+          "title": "Approved",
+          "message": "Ad request has been approved successfully"
+        }
+      },
+      "deny": {
+        "success": {
+          "title": "Denied",
+          "message": "Ad request has been denied"
+        }
+      },
+      "updateFailed": {
+        "title": "Error",
+        "message": "Failed to update ad request status"
+      }
+    },
+    "detail": {
+      "errorTitle": "Error",
+      "errorNotFound": "Ad request not found",
+      "reviewUnavailable": "Review Unavailable",
+      "alreadyActioned": "This request has already been {status}",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "duration": "Duration",
+      "oneWeek": "1 week",
+      "weeks": "{count} weeks",
+      "totalPrice": "Total Price",
+      "approve": "Approve",
+      "deny": "Deny",
+      "cancel": "Cancel",
+      "confirmApproveTitle": "Approve Ad Request",
+      "confirmApproveText": "Are you sure you want to approve this ad request?",
+      "confirmApprove": "Approve",
+      "confirmDenyTitle": "Deny Ad Request",
+      "confirmDenyText": "Are you sure you want to deny this ad request?",
+      "confirmDeny": "Deny"
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "My Campaigns",

@@ -29,6 +29,12 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.getAllReservationsByMediaId(jwt, mediaId));
     }
 
+    @GetMapping("/reservations/{reservationId}")
+    @PreAuthorize("hasAuthority('readAll:reservation')")
+    public ResponseEntity<ReservationResponseModel> getMediaReservationById(@AuthenticationPrincipal Jwt jwt, @PathVariable String reservationId) {
+        return ResponseEntity.ok(reservationService.getReservationByReservationId(jwt, reservationId));
+    }
+
     @PostMapping("/{mediaId}/reservations")
     @PreAuthorize("hasAuthority('create:reservation')")
     public ResponseEntity<ReservationResponseModel> createReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @RequestBody ReservationRequestModel requestModel) {
@@ -41,15 +47,15 @@ public class ReservationController {
         return ResponseEntity.ok(reservationService.updateReservationStatus(jwt, mediaId, reservationId, status));
     }
 
-    @GetMapping("/reservations")
+    @GetMapping("/reservations/media-owner")
     @PreAuthorize("hasAuthority('readAll:reservation')")
-    public ResponseEntity<List<ReservationResponseModel>> getAllReservationBySeller(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
-        return ResponseEntity.ok(reservationService.getAllReservationBySeller(jwt, businessId));
+    public ResponseEntity<List<ReservationResponseModel>> getAllReservationByMediaOwnerBusinessId(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
+        return ResponseEntity.ok(reservationService.getAllReservationByMediaOwnerBusinessId(jwt, businessId));
     }
 
-    @GetMapping("/reservations")
+    @GetMapping("/reservations/advertiser")
     @PreAuthorize("hasAuthority('readAll:reservation')")
-    public ResponseEntity<List<ReservationResponseModel>> getAllReservationByBuyer(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
-        return ResponseEntity.ok(reservationService.getAllReservationByBuyer(jwt, businessId));
+    public ResponseEntity<List<ReservationResponseModel>> getAllReservationByAdvertiserBusinessId(@AuthenticationPrincipal Jwt jwt, @RequestParam String businessId){
+        return ResponseEntity.ok(reservationService.getAllReservationByAdvertiserBusinessId(jwt, businessId));
     }
 }

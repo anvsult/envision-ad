@@ -1,0 +1,1 @@
+export { AdRequestDetails as default } from "@/pages/dashboard/media-owner"

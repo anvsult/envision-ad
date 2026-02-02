@@ -9,8 +9,9 @@ import java.util.List;
 
 public interface ReservationService {
     List<ReservationResponseModel> getAllReservationsByMediaId(Jwt jwt, String mediaId);
+    ReservationResponseModel getReservationByReservationId(Jwt jwt, String reservationId);
     ReservationResponseModel createReservation(Jwt jwt, String mediaId, ReservationRequestModel requestModel);
     ReservationResponseModel updateReservationStatus(Jwt jwt, String mediaId, String reservationId, ReservationStatus status);
-    List<ReservationResponseModel> getAllReservationBySeller(Jwt jwt, String businessId);
-    List<ReservationResponseModel> getAllReservationByBuyer(Jwt jwt, String businessId);
+    List<ReservationResponseModel> getAllReservationByMediaOwnerBusinessId(Jwt jwt, String businessId);
+    List<ReservationResponseModel> getAllReservationByAdvertiserBusinessId(Jwt jwt, String businessId);
 }

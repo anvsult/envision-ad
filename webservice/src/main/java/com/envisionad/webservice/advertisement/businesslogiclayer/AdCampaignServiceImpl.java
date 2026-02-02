@@ -50,6 +50,17 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     }
 
     @Override
+    public AdCampaignResponseModel getAdCampaignByCampaignId(String campaignId) {
+        AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
+
+        if (adCampaign == null){
+            throw new AdCampaignNotFoundException(campaignId);
+        }
+
+        return adCampaignResponseMapper.entityToResponseModel(adCampaign);
+    }
+
+    @Override
     public AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
 
