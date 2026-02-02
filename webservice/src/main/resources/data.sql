@@ -131,7 +131,7 @@ VALUES (
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407532/IMG_4963_ufrd4d.jpg',
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1769924600/btye7o2f5r2rs4dpufqr.jpg',
            '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
        ),
        (
@@ -194,7 +194,7 @@ VALUES (
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407676/woiadydpsfax7aiajiee.jpg',
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1769924677/thk7w8zdkce1jcyjheix.jpg',
            '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
        ),
        (

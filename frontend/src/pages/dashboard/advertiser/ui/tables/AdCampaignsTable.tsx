@@ -14,6 +14,17 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
     const t = useTranslations("adCampaigns.table");
     const getIcon = (type: string) => type === "VIDEO" ? <IconMovie size={16} /> : <IconPhoto size={16} />;
 
+    // Show empty state when there are no campaigns
+    if (campaigns.length === 0) {
+        return (
+            <Box p="xl">
+                <Text ta="center" c="dimmed" size="lg" fw={500}>
+                    {t('noCampaigns')}
+                </Text>
+            </Box>
+        );
+    }
+
     return (
         <Accordion variant="separated" multiple>
             {campaigns.map((campaign) => (
@@ -52,62 +63,65 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                                     </Table.Tr>
                                 </Table.Thead>
                                 <Table.Tbody>
-                                    {campaign.ads.map((ad) => (
-                                        <Table.Tr key={ad.adId}>
-                                            <Table.Td width={150}>
-                                                <Box
-                                                    w={120}
-                                                    h={68}
-                                                    style={{
-                                                        overflow: 'hidden',
-                                                        borderRadius: '8px',
-                                                        border: '1px solid var(--mantine-color-gray-3)',
-                                                        backgroundColor: 'var(--mantine-color-gray-1)'
-                                                    }}
-                                                >
-                                                    {ad.adType === 'VIDEO' ? (
-                                                        <video
-                                                            src={ad.adUrl}
-                                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                                            muted
-                                                            playsInline
-                                                        />
-                                                    ) : (
-                                                        <Image
-                                                            src={ad.adUrl}
-                                                            w="100%"
-                                                            h="100%"
-                                                            fit="cover"
-                                                            alt={ad.name}
-                                                            fallbackSrc="https://placehold.co/120x68?text=No+Image"
-                                                        />
-                                                    )}
-                                                </Box>
-                                            </Table.Td>
-                                            <Table.Td style={{ verticalAlign: 'middle' }}>
-                                                <Text fw={500} size="sm">{ad.name}</Text>
-                                            </Table.Td>
-                                            <Table.Td style={{ verticalAlign: 'middle' }}>
-                                                <Badge leftSection={getIcon(ad.adType)} color={ad.adType === "VIDEO" ? "blue" : "green"} variant="light">
-                                                    {t("types." + ad.adType.toLowerCase())}
-                                                </Badge>
-                                            </Table.Td>
-                                            <Table.Td style={{ verticalAlign: 'middle' }}>
-                                                {ad.adDurationSeconds}s
-                                            </Table.Td>
-                                            <Table.Td style={{ verticalAlign: 'middle' }}>
-                                                <Group justify="flex-end">
-                                                    <ActionIcon color="red" variant="subtle" onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}>
-                                                        <IconTrash size={16} />
-                                                    </ActionIcon>
-                                                </Group>
-                                            </Table.Td>
-                                        </Table.Tr>
-                                    ))}
-                                    {campaign.ads.length === 0 && (
+                                    {campaign.ads.length > 0 ? (
+                                        campaign.ads.map((ad) => (
+                                            <Table.Tr key={ad.adId}>
+                                                <Table.Td width={150}>
+                                                    <Box
+                                                        w={120}
+                                                        h={68}
+                                                        style={{
+                                                            overflow: 'hidden',
+                                                            borderRadius: '8px',
+                                                            border: '1px solid var(--mantine-color-gray-3)',
+                                                            backgroundColor: 'var(--mantine-color-gray-1)'
+                                                        }}
+                                                    >
+                                                        {ad.adType === 'VIDEO' ? (
+                                                            <video
+                                                                src={ad.adUrl}
+                                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                                                muted
+                                                                playsInline
+                                                            />
+                                                        ) : (
+                                                            <Image
+                                                                src={ad.adUrl}
+                                                                w="100%"
+                                                                h="100%"
+                                                                fit="cover"
+                                                                alt={ad.name}
+                                                                fallbackSrc="https://placehold.co/120x68?text=No+Image"
+                                                            />
+                                                        )}
+                                                    </Box>
+                                                </Table.Td>
+                                                <Table.Td style={{ verticalAlign: 'middle' }}>
+                                                    <Text fw={500} size="sm">{ad.name}</Text>
+                                                </Table.Td>
+                                                <Table.Td style={{ verticalAlign: 'middle' }}>
+                                                    <Badge leftSection={getIcon(ad.adType)} color={ad.adType === "VIDEO" ? "blue" : "green"} variant="light">
+                                                        {t("types." + ad.adType.toLowerCase())}
+                                                    </Badge>
+                                                </Table.Td>
+                                                <Table.Td style={{ verticalAlign: 'middle' }}>
+                                                    {ad.adDurationSeconds}s
+                                                </Table.Td>
+                                                <Table.Td style={{ verticalAlign: 'middle' }}>
+                                                    <Group justify="flex-end">
+                                                        <ActionIcon color="red" variant="subtle" onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}>
+                                                            <IconTrash size={16} />
+                                                        </ActionIcon>
+                                                    </Group>
+                                                </Table.Td>
+                                            </Table.Tr>
+                                        ))
+                                    ) : (
                                         <Table.Tr>
                                             <Table.Td colSpan={5} align="center">
-                                                <Text c="dimmed" size="sm" py="md">{t('noAd')}No ads found in this campaign</Text>
+                                                <Text ta="center" c="dimmed" py="xl">
+                                                    {t('noAds')}
+                                                </Text>
                                             </Table.Td>
                                         </Table.Tr>
                                     )}

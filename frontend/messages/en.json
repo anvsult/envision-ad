@@ -426,6 +426,9 @@
       "requiredTitle": "Stripe Account Required",
       "requiredMessage": "To create media and receive payments, you must first set up your Stripe account. ",
       "requiredLink": "Complete your Stripe onboarding here."
+    },
+    "page": {
+      "title": "My Media"
     }
   },
   "proofOfDisplay": {
@@ -655,7 +658,9 @@
       "types": {
         "video": "Video",
         "image": "Image"
-      }
+      },
+      "noCampaigns": "No campaigns found. Add your first campaign to get started!",
+      "noAds": "No ads found in this campaign. Add your first ad to get started!"
     },
     "notifications": {
       "loadFailed": {
