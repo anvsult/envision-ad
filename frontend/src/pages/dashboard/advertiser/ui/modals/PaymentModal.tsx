@@ -81,8 +81,8 @@ export function PaymentModal({
             const paymentIntentPayload = {
                 mediaId: reservation.mediaId,
                 campaignId: reservation.campaignId,
-                startDate: dayjs(reservation.startDate),
-                endDate: dayjs(reservation.endDate),
+                startDate: reservation.startDate,
+                endDate: reservation.endDate,
                 reservationId: reservation.reservationId,
             };
 
