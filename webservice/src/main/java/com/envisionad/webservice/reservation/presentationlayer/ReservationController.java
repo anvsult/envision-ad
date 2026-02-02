@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/media/{mediaId}/reservations")
-@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
+@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
 public class ReservationController {
     private final ReservationService reservationService;
 
@@ -30,7 +30,9 @@ public class ReservationController {
 
     @PostMapping()
     @PreAuthorize("hasAuthority('create:reservation')")
-    public ResponseEntity<ReservationResponseModel> createReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @RequestBody ReservationRequestModel requestModel) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(jwt, mediaId, requestModel));
+    public ResponseEntity<ReservationResponseModel> createReservation(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable String mediaId, @RequestBody ReservationRequestModel requestModel) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(reservationService.createReservation(jwt, mediaId, requestModel));
     }
 }
