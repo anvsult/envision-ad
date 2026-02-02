@@ -59,8 +59,8 @@ export interface MediaLocation {
     street: string;
     city: string;
     postalCode: string;
-    latitude: number;
-    longitude: number;
+    latitude: number | null;
+    longitude: number | null;
 }
 
 export interface FilteredActiveMediaProps{

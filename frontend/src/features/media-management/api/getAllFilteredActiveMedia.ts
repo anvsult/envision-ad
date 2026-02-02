@@ -64,6 +64,11 @@ export async function getAllFilteredActiveMedia(
         params.append("userLng", latLng.lng.toString());
     }
 
+    // Note: The bounds are sent as repeated "bounds" query parameters in the
+    // following non-standard order: [south, north, west, east].
+    // This ordering is required by the backend API contract and must be
+    // preserved, even though geographic bounding boxes are more commonly
+    // expressed as [west, south, east, north] or [minLat, minLng, maxLat, maxLng].
     if (bounds){
         const boundArray = [bounds.getSouth(), bounds.getNorth(), bounds.getWest(), bounds.getEast()];
         boundArray.forEach(bound => params.append("bounds", bound.toString()));

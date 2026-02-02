@@ -6,7 +6,7 @@
 }
 
 .media-marker span {
-    background: var(--mantine-color-blue-6); /* Green background */
+    background: var(--mantine-color-blue-6); /* Blue background */
     color: white;
     border: 1px solid white; 
     border-radius: 50px; 

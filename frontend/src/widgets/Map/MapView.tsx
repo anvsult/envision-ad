@@ -26,9 +26,12 @@ interface MediaMarkerProps{
 
 function MediaMarker({media}: MediaMarkerProps){
 
+  const priceNum = Number(media.price);
+  const safePrice = Number.isFinite(priceNum) ? priceNum.toString() : '0';
+
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
-    html: `<a href='#MediaCard${media.index}'><span >$${media.price.toString()}</span><a>`,
+    html: `<a href='#MediaCard${media.index}'><span >$${safePrice}</span><a>`,
     iconSize: [200, 30],
     iconAnchor: [100, 15]
     

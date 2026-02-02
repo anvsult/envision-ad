@@ -150,7 +150,6 @@ class MediaControllerUnitTest {
         mediaLocation.setLatitude(30.5);
         mediaLocation.setLongitude(-50.7);
 
-
         return mediaLocation;
     }
 
@@ -299,7 +298,7 @@ class MediaControllerUnitTest {
                     .thenReturn(responseModel);
 
             ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null,
-                    null, null, null, null,  null,null);
+                    null, null, null, null, null, null);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             Page<?> body = (Page<?>) response.getBody();

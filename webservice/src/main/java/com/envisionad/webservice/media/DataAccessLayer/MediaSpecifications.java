@@ -66,19 +66,31 @@ public class MediaSpecifications {
                 return null;
             }
 
-            double minLat = Math.min(bounds.get(0), bounds.get(1));
-            double maxLat = Math.max(bounds.get(0), bounds.get(1));
-            double minLng = Math.min(bounds.get(2), bounds.get(3));
-            double maxLng = Math.max(bounds.get(2), bounds.get(3));
+            double south = bounds.get(0);
+            double north = bounds.get(1);
+            double west = bounds.get(2);
+            double east = bounds.get(3);
+
+            double minLat = Math.min(south, north);
+            double maxLat = Math.max(south, north);
 
             Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.INNER);
 
             Predicate latPredicate =
                 cb.between(location.get("latitude"), minLat, maxLat);
 
-            Predicate lngPredicate =
-                cb.between(location.get("longitude"), minLng, maxLng);
+            Predicate lngPredicate;
 
+            if (west <= east) {
+                // Normal case: bounding box does not cross the International Date Line.
+                lngPredicate = cb.between(location.get("longitude"), west, east);
+            } else {
+                // Bounding box crosses the International Date Line. Select longitudes
+                // greater than or equal to west OR less than or equal to east.
+                Predicate westToDateLine = cb.greaterThanOrEqualTo(location.get("longitude"), west);
+                Predicate dateLineToEast = cb.lessThanOrEqualTo(location.get("longitude"), east);
+                lngPredicate = cb.or(westToDateLine, dateLineToEast);
+            }
             return cb.and(latPredicate, lngPredicate);
         };
     }

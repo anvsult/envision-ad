@@ -82,11 +82,9 @@ function BrowsePage() {
     let cancelled = false;
 
     async function resolveLocation() {
-      
       setLocationStatus('loading');
 
       try {
-        
         if (
           sortBy === SpecialSort.nearest &&
           (!addressSearch || addressSearch === sortNearest)
@@ -104,7 +102,7 @@ function BrowsePage() {
           }
 
           if (!cancelled) {
-            const coords = { lat: address.lat, lng: address.lng }
+            const coords = { lat: address.lat, lng: address.lng };
             setLocation(coords);
             setLocationStatus('success');
             map?.setView(coords, 13);
@@ -115,6 +113,9 @@ function BrowsePage() {
 
         if (err instanceof GeolocationPositionError && err.code === 1) {
           setLocationStatus('denied');
+          if (sortBy === SpecialSort.nearest) {
+            setSortBy(SortOptions.priceAsc);
+          }
         } else {
           setLocationStatus('error');
         }
@@ -122,7 +123,7 @@ function BrowsePage() {
     }
     resolveLocation();
     return () => { cancelled = true };
-  }, [addressSearch, map, searchLanguage, sortBy, sortNearest, mapVisible]);
+  }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
 
   useEffect(() => {
     if (addressSearch) {
@@ -155,22 +156,13 @@ function BrowsePage() {
     setDraftBbox(map ? map.getBounds(): null)
   }, [map])
 
-  
-  const lastCall = useRef(0);
-
   useEffect(() => {
     if (!draftBbox) {
       setBbox(null);
       return;
     }
-    
 
-    const timeout = setTimeout(async () => {
-      const now = new Date().getTime();
-      if (now - lastCall.current <= 300) {
-          return;
-      }
-      lastCall.current = now;
+    const timeout = setTimeout(() => {
       setBbox(draftBbox);
     }, 300);
 
@@ -200,7 +192,7 @@ function BrowsePage() {
 
 
   return (
-      <Container size={map ? "1600" : "xl"} w="100%" py={20} >
+      <Container size={map ? 1600 : "xl"} w="100%" py={20} >
         <Group grow h="100%" top="0" justify='flex-start'>
           <Stack gap="sm" mih="95vh" top="0" justify='flex-start'>
               <SearchMobileViewer>

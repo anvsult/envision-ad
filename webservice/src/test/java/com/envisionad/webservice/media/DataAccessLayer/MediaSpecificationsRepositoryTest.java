@@ -35,7 +35,6 @@ class MediaSpecificationsRepositoryTest {
         UUID businessIdB = UUID.randomUUID();
 
 
-
         // Create a location (required relation)
         MediaLocation location = new MediaLocation();
         location.setName("Test Location");
