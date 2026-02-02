@@ -46,7 +46,7 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
-      "adRequests": "Demandes d'annonce",
+      "advertisements": "Publicités",
       "myAds": "Mes Campagnes"
     },
     "adminTitle": "Admin",
@@ -720,6 +720,54 @@
       "confirmDeny": "Refuser"
     }
   },
+  "advertiserReservations": {
+    "page": {
+      "title": "Publicités",
+      "reservationCount": {
+        "singular": "réservation",
+        "plural": "réservations"
+      }
+    },
+    "tabs": {
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "confirmed": "Confirmées",
+      "denied": "Refusées"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "confirmed": "Confirmée",
+      "denied": "Refusée"
+    },
+    "noReservations": "Aucune réservation trouvée pour ce statut.",
+    "payButton": "Payer",
+    "payment": {
+      "title": "Compléter le paiement",
+      "reviewTitle": "Vérifier votre réservation",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total",
+      "cancel": "Annuler",
+      "proceedToPay": "Procéder au paiement",
+      "errorTitle": "Erreur de paiement",
+      "initFailed": "Échec de l'initialisation du paiement. Veuillez réessayer.",
+      "missingKey": "Erreur de configuration du paiement. Veuillez contacter le support.",
+      "successTitle": "Paiement réussi !",
+      "successMessage": "Votre paiement a été traité avec succès. La réservation est maintenant confirmée.",
+      "done": "Terminé"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Échec du chargement des réservations"
+      },
+      "paymentSuccess": {
+        "title": "Paiement terminé",
+        "message": "Votre réservation a été confirmée avec succès"
+      }
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "Mes campagnes",
@@ -878,6 +926,7 @@
     "nextStepButton": "Étape suivante",
     "confirmPayButton": "Confirmer & Payer",
     "reviewTitle": "Vérifier la réservation",
+    "confirmButton": "Confirmer la réservation",
     "dateSelection": {
       "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
     },

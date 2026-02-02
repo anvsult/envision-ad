@@ -5,7 +5,7 @@ import {
     IconDeviceTv,
     IconLayoutDashboard,
     IconUsers,
-    IconShieldCheck, IconDiscountCheck, IconFileDescription,
+    IconShieldCheck, IconDiscountCheck, IconFileDescription, IconInbox, IconSpeakerphone,
 } from "@tabler/icons-react";
 import {useTranslations} from "next-intl";
 import {usePermissions} from "@/app/providers/PermissionProvider";
@@ -35,6 +35,16 @@ export default function SideBar() {
                 leftSection={<IconFileDescription size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/media-owner/proof")}
             />
+        ),
+        (permissions.includes("update:reservation")) && (
+            <NavLink
+                key="requests"
+                component={Link}
+                href="/dashboard/media-owner/ad-requests"
+                label={t("media-owner.adRequests")}
+                leftSection={<IconInbox size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/media-owner/ad-requests")}
+            />
         )
     ].filter(Boolean);
 
@@ -48,6 +58,16 @@ export default function SideBar() {
                     leftSection={<IconAd size={20} stroke={1.5} />}
                     active={pathname?.endsWith("/advertiser/campaigns")}
                 />
+        ),
+        (permissions.includes('readAll:reservation')) && (
+            <NavLink
+                key="advertisements"
+                component={Link}
+                href="/dashboard/advertiser/advertisements"
+                label={t("advertiser.advertisements")}
+                leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/advertisements")}
+            />
         )
     ].filter(Boolean);
 

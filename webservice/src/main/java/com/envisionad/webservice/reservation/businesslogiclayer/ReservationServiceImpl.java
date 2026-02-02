@@ -194,7 +194,25 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationResponseModel> getAllReservationByAdvertiserBusinessId(Jwt jwt, String businessId) {
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
-        return reservationRepository.findAll().stream().filter(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()).getBusinessId().getBusinessId().equals(businessId)).map(reservationResponseMapper::entityToResponseModel).toList();
+        List<ReservationResponseModel> reservations = reservationRepository.findAll().stream().filter(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()).getBusinessId().getBusinessId().equals(businessId)).map(reservationResponseMapper::entityToResponseModel).toList();
+
+        List<String> campaignIds = reservations.stream()
+                .map(ReservationResponseModel::getCampaignId)
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .toList();
+
+        var campaigns = adCampaignRepository.findAllByCampaignId_CampaignIdIn(campaignIds);
+
+        var campaignNameById = campaigns.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        c -> c.getCampaignId().getCampaignId(),
+                        AdCampaign::getName
+                ));
+
+        reservations.forEach(r -> r.setCampaignName(campaignNameById.get(r.getCampaignId())));
+
+        return reservations;
     }
 
     private Media loadAndValidateMedia(String mediaId) {

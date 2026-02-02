@@ -38,9 +38,12 @@ export default function AdRequests() {
                 setLoading(true);
 
                 const business = await getEmployeeOrganization(user.sub);
+                if (business == null){
+                    new Error("Failed to load business information");
+                }
                 const allReservations =
                     await getAllReservationByMediaOwnerBusinessId(
-                        business.businessId
+                        business!.businessId
                     );
 
                 const pending = allReservations.filter(

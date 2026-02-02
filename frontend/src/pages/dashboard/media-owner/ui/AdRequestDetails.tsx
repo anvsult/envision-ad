@@ -12,7 +12,7 @@ import {
     Loader,
     Center,
     Button,
-    Modal,
+    Modal, Image,
 } from "@mantine/core";
 import {
     IconCalendar,
@@ -40,7 +40,6 @@ const formatDate = (isoDate: string, locale: string): string => {
     });
 };
 
-// Always returns duration in weeks (assumes the duration is always a multiple of 7 days)
 const formatDuration = (start: string, end: string, t: ReturnType<typeof useTranslations>): string => {
     const diffMs = new Date(end).getTime() - new Date(start).getTime();
     const days = Math.max(1, Math.round(diffMs / (1000 * 60 * 60 * 24)));
@@ -49,9 +48,6 @@ const formatDuration = (start: string, end: string, t: ReturnType<typeof useTran
     return weeks === 1 ? t("detail.oneWeek") : t("detail.weeks", { count: weeks });
 };
 
-// --- Ad Carousel ---
-// Auto-advances every `adDurationSeconds` for the current ad (IMAGE only; VIDEO ads
-// stay static until the user clicks next). Dot indicators at the bottom show position.
 function AdCarousel({ ads }: { ads: Ad[] }) {
     const [activeIndex, setActiveIndex] = useState(0);
     const current = ads[activeIndex];
@@ -60,7 +56,6 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
     const prev = () => setActiveIndex((i) => (i === 0 ? ads.length - 1 : i - 1));
     const next = () => setActiveIndex((i) => (i === ads.length - 1 ? 0 : i + 1));
 
-    // Auto-advance: only for IMAGE ads; resets whenever activeIndex changes
     useEffect(() => {
         if (current.adType !== "IMAGE") return;
 
@@ -73,7 +68,6 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
 
     return (
         <Card withBorder radius="lg" p={0} style={{ overflow: "hidden" }}>
-            {/* Image / Video display */}
             <div style={{
                 position: "relative",
                 width: "100%",
@@ -85,7 +79,7 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
                 justifyContent: "center"
             }}>
                 {current.adType === "IMAGE" ? (
-                    <img
+                    <Image
                         key={current.adId}
                         src={current.adUrl}
                         alt={current.name}
@@ -102,7 +96,6 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
                     />
                 )}
 
-                {/* Prev / Next buttons — only shown when there's more than one ad */}
                 {ads.length > 1 && (
                     <>
                         <button
@@ -153,7 +146,6 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
                 )}
             </div>
 
-            {/* Caption + dot indicators */}
             <div style={{ padding: "10px 16px 12px", display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                 <Text size="sm" fw={500}>{current.name}</Text>
 
@@ -195,7 +187,6 @@ export default function AdRequestDetailPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Confirmation modal
     const [confirmAction, setConfirmAction] = useState<"approve" | "deny" | null>(null);
     const [submitting, setSubmitting] = useState(false);
 
@@ -205,7 +196,6 @@ export default function AdRequestDetailPage() {
         if (!submitting) setConfirmAction(null);
     };
 
-    // Fetch the single reservation by ID
     useEffect(() => {
         if (!reservationId) return;
 
@@ -226,7 +216,6 @@ export default function AdRequestDetailPage() {
         void load();
     }, [reservationId]);
 
-    // Once we have the reservation, fetch the linked campaign
     useEffect(() => {
         if (!reservation?.campaignId) return;
 
@@ -235,7 +224,6 @@ export default function AdRequestDetailPage() {
                 const data = await getAdCampaignById(reservation.campaignId);
                 setCampaign(data);
             } catch (err: unknown) {
-                // Non-fatal: page can still render with reservation data
                 console.error("Failed to load campaign details", err);
             }
         };
@@ -243,7 +231,6 @@ export default function AdRequestDetailPage() {
         void loadCampaign();
     }, [reservation?.campaignId]);
 
-    // Approve / Deny handler
     const handleConfirm = async () => {
         if (!confirmAction || !reservation) return;
 
@@ -277,7 +264,6 @@ export default function AdRequestDetailPage() {
         }
     };
 
-    // --- Loading state ---
     if (loading) {
         return (
             <Container size="lg" py="xl">
@@ -288,7 +274,6 @@ export default function AdRequestDetailPage() {
         );
     }
 
-    // --- Error / not found state ---
     if (error || !reservation) {
         return (
             <Container size="lg" py="xl">
@@ -303,7 +288,6 @@ export default function AdRequestDetailPage() {
         );
     }
 
-    // --- Already actioned guard (same pattern as AdminMediaReviewPage) ---
     const isPending = reservation.status === ReservationStatus.PENDING;
 
     if (!isPending) {
@@ -327,7 +311,6 @@ export default function AdRequestDetailPage() {
             <Container size="lg" py="xl">
                 <Group align="center" justify="space-between" wrap="wrap">
 
-                    {/* Left Column — title + carousel */}
                     <Stack gap="md" style={{ flex: 2, minWidth: 320 }}>
                         <Group gap="xs">
                             <BackButton />
@@ -341,9 +324,7 @@ export default function AdRequestDetailPage() {
                         )}
                     </Stack>
 
-                    {/* Right Column — reservation summary + price + actions */}
                     <Stack gap="md" style={{ flex: 1, minWidth: 280 }}>
-                        {/* Reservation summary */}
                         <Card withBorder radius="lg" p="lg">
                             <Stack gap="sm">
                                 <Group justify="space-between" align="center">
@@ -372,7 +353,6 @@ export default function AdRequestDetailPage() {
                             </Stack>
                         </Card>
 
-                        {/* Price + actions */}
                         <Card withBorder radius="lg" shadow="md" p="lg">
                             <Stack align="center" gap="md">
                                 <Group gap="xs" align="center">
@@ -410,7 +390,6 @@ export default function AdRequestDetailPage() {
                 </Group>
             </Container>
 
-            {/* Confirmation Modal — same pattern as AdminMediaReviewPage */}
             <Modal
                 key={confirmAction ?? "closed"}
                 opened={confirmOpen}

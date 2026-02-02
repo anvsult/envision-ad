@@ -46,7 +46,7 @@
     "advertiserTitle": "Advertiser",
     "advertiser": {
       "overview": "Overview",
-      "adRequests": "Ad requests",
+      "advertisements": "Advertisements",
       "myAds": "My Campaigns"
     },
     "adminTitle": "Admin",
@@ -677,6 +677,54 @@
       "confirmDeny": "Deny"
     }
   },
+  "advertiserReservations": {
+    "page": {
+      "title": "Advertisements",
+      "reservationCount": {
+        "singular": "reservation",
+        "plural": "reservations"
+      }
+    },
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "confirmed": "Confirmed",
+      "denied": "Denied"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "confirmed": "Confirmed",
+      "denied": "Denied"
+    },
+    "noReservations": "No reservations found for this status.",
+    "payButton": "Pay",
+    "payment": {
+      "title": "Complete Payment",
+      "reviewTitle": "Review Your Reservation",
+      "campaign": "Campaign",
+      "dates": "Dates",
+      "totalCost": "Total Cost",
+      "cancel": "Cancel",
+      "proceedToPay": "Proceed to Payment",
+      "errorTitle": "Payment Error",
+      "initFailed": "Failed to initialize payment. Please try again.",
+      "missingKey": "Payment configuration error. Please contact support.",
+      "successTitle": "Payment Successful!",
+      "successMessage": "Your payment has been processed successfully. The reservation is now confirmed.",
+      "done": "Done"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Error",
+        "message": "Failed to load reservations"
+      },
+      "paymentSuccess": {
+        "title": "Payment Complete",
+        "message": "Your reservation has been confirmed successfully"
+      }
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "My Campaigns",
@@ -875,6 +923,7 @@
     "nextStepButton": "Next step",
     "confirmPayButton": "Confirm & Pay",
     "reviewTitle": "Review Reservation",
+    "confirmButton": "Confirm Reservation",
     "dateSelection": {
       "selected": "Selected: {start} to {end} ({weeks} weeks)"
     },
