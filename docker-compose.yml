@@ -53,6 +53,7 @@ services:
       NODE_ENV: "production"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_BASE_URL: "${APP_BASE_URL}"
+      WEBSERVICE_API_URL: "${WEBSERVICE_API_URL}"
 
 #     AUTH0
       AUTH0_DOMAIN: "${AUTH0_DOMAIN}"

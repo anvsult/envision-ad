@@ -30,6 +30,7 @@ import { useLocale, useTranslations } from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
+import {AdPreviewCarousel} from "@/widgets/Media/Modals/preview-step/AdPreviewCarousel";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -57,6 +58,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             const load = async () => {
                 try {
                     const business = await getEmployeeOrganization(user.sub);
+                    if (!business) {
+                        throw new Error('Business not found');
+                    }
                     const data = await getAllAdCampaigns(business.businessId);
                     setCampaigns(data);
                 } catch (e) {
@@ -343,6 +347,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
                                     <Paper withBorder p="lg" w="100%">
+                                        {/* Previewing the ad campaign images on the media */}
+                                        <Box mb="lg">
+                                            <AdPreviewCarousel
+                                                selectedCampaignAds={campaigns.find(c => c.campaignId === selectedCampaignId)?.ads || []}
+                                                mediaImageUrl={media.imageUrl}
+                                                mediaImageCorners={media.previewConfiguration}/>
+                                        </Box>
                                         <Group justify="space-between">
                                             <Text c="dimmed">{t('labels.media')}:</Text>
                                             <Text fw={500}>{media.title}</Text>

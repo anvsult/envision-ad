@@ -3,6 +3,16 @@
     "title": "Envision AD - Affordable Ads, Unforgettable Impact",
     "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your organization."
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "back": "Back to home"
+  },
+  "forbidden": {
+    "title": "Forbidden",
+    "description": "You do not have permission to access this page.",
+    "back": "Back to home"
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -259,14 +269,7 @@
         "stateRequired": "Organization state/Province is required.",
         "zipRequired": "Organization zip/postal code is required.",
         "countryRequired": "Organization country is required.",
-        "roleRequired": "At least one role is required.",
-        "updateFailed": "Failed to update organization details.",
-        "createFailed": "Failed to create organization."
-      },
-      "success": {
-        "title": "Success",
-        "update": "Organization details has been updated.",
-        "create": "Organization has been created."
+        "roleRequired": "At least one role is required."
       }
     },
     "sizes": {
@@ -325,13 +328,13 @@
       },
       "errors": {
         "title": "Error",
-        "deleteEmployeeFailed": "Failed to remove employee.",
         "deleteInvitationFailed": "Failed to cancel invitation."
       }
     },
     "verificationHistory": "Verification History",
     "requestVerification": "Request Verification",
     "verificationTable": {
+      "noHistory": "No verification request history found.",
       "requestDate": "Request Date",
       "status": "Status",
       "reason": "Reason"
@@ -349,12 +352,16 @@
     },
     "success": {
       "title": "Success",
-      "verificationRequest": "Verification request has been sent."
+      "verificationRequest": "Verification request has been sent.",
+      "update": "Organization details has been updated.",
+      "create": "Organization has been created."
     },
     "errors": {
       "title": "Error",
       "loadFailed": "Failed to load organization for editing.",
-      "verificationRequestFailed": "Failed to request verification."
+      "verificationRequestFailed": "Failed to request verification.",
+      "updateFailed": "Failed to update organization details.",
+      "createFailed": "Failed to create organization."
     }
   },
   "media": {

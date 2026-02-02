@@ -12,14 +12,15 @@ import {useUser} from "@auth0/nextjs-auth0/client";
 import {
     getAllOrganizationVerifications,
     getEmployeeOrganization,
-    requestOrganizationVerification
+    requestOrganizationVerification,
+    createOrganization,
+    updateOrganization, getAllOrganizationEmployees
 } from "@/features/organization-management/api";
 import {VerificationHistoryTable} from "@/pages/dashboard/organization/ui/tables/VerificationTable";
 import {notifications} from "@mantine/notifications";
-import {getAccessToken} from "@auth0/nextjs-auth0";
-import {jwtDecode} from "jwt-decode";
-import {Token} from "@/entities/auth";
 import {ConfirmationModal} from "@/shared/ui";
+import {AUTH0_ROLES} from "@/shared/lib/auth/roles";
+import {usePermissions} from "@/app/providers";
 
 export default function OrganizationDashboard() {
     const {formState, updateField, resetForm, setFormState} = useOrganizationForm();
@@ -31,8 +32,9 @@ export default function OrganizationDashboard() {
     const [requestingVerification, setRequestingVerification] = useState(false);
     const {user} = useUser();
 
-    const [permissions, setPermissions] = useState<string[]>([]);
+    const { permissions, refreshPermissions } = usePermissions();
     const [confirmVerificationRequest, setConfirmVerificationRequest] = useState(false);
+    const [editingId, setEditingId] = useState<string | null>(null);
 
     const t = useTranslations("organization");
 
@@ -51,13 +53,6 @@ export default function OrganizationDashboard() {
             }
         };
 
-        const fetchPermissions = async () => {
-            const token = await getAccessToken();
-            const decodedToken = jwtDecode<Token>(token);
-            setPermissions(decodedToken.permissions);
-        };
-
-        void fetchPermissions();
         void loadOrganization();
     }, [user?.sub]);
 
@@ -109,11 +104,113 @@ export default function OrganizationDashboard() {
                 mediaOwner: organization.roles.mediaOwner ?? false
             }
         });
+        setEditingId(organization.businessId);
         setIsModalOpen(true);
     };
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        setEditingId(null);
+    };
+
+    const handleSave = async () => {
+        try {
+            if (editingId) {
+                await updateOrganization(editingId, formState);
+
+                const roleChanges = {
+                    toRemove: [
+                        organization?.roles.advertiser && !formState.roles.advertiser && AUTH0_ROLES.ADVERTISER,
+                        organization?.roles.mediaOwner && !formState.roles.mediaOwner && AUTH0_ROLES.MEDIA_OWNER,
+                    ].filter(Boolean) as string[],
+                    toAdd: [
+                        !organization?.roles.advertiser && formState.roles.advertiser && AUTH0_ROLES.ADVERTISER,
+                        !organization?.roles.mediaOwner && formState.roles.mediaOwner && AUTH0_ROLES.MEDIA_OWNER,
+                    ].filter(Boolean) as string[],
+                };
+
+                const employees = await getAllOrganizationEmployees(editingId);
+
+                if (roleChanges.toRemove.length > 0 || roleChanges.toAdd.length > 0) {
+                    await Promise.all(
+                        employees.map(async (employee) => {
+                            const encodedUserId = encodeURIComponent(employee.user_id);
+
+                            if (roleChanges.toRemove.length > 0) {
+                                await fetch(`/api/auth0/update-user-roles/${encodedUserId}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ roles: roleChanges.toRemove })
+                                });
+                            }
+
+                            if (roleChanges.toAdd.length > 0) {
+                                await fetch(`/api/auth0/update-user-roles/${encodedUserId}`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ roles: roleChanges.toAdd })
+                                });
+                            }
+                        })
+                    );
+
+                    await refreshPermissions();
+                }
+
+                notifications.show({
+                    title: t("success.title"),
+                    message: t("success.update"),
+                    color: "green",
+                });
+            } else {
+                await createOrganization(formState);
+
+                await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(user!.sub)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({roles: [
+                            AUTH0_ROLES.BUSINESS_OWNER,
+                            ...(formState.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
+                            ...(formState.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : [])
+                        ]})
+                });
+
+                await refreshPermissions();
+
+                notifications.show({
+                    title: t("success.title"),
+                    message: t("success.create"),
+                    color: "green",
+                });
+            }
+
+            await refreshOrganization();
+            handleCloseModal();
+            resetForm();
+        } catch (error) {
+            if (editingId) {
+                console.error("Failed to update organization", error);
+                notifications.show({
+                    title: t("errors.error"),
+                    message: t("errors.updateFailed"),
+                    color: "red",
+                });
+            } else {
+                console.error("Failed to create organization", error);
+                notifications.show({
+                    title: t("errors.error"),
+                    message: t("errors.createFailed"),
+                    color: "red",
+                });
+            }
+            throw error;
+        }
     };
 
     const handleRequestVerification = async () => {
@@ -166,11 +263,10 @@ export default function OrganizationDashboard() {
                     <OrganizationModal
                         opened={isModalOpen}
                         onClose={handleCloseModal}
-                        onSuccess={refreshOrganization}
+                        onSave={handleSave}
                         formState={formState}
                         onFieldChange={updateField}
-                        resetForm={resetForm}
-                        editingId={organization.businessId}
+                        editingId={editingId}
                     />
 
                     { (permissions.includes('read:verification') || permissions.includes('create:verification')) &&
@@ -230,11 +326,10 @@ export default function OrganizationDashboard() {
                         <OrganizationModal
                             opened={isModalOpen}
                             onClose={handleCloseModal}
-                            onSuccess={refreshOrganization}
+                            onSave={handleSave}
                             formState={formState}
                             onFieldChange={updateField}
-                            resetForm={resetForm}
-                            editingId={null}
+                            editingId={editingId}
                         />
                     </Stack>
                 </Center>
