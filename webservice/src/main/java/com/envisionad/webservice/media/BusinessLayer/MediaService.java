@@ -13,17 +13,17 @@ public interface MediaService {
     List<Media> getAllMedia();
 
     Page<Media> getAllFilteredActiveMedia(
-            Pageable pageable,
-            String title,
-            String businessId,
-            BigDecimal minPrice,
-            BigDecimal maxPrice,
-            Integer minDailyImpressions,
-            String specialSort,
-            Double userLat,
-            Double userLng,
-            List<Double> bounds,
-            String excludedId
+        Pageable pageable,
+        String title,
+        String businessId,
+        BigDecimal minPrice,
+        BigDecimal maxPrice,
+        Integer minDailyImpressions,
+        String specialSort,
+        Double userLat,
+        Double userLng,
+        List<Double> bounds,
+        String excludedId
     );
 
     Media getMediaById(UUID id);

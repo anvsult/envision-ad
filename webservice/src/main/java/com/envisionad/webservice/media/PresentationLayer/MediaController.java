@@ -104,6 +104,8 @@ public class MediaController {
         return ResponseEntity.ok(responsePage);
     }
 
+
+
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {
         Media media = mediaService.getMediaById(UUID.fromString(id));

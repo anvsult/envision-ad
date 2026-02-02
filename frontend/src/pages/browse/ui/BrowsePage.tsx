@@ -1,6 +1,6 @@
 'use client'
 
-import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
+import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, ScrollArea, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -167,12 +167,12 @@ function BrowsePage() {
 
     const timeout = setTimeout(async () => {
       const now = new Date().getTime();
-      if (now - lastCall.current <= 400) {
+      if (now - lastCall.current <= 300) {
           return;
       }
       lastCall.current = now;
       setBbox(draftBbox);
-    }, 400);
+    }, 300);
 
     return () => clearTimeout(timeout);
 
@@ -202,7 +202,7 @@ function BrowsePage() {
   return (
       <Container size={map ? "1600" : "xl"} w="100%" py={20} >
         <Group grow h="100%" top="0" justify='flex-start'>
-          <Stack gap="sm" h="100%" top="0" justify='flex-start'>
+          <Stack gap="sm" mih="95vh" top="0" justify='flex-start'>
               <SearchMobileViewer>
                 <Autocomplete
                   placeholder={t('searchAddress')}
@@ -239,13 +239,10 @@ function BrowsePage() {
                 
               </SearchMobileViewer>
               <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
-              <ActionIcon onClick={() => setMapVisible(!mapVisible)}>
-                <IconMap size={20} />
-              </ActionIcon>
-            
-              {(isMobile && location && sortBy === SpecialSort.nearest) && 
+              
+              {(isMobile && mapVisible) && 
                 <Container style={{position: "relative",  width: "100%"}} p="0">
-                  <MapView center={location} medias={media} setMap={setMap} isMobile={isMobile}/>
+                  <MapView center={location ?? defaultPos} medias={media} setMap={setMap} isMobile={isMobile}/>
                 </Container>
               }
 
@@ -267,7 +264,7 @@ function BrowsePage() {
                 <Text>{t('nomedia.changefilters')}</Text>
               </Stack>
             ) : (
-              <MediaCardGrid medias={media} size={(mapVisible)? 2 : 1} />
+              <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
             )}
             {totalPages > 1 && (
               <Group justify="center" mt="md">
@@ -282,11 +279,16 @@ function BrowsePage() {
           </Stack>
 
         {(!isMobile && mapVisible) && 
-          <Container style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+          <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
             <MapView center={location ?? defaultPos} medias={media} setMap={setMap} isMobile={isMobile}/>
           </Container>
         }
         
+        </Group>
+        <Group pos='fixed' justify='flex-end'  mt="xl" right='3vh' bottom='3vh' w='100%'>
+          <Button size='lg' rightSection={<IconMap size={20} />} onClick={() => setMapVisible(!mapVisible)} radius='xl' >
+            {mapVisible ? t('closeMap') : t('openMap')}
+          </Button>
         </Group>
       </Container>
   );

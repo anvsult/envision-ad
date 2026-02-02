@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,6 +30,11 @@ class MediaSpecificationsRepositoryTest {
     void setUp() {
         mediaRepository.deleteAll();
         mediaLocationRepository.deleteAll();
+
+        UUID businessIdA = UUID.randomUUID();
+        UUID businessIdB = UUID.randomUUID();
+
+
 
         // Create a location (required relation)
         MediaLocation location = new MediaLocation();
@@ -53,6 +59,7 @@ class MediaSpecificationsRepositoryTest {
         m1.setPrice(new BigDecimal("100.00"));
         m1.setDailyImpressions(1000);
         m1.setResolution("1920x1080");
+        m1.setBusinessId(businessIdA);
         mediaRepository.save(m1);
 
         // Media 2: Inactive, "Poster Wall", Price 50, Imp 500
@@ -64,6 +71,7 @@ class MediaSpecificationsRepositoryTest {
         m2.setStatus(Status.INACTIVE);
         m2.setPrice(new BigDecimal("50.00"));
         m2.setDailyImpressions(500);
+        m2.setBusinessId(businessIdB);
         mediaRepository.save(m2);
 
         // Media 3: Active, "Big Digital Screen", Price 200, Imp 2000
@@ -75,6 +83,7 @@ class MediaSpecificationsRepositoryTest {
         m3.setStatus(Status.ACTIVE);
         m3.setPrice(new BigDecimal("200.00"));
         m3.setDailyImpressions(2000);
+        m3.setBusinessId(businessIdA);
         mediaRepository.save(m3);
     }
 
@@ -155,5 +164,41 @@ class MediaSpecificationsRepositoryTest {
 
         assertEquals(1, results.size());
         assertEquals("Big Digital Screen", results.get(0).getTitle());
+    }
+
+    @Test
+    void businessIdEquals_ShouldFilterCorrectly() {
+        UUID businessId = mediaRepository.findAll().get(0).getBusinessId();
+
+        Specification<Media> spec = MediaSpecifications.businessIdEquals(businessId);
+        List<Media> results = mediaRepository.findAll(spec);
+
+        assertEquals(2, results.size());
+        assertTrue(results.stream().allMatch(m -> m.getBusinessId().equals(businessId)));
+    }
+
+    @Test
+    void mediaIdIsNotEqual_ShouldExcludeOneMedia() {
+        Media excluded = mediaRepository.findAll().get(0);
+
+        Specification<Media> spec = MediaSpecifications.mediaIdIsNotEqual(excluded.getId());
+        List<Media> results = mediaRepository.findAll(spec);
+
+        assertEquals(2, results.size());
+        assertTrue(results.stream().noneMatch(m -> m.getId().equals(excluded.getId())));
+    }
+
+    @Test
+    void withinBounds_ShouldIncludeAllMediaInsideBounds() {
+        List<Double> bounds = new ArrayList<>();
+        bounds.add(40.0);
+        bounds.add(50.0);
+        bounds.add(-80.0);
+        bounds.add(-70.0);
+
+        Specification<Media> spec = MediaSpecifications.withinBounds(bounds);
+        List<Media> results = mediaRepository.findAll(spec);
+
+        assertEquals(3, results.size());
     }
 }

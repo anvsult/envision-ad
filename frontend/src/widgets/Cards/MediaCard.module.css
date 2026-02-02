@@ -9,6 +9,9 @@
             transform: scale(1.05);
             transition: transform 0.2s ease
         }
+        .mediaTitle{
+            text-decoration: underline;
+        }
     }
 }
 

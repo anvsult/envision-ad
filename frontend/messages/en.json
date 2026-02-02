@@ -181,6 +181,8 @@
       "primary": "en",
       "fallback": "fr-CA"
     },
+    "openMap": "Open Map",
+    "closeMap": "Close Map",
     "browseactions": {
       "filters": {
         "actionName": "Filter:",

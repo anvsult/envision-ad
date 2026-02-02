@@ -1,7 +1,8 @@
-.media-marker{
+.media-marker a{
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
 }
 
 .media-marker span {

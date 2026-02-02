@@ -29,9 +29,10 @@ function MediaMarker({media}: MediaMarkerProps){
 
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
-    html: `<span>$${media.price.toString()}</span>`,
+    html: `<a href='#MediaCard${media.index}'><span >$${media.price.toString()}</span><a>`,
     iconSize: [200, 30],
     iconAnchor: [100, 15]
+    
   });
 
 

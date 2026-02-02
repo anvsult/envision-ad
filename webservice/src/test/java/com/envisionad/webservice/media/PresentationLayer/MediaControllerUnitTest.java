@@ -10,10 +10,7 @@ import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
-import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
-import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
-import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
-import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.envisionad.webservice.media.PresentationLayer.Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,34 +59,16 @@ class MediaControllerUnitTest {
     private final String businessId = UUID.randomUUID().toString();
     private final UUID mediaLocationId = UUID.randomUUID();
     private final UUID mediaId = UUID.randomUUID();
+    private final List<Double> bounds = Arrays.asList(-51.0, -50.0, 30.0, 31.0);
+    private final List<Double> invalidBounds = Arrays.asList(-51.0, -50.0, 30.0);
 
         @BeforeEach
         void setUp() {
                 // ... (setup remains same until end of method)
 
-            MediaLocation mediaLocation = new MediaLocation();
-            mediaLocation.setId(mediaLocationId);
-            mediaLocation.setName("Name");
-            mediaLocation.setDescription("This is a location");
-            mediaLocation.setCountry("Canada");
-            mediaLocation.setProvince("Quebec");
-            mediaLocation.setCity("Montreal");
-            mediaLocation.setStreet("Sesame Street 101");
-            mediaLocation.setPostalCode("J3G");
-            mediaLocation.setLatitude(30.5);
-            mediaLocation.setLongitude(-50.7);
+            MediaLocation mediaLocation = getMediaLocation();
 
-            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
-            mediaLocationResponseModel.setId(mediaLocationId);
-            mediaLocationResponseModel.setName("Name");
-            mediaLocationResponseModel.setDescription("This is a location");
-            mediaLocationResponseModel.setCountry("Canada");
-            mediaLocationResponseModel.setProvince("Quebec");
-            mediaLocationResponseModel.setCity("Montreal");
-            mediaLocationResponseModel.setStreet("Sesame Street 101");
-            mediaLocationResponseModel.setPostalCode("J3G");
-            mediaLocationResponseModel.setLatitude(30.5);
-            mediaLocationResponseModel.setLongitude(-50.7);
+            MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel();
 
             ScheduleModel schedule = new ScheduleModel();
             WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
@@ -143,7 +122,39 @@ class MediaControllerUnitTest {
             requestModel.setPreviewConfiguration("{\"corners\": []}");
         }
 
-        @Test
+    private MediaLocationResponseModel getMediaLocationResponseModel() {
+        MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
+        mediaLocationResponseModel.setId(mediaLocationId);
+        mediaLocationResponseModel.setName("Name");
+        mediaLocationResponseModel.setDescription("This is a location");
+        mediaLocationResponseModel.setCountry("Canada");
+        mediaLocationResponseModel.setProvince("Quebec");
+        mediaLocationResponseModel.setCity("Montreal");
+        mediaLocationResponseModel.setStreet("Sesame Street 101");
+        mediaLocationResponseModel.setPostalCode("J3G");
+        mediaLocationResponseModel.setLatitude(30.5);
+        mediaLocationResponseModel.setLongitude(-50.7);
+        return mediaLocationResponseModel;
+    }
+
+    private MediaLocation getMediaLocation() {
+        MediaLocation mediaLocation = new MediaLocation();
+        mediaLocation.setId(mediaLocationId);
+        mediaLocation.setName("Name");
+        mediaLocation.setDescription("This is a location");
+        mediaLocation.setCountry("Canada");
+        mediaLocation.setProvince("Quebec");
+        mediaLocation.setCity("Montreal");
+        mediaLocation.setStreet("Sesame Street 101");
+        mediaLocation.setPostalCode("J3G");
+        mediaLocation.setLatitude(30.5);
+        mediaLocation.setLongitude(-50.7);
+
+
+        return mediaLocation;
+    }
+
+    @Test
         void addMedia_WithValidJwt_ShouldSetBusinessId() {
                 UUID businessId = UUID.randomUUID();
                 String userId = "auth0|123";
@@ -221,19 +232,19 @@ class MediaControllerUnitTest {
                 Page<Media> mediaPage = new PageImpl<>(List.of(media));
                 Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
-                when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null))
+                when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null, null))
                                 .thenReturn(mediaPage);
                 when(responseMapper.entityToResponseModel(media))
                                 .thenReturn(responseModel);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null, null,
-                                null, null, null, null);
+                                null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
                 assertEquals(1, body.getTotalElements());
 
-                verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null);
+                verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null, null, null);
         }
 
         @Test
@@ -251,6 +262,7 @@ class MediaControllerUnitTest {
                             "nearest",
                             50.0,
                             50.0,
+                            bounds,
                             mediaId.toString()
                     ))
                     .thenReturn(mediaPage);
@@ -259,16 +271,17 @@ class MediaControllerUnitTest {
                                 .thenReturn(responseModel);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
-                    pageable,
-                    "Billboard",
-                    businessId,
-                    BigDecimal.valueOf(50),
-                    BigDecimal.valueOf(200),
-                    1000,
-                    "nearest",
-                    50.0,
-                    50.0,
-                    mediaId.toString());
+                        pageable,
+                        "Billboard",
+                        businessId,
+                        BigDecimal.valueOf(50),
+                        BigDecimal.valueOf(200),
+                        1000,
+                        "nearest",
+                        50.0,
+                        50.0,
+                        bounds,
+                        mediaId.toString());
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -280,13 +293,13 @@ class MediaControllerUnitTest {
             Pageable pageable = PageRequest.of(0, 10);
             Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
-            when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null, null))
+            when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null, null, null))
                     .thenReturn(mediaPage);
             when(responseMapper.entityToResponseModel(media))
                     .thenReturn(responseModel);
 
             ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null, null,
-                    null, null, null, null, null);
+                    null, null, null, null,  null,null);
 
             assertEquals(HttpStatus.OK, response.getStatusCode());
             Page<?> body = (Page<?>) response.getBody();
@@ -299,16 +312,44 @@ class MediaControllerUnitTest {
                 Pageable pageable = PageRequest.of(0, 10);
                 Page<Media> emptyPage = Page.empty();
 
-                when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch",  null,null, null, null, null, null, null, null))
+                when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch",  null,null, null, null, null, null, null, null, null))
                                 .thenReturn(emptyPage);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null,null, null,
-                                null, null, null, null, null);
+                                null, null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
                 assertTrue(body.isEmpty());
         }
+
+    @Test
+    void getAllFilteredActiveMedia_BusinessIdOnly_ShouldFilter() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null,
+                businessId,
+                null, null, null,
+                null, null, null,
+                null, null
+        )).thenReturn(mediaPage);
+
+        when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
+
+        ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                pageable,
+                null,
+                businessId,
+                null, null, null,
+                null, null, null,
+                null, null
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
 
         @Test
         void getAllFilteredActiveMedia_MinPriceNegative_ShouldThrowException() {
@@ -318,6 +359,7 @@ class MediaControllerUnitTest {
                     null,
                     null,
                     BigDecimal.valueOf(-1),
+                    null,
                     null,
                     null,
                     null,
@@ -343,6 +385,7 @@ class MediaControllerUnitTest {
                         null,
                         null,
                         null,
+                        null,
                         null);
                 });
 
@@ -359,6 +402,7 @@ class MediaControllerUnitTest {
                     null,
                     BigDecimal.valueOf(50),
                     BigDecimal.valueOf(10),
+                    null,
                     null,
                     null,
                     null,
@@ -383,12 +427,90 @@ class MediaControllerUnitTest {
                         null,
                         null,
                         null,
+                        null,
                         null);
                 });
 
                 assertEquals("minDailyImpressions must be non-negative.", exception.getMessage());
                 verifyNoInteractions(mediaService);
         }
+
+    @Test
+    void getAllFilteredActiveMedia_SpecialSortOnly_ShouldPassThrough() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null, null,
+                "nearest",
+                50.0, 50.0,
+                null, null
+        )).thenReturn(mediaPage);
+
+        when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
+
+        ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null, null,
+                "nearest",
+                50.0, 50.0,
+                null, null
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+        @Test
+        void getAllFilteredActiveMedia_BoundsNotFour_ShouldThrowException() {
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                mediaController.getAllFilteredActiveMedia(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        invalidBounds,
+                        null);
+            });
+
+            assertEquals("bounds must have a length of exactly 4.", exception.getMessage());
+            verifyNoInteractions(mediaService);
+        }
+
+    @Test
+    void getAllFilteredActiveMedia_ExcludedIdOnly_ShouldFilter() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null, null,
+                null, null, null,
+                null, mediaId.toString()
+        )).thenReturn(mediaPage);
+
+        when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
+
+        ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null, null,
+                null, null, null,
+                null, mediaId.toString()
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(mediaService).getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null, null,
+                null, null, null,
+                null, mediaId.toString()
+        );
+    }
 
         @Test
         void getMediaById_WhenFound_ShouldReturnMedia() {

@@ -5,7 +5,6 @@ import { getJoinedAddress, MediaLocation } from "@/entities/media";
 import { useEffect, useState } from "react";
 import { getOrganizationById } from "@/features/organization-management/api";
 import { useMediaQuery } from "@mantine/hooks";
-import { isMobileView } from "../../../tests/support/utils/viewUtils";
 
 export interface MediaCardProps {
     index: string;
@@ -70,7 +69,10 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
     
 
     return (
-        <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never" >
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never"
+            style={{scrollMarginTop: "2vh"}}
+        
+        >
             <Paper 
                 shadow="sm"
                 radius="md"
@@ -88,7 +90,7 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
                     </AspectRatio>
                     <Stack gap="5px" p="10px">
                         <Stack gap="2px">
-                            <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} >
+                            <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} className={styles.mediaTitle} >
                                 {title}
                             </Text>
                             <Text id={"MediaCardOwnerName" + index} size="sm" color="gray" lineClamp={1}>
