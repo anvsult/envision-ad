@@ -42,6 +42,10 @@ export const routing = defineRouting({
       'en': '/dashboard/media-owner/proof',
       'fr': '/tableau-de-bord/media-owner/preuve'
     },
+    '/dashboard/media-owner/ad-requests': {
+      'en': '/dashboard/media-owner/ad-requests',
+      'fr': '/tableau-de-bord/media-owner/demandes-publicitaires'
+    },
 
     //advertiser dashboard
     '/dashboard/advertiser/metrics': {
@@ -55,6 +59,10 @@ export const routing = defineRouting({
     '/dashboard/advertiser/campaigns': {
       'en': '/dashboard/advertiser/campaigns',
       'fr': '/tableau-de-bord/annonceur/campagnes'
+    },
+    '/dashboard/advertiser/advertisements': {
+      'en': '/dashboard/advertiser/advertisements',
+      'fr': '/tableau-de-bord/annonceur/publicites'
     },
 
     // admin dashboard

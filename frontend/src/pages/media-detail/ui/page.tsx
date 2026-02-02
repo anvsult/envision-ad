@@ -1,36 +1,39 @@
 "use client";
 
 import {
-  Container,
-  Group,
+  ActionIcon,
+  Anchor,
+  AspectRatio,
   Button,
+  Card,
+  Center,
+  Container,
+  Divider,
+  Group,
+  Image,
+  Loader,
+  Modal,
+  SimpleGrid,
+  Stack,
   Text,
   Title,
-  Stack,
-  Card,
-  Divider,
-  Loader,
-  Center,
-  SimpleGrid,
-  Modal,
-  Image,
-  AspectRatio,
-  Anchor,
-  ActionIcon, Box, Tooltip,
+  Box,
+  Tooltip,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
-import { BackButton } from "@/widgets/BackButton";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
-import { getMediaById, SpecialSort } from "@/features/media-management/api";
-import { getMediaReservations } from "@/features/reservation-management/api";
+import {IconAlertCircle, IconArrowLeft} from "@tabler/icons-react";
+import {BackButton} from "@/widgets/BackButton";
+import {useParams} from "next/navigation";
+import {useEffect, useMemo, useState} from "react";
+import {getMediaById, SpecialSort} from "@/features/media-management/api";
+import {getMediaReservations} from "@/features/reservation-management/api";
 import {useLocale, useTranslations} from "next-intl";
-import { getJoinedAddress, Media } from "@/entities/media";
-import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
-import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
-import { FilteredActiveMediaProps } from "@/entities/media/model/media";
-import { getOrganizationById } from "@/features/organization-management/api";
-import { LatLngLiteral } from "leaflet";
+import {getJoinedAddress, Media} from "@/entities/media";
+import {ReserveMediaModal} from "@/widgets/Media/Modals/ReserveMediaModal";
+import {MediaCardCarouselLoader} from "@/widgets/Carousel/CardCarousel";
+import {FilteredActiveMediaProps} from "@/entities/media/model/media";
+import {getOrganizationById} from "@/features/organization-management/api";
+import {LatLngLiteral} from "leaflet";
+import {ReservationStatus} from "@/entities/reservation";
 import {usePermissions} from "@/app/providers";
 import {useUser} from "@auth0/nextjs-auth0/client";
 
@@ -83,7 +86,7 @@ export default function MediaDetailsPage() {
           // Count unique campaign IDs from active reservations
           const uniqueCampaigns = new Set(
             reservations
-              .filter(r => r.status === "ACTIVE" || r.status === "PENDING")
+              .filter(r => r.status === ReservationStatus.CONFIRMED)
               .map(r => r.campaignId)
           );
           setActiveAdsCount(uniqueCampaigns.size);

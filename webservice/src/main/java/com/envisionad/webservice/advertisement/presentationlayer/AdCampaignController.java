@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/businesses/{businessId}/campaigns")
-@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
+@RequestMapping("api/v1/")
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class AdCampaignController {
     private final AdCampaignService adCampaignService;
 
@@ -24,25 +24,31 @@ public class AdCampaignController {
         this.adCampaignService = adCampaignService;
     }
 
-    @GetMapping()
+    @GetMapping("businesses/{businessId}/campaigns")
     @PreAuthorize("hasAuthority('readAll:campaign')")
     public ResponseEntity<List<AdCampaignResponseModel>> getAllBusinessCampaigns(@PathVariable String businessId) {
         return ResponseEntity.ok(adCampaignService.getAllAdCampaignsByBusinessId(businessId));
     }
 
-    @PostMapping()
+    @GetMapping("campaigns/{campaignId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<AdCampaignResponseModel> getAdCampaignByCampaignId(@PathVariable String campaignId) {
+        return ResponseEntity.ok(adCampaignService.getAdCampaignByCampaignId(campaignId));
+    }
+
+    @PostMapping("businesses/{businessId}/campaigns")
     @PreAuthorize("hasAuthority('create:campaign')")
     public ResponseEntity<AdCampaignResponseModel> createAdCampaign(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String businessId,
-            @RequestBody AdCampaignRequestModel adCampaignRequestModel) {
-        AdCampaignResponseModel newCampaign = adCampaignService.createAdCampaign(jwt, businessId,
-                adCampaignRequestModel);
+            @RequestBody AdCampaignRequestModel adCampaignRequestModel
+            ) {
+        AdCampaignResponseModel newCampaign = adCampaignService.createAdCampaign(jwt, businessId, adCampaignRequestModel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newCampaign);
     }
 
-    @PostMapping("/{campaignId}/ads")
+    @PostMapping("businesses/{businessId}/campaigns/{campaignId}/ads")
     @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> addAdToCampaign(
             @PathVariable String campaignId,
@@ -53,7 +59,7 @@ public class AdCampaignController {
 
     }
 
-    @DeleteMapping("/{campaignId}/ads/{adId}")
+    @DeleteMapping("businesses/{businessId}/campaigns/{campaignId}/ads/{adId}")
     @PreAuthorize("hasAuthority('update:campaign')")
     public ResponseEntity<AdResponseModel> deleteAdFromCampaign(
             @PathVariable String campaignId,
@@ -63,7 +69,7 @@ public class AdCampaignController {
         return ResponseEntity.ok(deletedAd);
     }
 
-    @GetMapping("/active-count")
+    @GetMapping("businesses/{businessId}/campaigns/active-count")
     @PreAuthorize("hasAuthority('readAll:campaign')")
     public ResponseEntity<Integer> getActiveCampaignCount(@PathVariable String businessId) {
         return ResponseEntity.ok(adCampaignService.getActiveCampaignCount(businessId));

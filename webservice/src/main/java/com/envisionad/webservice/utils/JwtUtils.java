@@ -16,7 +16,7 @@ public class JwtUtils {
     }
 
     public String extractUserId(Jwt jwt) {
-        String userId = jwt.getClaim("sub");
+        String userId = jwt.getSubject();
         if (userId == null || userId.isEmpty()) {
             throw new AccessDeniedException("Invalid token");
         }
@@ -24,6 +24,13 @@ public class JwtUtils {
     }
 
     public void validateUserIsEmployeeOfBusiness(String userId, String businessId) {
+        boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
+        if (!isEmployee)
+            throw new AccessDeniedException("Access Denied");
+    }
+
+    public void validateUserIsEmployeeOfBusiness(Jwt jwt, String businessId) {
+        String userId = extractUserId(jwt);
         boolean isEmployee = employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId);
         if (!isEmployee)
             throw new AccessDeniedException("Access Denied");

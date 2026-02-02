@@ -5,7 +5,12 @@ import {
     IconDeviceTv,
     IconLayoutDashboard,
     IconUsers,
-    IconShieldCheck, IconDiscountCheck, IconChartDots, IconFileDescription
+    IconShieldCheck,
+    IconDiscountCheck,
+    IconChartDots,
+    IconFileDescription,
+    IconInbox,
+    IconSpeakerphone,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";
@@ -35,20 +40,31 @@ export default function SideBar() {
                 leftSection={<IconFileDescription size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/media-owner/proof")}
             />
+        ),
+        (permissions.includes("update:reservation")) && (
+            <NavLink
+                key="requests"
+                component={Link}
+                href="/dashboard/media-owner/ad-requests"
+                label={t("media-owner.adRequests")}
+                leftSection={<IconInbox size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/media-owner/ad-requests")}
+            />
         )
     ].filter(Boolean);
 
     const advertiserNavItems = [
-        (permissions.includes('read:campaign') && (
-            <>
-                <NavLink
-                    key="metricOverview"
-                    component={Link}
-                    href="/dashboard/advertiser/metrics"
-                    label={t("advertiser.metricOverview")}
-                    leftSection={<IconChartDots size={20} stroke={1.5} />}
-                    active={pathname === "/dashboard/advertiser/metrics"}
-                />
+        (permissions.includes('read:campaign')) && (
+            <NavLink
+                key="metricOverview"
+                component={Link}
+                href="/dashboard/advertiser/metrics"
+                label={t("advertiser.metricOverview")}
+                leftSection={<IconChartDots size={20} stroke={1.5} />}
+                active={pathname === "/dashboard/advertiser/metrics"}
+            />
+        ),
+        (permissions.includes('read:campaign')) && (
                 <NavLink
                     key="campaigns"
                     component={Link}
@@ -57,8 +73,17 @@ export default function SideBar() {
                     leftSection={<IconAd size={20} stroke={1.5} />}
                     active={pathname?.endsWith("/advertiser/campaigns")}
                 />
-            </>
-        ))
+        ),
+        (permissions.includes('readAll:reservation')) && (
+            <NavLink
+                key="advertisements"
+                component={Link}
+                href="/dashboard/advertiser/advertisements"
+                label={t("advertiser.advertisements")}
+                leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/advertisements")}
+            />
+        )
     ].filter(Boolean);
 
     const adminNavItems = [

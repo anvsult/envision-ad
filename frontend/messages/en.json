@@ -48,6 +48,7 @@
       "overview": "Overview",
       "metricOverview": "Metrics",
       "adRequests": "Ad requests",
+      "advertisements": "Advertisements",
       "myAds": "My Campaigns",
       "graphs": {
         "totalAdSpend": "Total Ad Spend",
@@ -653,6 +654,109 @@
       "fileRequired": "File is required"
     }
   },
+  "adRequests": {
+    "page": {
+      "title": "Ad Requests",
+      "requestCount": {
+        "singular": "pending request",
+        "plural": "pending requests"
+      },
+      "noRequests": "You have no pending ad requests.",
+      "pending": "Pending",
+      "unknownCampaign": "Unknown Campaign name"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Error",
+        "message": "Failed to load ad requests"
+      },
+      "approve": {
+        "success": {
+          "title": "Approved",
+          "message": "Ad request has been approved successfully"
+        }
+      },
+      "deny": {
+        "success": {
+          "title": "Denied",
+          "message": "Ad request has been denied"
+        }
+      },
+      "updateFailed": {
+        "title": "Error",
+        "message": "Failed to update ad request status"
+      }
+    },
+    "detail": {
+      "errorTitle": "Error",
+      "errorNotFound": "Ad request not found",
+      "reviewUnavailable": "Review Unavailable",
+      "alreadyActioned": "This request has already been {status}",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "duration": "Duration",
+      "oneWeek": "1 week",
+      "weeks": "{count} weeks",
+      "totalPrice": "Total Price",
+      "approve": "Approve",
+      "deny": "Deny",
+      "cancel": "Cancel",
+      "confirmApproveTitle": "Approve Ad Request",
+      "confirmApproveText": "Are you sure you want to approve this ad request?",
+      "confirmApprove": "Approve",
+      "confirmDenyTitle": "Deny Ad Request",
+      "confirmDenyText": "Are you sure you want to deny this ad request?",
+      "confirmDeny": "Deny"
+    }
+  },
+  "advertiserReservations": {
+    "page": {
+      "title": "Advertisements",
+      "reservationCount": {
+        "singular": "reservation",
+        "plural": "reservations"
+      }
+    },
+    "tabs": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "confirmed": "Confirmed",
+      "denied": "Denied"
+    },
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "confirmed": "Confirmed",
+      "denied": "Denied"
+    },
+    "noReservations": "No reservations found for this status.",
+    "payButton": "Pay",
+    "payment": {
+      "title": "Complete Payment",
+      "reviewTitle": "Review Your Reservation",
+      "campaign": "Campaign",
+      "dates": "Dates",
+      "totalCost": "Total Cost",
+      "cancel": "Cancel",
+      "proceedToPay": "Proceed to Payment",
+      "errorTitle": "Payment Error",
+      "initFailed": "Failed to initialize payment. Please try again.",
+      "missingKey": "Payment configuration error. Please contact support.",
+      "successTitle": "Payment Successful!",
+      "successMessage": "Your payment has been processed successfully. The reservation is now confirmed.",
+      "done": "Done"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Error",
+        "message": "Failed to load reservations"
+      },
+      "paymentSuccess": {
+        "title": "Payment Complete",
+        "message": "Your reservation has been confirmed successfully"
+      }
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "My Campaigns",
@@ -833,7 +937,7 @@
       "selectCampaign": "Please select a campaign to proceed",
       "selectDate": "Please select a valid start and end date",
       "missingPaymentInfo": "Missing required payment information",
-      "paymentInitFailed": "Failed to initialize payment",
+      "reservationFailed": "Reservation failed. Please try again later.",
       "paymentRequired": "Payment must be completed first"
     },
     "errorTitle": "Error",
@@ -853,6 +957,7 @@
     "nextStepButton": "Next step",
     "confirmPayButton": "Confirm & Pay",
     "reviewTitle": "Review Reservation",
+    "confirmButton": "Confirm Reservation",
     "dateSelection": {
       "selected": "Selected: {start} to {end} ({weeks} weeks)"
     },

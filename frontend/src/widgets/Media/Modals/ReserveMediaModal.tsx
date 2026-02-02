@@ -16,10 +16,9 @@ import {
     ThemeIcon,
     Title,
     Input,
-    Loader
 } from '@mantine/core';
 import { DatePicker, type DatesRangeValue } from '@mantine/dates';
-import {IconCheck, IconCalendar, IconCreditCard, IconEye} from '@tabler/icons-react';
+import {IconCheck, IconCalendar, IconEye} from '@tabler/icons-react';
 import { notifications } from "@mantine/notifications";
 import { Media } from "@/entities/media";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
@@ -31,15 +30,7 @@ import { useLocale, useTranslations } from "next-intl";
 import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
-import {EmbeddedCheckout, EmbeddedCheckoutProvider} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
-import {createPaymentIntent} from "@/features/payment";
 import {AdPreviewCarousel} from "@/widgets/Media/Modals/preview-step/AdPreviewCarousel";
-
-// Only initialize Stripe if the publishable key is present
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-    ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-    : null;
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -59,11 +50,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     const isSmallScreen = useMediaQuery('(max-width: 720px)');
     const locale = useLocale();
     const { user } = useUser();
-
-    // Payment states
-    const [clientSecret, setClientSecret] = useState<string | null>(null);
-
-    const missingKey = !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
     useEffect(() => {
         if (!user?.sub) return;
@@ -165,22 +151,12 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 return;
             }
 
-            if (!media.id || !media.businessId || !selectedCampaignId) {
-                notifications.show({
-                    title: t('errorTitle'),
-                    message: t('errors.missingPaymentInfo'),
-                    color: 'red'
-                });
-                return;
-            }
-
-            // Move to review step
             setErrors({});
             setActiveStep(1);
             return;
         }
 
-        // Step 1: Review -> Step 2: Payment (create checkout session)
+        // Step 1: Review -> Submit reservation
         if (activeStep === 1) {
             if (!media.id || !selectedCampaignId || !dateRange[0] || !dateRange[1]) {
                 notifications.show({
@@ -193,41 +169,20 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
             setLoading(true);
             try {
-                // 1. Create a pending reservation
                 const reservationPayload = {
                     campaignId: selectedCampaignId,
                     startDate: dayjs(dateRange[0]).startOf('day').format('YYYY-MM-DDTHH:mm:ss'),
                     endDate: dayjs(dateRange[1]).endOf('day').format('YYYY-MM-DDTHH:mm:ss'),
                 };
-                const reservation = await createReservation(media.id, reservationPayload);
+                await createReservation(media.id, reservationPayload);
 
-                // 2. Create a payment intent with the new reservation ID
-                const paymentIntentPayload = {
-                    mediaId: media.id,
-                    campaignId: selectedCampaignId,
-                    startDate: dayjs(dateRange[0]),
-                    endDate: dayjs(dateRange[1]),
-                    reservationId: reservation.reservationId, // Pass reservationId to payment intent
-                };
-                const data = await createPaymentIntent(paymentIntentPayload);
-
-
-                // Set client secret for embedded checkout
-                if (data.clientSecret) {
-                    setClientSecret(data.clientSecret);
-                    setActiveStep(2);
-                } else {
-                    notifications.show({
-                        title: t('errorTitle'),
-                        message: t('errors.paymentInitFailed'),
-                        color: 'red'
-                    });
-                }
+                // Move to success screen
+                setActiveStep(2);
             } catch (error) {
-                console.error('Payment init error:', error);
+                console.error('Reservation error:', error);
                 notifications.show({
                     title: t('errorTitle'),
-                    message: t('errors.paymentInitFailed'),
+                    message: t('errors.reservationFailed'),
                     color: 'red'
                 });
             } finally {
@@ -239,15 +194,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
     const prevStep = () => setActiveStep((current) => (current > 0 ? current - 1 : current));
 
-    /**
-     * Create the reservation after payment is confirmed.
-     * This is called ONCE after Stripe confirms payment completion.
-     */
-
-
     function billingWeeks(start: Dayjs, end: Dayjs): number {
         if (end.isBefore(start)) {
-            // swap so calculation still works if dates are reversed
             [start, end] = [end, start];
         }
         const totalDays = end.diff(start, 'day');
@@ -256,8 +204,8 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
     /**
      * Calculate total cost for UI display only.
-     * NOTE: The actual payment amount is calculated and validated on the backend for security.
-     * This is just an estimate for the user to see what they'll pay.
+     * NOTE: The actual amount is calculated and validated on the backend for security.
+     * This is just an estimate for the user to see.
      *
      * @returns Estimated total cost in dollars
      */
@@ -287,13 +235,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
      */
     const handleModalClose = () => {
         onClose();
-        // Small delay to let the modal close animation complete
         setTimeout(() => {
             setActiveStep(0);
             setDateRange([null, null]);
             setSelectedCampaignId(null);
             setErrors({});
-            setClientSecret(null);
         }, 200);
     };
 
@@ -305,17 +251,15 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
             title={<Text fw={700}>{t('title', { title: media.title })}</Text>}
             centered
             padding="xl"
-            closeOnClickOutside={activeStep !== 3}
+            closeOnClickOutside={activeStep !== 2}
         >
             <Stack gap="xl" p="md">
 
                 <Stepper active={activeStep} onStepClick={(step) => {
-                    // Only allow going back, not forward
                     if (step < activeStep) setActiveStep(step);
                 }} allowNextStepsSelect={false}>
-                    <Stepper.Step  icon={<IconCalendar size={18} />} />
-                    <Stepper.Step  icon={<IconEye size={18} />} />
-                    <Stepper.Step  icon={<IconCreditCard size={18} />} />
+                    <Stepper.Step icon={<IconCalendar size={18} />} />
+                    <Stepper.Step icon={<IconEye size={18} />} />
 
                     <Stepper.Completed>
                         <Center py="xl">
@@ -339,11 +283,11 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     </Stepper.Completed>
                 </Stepper>
 
-                {activeStep < 3 && (
+                {activeStep < 2 && (
                     <>
                         <Divider />
                         <Box style={{ minHeight: 300 }}>
-                            {/* Step 1: Campaign & Dates */}
+                            {/* Step 0: Campaign & Dates */}
                             {activeStep === 0 && (
                                 <Stack align="center">
                                     <Select
@@ -398,7 +342,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                 </Stack>
                             )}
 
-                            {/* Step 2: Review & Confirm */}
+                            {/* Step 1: Review & Confirm */}
                             {activeStep === 1 && (
                                 <Stack align="center" gap="md">
                                     <Text size="xl" fw={600}>{t('reviewTitle')}</Text>
@@ -428,50 +372,25 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-
                                                 {formatCurrency(calculateTotalCost())}
                                             </Text>
                                         </Group>
                                     </Paper>
                                 </Stack>
                             )}
-
-                            {/* Step 3: Embedded Stripe Checkout */}
-                            {activeStep === 2 && clientSecret && (
-                                missingKey ? (
-                                    <Text c="red">{t('errors.missingPaymentInfo')}</Text>
-                                ) : stripePromise ? (
-                                    <EmbeddedCheckoutProvider
-                                        stripe={stripePromise}
-                                        options={{
-                                            clientSecret,
-                                            onComplete: () => {
-                                                console.log('Payment completed, moving to success screen...');
-                                                setActiveStep(3);
-                                            }
-                                        }}
-                                    >
-                                        <EmbeddedCheckout />
-                                    </EmbeddedCheckoutProvider>
-                                ) : (
-                                    <Center><Loader/></Center>
-                                )
-                            )}
                         </Box>
                     </>
                 )}
 
-                {activeStep < 3 && (
+                {activeStep < 2 && (
                     <Group justify="center">
                         <Button variant="default" onClick={activeStep === 0 ? handleModalClose : prevStep}>
                             {activeStep === 0 ? t('cancelButton') : t('backButton')}
                         </Button>
 
-                        {activeStep <= 1 && (
-                            <Button onClick={nextStep} loading={loading}>
-                                {t('nextStepButton')}
-                            </Button>
-                        )}
+                        <Button onClick={nextStep} loading={loading}>
+                            {activeStep === 0 ? t('nextStepButton') : t('confirmButton')}
+                        </Button>
                     </Group>
                 )}
             </Stack>

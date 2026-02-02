@@ -112,8 +112,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), businessId))
             throw new DuplicateBusinessNameException();
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         Business newBusiness = businessMapper.toEntity(businessRequestModel);
         newBusiness.setId(existingBusiness.getId());
@@ -153,8 +152,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (business == null)
             throw new BusinessNotFoundException();
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         if (business.isVerified())
             throw new BusinessAlreadyVerifiedException();
@@ -171,8 +169,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public List<VerificationResponseModel> getAllVerificationsByBusinessId(Jwt jwt, String businessId) {
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         return verificationRepository.findAllByBusinessId_BusinessId(businessId).stream().map(verificationMapper::toResponse).toList();
     }
@@ -188,8 +185,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (business == null)
             throw new BusinessNotFoundException();
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         Invitation invitation =  invitationMapper.toEntity(invitationRequest);
 
@@ -213,8 +209,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         Invitation invitation = invitationRepository.findByInvitationId_InvitationId(invitationId);
 
@@ -229,8 +224,7 @@ public class BusinessServiceImpl implements BusinessService {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
             throw new BusinessNotFoundException();
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         return employeeRepository.findAllByBusinessId_BusinessId(businessId)
                 .stream()
@@ -297,8 +291,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
 
-        String userId = jwtUtils.extractUserId(jwt);
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         Employee employee = employees.stream().filter(e -> e.getEmployeeId().getEmployeeId().equals(employeeId)).findFirst().orElse(null);
 

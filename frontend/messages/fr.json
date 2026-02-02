@@ -47,7 +47,8 @@
     "advertiser": {
       "overview": "Aperçu",
       "metricOverview": "Métriques",
-      "adRequests": "Demandes d'annonce",
+      "adRequests": "demandes publicitaires",
+      "advertisements": "Publicités",
       "myAds": "Mes Campagnes",
       "graphs": {
         "totalAdSpend": "Dépenses publicitaires totales",
@@ -694,6 +695,109 @@
       "fileRequired": "Le fichier est requis"
     }
   },
+  "adRequests": {
+    "page": {
+      "title": "Demandes de publicité",
+      "requestCount": {
+        "singular": "demande en attente",
+        "plural": "demandes en attente"
+      },
+      "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
+      "pending": "En attente",
+      "unknownCampaign": "Nom de campagne inconnue"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Impossible de charger les demandes de publicité"
+      },
+      "approve": {
+        "success": {
+          "title": "Approuvée",
+          "message": "La demande de publicité a été approuvée avec succès"
+        }
+      },
+      "deny": {
+        "success": {
+          "title": "Refusée",
+          "message": "La demande de publicité a été refusée"
+        }
+      },
+      "updateFailed": {
+        "title": "Erreur",
+        "message": "Impossible de mettre à jour le statut de la demande"
+      }
+    },
+    "detail": {
+      "errorTitle": "Erreur",
+      "errorNotFound": "Demande de publicité introuvable",
+      "reviewUnavailable": "Révision non disponible",
+      "alreadyActioned": "Cette demande a déjà été {status}",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "duration": "Durée",
+      "oneWeek": "1 semaine",
+      "weeks": "{count} semaines",
+      "totalPrice": "Prix total",
+      "approve": "Approuver",
+      "deny": "Refuser",
+      "cancel": "Annuler",
+      "confirmApproveTitle": "Approuver la demande",
+      "confirmApproveText": "Êtes-vous sûr de vouloir approuver cette demande de publicité ?",
+      "confirmApprove": "Approuver",
+      "confirmDenyTitle": "Refuser la demande",
+      "confirmDenyText": "Êtes-vous sûr de vouloir refuser cette demande de publicité ?",
+      "confirmDeny": "Refuser"
+    }
+  },
+  "advertiserReservations": {
+    "page": {
+      "title": "Publicités",
+      "reservationCount": {
+        "singular": "réservation",
+        "plural": "réservations"
+      }
+    },
+    "tabs": {
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "confirmed": "Confirmées",
+      "denied": "Refusées"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "confirmed": "Confirmée",
+      "denied": "Refusée"
+    },
+    "noReservations": "Aucune réservation trouvée pour ce statut.",
+    "payButton": "Payer",
+    "payment": {
+      "title": "Compléter le paiement",
+      "reviewTitle": "Vérifier votre réservation",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total",
+      "cancel": "Annuler",
+      "proceedToPay": "Procéder au paiement",
+      "errorTitle": "Erreur de paiement",
+      "initFailed": "Échec de l'initialisation du paiement. Veuillez réessayer.",
+      "missingKey": "Erreur de configuration du paiement. Veuillez contacter le support.",
+      "successTitle": "Paiement réussi !",
+      "successMessage": "Votre paiement a été traité avec succès. La réservation est maintenant confirmée.",
+      "done": "Terminé"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Échec du chargement des réservations"
+      },
+      "paymentSuccess": {
+        "title": "Paiement terminé",
+        "message": "Votre réservation a été confirmée avec succès"
+      }
+    }
+  },
   "adCampaigns": {
     "page": {
       "title": "Mes campagnes",
@@ -834,7 +938,7 @@
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
       "selectDate": "Veuillez sélectionner une date de début et de fin valides",
       "missingPaymentInfo": "Informations de paiement requises manquantes",
-      "paymentInitFailed": "Échec de l'initialisation du paiement",
+      "reservationFailed": "Échec de la réservation. Veuillez réessayer plus tard.",
       "paymentRequired": "Le paiement doit être complété en premier"
     },
     "errorTitle": "Erreur de réservation",
@@ -854,6 +958,7 @@
     "nextStepButton": "Étape suivante",
     "confirmPayButton": "Confirmer & Payer",
     "reviewTitle": "Vérifier la réservation",
+    "confirmButton": "Confirmer la réservation",
     "dateSelection": {
       "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
     },
