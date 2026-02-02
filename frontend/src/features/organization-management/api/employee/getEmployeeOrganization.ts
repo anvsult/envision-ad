@@ -16,7 +16,7 @@ export const getEmployeeOrganization = async (id: string): Promise<OrganizationR
 };
 
 export const getEmployeeOrganizationServer = async (id: string, token: string): Promise<OrganizationResponseDTO | null> => {
-    const baseUrl = process.env.WEBSERVICE_API_URL || process.env.NEXT_PUBLIC_API_URL;
+    const baseUrl = process.env.DOCKER === "true" ? process.env.WEBSERVICE_API_URL : process.env.NEXT_PUBLIC_API_URL;
     const response = await fetch(
         `${baseUrl}/businesses/employee/${encodeURIComponent(id)}`,
         {

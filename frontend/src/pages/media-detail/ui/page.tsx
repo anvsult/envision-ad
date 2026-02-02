@@ -17,6 +17,8 @@ import {
   Stack,
   Text,
   Title,
+  Box,
+  Tooltip,
 } from "@mantine/core";
 import {IconAlertCircle, IconArrowLeft} from "@tabler/icons-react";
 import {BackButton} from "@/widgets/BackButton";
@@ -32,6 +34,8 @@ import {FilteredActiveMediaProps} from "@/entities/media/model/media";
 import {getOrganizationById} from "@/features/organization-management/api";
 import {LatLngLiteral} from "leaflet";
 import {ReservationStatus} from "@/entities/reservation";
+import {usePermissions} from "@/app/providers";
+import {useUser} from "@auth0/nextjs-auth0/client";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -63,6 +67,8 @@ export default function MediaDetailsPage() {
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [activeAdsCount, setActiveAdsCount] = useState<number>(0);
+  const user = useUser();
+  const { permissions } = usePermissions();
 
   useEffect(() => {
     if (!id) return;
@@ -375,9 +381,23 @@ export default function MediaDetailsPage() {
                   <Text fw={600} size="xl" td="underline">
                     {priceLabel}
                   </Text>
-                  <Button radius="xl" fullWidth onClick={() => setReserveModalOpen(true)}>
-                    {t("reserveButton")}
-                  </Button>
+                  <Tooltip
+                      label={!user.user ? t("loginRequired") : t("noPermission")}
+                      disabled={!!user.user && permissions.includes("create:reservation")}
+                      position="top"
+                      withArrow
+                  >
+                    <Box w="100%">
+                      <Button
+                          radius="xl"
+                          fullWidth
+                          onClick={() => setReserveModalOpen(true)}
+                          disabled={!user.user || !permissions.includes("create:reservation")}
+                      >
+                        {t("reserveButton")}
+                      </Button>
+                    </Box>
+                  </Tooltip>
                   <Text size="xs" c="dimmed">
                     {t("reserveNote")}
                   </Text>

@@ -144,6 +144,8 @@
       "POSTER": "Poster",
       "DIGITAL": "Digital"
     },
+    "loginRequired": "Please login first to reserve this media.",
+    "noPermission": "You don't have the permission to reserve this media.",
     "errorTitle": "Could not load this media.",
     "errorNotFound": "Media not found.",
     "errorLoading": "Failed to load media details.",
