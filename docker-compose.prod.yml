@@ -26,6 +26,7 @@ services:
     environment:
       NODE_OPTIONS: "--max-old-space-size=3072"
       NODE_ENV: "production"
+      DOCKER: "true"
       NEXT_TELEMETRY_DISABLED: "1"
       APP_BASE_URL: "${APP_BASE_URL}"
       WEBSERVICE_API_URL: "${WEBSERVICE_API_URL}"
