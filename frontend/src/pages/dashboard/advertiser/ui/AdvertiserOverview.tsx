@@ -140,17 +140,7 @@ export function AdvertiserOverview() {
                         });
                     }
 
-                    // Process Earnings (Incoming Payouts) -> MERGE INTO SPEND
-                    if (data.payouts && Array.isArray(data.payouts)) {
-                        data.payouts.forEach((payout: Payout) => {
-                            // Payouts (BalanceTransactions) also have 'created' and 'amount'
-                            const date = new Date(payout.created * 1000);
-                            const dateKey = getDateKey(date, timeRange);
-                            if (!paymentsByDate[dateKey]) paymentsByDate[dateKey] = { spend: 0 };
-                            paymentsByDate[dateKey].spend += payout.amount; // Treating Earnings as Spend
-                            calculatedTotal += payout.amount;
-                        });
-                    }
+
 
 
 
@@ -183,7 +173,7 @@ export function AdvertiserOverview() {
                     // Fill template with real data
                     const filledData = templateData.map(item => ({
                         ...item,
-                        Spend: (paymentsByDate[item.date]?.spend || 0) / 100, // Convert cents to dollars
+                        Spend: (paymentsByDate[item.date]?.spend || 0), // Already in dollars (BigDecimal from backend)
                     }));
 
                     setChartData(filledData);
@@ -212,7 +202,7 @@ export function AdvertiserOverview() {
     const stats = [
         {
             title: t("graphs.totalAdSpend"),
-            value: `C$${(totalSpend / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            value: `C$${(totalSpend).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             diff: 0, // No diff logic for now
             period: getComparisonLabel(),
             icon: IconCoin,
@@ -259,15 +249,12 @@ export function AdvertiserOverview() {
 
                     <Group align="flex-end" gap="xs" mt={25}>
                         <Text className="text-4xl font-bold">{stat.value}</Text>
-                        <Text c={diffColor} fw={700} size="sm" className="flex items-center">
-                            <span>{stat.diff}%</span>
-                            <DiffIcon size="1rem" stroke={1.5} />
-                        </Text>
+
                     </Group>
 
-                    <Text size="xs" c="dimmed" mt={7}>
+                    {/* <Text size="xs" c="dimmed" mt={7}>
                         {stat.period}
-                    </Text>
+                    </Text> */}
                 </Paper>
             </Grid.Col>
         );

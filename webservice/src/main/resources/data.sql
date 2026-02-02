@@ -349,13 +349,13 @@ VALUES
     ('r1111111-1111-1111-1111-111111111111',
      '2026-02-01 00:00:00', '2026-02-28 23:59:59',
      'CONFIRMED', 2645.00,
-     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
      'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
      NULL),
     ('r2222222-2222-2222-2222-222222222222',
      '2026-03-01 00:00:00', '2026-03-31 23:59:59',
      'PENDING', 5100.00,
-     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
+     'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
      'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
      NULL)
 ON CONFLICT (reservation_id) DO NOTHING;

@@ -32,9 +32,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
-import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
-import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 
 @Slf4j
 @Service
@@ -372,9 +369,17 @@ public class StripeServiceImpl implements StripeService {
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
+        // SYNC: Check for pending payments that might have succeeded (since webhooks
+        // don't work locally)
+        syncPendingPayments(businessId);
+
         // Check if the business has a connected Stripe account (likely a Media Owner)
         Optional<StripeAccount> accountOpt = stripeAccountRepository.findByBusinessId(businessId);
         Map<String, Object> dashboard = new HashMap<>();
+
+        // SYNC: Check for pending payments
+        log.info("Checking for pending payments for advertiser: {}", businessId);
+        syncPendingPayments(businessId);
 
         // 1. Determine Date Range
         LocalDateTime startDate = calculateStartDate(period);
@@ -423,26 +428,34 @@ public class StripeServiceImpl implements StripeService {
         dashboard.put("estimatedImpressions", totalImpressions);
 
         // 3. Always calculate Advertiser Spend (Outgoing Payments)
-        List<PaymentIntent> advertiserPayments = paymentIntentRepository
-                .findSuccessfulPaymentsByAdvertiserIdAndDateRange(
-                        businessId,
-                        startDate,
-                        LocalDateTime.now());
+        // 3. Always calculate Advertiser Spend (Outgoing Payments)
+        // REPLACEMENT: Use Reservations instead of PaymentIntents per user request
 
-        BigDecimal totalSpend = advertiserPayments.stream()
-                .map(PaymentIntent::getAmount)
+        // Filter reservations that "started" in this period (Booking Basis)
+        List<Reservation> newReservations = reservations.stream()
+                .filter(r -> !r.getStartDate().isBefore(startDate) && !r.getStartDate().isAfter(endDate))
+                .toList();
+
+        BigDecimal totalSpend = newReservations.stream()
+                .map(Reservation::getTotalPrice)
+                .filter(Objects::nonNull)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        List<Map<String, Object>> advertiserPaymentList = advertiserPayments.stream().map(p -> {
+        // Map to "payments" structure for frontend graph
+        List<Map<String, Object>> advertiserPaymentList = newReservations.stream().map(r -> {
             Map<String, Object> map = new HashMap<>();
-            map.put("amount", p.getAmount());
-            map.put("created", p.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond());
-            map.put("currency", p.getCurrency());
+            map.put("amount", r.getTotalPrice());
+            map.put("created", r.getStartDate().atZone(java.time.ZoneId.systemDefault()).toEpochSecond());
+            map.put("currency", "CAD"); // Default currency
             return map;
         }).toList();
 
         dashboard.put("totalSpend", totalSpend);
         dashboard.put("payments", advertiserPaymentList);
+
+        log.info("Dashboard data for {}: totalSpend={}, paymentCount={}", businessId, totalSpend,
+                advertiserPaymentList.size());
+
         // Default to not media owner unless found below
         dashboard.put("isMediaOwner", false);
 
@@ -495,7 +508,7 @@ public class StripeServiceImpl implements StripeService {
             dashboard.put("netEarnings", netEarnings);
             dashboard.put("platformFee", grossEarnings.subtract(netEarnings));
             dashboard.put("paymentCount", revenuePayments.size());
-            dashboard.put("advertiserPaymentCount", advertiserPayments.size());
+            dashboard.put("advertiserPaymentCount", newReservations.size());
             dashboard.put("isMediaOwner", true);
 
         }
@@ -529,4 +542,42 @@ public class StripeServiceImpl implements StripeService {
         };
     }
 
+    private void syncPendingPayments(String businessId) {
+        log.info("Starting syncPendingPayments for businessId: {}", businessId);
+        try {
+            List<PaymentIntent> pendingPayments = paymentIntentRepository.findPendingPaymentsByAdvertiserId(businessId);
+            log.info("Found {} pending payments for businessId: {}", pendingPayments.size(), businessId);
+
+            for (PaymentIntent p : pendingPayments) {
+                log.info("Checking Stripe session for payment: {}", p.getId());
+                if (p.getStripeSessionId() != null) {
+                    try {
+                        Session session = Session.retrieve(p.getStripeSessionId());
+                        log.info("Stripe session status for {}: {}", p.getStripeSessionId(), session.getStatus());
+
+                        if ("complete".equals(session.getStatus())) {
+                            p.setStatus(PaymentStatus.SUCCEEDED);
+                            // If we have the PI ID now, save it
+                            if (session.getPaymentIntent() != null) {
+                                p.setStripePaymentIntentId(session.getPaymentIntent());
+                            }
+                            paymentIntentRepository.save(p);
+                            log.info("Synced pending payment {} to SUCCEEDED", p.getId());
+                        } else if ("expired".equals(session.getStatus())) {
+                            p.setStatus(PaymentStatus.FAILED);
+                            paymentIntentRepository.save(p);
+                            log.info("Synced pending payment {} to FAILED", p.getId());
+                        }
+                    } catch (StripeException e) {
+                        log.warn("Failed to sync Stripe session {}: {}", p.getStripeSessionId(), e.getMessage());
+                    }
+                } else {
+                    log.warn("PaymentIntent {} has no Stripe Session ID", p.getId());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Error verifying pending payments for business {}: {}", businessId, e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

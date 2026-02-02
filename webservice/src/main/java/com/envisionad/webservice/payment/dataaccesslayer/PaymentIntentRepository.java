@@ -30,4 +30,9 @@ public interface PaymentIntentRepository extends JpaRepository<PaymentIntent, Lo
                         @Param("businessId") String businessId,
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate);
+
+        @Query("SELECT p FROM PaymentIntent p JOIN Reservation r ON p.reservationId = r.reservationId " +
+                        "WHERE r.advertiserId = :businessId " +
+                        "AND p.status = com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus.PENDING")
+        List<PaymentIntent> findPendingPaymentsByAdvertiserId(@Param("businessId") String businessId);
 }
