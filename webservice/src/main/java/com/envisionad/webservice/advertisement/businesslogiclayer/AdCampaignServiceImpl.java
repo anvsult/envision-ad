@@ -18,10 +18,13 @@ import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
+
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.time.LocalDateTime;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 
 @Service
 public class AdCampaignServiceImpl implements AdCampaignService {
@@ -32,8 +35,9 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     private final AdRequestMapper adRequestMapper;
     private final AdResponseMapper adResponseMapper;
     private final JwtUtils jwtUtils;
+    private final ReservationRepository reservationRepository;
 
-    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
+    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils, ReservationRepository reservationRepository) {
         this.businessRepository = businessRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignRequestMapper = adCampaignRequestMapper;
@@ -41,6 +45,7 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         this.adRequestMapper = adRequestMapper;
         this.adResponseMapper = adResponseMapper;
         this.jwtUtils = jwtUtils;
+        this.reservationRepository = reservationRepository;
     }
 
     @Override
@@ -50,7 +55,8 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     }
 
     @Override
-    public AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel) {
+    public AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId,
+            AdCampaignRequestModel adCampaignRequestModel) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
 
         if (business == null) {
@@ -83,7 +89,8 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     @Override
     public AdResponseModel addAdToCampaign(String campaignId, AdRequestModel adRequestModel) {
         AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
-        if (adCampaign == null) throw new AdCampaignNotFoundException(campaignId);
+        if (adCampaign == null)
+            throw new AdCampaignNotFoundException(campaignId);
 
         Ad newAd = adRequestMapper.requestModelToEntity(adRequestModel);
         newAd.setAdIdentifier(new AdIdentifier());
@@ -125,5 +132,10 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         adCampaignRepository.save(adCampaign);
 
         return adResponseMapper.entityToResponseModel(adToDelete);
+    }
+
+    @Override
+    public Integer getActiveCampaignCount(String businessId) {
+        return reservationRepository.countActiveCampaignsByAdvertiserId(businessId, LocalDateTime.now());
     }
 }

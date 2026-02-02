@@ -3,6 +3,16 @@
     "title": "Envision AD - Affordable Ads, Unforgettable Impact",
     "description": "Find affordable advertising spaces with visual impact. Browse available ad spaces and grow your organization."
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you are looking for does not exist.",
+    "back": "Back to home"
+  },
+  "forbidden": {
+    "title": "Forbidden",
+    "description": "You do not have permission to access this page.",
+    "back": "Back to home"
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -36,8 +46,30 @@
     "advertiserTitle": "Advertiser",
     "advertiser": {
       "overview": "Overview",
+      "metricOverview": "Metrics",
       "adRequests": "Ad requests",
-      "myAds": "My Campaigns"
+      "myAds": "My Campaigns",
+      "graphs": {
+        "totalAdSpend": "Total Ad Spend",
+        "activeCampaigns": "Active Campaigns",
+        "estimatedImpressions": "Estimated Impressions",
+        "averageCPM": "Average CPM",
+        "campaignPerformance": "Campaign Performance",
+        "mediaDistribution": "Media Distribution",
+        "comparedToLastWeek": "Compared to last week",
+        "comparedToLastMonth": "Compared to last month",
+        "comparedToLastYear": "Compared to last year",
+        "impressions": "Impressions",
+        "spent": "Spent",
+        "gym": "Gym",
+        "barbershop": "Barbershop",
+        "groceryStore": "Grocery Store"
+      },
+      "timeRanges": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
@@ -163,7 +195,7 @@
       "approve": "Media has been approved",
       "deny": "Media has been denied"
     },
-    "otherMediaBy":"Other medias from ",
+    "otherMediaBy": "Other medias from ",
     "errors": {
       "error": "Error",
       "approveFailed": "Media approval has failed",
@@ -261,14 +293,7 @@
         "stateRequired": "Organization state/Province is required.",
         "zipRequired": "Organization zip/postal code is required.",
         "countryRequired": "Organization country is required.",
-        "roleRequired": "At least one role is required.",
-        "updateFailed": "Failed to update organization details.",
-        "createFailed": "Failed to create organization."
-      },
-      "success": {
-        "title": "Success",
-        "update": "Organization details has been updated.",
-        "create": "Organization has been created."
+        "roleRequired": "At least one role is required."
       }
     },
     "sizes": {
@@ -327,13 +352,13 @@
       },
       "errors": {
         "title": "Error",
-        "deleteEmployeeFailed": "Failed to remove employee.",
         "deleteInvitationFailed": "Failed to cancel invitation."
       }
     },
     "verificationHistory": "Verification History",
     "requestVerification": "Request Verification",
     "verificationTable": {
+      "noHistory": "No verification request history found.",
       "requestDate": "Request Date",
       "status": "Status",
       "reason": "Reason"
@@ -351,12 +376,16 @@
     },
     "success": {
       "title": "Success",
-      "verificationRequest": "Verification request has been sent."
+      "verificationRequest": "Verification request has been sent.",
+      "update": "Organization details has been updated.",
+      "create": "Organization has been created."
     },
     "errors": {
       "title": "Error",
       "loadFailed": "Failed to load organization for editing.",
-      "verificationRequestFailed": "Failed to request verification."
+      "verificationRequestFailed": "Failed to request verification.",
+      "updateFailed": "Failed to update organization details.",
+      "createFailed": "Failed to create organization."
     }
   },
   "media": {
@@ -458,7 +487,9 @@
       "description": "The advertiser was notified by email for this campaign.",
       "uploadedFiles": "Uploaded: {count} file(s)"
     },
-    "page": { "title": "Proof of Display" },
+    "page": {
+      "title": "Proof of Display"
+    },
     "table": {
       "image": "Image",
       "name": "Name",
@@ -863,14 +894,14 @@
       "continueOnboarding": "Continue Onboarding"
     },
     "notifications": {
-        "success": {
-            "title": "Onboarding Complete!",
-            "message": "Your account is ready. We're just confirming the final details with Stripe."
-        },
-        "refresh": {
-            "title": "Onboarding Session Expired",
-            "message": "Your session expired. Please try connecting again."
-        }
+      "success": {
+        "title": "Onboarding Complete!",
+        "message": "Your account is ready. We're just confirming the final details with Stripe."
+      },
+      "refresh": {
+        "title": "Onboarding Session Expired",
+        "message": "Your session expired. Please try connecting again."
+      }
     }
   },
   "invitation": {
