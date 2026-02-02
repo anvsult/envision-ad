@@ -334,7 +334,6 @@ class BusinessServiceUnitTest {
     public void whenRequestBusinessVerification_withAlreadyVerifiedBusiness_thenReturnBusinessAlreadyVerifiedException() {
         Business business = createBusiness(true);
 
-        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
 
         assertThrows(BusinessAlreadyVerifiedException.class,
@@ -346,7 +345,6 @@ class BusinessServiceUnitTest {
         Business business = createBusiness(false);
         Verification verification = createVerification(BUSINESS_ID, VERIFICATION_ID, VerificationStatus.PENDING);
 
-        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
         when(verificationRepository.findAllByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(List.of(verification));
 
@@ -377,7 +375,6 @@ class BusinessServiceUnitTest {
 
         Business business = createBusiness(true);
 
-        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(businessRepository.findByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(business);
         when(invitationRepository.existsByBusinessId_BusinessIdAndEmail(BUSINESS_ID, email)).thenReturn(true);
         when(invitationMapper.toEntity(invitationRequestModel)).thenReturn(invitation);
@@ -397,11 +394,9 @@ class BusinessServiceUnitTest {
     @Test
     public void whenCancelInvitation_withNotInvitationId_thenReturnInvitationNotFoundException(){
         when(businessRepository.existsByBusinessId_BusinessId(BUSINESS_ID)).thenReturn(true);
-        when(jwtUtils.extractUserId(mediaToken)).thenReturn("auth0|696a89137cfdb558ea4a4a4a");
         when(invitationRepository.findByInvitationId_InvitationId(INVITATION_ID)).thenReturn(null);
 
-        assertThrows(InvitationNotFoundException.class,
-                () -> businessService.cancelInvitation(mediaToken, BUSINESS_ID, INVITATION_ID));
+        assertThrows(InvitationNotFoundException.class, () -> businessService.cancelInvitation(mediaToken, BUSINESS_ID, INVITATION_ID));
     }
 
     @Test

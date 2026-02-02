@@ -1,5 +1,4 @@
 import axiosInstance from "@/shared/api/axios/axios";
-import { Dayjs } from 'dayjs';
 
 export const createPaymentIntent = async (params: {
     mediaId: string;

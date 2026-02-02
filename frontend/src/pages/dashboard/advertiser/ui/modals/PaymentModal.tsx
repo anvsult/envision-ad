@@ -17,7 +17,6 @@ import {
 import { IconCheck } from "@tabler/icons-react";
 import { notifications } from "@mantine/notifications";
 import { useTranslations, useLocale } from "next-intl";
-import dayjs from "dayjs";
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 

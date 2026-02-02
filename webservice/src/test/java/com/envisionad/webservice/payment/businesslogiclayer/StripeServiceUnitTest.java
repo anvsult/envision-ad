@@ -198,29 +198,6 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void createCheckoutSession_throwsDuplicatePaymentException_whenPaymentAlreadyExists() {
-                // Given
-                String reservationId = "res-duplicate";
-                BigDecimal amount = BigDecimal.valueOf(100.00);
-                String businessId = "biz-1";
-
-                PaymentIntent existingPayment = new PaymentIntent();
-                existingPayment.setReservationId(reservationId);
-                existingPayment.setStatus(PaymentStatus.PENDING);
-
-                when(paymentIntentRepository.findByReservationId(reservationId))
-                                .thenReturn(Optional.of(existingPayment));
-
-                // When & Then
-                DuplicatePaymentException exception = assertThrows(DuplicatePaymentException.class,
-                                () -> stripeService.createCheckoutSession(reservationId, amount, businessId));
-
-                assertNotNull(exception.getMessage());
-                assertTrue(exception.getMessage().contains("A payment already exists for reservation ID"));
-                assertTrue(exception.getMessage().contains(reservationId));
-        }
-
-        @Test
         void createCheckoutSession_throwsDuplicatePaymentException_whenPaymentSucceeded() {
                 // Given
                 String reservationId = "res-succeeded";

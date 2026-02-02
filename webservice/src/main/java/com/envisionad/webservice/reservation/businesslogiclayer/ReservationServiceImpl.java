@@ -154,11 +154,11 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
 
         if (!reservation.getStatus().equals(ReservationStatus.PENDING)){
-            throw new BadReservationRequestException();
+            throw new ReservationAlreadyProcessedException();
         }
 
         if (!reservationStatus.equals(ReservationStatus.APPROVED) && !reservationStatus.equals(ReservationStatus.DENIED)){
-            throw new ReservationAlreadyProcessedException();
+            throw new BadReservationRequestException();
         }
 
         reservation.setStatus(reservationStatus);

@@ -36,7 +36,7 @@ const getStatusColor = (status: ReservationStatus): string => {
     }
 };
 
-const getStatusLabel = (status: ReservationStatus, t: any): string => {
+const getStatusLabel = (status: ReservationStatus, t: (key: string) => string): string => {
     switch (status) {
         case ReservationStatus.PENDING:
             return t("status.pending");
@@ -55,7 +55,7 @@ interface ReservationCardProps {
     reservation: ReservationResponseDTO;
     onPayClick: (reservation: ReservationResponseDTO) => void;
     showPayButton: boolean;
-    t: any;
+    t: (key: string) => string;
 }
 
 function ReservationCard({ reservation, onPayClick, showPayButton, t }: ReservationCardProps) {

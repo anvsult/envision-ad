@@ -935,7 +935,7 @@
       "selectCampaign": "Please select a campaign to proceed",
       "selectDate": "Please select a valid start and end date",
       "missingPaymentInfo": "Missing required payment information",
-      "paymentInitFailed": "Failed to initialize payment",
+      "reservationFailed": "Reservation failed. Please try again later.",
       "paymentRequired": "Payment must be completed first"
     },
     "errorTitle": "Error",

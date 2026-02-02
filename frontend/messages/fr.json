@@ -936,7 +936,7 @@
       "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
       "selectDate": "Veuillez sélectionner une date de début et de fin valides",
       "missingPaymentInfo": "Informations de paiement requises manquantes",
-      "paymentInitFailed": "Échec de l'initialisation du paiement",
+      "reservationFailed": "Échec de la réservation. Veuillez réessayer plus tard.",
       "paymentRequired": "Le paiement doit être complété en premier"
     },
     "errorTitle": "Erreur de réservation",

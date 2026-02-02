@@ -335,7 +335,7 @@ class ProofOfDisplayServiceUnitTest {
         request.setProofImageUrls(List.of("https://img.example/proof.png"));
 
         Jwt jwt = mockJwtSubjectOnly();
-        when(jwtUtils.extractUserId(jwt)).thenReturn("user-123"); 
+        when(jwtUtils.extractUserId(jwt)).thenReturn("user-123");
 
         Media media = mock(Media.class);
         when(media.getBusinessId()).thenReturn(null);
@@ -347,7 +347,7 @@ class ProofOfDisplayServiceUnitTest {
         // Act + Assert
         assertThrows(IllegalStateException.class, () -> proofOfDisplayService.sendProofEmail(jwt, request));
 
-        verify(jwtUtils, never()).validateUserIsEmployeeOfBusiness(any(), any());
+        verify(jwtUtils, never()).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
         verify(reservationRepository, never()).existsConfirmedReservationForMediaAndCampaign(any(), any());
         verify(emailService, never()).sendSimpleEmail(any(), any(), any());
     }

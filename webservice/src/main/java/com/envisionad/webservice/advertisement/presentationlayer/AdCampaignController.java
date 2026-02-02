@@ -31,6 +31,7 @@ public class AdCampaignController {
     }
 
     @GetMapping("campaigns/{campaignId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<AdCampaignResponseModel> getAdCampaignByCampaignId(@PathVariable String campaignId) {
         return ResponseEntity.ok(adCampaignService.getAdCampaignByCampaignId(campaignId));
     }
