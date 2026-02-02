@@ -31,14 +31,14 @@ function MediaMarker({media}: MediaMarkerProps){
 
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
-    html: `<a href='#MediaCard${media.index}'><span >$${safePrice}</span><a>`,
+    html: `<a href='#MediaCard${media.index}'><span >$${safePrice}</span></a>`,
     iconSize: [200, 30],
     iconAnchor: [100, 15]
-    
   });
 
 
   return (
+
     <Marker position={{lat: media.mediaLocation.latitude, lng: media.mediaLocation.longitude}} icon={mediaMarkerIcon}/>
   )
 }

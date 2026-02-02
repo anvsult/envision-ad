@@ -85,8 +85,6 @@ public class MediaController {
             throw new IllegalArgumentException("bounds must have a length of exactly 4.");
         }
 
-        System.out.println("bounds = " + bounds);
-
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,
                 title,

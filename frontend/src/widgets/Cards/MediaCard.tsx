@@ -70,8 +70,7 @@ function MediaCard({index, href, imageUrl, title, organizationId, mediaLocation,
 
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} color="black" underline="never"
-            style={{scrollMarginTop: "2vh"}}
-        
+            style={{ scrollMarginTop: "10vh"}}
         >
             <Paper 
                 shadow="sm"
