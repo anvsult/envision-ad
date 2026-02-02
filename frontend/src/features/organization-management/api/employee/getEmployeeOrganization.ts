@@ -1,7 +1,7 @@
 import { OrganizationResponseDTO } from "@/entities/organization";
 import axiosInstance from "@/shared/api/axios/axios";
 import axios from "axios";
-import {log} from "node:util";
+
 
 export const getEmployeeOrganization = async (id: string): Promise<OrganizationResponseDTO | null> => {
     try {

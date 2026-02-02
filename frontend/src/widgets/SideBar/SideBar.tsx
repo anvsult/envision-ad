@@ -39,7 +39,7 @@ export default function SideBar() {
     ].filter(Boolean);
 
     const advertiserNavItems = [
-        (permissions.includes('create:campaign') && (
+        (permissions.includes('read:campaign') && (
             <>
                 <NavLink
                     key="metricOverview"

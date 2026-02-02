@@ -61,7 +61,9 @@
         "spent": "Dépenses",
         "gym": "Gym",
         "barbershop": "Barbier",
-        "groceryStore": "Épicerie"
+        "groceryStore": "Épicerie",
+        "comparedToLastMonth": "Par rapport au mois dernier",
+        "comparedToLastYear": "Par rapport à l'année dernière"
       },
       "timeRanges": {
         "weekly": "Hebdomadaire",

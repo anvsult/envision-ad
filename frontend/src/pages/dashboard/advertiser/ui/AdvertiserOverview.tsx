@@ -10,11 +10,8 @@ import {
     Select,
     ThemeIcon,
     Title,
-    RingProgress,
-    Center,
     Box,
     Skeleton,
-    Button,
 } from "@mantine/core";
 import {
     IconCoin,
@@ -23,12 +20,51 @@ import {
     IconChartBar,
     IconArrowUpRight,
     IconArrowDownRight,
-    IconMapPin,
 } from "@tabler/icons-react";
 import { AreaChart } from "@mantine/charts";
 import { useTranslations } from "next-intl";
 import { getAccessToken } from "@auth0/nextjs-auth0";
 import { jwtDecode } from "jwt-decode";
+
+
+const getDateKey = (date: Date, timeRange: string | null): string => {
+    if (timeRange === "Weekly") {
+        return date.toLocaleDateString('en-US', { weekday: 'short' });
+    } else if (timeRange === "Monthly") {
+        const day = date.getDate();
+        const weekNum = Math.ceil(day / 7);
+        return `Week ${weekNum}`;
+    } else {
+        return date.toLocaleDateString('en-US', { month: 'short' });
+    }
+};
+
+interface DecodedToken {
+    sub: string;
+    [key: string]: unknown;
+}
+
+interface Payment {
+    created: number;
+    amount: number;
+}
+
+interface Payout {
+    created: number;
+    amount: number;
+}
+
+interface ChartDataPoint {
+    date: string;
+    Spend: number;
+    [key: string]: number | string;
+}
+
+interface TooltipPayload {
+    name: string;
+    value: number;
+    color: string;
+}
 
 export function AdvertiserOverview() {
     const t = useTranslations("sideBar.advertiser");
@@ -36,18 +72,21 @@ export function AdvertiserOverview() {
     const [mounted, setMounted] = useState(false);
     const [activeCampaignCount, setActiveCampaignCount] = useState<number | null>(null);
     const [totalSpend, setTotalSpend] = useState<number>(0);
-    const [grossEarnings, setGrossEarnings] = useState<number>(0);
+
     const [estimatedImpressions, setEstimatedImpressions] = useState<number>(0);
     const [averageCPM, setAverageCPM] = useState<number>(0);
-    const [chartData, setChartData] = useState<any[]>([]);
-    const [isMediaOwner, setIsMediaOwner] = useState(false);
+    const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
+    }, []);
+
+    useEffect(() => {
         const fetchData = async () => {
             try {
                 const token = await getAccessToken();
-                const decodedToken = jwtDecode<any>(token);
+                const decodedToken = jwtDecode<DecodedToken>(token);
                 const userId = decodedToken.sub;
 
                 // 1. Get Business ID
@@ -70,11 +109,18 @@ export function AdvertiserOverview() {
                     }
 
                     // 3. Get Dashboard Data (Spend & Payments)
-                    // The backend automatically determines based on businessId if it's Advertiser or Media Owner
-                    // If no connected Stripe account, it returns "payments" list and "totalSpend" for Advertiser
                     const dashboardResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/dashboard?businessId=${businessId}&period=${timeRange || "Weekly"}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
+
+                    if (!dashboardResponse.ok) {
+                        console.error(
+                            "Failed to fetch dashboard data",
+                            dashboardResponse.status,
+                            dashboardResponse.statusText
+                        );
+                        return;
+                    }
 
                     const data = await dashboardResponse.json();
 
@@ -85,18 +131,9 @@ export function AdvertiserOverview() {
 
                     // Process Spend (Outgoing)
                     if (data.payments && Array.isArray(data.payments)) {
-                        data.payments.forEach((payment: any) => {
+                        data.payments.forEach((payment: Payment) => {
                             const date = new Date(payment.created * 1000);
-                            let dateKey = "";
-                            if (timeRange === "Weekly") {
-                                dateKey = date.toLocaleDateString('en-US', { weekday: 'short' });
-                            } else if (timeRange === "Monthly") {
-                                const day = date.getDate();
-                                const weekNum = Math.ceil(day / 7);
-                                dateKey = `Week ${weekNum}`;
-                            } else {
-                                dateKey = date.toLocaleDateString('en-US', { month: 'short' });
-                            }
+                            const dateKey = getDateKey(date, timeRange);
                             if (!paymentsByDate[dateKey]) paymentsByDate[dateKey] = { spend: 0 };
                             paymentsByDate[dateKey].spend += payment.amount;
                             calculatedTotal += payment.amount;
@@ -104,36 +141,26 @@ export function AdvertiserOverview() {
                     }
 
                     // Process Earnings (Incoming Payouts) -> MERGE INTO SPEND
-                    // Reverting to use 'payouts' (Stripe Data) as requested.
                     if (data.payouts && Array.isArray(data.payouts)) {
-                        data.payouts.forEach((payout: any) => {
+                        data.payouts.forEach((payout: Payout) => {
                             // Payouts (BalanceTransactions) also have 'created' and 'amount'
                             const date = new Date(payout.created * 1000);
-                            let dateKey = "";
-                            if (timeRange === "Weekly") {
-                                dateKey = date.toLocaleDateString('en-US', { weekday: 'short' });
-                            } else if (timeRange === "Monthly") {
-                                const day = date.getDate();
-                                const weekNum = Math.ceil(day / 7);
-                                dateKey = `Week ${weekNum}`;
-                            } else {
-                                dateKey = date.toLocaleDateString('en-US', { month: 'short' });
-                            }
+                            const dateKey = getDateKey(date, timeRange);
                             if (!paymentsByDate[dateKey]) paymentsByDate[dateKey] = { spend: 0 };
                             paymentsByDate[dateKey].spend += payout.amount; // Treating Earnings as Spend
                             calculatedTotal += payout.amount;
                         });
                     }
 
-                    // Set Total Spend from manual calculation of all transactions
+
+
                     // Set Total Spend from manual calculation of all transactions
                     setTotalSpend(calculatedTotal);
 
                     if (data.estimatedImpressions !== undefined) setEstimatedImpressions(data.estimatedImpressions);
                     if (data.averageCPM !== undefined) setAverageCPM(data.averageCPM);
 
-                    // We can still track isMediaOwner if needed, but for the graph we merge.
-                    if (data.isMediaOwner !== undefined) setIsMediaOwner(data.isMediaOwner);
+
 
                     // Transform to Chart Data Array
                     let templateData = [];
@@ -276,12 +303,7 @@ export function AdvertiserOverview() {
                                 {t("graphs.campaignPerformance")}
                             </Text>
                             <Group gap="md">
-                                <Group gap="xs">
-                                    <ThemeIcon variant="filled" color="blue.6" size={10} radius="xl" />
-                                    <Text size="sm" fw={600} c="dimmed">
-                                        {t("graphs.impressions")}
-                                    </Text>
-                                </Group>
+
                                 <Group gap="xs">
                                     <ThemeIcon variant="filled" color="cyan.6" size={10} radius="xl" />
                                     <Text size="sm" fw={600} c="dimmed">
@@ -297,7 +319,7 @@ export function AdvertiserOverview() {
                                     data={chartData}
                                     dataKey="date"
                                     series={[
-                                        // Always show Spend series (which now includes Earnings/Payouts if applicable)
+                                        // Always show Spend series
                                         { name: "Spend", label: t("graphs.spent"), color: "cyan.6" },
                                     ]}
                                     curveType="monotone"
@@ -308,19 +330,20 @@ export function AdvertiserOverview() {
                                     withPointLabels={false}
                                     areaProps={{ label: false }}
                                     tooltipProps={{
-                                        content: ({ payload, label }) => {
+                                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                        content: ({ payload, label }: any) => {
                                             if (!payload) return null;
                                             return (
                                                 <Paper px="md" py="xs" withBorder shadow="md" radius="md">
                                                     <Text fw={500} mb={5}>{label}</Text>
-                                                    {payload.map((item: any) => (
+                                                    {payload.map((item: TooltipPayload) => (
                                                         <Group key={item.name} gap="xs" justify="space-between">
                                                             <Group gap={5}>
                                                                 <ThemeIcon color={item.color} variant="filled" size={8} radius="xl" />
                                                                 <Text size="sm" c="dimmed">{item.name === "Spend" ? t("graphs.spent") : t("graphs.impressions")}</Text>
                                                             </Group>
                                                             <Text size="sm" fw={500}>
-                                                                {item.name === "Spend" ? `C$${item.value}` : item.name === "Earnings" ? `C$${item.value}` : item.value}
+                                                                {item.name === "Spend" ? `C$${item.value}` : item.value}
                                                             </Text>
                                                         </Group>
                                                     ))}
@@ -336,46 +359,7 @@ export function AdvertiserOverview() {
                     </Paper>
                 </Grid.Col>
 
-                {/*                <Grid.Col span={{ base: 12, md: 4 }}>
-                    <Paper withBorder p="xl" radius="md" h="100%">
-                        <Text size="xl" fw={700} mb="lg">
-                            {t("graphs.mediaDistribution")}
-                        </Text>
-                        <Center h={250}>
-                            <Group align="center" justify="center" gap="xl">
-                                <RingProgress
-                                    size={200}
-                                    thickness={20}
-                                    roundCaps
-                                    sections={[
-                                        { value: 40, color: 'blue' },
-                                        { value: 25, color: 'green' },
-                                        { value: 15, color: 'grape' },
-                                    ]}
-                                    label={
-                                        <Center>
-                                            <IconMapPin size={40} />
-                                        </Center>
-                                    }
-                                />
-                                <Stack gap="xs">
-                                    <Group gap="xs">
-                                        <ThemeIcon variant="filled" color="blue" size={10} radius="xl" />
-                                        <Text size="md" fw={700} c="dimmed">{t("graphs.gym")}</Text>
-                                    </Group>
-                                    <Group gap="xs">
-                                        <ThemeIcon variant="filled" color="green" size={10} radius="xl" />
-                                        <Text size="md" fw={700} c="dimmed">{t("graphs.barbershop")}</Text>
-                                    </Group>
-                                    <Group gap="xs">
-                                        <ThemeIcon variant="filled" color="grape" size={10} radius="xl" />
-                                        <Text size="md" fw={700} c="dimmed">{t("graphs.groceryStore")}</Text>
-                                    </Group>
-                                </Stack>
-                            </Group>
-                        </Center>
-                    </Paper>
-                </Grid.Col> */}
+
             </Grid>
         </Stack>
     );

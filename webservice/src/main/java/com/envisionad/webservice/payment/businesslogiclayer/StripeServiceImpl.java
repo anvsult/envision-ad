@@ -28,8 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+
 import java.util.*;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
@@ -377,13 +376,24 @@ public class StripeServiceImpl implements StripeService {
         Optional<StripeAccount> accountOpt = stripeAccountRepository.findByBusinessId(businessId);
         Map<String, Object> dashboard = new HashMap<>();
 
-        // 2. Determine Date Range
+        // 1. Determine Date Range
         LocalDateTime startDate = calculateStartDate(period);
         LocalDateTime endDate = LocalDateTime.now();
 
-        // 3. Calculate Estimated Impressions and CPM
+        // 2. Calculate Estimated Impressions and CPM
         List<Reservation> reservations = reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
                 businessId, startDate, endDate);
+
+        // Batch fetch Media to avoid N+1 query
+        Set<UUID> mediaIds = new HashSet<>();
+        for (Reservation r : reservations) {
+            mediaIds.add(r.getMediaId());
+        }
+        List<Media> medias = mediaRepository.findAllById(mediaIds);
+        Map<UUID, Media> mediaMap = new HashMap<>();
+        for (Media m : medias) {
+            mediaMap.put(m.getId(), m);
+        }
 
         long totalImpressions = 0;
         for (Reservation reservation : reservations) {
@@ -399,10 +409,10 @@ public class StripeServiceImpl implements StripeService {
                     days = 1;
                 }
 
-                // Fetch Media for impressions
-                Optional<Media> mediaOpt = mediaRepository.findById(reservation.getMediaId());
-                if (mediaOpt.isPresent()) {
-                    Integer dailyImpressions = mediaOpt.get().getDailyImpressions();
+                // Use batched Media map
+                Media media = mediaMap.get(reservation.getMediaId());
+                if (media != null) {
+                    Integer dailyImpressions = media.getDailyImpressions();
                     if (dailyImpressions != null) {
                         totalImpressions += (days * dailyImpressions);
                     }
@@ -412,7 +422,7 @@ public class StripeServiceImpl implements StripeService {
 
         dashboard.put("estimatedImpressions", totalImpressions);
 
-        // 1. Always calculate Advertiser Spend (Outgoing Payments)
+        // 3. Always calculate Advertiser Spend (Outgoing Payments)
         List<PaymentIntent> advertiserPayments = paymentIntentRepository
                 .findSuccessfulPaymentsByAdvertiserIdAndDateRange(
                         businessId,
@@ -494,13 +504,9 @@ public class StripeServiceImpl implements StripeService {
         BigDecimal totalSpendVal = (BigDecimal) dashboard.getOrDefault("totalSpend", BigDecimal.ZERO);
         BigDecimal cpm = BigDecimal.ZERO;
         if (totalImpressions > 0 && totalSpendVal.compareTo(BigDecimal.ZERO) > 0) {
-            // CPM = (Spend / Impressions) * 1000
-            // Spend in cents? No, usually Spend in currency.
-            // totalSpendVal is in cents here (from Stripe Amount).
-            // So we need to be careful.
-            // CPM is usually "Cost per 1000 impressions".
-            // Cost in dollars = totalSpendVal / 100
-            // CPM = ((totalSpendVal / 100) / totalImpressions) * 1000
+            // CPM (cost per 1000 impressions) with spend in cents:
+            // CPM = (spendInDollars / impressions) * 1000
+            // = ((totalSpendVal / 100) / totalImpressions) * 1000
             // = (totalSpendVal * 10) / totalImpressions
             try {
                 cpm = totalSpendVal.multiply(BigDecimal.TEN)

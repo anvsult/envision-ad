@@ -750,6 +750,13 @@ class StripeServiceUnitTest {
                                 eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
                                 .thenReturn(payments);
 
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(new ArrayList<>());
+                when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(new ArrayList<>());
+
                 BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
                 when(mockPayouts.getData()).thenReturn(new ArrayList<>());
 
@@ -937,6 +944,13 @@ class StripeServiceUnitTest {
                 when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
                 doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(userId, businessId);
                 when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.empty());
+
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(Collections.emptyList());
+                when(paymentIntentRepository.findSuccessfulPaymentsByAdvertiserIdAndDateRange(
+                                eq(businessId), any(LocalDateTime.class), any(LocalDateTime.class)))
+                                .thenReturn(Collections.emptyList());
 
                 // When
                 Map<String, Object> dashboard = stripeService.getDashboardData(jwt, businessId, period);
