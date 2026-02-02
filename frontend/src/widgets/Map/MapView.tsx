@@ -6,18 +6,14 @@ import { useMemo } from 'react';
 import { MediaCardProps } from '../Cards/MediaCard';
 import './MapView.css';
 
-const default_zoom = 10;
-
-
-
 interface MapViewProps {
   center: LatLngLiteral;
+  zoom: number;
   medias?: MediaCardProps[];
   setMap: React.Dispatch<React.SetStateAction<Map|null>>;
   isMobile: boolean;
   
 }
-
 
 interface MediaMarkerProps{
   media: MediaCardProps;
@@ -43,13 +39,13 @@ function MediaMarker({media}: MediaMarkerProps){
   )
 }
 
-export default function MapView({center, setMap,  medias, isMobile}: MapViewProps){
+export default function MapView({center, zoom, setMap,  medias, isMobile}: MapViewProps){
 
   const displayMap = useMemo(
     () => (
         <MapContainer
           center={center}
-          zoom={default_zoom}
+          zoom={zoom}
           scrollWheelZoom={true}
           ref={setMap}
           style={{height: "100%", width: "100%"}}>
@@ -63,7 +59,7 @@ export default function MapView({center, setMap,  medias, isMobile}: MapViewProp
           }
         </MapContainer>
       ) ,
-    [center, medias, setMap],
+    [center, medias, setMap, zoom],
   )
 
     return(

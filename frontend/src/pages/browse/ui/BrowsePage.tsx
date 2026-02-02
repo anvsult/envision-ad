@@ -3,7 +3,7 @@
 import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
@@ -56,6 +56,9 @@ function BrowsePage() {
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
 
+
+  // Map
+  const defaultZoom = 12;
   const [mapVisible, setMapVisible] = useState<boolean>(false);
   const [map, setMap] = useState<Map|null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
@@ -105,7 +108,7 @@ function BrowsePage() {
             const coords = { lat: address.lat, lng: address.lng };
             setLocation(coords);
             setLocationStatus('success');
-            map?.setView(coords, 13);
+            map?.setView(coords, defaultZoom);
           }
         }
       } catch (err: unknown) {
@@ -236,7 +239,7 @@ function BrowsePage() {
               
               {(isMobile && mapVisible) && 
                 <Container style={{position: "relative",  width: "100%"}} p="0">
-                  <MapView center={location ?? defaultPos} medias={media} setMap={setMap} isMobile={isMobile}/>
+                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
                 </Container>
               }
 
@@ -274,13 +277,13 @@ function BrowsePage() {
 
         {(!isMobile && mapVisible) && 
           <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-            <MapView center={location ?? defaultPos} medias={media} setMap={setMap} isMobile={isMobile}/>
+            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
           </Container>
         }
         
         </Group>
         <Group pos='fixed' justify='flex-end'  mt="xl" right='3vh' bottom='3vh' w='100%'>
-          <Button size='lg' rightSection={<IconMap size={20} />} onClick={() => setMapVisible(!mapVisible)} radius='xl' >
+          <Button size='lg' rightSection={<IconMap size={30} />} onClick={() => setMapVisible(!mapVisible)} radius='xl' >
             {mapVisible ? t('closeMap') : t('openMap')}
           </Button>
         </Group>
