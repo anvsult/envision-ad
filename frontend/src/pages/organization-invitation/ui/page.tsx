@@ -1,57 +1,38 @@
 "use client";
 
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Button, Center, Loader, Paper, Stack, Text, Title } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import {addEmployeeToOrganization, getOrganizationById} from "@/features/organization-management/api";
-import {AUTH0_ROLES} from "@/shared/lib/auth/roles";
-import {usePermissions} from "@/app/providers";
+import { addEmployeeToOrganization } from "@/features/organization-management/api";
 
 export default function OrganizationInvitationPage() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, isLoading } = useUser();
-    const { refreshPermissions } = usePermissions();
 
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
     const [message, setMessage] = useState("");
 
     const token = searchParams?.get("token");
-    const organizationId = searchParams?.get("businessId");
-    const invitationProcessed = useRef(false);
+    const organizationId = searchParams?.get("organizationId");
 
     useEffect(() => {
-        if (!searchParams || invitationProcessed.current) {
+        // Wait for searchParams to be available
+        if (!searchParams) {
             return;
         }
 
         const acceptInvitation = async () => {
-            invitationProcessed.current = true;
             try {
                 await addEmployeeToOrganization(organizationId!, token!)
-
-                const organization = await getOrganizationById(organizationId!);
-
-                await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(user!.sub)}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({roles: [
-                            ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
-                            ...(organization.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : [])
-                        ]})
-                });
-
-                await refreshPermissions();
 
                 setStatus("success");
                 setMessage("You've successfully joined the organization!");
 
                 setTimeout(() => {
-                    router.push("/dashboard/organization/overview");
+                    router.push("/dashboard/organization/employees");
                 }, 2000);
 
             } catch {
@@ -61,7 +42,7 @@ export default function OrganizationInvitationPage() {
         };
 
         if (!isLoading && !user) {
-            const returnUrl = `/invite?businessId=${encodeURIComponent(organizationId!)}&token=${encodeURIComponent(token!)}`;
+            const returnUrl = `/invite?organizationId=${organizationId}&token=${token}`;
             router.push(`/auth/login?returnTo=${encodeURIComponent(returnUrl)}`);
             return;
         }
@@ -69,7 +50,7 @@ export default function OrganizationInvitationPage() {
         if (user && token && organizationId) {
             acceptInvitation();
         }
-    }, [user, isLoading, token, organizationId, router, searchParams, refreshPermissions]);
+    }, [user, isLoading, token, organizationId, router, searchParams]);
 
     // Show loading while searchParams is being initialized
     if (!searchParams) {

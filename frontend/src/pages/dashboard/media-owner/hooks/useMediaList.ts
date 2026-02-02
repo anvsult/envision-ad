@@ -37,14 +37,14 @@ export function useMediaList() {
 
     const buildScheduleFromForm = (formState: MediaFormState) => {
         const selectedMonths = Object.keys(formState.activeMonths).filter(
-            (m) => formState.activeMonths[m]
+            (m) => !!formState.activeMonths[m]
         );
 
         const weeklySchedule = [
             "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
         ].map(day => ({
             dayOfWeek: day.toLowerCase(),
-            isActive: formState.activeDaysOfWeek[day],
+            isActive: !!formState.activeDaysOfWeek[day],
             startTime: formState.dailyOperatingHours[day]?.start ?? null,
             endTime: formState.dailyOperatingHours[day]?.end ?? null
         }));

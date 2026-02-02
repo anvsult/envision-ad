@@ -1,16 +1,16 @@
 "use client";
 
 import React from "react";
-import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { Box, Drawer, Group, Paper } from "@mantine/core";
+import {useDisclosure, useMediaQuery} from "@mantine/hooks";
+import {Box, Drawer, Group, Paper} from "@mantine/core";
 import SideBar from "@/widgets/SideBar/SideBar";
 
 export default function DashboardLayout({
-    children,
-}: {
+                                            children,
+                                        }: {
     children: React.ReactNode;
 }) {
-    const [opened, { close }] = useDisclosure(false);
+    const [opened, {close}] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
 
     return (
@@ -31,15 +31,14 @@ export default function DashboardLayout({
                     <Paper
                         w={250}
                         p="md"
-                        style={{ minHeight: "calc(100vh - 80px)", borderRadius: 0 }}
+                        style={{minHeight: "calc(100vh - 80px)", borderRadius: 0}}
                         withBorder
-                        bg="gray.0"
                     >
                         <SideBar />
                     </Paper>
                 )}
 
-                <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{flex: 1, minWidth: 0}}>
                     {children}
                 </div>
             </Group>

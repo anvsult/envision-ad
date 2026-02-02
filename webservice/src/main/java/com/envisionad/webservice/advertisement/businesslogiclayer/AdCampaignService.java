@@ -19,6 +19,4 @@ public interface AdCampaignService {
     AdCampaignResponseModel createAdCampaign(Jwt jwt, String businessId, AdCampaignRequestModel adCampaignRequestModel);
 
     List<String> getAllCampaignImageLinks(String campaignId);
-
-    Integer getActiveCampaignCount(String businessId);
 }

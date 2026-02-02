@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/payments")
-@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class PaymentController {
     private final StripeService stripeService;
 
@@ -47,7 +47,8 @@ public class PaymentController {
                 request.getMediaId(),
                 request.getReservationId(),
                 request.getStartDate(),
-                request.getEndDate());
+                request.getEndDate()
+        );
 
         return ResponseEntity.ok(result);
     }

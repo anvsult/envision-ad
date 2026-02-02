@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/proof-of-display")
-@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class ProofOfDisplayController {
 
     private final ProofOfDisplayService service;
@@ -22,8 +22,7 @@ public class ProofOfDisplayController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/email")
-    public ResponseEntity<Void> sendProof(@AuthenticationPrincipal Jwt jwt,
-            @Valid @RequestBody ProofOfDisplayRequest request) {
+    public ResponseEntity<Void> sendProof(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ProofOfDisplayRequest request) {
         service.sendProofEmail(jwt, request);
         return ResponseEntity.ok().build();
     }

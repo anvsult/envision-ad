@@ -169,48 +169,18 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
     // Order of corners to draw lines: TL -> TR -> BR -> BL -> TL
     const cornerKeys: (keyof typeof corners)[] = ['tl', 'tr', 'br', 'bl'];
 
-    const imageRef = useRef<HTMLImageElement>(null);
-    const [svgBounds, setSvgBounds] = useState({ width: 0, height: 0, top: 0, left: 0 });
-
-    // Update SVG bounds whenever the window resizes or image loads
-    const updateBounds = () => {
-        if (imageRef.current) {
-            const rect = imageRef.current.getBoundingClientRect();
-            const containerRect = imageRef.current.parentElement?.getBoundingClientRect();
-
-            if (containerRect) {
-                setSvgBounds({
-                    width: rect.width,
-                    height: rect.height,
-                    top: rect.top - containerRect.top,
-                    left: rect.left - containerRect.left,
-                });
-            }
-        }
-    };
-
-    useEffect(() => {
-        window.addEventListener('resize', updateBounds);
-        return () => window.removeEventListener('resize', updateBounds);
-    }, []);
-    useEffect(() => {
-        // Small timeout ensures the DOM has painted and Mantine's wrapper is ready
-        const timer = setTimeout(updateBounds, 100);
-        return () => clearTimeout(timer);
-    }, [imageUrl]); // Re-run if the image URL changes
     return (
-        <div style={{ position: 'relative', width: '100%', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ position: 'relative', width: '100%', height: 'auto', userSelect: 'none', display: 'flex', justifyContent: 'center' }}>
             <Image
-                ref={imageRef}
                 src={imageUrl}
                 alt="Preview"
-                onLoad={updateBounds}
                 style={{
                     width: 'auto',
                     height: 'auto',
                     maxWidth: '100%',
                     maxHeight: '400px',
                     display: 'block',
+                    pointerEvents: 'none'
                 }}
             />
 
@@ -218,10 +188,10 @@ export const ImageCornerSelector: React.FC<ImageCornerSelectorProps> = ({ imageU
                 ref={svgRef}
                 style={{
                     position: 'absolute',
-                    top: svgBounds.top,
-                    left: svgBounds.left,
-                    width: svgBounds.width,
-                    height: svgBounds.height,
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
                     zIndex: 10
                 }}
             >

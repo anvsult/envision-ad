@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -168,7 +169,7 @@ public class StripeWebhookService {
 
             log.info("Marked payment as failed: reservationId={}", payment.getReservationId());
 
-            // Update reservation status to CANCELLED due to payment failure
+            // Update reservation status to FAILED
             updateReservationStatus(payment.getReservationId(), ReservationStatus.CANCELLED);
         } else {
             log.warn("No payment record found for PaymentIntent: {}", paymentIntentId);
@@ -221,7 +222,7 @@ public class StripeWebhookService {
             log.info("Account {} is now fully onboarded.", stripeAccountId);
         }
     }
-
+    
     private void updateReservationStatus(String reservationId, ReservationStatus newStatus) {
         Optional<Reservation> reservationOpt = reservationRepository.findByReservationId(reservationId);
 

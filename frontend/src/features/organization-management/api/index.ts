@@ -1,9 +1,9 @@
 export { createOrganization } from './createOrganization';
 export { getOrganizationById } from './getOrganizationById';
 export { updateOrganization } from './updateOrganization';
-export { getEmployeeOrganization, getEmployeeOrganizationServer } from './employee/getEmployeeOrganization';
+export { getEmployeeOrganization } from './employee/getEmployeeOrganization';
 export { getAllOrganizations } from './getAllOrganizations';
-export { getAllOrganizationEmployees, getAllOrganizationEmployeesServer } from './employee/getAllOrganizationEmployees';
+export { getAllOrganizationEmployees } from './employee/getAllOrganizationEmployees';
 export { removeEmployeeFromOrganization } from './employee/removeEmployeeFromOrganization';
 export { createInviteEmployeeToOrganization } from './invitation/createInviteEmployeeToOrganization';
 export { cancelInviteEmployeeToOrganization } from './invitation/cancelInviteEmployeeToOrganization';

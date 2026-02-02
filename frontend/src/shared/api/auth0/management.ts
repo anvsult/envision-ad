@@ -1,5 +1,3 @@
-import {RoleId} from "@/shared/lib/auth/roles";
-
 /**
  * Service for interacting with the Auth0 Management API.
  * Uses Client Credentials Grant to obtain an access token.
@@ -182,30 +180,6 @@ export class Auth0ManagementService {
                 preferred_language: locale,
             },
         });
-    }
-
-    /**
-     * Updates a user's role by adding or removing it.
-     * @param {string} userId - The unique identifier of the user.
-     * @param {RoleId[]} roles - The id of the roles to add or remove (e.g., "rol_fFGTiHiGm6EV36pD").
-     * @param {'POST' | 'DELETE'} action - The action to perform: 'post' to assign the role, 'delete' to revoke it.
-     * @returns {Promise<void>}
-     * @throws {Error} If the role update fails.
-     */
-    static async updateUserRole(userId: string, roles: RoleId[], action: 'POST' | 'DELETE') {
-        const token = await this.getAccessToken();
-
-        await fetch(
-            `https://${process.env.AUTH0_DOMAIN}/api/v2/users/${userId}/roles`,
-            {
-                method: action,
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ roles: roles }),
-            }
-        );
     }
 
     /**

@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin('./src/shared/lib/i18n/request.ts');
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  /* config options here */
   reactCompiler: true,
 };
 

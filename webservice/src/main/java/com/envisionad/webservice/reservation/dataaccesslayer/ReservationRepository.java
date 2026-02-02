@@ -12,43 +12,30 @@ import java.util.UUID;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Integer> {
 
-        @Query("""
-                            SELECT (COUNT(r) > 0)
-                            FROM Reservation r
-                            WHERE r.mediaId = :mediaId
-                              AND r.campaignId = :campaignId
-                              AND r.status IN ('CONFIRMED', 'PENDING')
-                        """)
-        boolean existsConfirmedReservationForMediaAndCampaign(
-                        @Param("mediaId") UUID mediaId,
-                        @Param("campaignId") String campaignId);
+    @Query("""
+            SELECT (COUNT(r) > 0)
+            FROM Reservation r
+            WHERE r.mediaId = :mediaId
+              AND r.campaignId = :campaignId
+              AND r.status IN ('CONFIRMED', 'PENDING')
+        """)
+    boolean existsConfirmedReservationForMediaAndCampaign(
+            @Param("mediaId") UUID mediaId,
+            @Param("campaignId") String campaignId
+    );
 
-        List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
-        @Query("SELECT r FROM Reservation r WHERE r.mediaId = :mediaId " +
-                        "AND r.status = 'CONFIRMED' " +
-                        "AND r.startDate < :endDate " +
-                        "AND r.endDate > :startDate")
-        List<Reservation> findAllActiveReservationsByMediaIdAndDateRange(
-                        @Param("mediaId") UUID mediaId,
-                        @Param("startDate") @NotNull LocalDateTime startDate,
-                        @Param("endDate") @NotNull LocalDateTime endDate);
+    List<Reservation> findAllReservationsByMediaId(UUID mediaId);
 
-        Optional<Reservation> findByReservationId(String reservationId);
+    @Query("SELECT r FROM Reservation r WHERE r.mediaId = :mediaId " +
+           "AND r.status = 'CONFIRMED' " +
+           "AND r.startDate < :endDate " +
+           "AND r.endDate > :startDate")
+    List<Reservation> findAllActiveReservationsByMediaIdAndDateRange(
+            @Param("mediaId") UUID mediaId,
+            @Param("startDate") @NotNull LocalDateTime startDate,
+            @Param("endDate") @NotNull LocalDateTime endDate
+    );
 
-        @Query("SELECT COUNT(DISTINCT r.campaignId) FROM Reservation r WHERE r.advertiserId = :advertiserId " +
-                        "AND r.status = 'CONFIRMED' " +
-                        "AND r.startDate <= :now " +
-                        "AND r.endDate >= :now")
-        int countActiveCampaignsByAdvertiserId(@Param("advertiserId") String advertiserId,
-                        @Param("now") LocalDateTime now);
-
-        @Query("SELECT r FROM Reservation r WHERE r.advertiserId = :advertiserId " +
-                        "AND r.status = 'CONFIRMED' " +
-                        "AND r.startDate < :endDate " +
-                        "AND r.endDate > :startDate")
-        List<Reservation> findConfirmedReservationsByAdvertiserIdAndDateRange(
-                        @Param("advertiserId") String advertiserId,
-                        @Param("startDate") LocalDateTime startDate,
-                        @Param("endDate") LocalDateTime endDate);
+    Optional<Reservation> findByReservationId(String reservationId);
 }

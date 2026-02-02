@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/businesses/{businessId}/campaigns")
-@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class AdCampaignController {
     private final AdCampaignService adCampaignService;
 
@@ -35,9 +35,9 @@ public class AdCampaignController {
     public ResponseEntity<AdCampaignResponseModel> createAdCampaign(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String businessId,
-            @RequestBody AdCampaignRequestModel adCampaignRequestModel) {
-        AdCampaignResponseModel newCampaign = adCampaignService.createAdCampaign(jwt, businessId,
-                adCampaignRequestModel);
+            @RequestBody AdCampaignRequestModel adCampaignRequestModel
+            ) {
+        AdCampaignResponseModel newCampaign = adCampaignService.createAdCampaign(jwt, businessId, adCampaignRequestModel);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newCampaign);
     }
@@ -61,11 +61,5 @@ public class AdCampaignController {
         AdResponseModel deletedAd = adCampaignService.deleteAdFromCampaign(campaignId, adId);
 
         return ResponseEntity.ok(deletedAd);
-    }
-
-    @GetMapping("/active-count")
-    @PreAuthorize("hasAuthority('readAll:campaign')")
-    public ResponseEntity<Integer> getActiveCampaignCount(@PathVariable String businessId) {
-        return ResponseEntity.ok(adCampaignService.getActiveCampaignCount(businessId));
     }
 }

@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/media")
 @Slf4j
-@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
+@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
 public class MediaController {
 
     private final MediaService mediaService;

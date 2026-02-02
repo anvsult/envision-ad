@@ -12,14 +12,12 @@ import {Header} from "@/widgets/Header/Header";
 import {ModalsProvider} from "@mantine/modals";
 import {auth0} from "@/shared/api/auth0/auth0";
 import {Auth0Provider} from "@auth0/nextjs-auth0";
-import {Metadata} from "next";
-import {PermissionsProvider} from "@/app/providers";
 
 export async function generateMetadata({
                                            params,
                                        }: {
     params: Promise<{ locale: string }>;
-}): Promise<Metadata> {
+}) {
     const {locale} = await params;
     const t = await getTranslations({locale, namespace: "metadata"});
 
@@ -59,16 +57,14 @@ export default async function RootLayout({
             <body
                 style={{minHeight: "100vh", display: "flex", flexDirection: "column"}}>
             <Auth0Provider user={user}>
-                <PermissionsProvider>
-                    <MantineProvider theme={theme}>
-                        <ModalsProvider>
-                            <Notifications/>
-                            <Header/>
-                            {children}
-                            <Footer/>
-                        </ModalsProvider>
-                    </MantineProvider>
-                </PermissionsProvider>
+                <MantineProvider theme={theme}>
+                    <ModalsProvider>
+                        <Notifications/>
+                        <Header/>
+                        {children}
+                        <Footer/>
+                    </ModalsProvider>
+                </MantineProvider>
             </Auth0Provider>
             </body>
             </html>

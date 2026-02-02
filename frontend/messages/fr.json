@@ -3,16 +3,6 @@
     "title": "Envision AD - Publicités Abordables, Impact Inoubliable",
     "description": "Trouvez des espaces publicitaires abordables avec un impact visuel. Parcourez les espaces publicitaires disponibles et développez votre organization."
   },
-  "notFound": {
-    "title": "Page non trouvée",
-    "description": "La page que vous recherchez n'existe pas.",
-    "back": "Retour à l'accueil"
-  },
-  "forbidden": {
-    "title": "Accès interdit",
-    "description": "Vous n'avez pas l'autorisation d'accéder à cette page.",
-    "back": "Retour à l'accueil"
-  },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
@@ -46,30 +36,8 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
-      "metricOverview": "Métriques",
       "adRequests": "Demandes d'annonce",
-      "myAds": "Mes Campagnes",
-      "graphs": {
-        "totalAdSpend": "Dépenses publicitaires totales",
-        "activeCampaigns": "Campagnes actives",
-        "estimatedImpressions": "Impressions estimées",
-        "averageCPM": "CPM moyen",
-        "campaignPerformance": "Performance de la campagne",
-        "mediaDistribution": "Répartition des médias",
-        "comparedToLastWeek": "Par rapport à la semaine dernière",
-        "impressions": "Impressions",
-        "spent": "Dépenses",
-        "gym": "Gym",
-        "barbershop": "Barbier",
-        "groceryStore": "Épicerie",
-        "comparedToLastMonth": "Par rapport au mois dernier",
-        "comparedToLastYear": "Par rapport à l'année dernière"
-      },
-      "timeRanges": {
-        "weekly": "Hebdomadaire",
-        "monthly": "Mensuel",
-        "yearly": "Annuel"
-      }
+      "myAds": "Mes Campagnes"
     },
     "adminTitle": "Admin",
     "admin": {
@@ -196,7 +164,7 @@
       "approve": "Le média a été approuvé",
       "deny": "Le média a été refusé"
     },
-    "otherMediaBy": "Autres médias par ",
+    "otherMediaBy":"Autres médias par ",
     "errors": {
       "error": "Erreur",
       "approveFailed": "L’approbation du média a échoué",
@@ -294,7 +262,14 @@
         "stateRequired": "La province ou l’État de l’organisation est requis.",
         "zipRequired": "Le code postal de l’organisation est requis.",
         "countryRequired": "Le pays de l’organisation est requis.",
-        "roleRequired": "Au moins un rôle est requis."
+        "roleRequired": "Au moins un rôle est requis.",
+        "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
+        "createFailed": "Échec de la création de l’organisation."
+      },
+      "success": {
+        "title": "Succès",
+        "update": "Les informations de l’organisation ont été mises à jour.",
+        "create": "L’organisation a été créée."
       }
     },
     "sizes": {
@@ -353,13 +328,13 @@
       },
       "errors": {
         "title": "Erreur",
+        "deleteEmployeeFailed": "Échec de la suppression de l’employé.",
         "deleteInvitationFailed": "Échec de l’annulation de l’invitation."
       }
     },
     "verificationHistory": "Historique des vérifications",
     "requestVerification": "Demander une vérification",
     "verificationTable": {
-      "noHistory": "Aucun historique de demande de vérification trouvé.",
       "requestDate": "Date de la demande",
       "status": "Statut",
       "reason": "Raison"
@@ -377,16 +352,12 @@
     },
     "success": {
       "title": "Succès",
-      "verificationRequest": "La demande de vérification a été envoyée.",
-      "update": "Les informations de l’organisation ont été mises à jour.",
-      "create": "L’organisation a été créée."
+      "verificationRequest": "La demande de vérification a été envoyée."
     },
     "errors": {
       "title": "Erreur",
       "loadFailed": "Échec du chargement de l’organisation pour modification.",
-      "verificationRequestFailed": "Échec de la demande de vérification.",
-      "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
-      "createFailed": "Échec de la création de l’organisation."
+      "verificationRequestFailed": "Échec de la demande de vérification."
     }
   },
   "media": {

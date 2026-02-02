@@ -12,12 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -26,7 +20,6 @@ import java.util.List;
 public class SecurityConfig {
 
     private final AuthenticationErrorHandler authenticationErrorHandler;
-    private final ApplicationProperties applicationProperties;
 
     @Bean
     public SecurityFilterChain httpSecurity(final HttpSecurity http) throws Exception {
@@ -50,6 +43,5 @@ public class SecurityConfig {
         jwtAuthConverter.setJwtGrantedAuthoritiesConverter(jwtAuthoritiesConverter);
 
         return jwtAuthConverter;
-
     }
 }
