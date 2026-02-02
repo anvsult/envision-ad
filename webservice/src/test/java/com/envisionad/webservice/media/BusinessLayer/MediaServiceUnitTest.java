@@ -8,6 +8,7 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.envisionad.webservice.utils.MathFunctions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +23,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -120,7 +122,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, null, null, null, null);
+                pageable, null, null, null, null, null, null, null, null, null, null);
 
         // Assert
         assertNotNull(result);
@@ -137,7 +139,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, titleFilter, null, null, null, null, null, null, null, null);
+                pageable, titleFilter, null, null, null, null, null, null, null, null, null);
 
         // Assert
         ArgumentCaptor<Specification<Media>> specCaptor = ArgumentCaptor.forClass(Specification.class);
@@ -156,7 +158,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, minPrice, maxPrice, null, null, null, null, null);
+                pageable, null, null, minPrice, maxPrice, null, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -172,7 +174,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, minPrice, null, null, null, null, null, null);
+                pageable, null, null, minPrice, null, null, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -188,7 +190,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, maxPrice, null, null, null, null, null);
+                pageable, null, null, null, maxPrice, null, null, null, null, null, null);
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -204,9 +206,26 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, minImpressions, null, null, null, null);
+                pageable, null, null, null, null, minImpressions, null, null, null, null, null);
 
         // Assert
+        verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_WithBounds_ShouldFilterByBounds() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        List<Double> bounds = Arrays.asList(-51.0, -50.0, 30.0, 31.0);
+        when(mediaRepository.findAll(any(Specification.class), eq(pageable)))
+                .thenReturn(Page.empty());
+
+
+        // Act
+        mediaService.getAllFilteredActiveMedia(
+                pageable, null, null, null, null, null, null, null, null, bounds, null);
+
+        // Assert - Should use regular pagination
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
     }
 
@@ -218,12 +237,13 @@ class MediaServiceUnitTest {
         BigDecimal minPrice = new BigDecimal("100.00");
         BigDecimal maxPrice = new BigDecimal("500.00");
         Integer minImpressions = 15000;
+        List<Double> bounds = Arrays.asList(-51.0, -50.0, 30.0, 31.0);
         when(mediaRepository.findAll(any(Specification.class), eq(pageable)))
                 .thenReturn(Page.empty());
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, title, business1Id, minPrice, maxPrice, minImpressions, null, null, null, media2.getId().toString());
+                pageable, title, business1Id, minPrice, maxPrice, minImpressions, null, null, null, bounds, media2.getId().toString());
 
         // Assert
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -242,7 +262,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert
         assertNotNull(result);
@@ -265,7 +285,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert
         assertNotNull(result);
@@ -287,7 +307,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert
         assertNotNull(result);
@@ -307,7 +327,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert
         assertNotNull(result);
@@ -331,7 +351,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert
         assertNotNull(result);
@@ -349,7 +369,7 @@ class MediaServiceUnitTest {
 
         // Act - Missing userLat
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", null, -79.347015, null);
+                pageable, null, null, null, null, null, "nearest", null, -79.347015, null, null);
 
         // Assert - Should use regular pagination instead of distance sorting
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -364,7 +384,7 @@ class MediaServiceUnitTest {
 
         // Act - Missing userLng
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", 43.651070, null, null);
+                pageable, null, null, null, null, null, "nearest", 43.651070, null, null, null);
 
         // Assert - Should use regular pagination instead of distance sorting
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -379,7 +399,7 @@ class MediaServiceUnitTest {
 
         // Act
         mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "price", 43.651070, -79.347015, null);
+                pageable, null, null, null, null, null, "price", 43.651070, -79.347015, null, null);
 
         // Assert - Should use regular pagination
         verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -394,7 +414,7 @@ class MediaServiceUnitTest {
         double lon = -79.347015;
 
         // Act - Using reflection to test private method
-        double distance = calculateDistance(lat, lon, lat, lon);
+        double distance = MathFunctions.distance(lat, lon, lat, lon);
 
         // Assert
         assertEquals(0.0, distance, 0.001);
@@ -409,7 +429,7 @@ class MediaServiceUnitTest {
         double newYorkLon = -74.005974;
 
         // Act
-        double distance = calculateDistance(torontoLat, torontoLon, newYorkLat, newYorkLon);
+        double distance = MathFunctions.distance(torontoLat, torontoLon, newYorkLat, newYorkLon);
 
         // Assert - Distance between Toronto and New York is approximately 550 km
         assertTrue(distance > 500 && distance < 600,
@@ -425,7 +445,7 @@ class MediaServiceUnitTest {
         double lon2 = 151.209290;
 
         // Act
-        double distance = calculateDistance(lat1, lon1, lat2, lon2);
+        double distance = MathFunctions.distance(lat1, lon1, lat2, lon2);
 
         // Assert - Should be a very large distance (around 15,000+ km)
         assertTrue(distance > 15000, "Distance should be over 15,000 km");
@@ -440,7 +460,7 @@ class MediaServiceUnitTest {
         double lon2 = -79.347015;
 
         // Act
-        double distance = calculateDistance(lat1, lon1, lat2, lon2);
+        double distance = MathFunctions.distance(lat1, lon1, lat2, lon2);
 
         // Assert - Should be approximately 0.11 km
         assertTrue(distance < 1.0, "Distance should be less than 1 km");
@@ -456,7 +476,7 @@ class MediaServiceUnitTest {
         double lon2 = 180.0;
 
         // Act
-        double distance = calculateDistance(lat1, lon1, lat2, lon2);
+        double distance = MathFunctions.distance(lat1, lon1, lat2, lon2);
 
         // Assert - Should be close to half the earth's circumference
         assertTrue(distance > 15000 && distance < 20100,
@@ -472,7 +492,7 @@ class MediaServiceUnitTest {
         double lon2 = -58.381560;
 
         // Act
-        double distance = calculateDistance(lat1, lon1, lat2, lon2);
+        double distance = MathFunctions.distance(lat1, lon1, lat2, lon2);
 
         // Assert - Should be a large distance
         assertTrue(distance > 11000, "Distance should be over 11,000 km");
@@ -495,7 +515,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert - Should be sorted: media1 (closest), media2 (medium), media3 (farthest)
         List<Media> content = result.getContent();
@@ -525,7 +545,7 @@ class MediaServiceUnitTest {
 
         // Act
         Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                pageable, null, null, null, null, null, "nearest", userLat, userLng, null);
+                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
 
         // Assert - Both should be returned as they're at the same distance
         assertEquals(2, result.getContent().size());
@@ -582,23 +602,4 @@ class MediaServiceUnitTest {
         return media;
     }
 
-    /**
-     * Helper method to calculate distance using the Haversine formula.
-     * This replicates the private distance method in MediaServiceImpl for testing purposes.
-     */
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        // Calculate using Haversine formula (same as in MediaServiceImpl)
-        double R = 6371; // Earth's radius in km
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(lat1) * Math.cos(lat2)
-                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    }
 }

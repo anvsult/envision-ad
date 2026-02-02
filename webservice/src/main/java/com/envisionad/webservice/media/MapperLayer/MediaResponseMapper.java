@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.MapperLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationResponseModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -39,7 +40,7 @@ public class MediaResponseMapper {
         }
 
         if (media.getMediaLocation() != null) {
-            MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(
+            MediaLocationResponseModel mediaLocationResponseModel = getMediaLocationResponseModel(
                     media);
 
             response.setMediaLocation(mediaLocationResponseModel);
@@ -48,8 +49,8 @@ public class MediaResponseMapper {
         return response;
     }
 
-    private static MediaResponseModel.MediaLocationResponseModel getMediaLocationResponseModel(Media media) {
-        MediaResponseModel.MediaLocationResponseModel mediaLocationResponseModel = new MediaResponseModel.MediaLocationResponseModel();
+    private static MediaLocationResponseModel getMediaLocationResponseModel(Media media) {
+        MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
         mediaLocationResponseModel.setId(media.getMediaLocation().getId());
         mediaLocationResponseModel.setName(media.getMediaLocation().getName());
         mediaLocationResponseModel.setDescription(media.getMediaLocation().getDescription());

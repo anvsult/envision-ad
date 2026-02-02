@@ -214,6 +214,8 @@
       "primary": "fr-CA",
       "fallback": "en"
     },
+    "openMap": "Ouvrir la carte",
+    "closeMap": "Fermer la carte",
     "browseactions": {
       "filters": {
         "actionName": "Filtres:",

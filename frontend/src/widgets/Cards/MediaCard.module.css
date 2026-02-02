@@ -3,11 +3,14 @@
     &:hover {
         .imagecontainer {
             transform: translateY(-5px);
-            transition: transform 0.2s ease-in-out; 
+            transition: transform 0.2s ease; 
         }
         .image {
             transform: scale(1.05);
-            transition: transform 0.2s ease-in-out
+            transition: transform 0.2s ease
+        }
+        .mediaTitle{
+            text-decoration: underline;
         }
     }
 }
@@ -15,11 +18,11 @@
 .imagecontainer {
     overflow: hidden;
     transform: translateY(0px);
-    transition: transform 0.2s ease-in-out
+    transition: transform 0.2s ease
 }
 
 .image {
     transform: scale(1.0);
-    transition: transform 0.2s ease-in-out
+    transition: transform 0.2s ease
 }
 

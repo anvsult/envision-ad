@@ -60,40 +60,38 @@ public class MediaSpecifications {
                 : cb.notEqual(root.get("id"), excludedId);
     }
 
-    // public static Specification<Media> locationContains(String locationName) {
-    // return (root, query, cb) -> {
-    //
-    // if (locationName == null || locationName.isBlank()) {
-    // return cb.conjunction();
-    // }
-    //
-    // Join<Media, MediaLocation> location =
-    // root.join("mediaLocation", JoinType.LEFT);
-    //
-    // List<String> tokens = Arrays.stream(locationName.split(","))
-    // .map(String::trim)
-    // .filter(s -> !s.isEmpty())
-    // .map(String::toLowerCase)
-    // .toList();
-    //
-    // List<Predicate> tokenPredicates = new ArrayList<>();
-    //
-    // for (String token : tokens) {
-    // String like = "%" + token + "%";
-    //
-    // tokenPredicates.add(
-    // cb.or(
-    // cb.like(cb.lower(location.get("postalCode")), like),
-    // cb.like(cb.lower(location.get("street")), like),
-    // cb.like(cb.lower(location.get("city")), like),
-    // cb.like(cb.lower(location.get("province")), like),
-    // cb.like(cb.lower(location.get("country")), like)
-    // )
-    // );
-    // }
-    //
-    // return cb.and(tokenPredicates.toArray(new Predicate[0]));
-    // };
-    // }
+    public static Specification<Media> withinBounds(List<Double> bounds) {
+        return (root, query, cb) -> {
+            if (bounds == null || bounds.size() != 4) {
+                return null;
+            }
 
+            double south = bounds.get(0);
+            double north = bounds.get(1);
+            double west = bounds.get(2);
+            double east = bounds.get(3);
+
+            double minLat = Math.min(south, north);
+            double maxLat = Math.max(south, north);
+
+            Join<Media, MediaLocation> location = root.join("mediaLocation", JoinType.INNER);
+
+            Predicate latPredicate =
+                cb.between(location.get("latitude"), minLat, maxLat);
+
+            Predicate lngPredicate;
+
+            if (west <= east) {
+                // Normal case: bounding box does not cross the International Date Line.
+                lngPredicate = cb.between(location.get("longitude"), west, east);
+            } else {
+                // Bounding box crosses the International Date Line. Select longitudes
+                // greater than or equal to west OR less than or equal to east.
+                Predicate westToDateLine = cb.greaterThanOrEqualTo(location.get("longitude"), west);
+                Predicate dateLineToEast = cb.lessThanOrEqualTo(location.get("longitude"), east);
+                lngPredicate = cb.or(westToDateLine, dateLineToEast);
+            }
+            return cb.and(latPredicate, lngPredicate);
+        };
+    }
 }

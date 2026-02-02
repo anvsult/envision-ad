@@ -1,0 +1,26 @@
+.media-marker a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.media-marker span {
+    background: var(--mantine-color-blue-6); /* Blue background */
+    color: white;
+    border: 1px solid white; 
+    border-radius: 50px; 
+    box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    font-size: medium;
+    font-weight: bold;
+    margin: 0px;
+    transition: all 0.1s ease;
+    width: fit-content;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    &:hover{
+        transform: scale(1.08);
+    }
+}

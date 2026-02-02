@@ -1,22 +1,37 @@
 'use client'
 
-import {ActionIcon, Autocomplete, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
+import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
 import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
 import { useTranslations } from "next-intl";
-import { IconSearch } from '@tabler/icons-react';
+import { IconMap, IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
-import { LatLngLiteral } from 'leaflet';
+import { LatLngBounds, LatLngLiteral, Map } from 'leaflet';
 import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
+import MapView from '@/widgets/Map/MapView';
+import { useMediaQuery } from '@mantine/hooks';
+
+function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
+    const isMobile = useMediaQuery("(max-width: 575px)");
+    return(
+            isMobile ? 
+            <Stack>{children}</Stack>:
+            <Group grow>{children}</Group>
+    )
+}
 
 function BrowsePage() {
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const defaultPos = {lat: 45.516476848520064, lng: -73.52053208741675};
+
   const t = useTranslations('browse');
   const sortNearest = t('browseactions.sort.nearest');
   const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
@@ -37,10 +52,17 @@ function BrowsePage() {
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
   const [sortBy, setSortBy] = useState<string>(SortOptions.priceAsc);
-
   
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
   const [locationStatus, setLocationStatus] = useState<LocationStatus>('idle');
+
+
+  // Map
+  const defaultZoom = 12;
+  const [mapVisible, setMapVisible] = useState<boolean>(false);
+  const [map, setMap] = useState<Map|null>(null);
+  const [bbox, setBbox] = useState<LatLngBounds | null>(null);
+  const [draftBbox, setDraftBbox] = useState<LatLngBounds | null>(null);
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -49,17 +71,10 @@ function BrowsePage() {
     minDailyImpressions: minImpressions,
     sort: sortBy,
     latLng: location,
+    bounds: bbox,
     page: activePage - 1,
     size: ITEMS_PER_PAGE
-  }), [
-    titleFilter,
-    minPrice,
-    maxPrice,
-    minImpressions,
-    sortBy,
-    location,
-    activePage
-  ]);
+  }), [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox, activePage]);
 
   const media = useMediaList({ 
     filteredMediaProps: filteredMediaProps, 
@@ -90,8 +105,10 @@ function BrowsePage() {
           }
 
           if (!cancelled) {
-            setLocation({ lat: address.lat, lng: address.lng });
+            const coords = { lat: address.lat, lng: address.lng };
+            setLocation(coords);
             setLocationStatus('success');
+            map?.setView(coords, defaultZoom);
           }
         }
       } catch (err: unknown) {
@@ -99,7 +116,9 @@ function BrowsePage() {
 
         if (err instanceof GeolocationPositionError && err.code === 1) {
           setLocationStatus('denied');
-          setSortBy(SortOptions.priceAsc);
+          if (sortBy === SpecialSort.nearest) {
+            setSortBy(SortOptions.priceAsc);
+          }
         } else {
           setLocationStatus('error');
         }
@@ -107,7 +126,13 @@ function BrowsePage() {
     }
     resolveLocation();
     return () => { cancelled = true };
-  }, [addressSearch, searchLanguage, sortBy, sortNearest]);
+  }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
+
+  useEffect(() => {
+    if (addressSearch) {
+      setMapVisible(true);
+    }
+  }, [addressSearch]);
 
 
   useEffect(() => {
@@ -129,87 +154,142 @@ function BrowsePage() {
   }, [draftAddressSearch, searchLanguage, sortNearest]);
 
 
+
+  const onMove = useCallback(() => {
+    setDraftBbox(map ? map.getBounds(): null)
+  }, [map])
+
+  useEffect(() => {
+    if (!draftBbox) {
+      setBbox(null);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setBbox(draftBbox);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+
+  }, [draftBbox])
+  
+  
+  useEffect(() => {
+    map?.on('moveend', onMove);
+    map?.on('load', onMove);
+  }, [map, onMove])
+
+  useEffect(() => {
+    if (mapVisible) {
+      onMove();
+    } else {
+      setDraftBbox(null);
+    }
+  }, [mapVisible, onMove])
+
   function filters(){
     return(
       <>
-        <FilterPricePopover minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
-        <FilterValuePopover value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
+        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+        <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
       </>
     )
   }
 
-  return (
-      <Container size="xl" py={20} px={80}>
-        <Stack gap="sm">
-          <Group grow>
-            <TextInput
-              placeholder={t('searchTitle')}
-              value={draftTitleFilter}
-              onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  setTitleFilter(draftTitleFilter);
-                }
-              }}
-              rightSection={
-                <ActionIcon onClick={() => setTitleFilter(draftTitleFilter)}>
-                  <IconSearch size={16} />
-                </ActionIcon>
-              }
-            />
-            <Autocomplete
-              placeholder={t('searchAddress')}
-              data={locationOptions.map((o) => o)}
-              
-              value={draftAddressSearch}
-              onChange={ setDraftAddressSearch }
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  setAddressSearch(draftAddressSearch);
-                  setSortBy(SpecialSort.nearest)
-                }
-              }}
-              rightSection={
-                <ActionIcon onClick={() => setAddressSearch(draftAddressSearch)}>
-                  <IconSearch size={16} />
-                </ActionIcon>
-              }
-            />
-          </Group>
-          <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
 
-          {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
-            <Stack h="20em" justify="center" align="center">
-              <Loader />
-            </Stack>
-          ) : locationStatus === 'denied' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text>{t('nomedia.locationDenied')}</Text>
-            </Stack>
-          ) : mediaStatus === 'error' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text>{t('nomedia.failedToLoad')}</Text>
-            </Stack>
-          ) : mediaStatus === 'empty' ? (
-            <Stack h="20em" justify="center" align="center">
-              <Text size="32px">{t('nomedia.notfound')}</Text>
-              <Text>{t('nomedia.changefilters')}</Text>
-            </Stack>
-          ) : (
-            <MediaCardGrid medias={media} />
-          )}
-          {totalPages > 1 && (
-            <Group justify="center" mt="md">
-              <Pagination
-                total={totalPages}
-                value={activePage}
-                onChange={setActivePage}
-                size="md"
-              />
-            </Group>
-          )}
-          
-        </Stack>
+  return (
+      <Container size={map ? 1600 : "xl"} w="100%" py={20} >
+        <Group grow h="100%" top="0" justify='flex-start'>
+          <Stack gap="sm" mih="95vh" top="0" justify='flex-start'>
+              <SearchMobileViewer>
+                <Autocomplete
+                  placeholder={t('searchAddress')}
+                  id='AddressSearch'
+                  data={locationOptions.map((o) => o)}
+                  
+                  value={draftAddressSearch}
+                  onChange={ setDraftAddressSearch }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      setAddressSearch(draftAddressSearch);
+                    }
+                  }}
+                  rightSection={
+                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)}>
+                      <IconSearch size={16} />
+                    </ActionIcon>
+                  }
+                />
+                <TextInput
+                  placeholder={t('searchTitle')}
+                  id='TitleSearch'
+                  value={draftTitleFilter}
+                  onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      setTitleFilter(draftTitleFilter);
+                    }
+                  }}
+                  rightSection={
+                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)}>
+                      <IconSearch size={16} />
+                    </ActionIcon>
+                  }
+                />
+                
+              </SearchMobileViewer>
+              <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
+              
+              {(isMobile && mapVisible) && 
+                <Container style={{position: "relative",  width: "100%"}} p="0">
+                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
+                </Container>
+              }
+
+            {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
+              <Stack h="20em" justify="center" align="center">
+                <Loader />
+              </Stack>
+            ) : locationStatus === 'denied' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text>{t('nomedia.locationDenied')}</Text>
+              </Stack>
+            ) : mediaStatus === 'error' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text>{t('nomedia.failedToLoad')}</Text>
+              </Stack>
+            ) : mediaStatus === 'empty' ? (
+              <Stack h="20em" justify="center" align="center">
+                <Text size="32px">{t('nomedia.notfound')}</Text>
+                <Text>{t('nomedia.changefilters')}</Text>
+              </Stack>
+            ) : (
+              <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
+            )}
+            {totalPages > 1 && (
+              <Group justify="center" mt="md">
+                <Pagination
+                  total={totalPages}
+                  value={activePage}
+                  onChange={setActivePage}
+                  size="md"
+                />
+              </Group>
+            )}
+          </Stack>
+
+        {(!isMobile && mapVisible) && 
+          <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
+          </Container>
+        }
+        
+        </Group>
+        <Group pos='fixed' justify='flex-end'  mt="xl" right='3vh' bottom='3vh' w='100%'>
+          <Button size='lg' rightSection={<IconMap size={30} />} onClick={() => setMapVisible(!mapVisible)} radius='xl' >
+            {mapVisible ? t('closeMap') : t('openMap')}
+          </Button>
+        </Group>
       </Container>
   );
 }
