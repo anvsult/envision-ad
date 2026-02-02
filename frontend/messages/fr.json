@@ -46,8 +46,31 @@
     "advertiserTitle": "Annonceur",
     "advertiser": {
       "overview": "Aperçu",
+      "metricOverview": "Métriques",
+      "adRequests": "demandes publicitaires",
       "advertisements": "Publicités",
-      "myAds": "Mes Campagnes"
+      "myAds": "Mes Campagnes",
+      "graphs": {
+        "totalAdSpend": "Dépenses publicitaires totales",
+        "activeCampaigns": "Campagnes actives",
+        "estimatedImpressions": "Impressions estimées",
+        "averageCPM": "CPM moyen",
+        "campaignPerformance": "Performance de la campagne",
+        "mediaDistribution": "Répartition des médias",
+        "comparedToLastWeek": "Par rapport à la semaine dernière",
+        "impressions": "Impressions",
+        "spent": "Dépenses",
+        "gym": "Gym",
+        "barbershop": "Barbier",
+        "groceryStore": "Épicerie",
+        "comparedToLastMonth": "Par rapport au mois dernier",
+        "comparedToLastYear": "Par rapport à l'année dernière"
+      },
+      "timeRanges": {
+        "weekly": "Hebdomadaire",
+        "monthly": "Mensuel",
+        "yearly": "Annuel"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
@@ -174,7 +197,7 @@
       "approve": "Le média a été approuvé",
       "deny": "Le média a été refusé"
     },
-    "otherMediaBy":"Autres médias par ",
+    "otherMediaBy": "Autres médias par ",
     "errors": {
       "error": "Erreur",
       "approveFailed": "L’approbation du média a échoué",
@@ -192,6 +215,8 @@
       "primary": "fr-CA",
       "fallback": "en"
     },
+    "openMap": "Ouvrir la carte",
+    "closeMap": "Fermer la carte",
     "browseactions": {
       "filters": {
         "actionName": "Filtres:",
@@ -427,6 +452,9 @@
       "requiredTitle": "Compte Stripe requis",
       "requiredMessage": "Pour créer des médias et recevoir des paiements, vous devez d'abord configurer votre compte Stripe. ",
       "requiredLink": "Complétez votre intégration Stripe ici."
+    },
+    "page": {
+      "title": "Mes Médias"
     }
   },
   "proofOfDisplay": {
@@ -801,7 +829,9 @@
       "types": {
         "video": "Vidéo",
         "image": "Image"
-      }
+      },
+      "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
+      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer."
     },
     "notifications": {
       "loadFailed": {

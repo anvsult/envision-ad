@@ -35,10 +35,10 @@ export default class BrowsePage {
     }
 
     //Locators 
-    searchTitleBar = () => this.page.getByRole('textbox', { name: 'Title' })
-    searchTitleEnter = () => this.page.getByRole('button').nth(3)
-    searchAddressBar = () => this.page.getByRole('textbox', { name: 'Address' })
-    searchAddressEnter = () => this.page.getByRole('button').nth(4)
+    searchAddressBar = () => this.page.locator('#AddressSearch')
+    searchAddressEnter = () => this.page.locator('#AddressSearchButton')
+    searchTitleBar = () => this.page.locator('#TitleSearch')
+    searchTitleEnter = () => this.page.locator('#TitleSearchButton')
 
 
     mediaLink = (title: string) => this.page.getByRole('link', { name: title })
@@ -46,11 +46,11 @@ export default class BrowsePage {
     noLocation = () => this.page.getByText('Could not get nearest media.')
     noMediaFound = () => this.page.getByText('No media found')
     //Filter Locators
-    filterPriceButton = () => this.page.getByRole('button', { name: 'Price ($)' })
+    filterPriceButton = () => this.page.locator('#PriceFilter-target')
     filterPriceFrom = () => this.page.getByRole('textbox', { name: 'From' })
     filterPriceTo = () => this.page.getByRole('textbox', { name: 'To' })
     filterPriceAdd = () => this.page.getByRole('button', { name: 'Add filter' })
-    filterMinimumImpressionsButton = () => this.page.getByRole('button', { name: 'Minimum impressions' })
+    filterMinimumImpressionsButton = () => this.page.locator('#ImpressionsFilter-target')
     filterMinimumImpressionsMinimum = () => this.page.getByRole('textbox', { name: 'Minimum impressions' })
     filterMinimumImpressionsAdd = () => this.page.getByRole('button', { name: 'Add filter' })
     //Sort Locators

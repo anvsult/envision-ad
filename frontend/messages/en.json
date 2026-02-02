@@ -46,8 +46,31 @@
     "advertiserTitle": "Advertiser",
     "advertiser": {
       "overview": "Overview",
+      "metricOverview": "Metrics",
+      "adRequests": "Ad requests",
       "advertisements": "Advertisements",
-      "myAds": "My Campaigns"
+      "myAds": "My Campaigns",
+      "graphs": {
+        "totalAdSpend": "Total Ad Spend",
+        "activeCampaigns": "Active Campaigns",
+        "estimatedImpressions": "Estimated Impressions",
+        "averageCPM": "Average CPM",
+        "campaignPerformance": "Campaign Performance",
+        "mediaDistribution": "Media Distribution",
+        "comparedToLastWeek": "Compared to last week",
+        "comparedToLastMonth": "Compared to last month",
+        "comparedToLastYear": "Compared to last year",
+        "impressions": "Impressions",
+        "spent": "Spent",
+        "gym": "Gym",
+        "barbershop": "Barbershop",
+        "groceryStore": "Grocery Store"
+      },
+      "timeRanges": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "yearly": "Yearly"
+      }
     },
     "adminTitle": "Admin",
     "admin": {
@@ -173,7 +196,7 @@
       "approve": "Media has been approved",
       "deny": "Media has been denied"
     },
-    "otherMediaBy":"Other medias from ",
+    "otherMediaBy": "Other medias from ",
     "errors": {
       "error": "Error",
       "approveFailed": "Media approval has failed",
@@ -191,6 +214,8 @@
       "primary": "en",
       "fallback": "fr-CA"
     },
+    "openMap": "Open Map",
+    "closeMap": "Close Map",
     "browseactions": {
       "filters": {
         "actionName": "Filter:",
@@ -426,6 +451,9 @@
       "requiredTitle": "Stripe Account Required",
       "requiredMessage": "To create media and receive payments, you must first set up your Stripe account. ",
       "requiredLink": "Complete your Stripe onboarding here."
+    },
+    "page": {
+      "title": "My Media"
     }
   },
   "proofOfDisplay": {
@@ -463,7 +491,9 @@
       "description": "The advertiser was notified by email for this campaign.",
       "uploadedFiles": "Uploaded: {count} file(s)"
     },
-    "page": { "title": "Proof of Display" },
+    "page": {
+      "title": "Proof of Display"
+    },
     "table": {
       "image": "Image",
       "name": "Name",
@@ -758,7 +788,9 @@
       "types": {
         "video": "Video",
         "image": "Image"
-      }
+      },
+      "noCampaigns": "No campaigns found. Add your first campaign to get started!",
+      "noAds": "No ads found in this campaign. Add your first ad to get started!"
     },
     "notifications": {
       "loadFailed": {
@@ -972,14 +1004,14 @@
       "continueOnboarding": "Continue Onboarding"
     },
     "notifications": {
-        "success": {
-            "title": "Onboarding Complete!",
-            "message": "Your account is ready. We're just confirming the final details with Stripe."
-        },
-        "refresh": {
-            "title": "Onboarding Session Expired",
-            "message": "Your session expired. Please try connecting again."
-        }
+      "success": {
+        "title": "Onboarding Complete!",
+        "message": "Your account is ready. We're just confirming the final details with Stripe."
+      },
+      "refresh": {
+        "title": "Onboarding Session Expired",
+        "message": "Your session expired. Please try connecting again."
+      }
     }
   },
   "invitation": {

@@ -67,4 +67,10 @@ public class AdCampaignController {
 
         return ResponseEntity.ok(deletedAd);
     }
+
+    @GetMapping("businesses/{businessId}/campaigns/active-count")
+    @PreAuthorize("hasAuthority('readAll:campaign')")
+    public ResponseEntity<Integer> getActiveCampaignCount(@PathVariable String businessId) {
+        return ResponseEntity.ok(adCampaignService.getActiveCampaignCount(businessId));
+    }
 }

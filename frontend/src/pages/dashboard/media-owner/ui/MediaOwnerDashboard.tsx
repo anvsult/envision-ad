@@ -6,7 +6,7 @@ import {MediaTable} from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
 import {useMediaList} from "@/pages/dashboard/media-owner/hooks/useMediaList";
 import {useMediaForm} from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import {useTranslations} from "next-intl";
-import {Alert, Button, Group, Loader, Pagination, Stack,} from "@mantine/core";
+import {Alert, Button, Group, Loader, Pagination, Stack, Title,} from "@mantine/core";
 import {modals} from "@mantine/modals";
 import {notifications} from "@mantine/notifications";
 import {WeeklyScheduleModel} from "@/entities/media";
@@ -268,7 +268,8 @@ export default function MediaOwnerPage() {
 
     return (
         <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
-            <Group justify="flex-start">
+            <Group justify="space-between">
+                <Title order={2}>{t('page.title')}</Title>
                 {isStripeLoading ? (
                     <Loader/>
                 ) : isStripeOnboarded ? (

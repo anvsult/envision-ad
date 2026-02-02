@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 
 interface FilterNumberInputProps{
+    id?: string;
     value?: number|null;
     setValue: React.Dispatch<React.SetStateAction<number | null>>;
     label: string;
@@ -35,12 +36,13 @@ export function FilterNumberInput({value, setValue, label, placeholder, prefix, 
 }
 
 interface FilterPopoverProps {
+    id?: string;
     buttonName: string;
     applyActions: ()=> void;
     children?: React.ReactNode;
 }
 
-function FilterPopover({buttonName, applyActions, children}: FilterPopoverProps){
+function FilterPopover({id, buttonName, applyActions, children}: FilterPopoverProps){
     const t = useTranslations('browse.browseactions.filters');
     const [opened, setOpened] = useState(false);
     
@@ -67,7 +69,7 @@ function FilterPopover({buttonName, applyActions, children}: FilterPopoverProps)
     }, [opened, handleApply]);
   
     return(
-        <Popover opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted >
+        <Popover id={id} opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted >
             <PopoverTarget>
                 <Button onClick={toggleOpen} variant="transparent" rightSection={<IconChevronDown/>}>{buttonName}</Button>
             </PopoverTarget>
@@ -85,13 +87,14 @@ function FilterPopover({buttonName, applyActions, children}: FilterPopoverProps)
 }
 
 export interface FilterPricePopoverProps{
+    id?: string;
     minPrice?: number|null;
     maxPrice?: number|null;
     setMinPrice: React.Dispatch<React.SetStateAction<number | null>>;
     setMaxPrice: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
-export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice}: FilterPricePopoverProps) {
+export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxPrice}: FilterPricePopoverProps) {
     const t = useTranslations('browse.browseactions.filters');
     const [draftMin, setDraftMin] = useState<number | null>(minPrice ?? null);
     const [draftMax, setDraftMax] = useState<number | null>(maxPrice ?? null);
@@ -103,7 +106,7 @@ export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice
     };
 
     return(
-        <FilterPopover buttonName={t('price')} applyActions={handleApply}>
+        <FilterPopover id={id} buttonName={t('price')} applyActions={handleApply}>
             <Group gap='lg'>
                 <FilterNumberInput
                     label={t('from')}
@@ -126,7 +129,7 @@ export function FilterPricePopover({minPrice, maxPrice, setMinPrice, setMaxPrice
     )
 }
 
-export function FilterValuePopover({value, setValue, label, placeholder, prefix}: FilterNumberInputProps) {
+export function FilterValuePopover({id, value, setValue, label, placeholder, prefix}: FilterNumberInputProps) {
     const [draftValue, setdraftValue] = useState<number | null>(value ?? null);
     
 
@@ -135,7 +138,7 @@ export function FilterValuePopover({value, setValue, label, placeholder, prefix}
     };
 
     return(
-        <FilterPopover buttonName={label} applyActions={handleApply}>
+        <FilterPopover id={id} buttonName={label} applyActions={handleApply}>
             <Group gap='lg'>
                 <FilterNumberInput
                     label={label}

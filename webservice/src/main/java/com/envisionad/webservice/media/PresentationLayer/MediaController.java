@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/v1/media")
 @Slf4j
-@CrossOrigin(origins = {"http://localhost:3000", "https://envision-ad.ca"})
+@CrossOrigin(origins = { "http://localhost:3000", "https://envision-ad.ca" })
 public class MediaController {
 
     private final MediaService mediaService;
@@ -64,6 +64,7 @@ public class MediaController {
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
+            @RequestParam(required = false) List<Double> bounds,
             @RequestParam(required = false) String excludedId
             ) {
 
@@ -80,6 +81,10 @@ public class MediaController {
             throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
         }
 
+        if (bounds != null && bounds.size() != 4) {
+            throw new IllegalArgumentException("bounds must have a length of exactly 4.");
+        }
+
         Page<MediaResponseModel> responsePage = mediaService.getAllFilteredActiveMedia(
                 pageable,
                 title,
@@ -90,11 +95,14 @@ public class MediaController {
                 specialSort,
                 userLat,
                 userLng,
+                bounds,
                 excludedId
                 ).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {

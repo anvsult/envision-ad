@@ -5,6 +5,7 @@ export const ROUTE_PERMISSIONS: Record<string, string | undefined> = {
     '/dashboard/media-owner/media': undefined,
     '/dashboard/media-owner/ad-requests': 'update:reservation',
 
+    '/dashboard/advertiser/metrics': 'read:campaign',
     '/dashboard/advertiser/campaigns': 'read:campaign',
     '/dashboard/advertiser/advertisements': 'readAll:reservation',
 

@@ -1,4 +1,4 @@
-import { LatLngLiteral } from "leaflet";
+import { LatLngBounds, LatLngLiteral } from "leaflet";
 
 export interface Media {
     id?: string;
@@ -59,8 +59,8 @@ export interface MediaLocation {
     street: string;
     city: string;
     postalCode: string;
-    latitude: number | null;
-    longitude: number | null;
+    latitude: number;
+    longitude: number;
 }
 
 export interface FilteredActiveMediaProps{
@@ -71,6 +71,7 @@ export interface FilteredActiveMediaProps{
     minDailyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
+    bounds?: LatLngBounds | null,
     excludedId?: string | null,
     page?: number,
     size?: number

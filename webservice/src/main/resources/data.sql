@@ -40,7 +40,7 @@ INSERT INTO media_location (media_location_id, name, description, country, provi
 VALUES
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Champlain College', 'A college campus where many students and teachers congregate to learn.',
      'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
-     45.501600, -73.554600),
+     45.516476848520064, -73.52053208741675),
 
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Entrepôt en Folie', 'Digital screen installed at the store’s main entrance, visible to all incoming customers. This placement delivers immediate brand exposure at the start of the shopping experience and benefits from consistent foot traffic.',
      'Canada', 'QC', 'Longueuil', '2685 Ch. de Chambly', 'J4L 1M3',
@@ -131,7 +131,7 @@ VALUES (
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407532/IMG_4963_ufrd4d.jpg',
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1769924600/btye7o2f5r2rs4dpufqr.jpg',
            '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
        ),
        (
@@ -194,7 +194,7 @@ VALUES (
                    {"dayOfWeek": "sunday",   "isActive": false, "startTime": null, "endTime": null}
                ]
            }'::jsonb,
-           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1768407676/woiadydpsfax7aiajiee.jpg',
+           'ACTIVE', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1769924677/thk7w8zdkce1jcyjheix.jpg',
            '{"bl": {"x": 0.1, "y": 0.9}, "br": {"x": 0.9, "y": 0.9}, "tl": {"x": 0.1, "y": 0.1}, "tr": {"x": 0.9, "y": 0.1}}'
        ),
        (

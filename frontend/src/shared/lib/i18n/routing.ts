@@ -1,4 +1,4 @@
-import {defineRouting} from 'next-intl/routing';
+import { defineRouting } from 'next-intl/routing';
 
 export const routing = defineRouting({
   locales: ['en', 'fr'],
@@ -48,6 +48,14 @@ export const routing = defineRouting({
     },
 
     //advertiser dashboard
+    '/dashboard/advertiser/metrics': {
+      'en': '/dashboard/advertiser/metrics',
+      'fr': '/tableau-de-bord/annonceur/metriques'
+    },
+    '/dashboard/advertiser/overview': {
+      'en': '/dashboard/advertiser/overview',
+      'fr': '/tableau-de-bord/annonceur/apercu'
+    },
     '/dashboard/advertiser/campaigns': {
       'en': '/dashboard/advertiser/campaigns',
       'fr': '/tableau-de-bord/annonceur/campagnes'
