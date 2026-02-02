@@ -177,12 +177,15 @@ function BrowsePage() {
   useEffect(() => {
     map?.on('moveend', onMove);
     map?.on('load', onMove);
+  }, [map, onMove])
+
+  useEffect(() => {
     if (mapVisible) {
       onMove();
     } else {
       setDraftBbox(null);
     }
-  }, [map, mapVisible, onMove])
+  }, [mapVisible, onMove])
 
   function filters(){
     return(
