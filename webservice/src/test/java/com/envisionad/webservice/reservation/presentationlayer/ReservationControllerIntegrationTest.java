@@ -1,10 +1,8 @@
 package com.envisionad.webservice.reservation.presentationlayer;
 
-import com.envisionad.webservice.advertisement.dataaccesslayer.Ad;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
-import com.envisionad.webservice.advertisement.dataaccesslayer.AdDuration;
 import com.envisionad.webservice.business.dataaccesslayer.*;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -67,9 +65,6 @@ class ReservationControllerIntegrationTest {
 
     @Autowired
     private AdCampaignRepository adCampaignRepository;
-
-    @Autowired
-    private com.envisionad.webservice.advertisement.dataaccesslayer.AdRepository adRepository;
 
     @Autowired
     private BusinessRepository businessRepository;
@@ -357,60 +352,6 @@ class ReservationControllerIntegrationTest {
 
         // Verify no reservation was saved
         assertEquals(0, reservationRepository.count());
-    }
-
-    @Test
-    void createReservation_WithInsufficientLoopDuration_ShouldReturn400() {
-        // Arrange - Create a first campaign with ads that fill the loop duration (30 seconds)
-        AdCampaign firstCampaign = adCampaignRepository.findByCampaignId_CampaignId(this.campaignId);
-
-        Ad ad1 = new Ad();
-        ad1.setCampaign(firstCampaign);
-        ad1.setAdDurationSeconds(AdDuration.S30); // 30 seconds - fills the entire loop
-        adRepository.save(ad1);
-
-        // Create a confirmed reservation for the first campaign
-        Reservation existingReservation = new Reservation();
-        existingReservation.setReservationId(UUID.randomUUID().toString());
-        existingReservation.setMediaId(UUID.fromString(this.mediaId));
-        existingReservation.setCampaignId(this.campaignId);
-        existingReservation.setAdvertiserId(USER_ID);
-        existingReservation.setStatus(ReservationStatus.CONFIRMED);
-        existingReservation.setStartDate(LocalDateTime.now().plusDays(1));
-        existingReservation.setEndDate(LocalDateTime.now().plusDays(8));
-        existingReservation.setTotalPrice(new BigDecimal("150.00"));
-        reservationRepository.save(existingReservation);
-
-        // Create a second campaign with ads
-        AdCampaign secondCampaign = new AdCampaign();
-        secondCampaign.setCampaignId(new AdCampaignIdentifier());
-        secondCampaign.setBusinessId(firstCampaign.getBusinessId());
-        secondCampaign.setName("Second Campaign");
-        adCampaignRepository.save(secondCampaign);
-
-        Ad ad2 = new Ad();
-        ad2.setCampaign(secondCampaign);
-        ad2.setAdDurationSeconds(AdDuration.S10); // Any duration - loop is already full
-        adRepository.save(ad2);
-
-        // Try to create a new reservation with the second campaign during overlapping dates
-        ReservationRequestModel requestModel = new ReservationRequestModel();
-        requestModel.setCampaignId(secondCampaign.getCampaignId().getCampaignId());
-        requestModel.setStartDate(LocalDateTime.now().plusDays(2));
-        requestModel.setEndDate(LocalDateTime.now().plusDays(9));
-
-        // Act & Assert - Should fail because loop duration is already full
-        webTestClient.post()
-                .uri(BASE_URI_RESERVATIONS, this.mediaId)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .headers(headers -> headers.setBearerAuth("mock-token"))
-                .body(BodyInserters.fromValue(requestModel))
-                .exchange()
-                .expectStatus().isBadRequest();
-
-        // Verify only the existing reservation exists
-        assertEquals(1, reservationRepository.count());
     }
 
     @Test

@@ -14,7 +14,6 @@ import com.envisionad.webservice.reservation.dataaccesslayer.ReservationReposito
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
-import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
 import com.envisionad.webservice.reservation.exceptions.PaymentVerificationException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
@@ -111,9 +110,6 @@ public class ReservationServiceImpl implements ReservationService {
 //        if (businessId.equals(mediaOwnerBusinessId)) {
 //            throw new IllegalStateException("A business cannot reserve its own media");
 //        }
-
-        // 4. Validate media availability
-        validateMediaHasLoopDurationLeft(media, requestModel);
 
         // 5. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
@@ -317,23 +313,5 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    private void validateMediaHasLoopDurationLeft(Media media, ReservationRequestModel requestModel) {
-        List<AdCampaign> alreadyReservedCampaigns = reservationRepository.findAllActiveReservationsByMediaIdAndDateRange(
-                        media.getId(),
-                        requestModel.getStartDate(),
-                        requestModel.getEndDate()
-                ).stream()
-                .map(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()))
-                .toList();
-
-        int totalReservedDuration = alreadyReservedCampaigns.stream()
-                .flatMap(campaign -> campaign.getAds().stream())
-                .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
-                .sum();
-
-        if (media.getLoopDuration() <= totalReservedDuration) {
-            throw new InsufficientLoopDurationException();
-        }
-    }
 }
 
