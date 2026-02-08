@@ -5,9 +5,14 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentif
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
+import com.envisionad.webservice.reservation.exceptions.BadReservationRequestException;
+import com.envisionad.webservice.reservation.exceptions.ReservationAlreadyProcessedException;
+import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -210,4 +215,161 @@ class ReservationServiceImplUnitTest {
         verify(adCampaignRepository, never()).findAllByCampaignId_CampaignIdIn(anyList());
         verify(jwtUtils).validateUserIsEmployeeOfBusiness(mediaToken, BUSINESS_ID);
     }
+
+    @Test
+    void updateReservationStatus_whenValidPending_shouldApprove() {
+        // Arrange
+        String mediaId = UUID.randomUUID().toString();
+        String resId = "res-123";
+        stubMediaLookup(mediaId);
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(resId);
+        reservation.setStatus(ReservationStatus.PENDING);
+
+        when(reservationRepository.findByReservationId(resId)).thenReturn(Optional.of(reservation));
+        when(reservationResponseMapper.entityToResponseModel(any())).thenReturn(new ReservationResponseModel());
+
+        // Act
+        ReservationResponseModel result = reservationService.updateReservationStatus(
+                mediaToken, mediaId, resId, ReservationStatus.APPROVED);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(ReservationStatus.APPROVED, reservation.getStatus());
+        verify(reservationRepository).save(reservation);
+    }
+
+    @Test
+    void updateReservationStatus_whenMediaNotFound_shouldThrowException() {
+        String mediaId = UUID.randomUUID().toString();
+        when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.empty());
+
+        assertThrows(MediaNotFoundException.class, () ->
+                reservationService.updateReservationStatus(mediaToken, mediaId, "any", ReservationStatus.APPROVED));
+    }
+
+    @Test
+    void updateReservationStatus_whenAlreadyProcessed_shouldThrowException() {
+        String mediaId = UUID.randomUUID().toString();
+        stubMediaLookup(mediaId);
+
+        Reservation reservation = new Reservation();
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        when(reservationRepository.findByReservationId("res-123")).thenReturn(Optional.of(reservation));
+
+        assertThrows(ReservationAlreadyProcessedException.class, () ->
+                reservationService.updateReservationStatus(mediaToken, mediaId, "res-123", ReservationStatus.APPROVED));
+    }
+
+    @Test
+    void updateReservationStatus_whenSettingInvalidStatus_shouldThrowException() {
+        String mediaId = UUID.randomUUID().toString();
+        stubMediaLookup(mediaId);
+
+        Reservation reservation = new Reservation();
+        reservation.setStatus(ReservationStatus.PENDING);
+        when(reservationRepository.findByReservationId("res-123")).thenReturn(Optional.of(reservation));
+
+        assertThrows(BadReservationRequestException.class, () ->
+                reservationService.updateReservationStatus(mediaToken, mediaId, "res-123", ReservationStatus.PENDING));
+    }
+
+    @Test
+    void getAllReservationByMediaOwnerBusinessId_shouldFilterAndPopulateNames() {
+        // Arrange
+        String myBusinessId = UUID.randomUUID().toString();
+        UUID mediaId = UUID.randomUUID();
+
+        // Reservation 1: Belongs to my business
+        Reservation r1 = new Reservation();
+        r1.setMediaId(mediaId);
+        r1.setCampaignId("camp-1");
+
+        // Reservation 2: Belongs to someone else
+        Reservation r2 = new Reservation();
+        r2.setMediaId(UUID.randomUUID());
+
+        when(reservationRepository.findAll()).thenReturn(List.of(r1, r2));
+
+        // Mock Media lookup for the filter
+        Media myMedia = new Media();
+        myMedia.setBusinessId(UUID.fromString(myBusinessId));
+        when(mediaRepository.findById(mediaId)).thenReturn(Optional.of(myMedia));
+
+        // Mock mapping and Campaign lookup
+        ReservationResponseModel model = new ReservationResponseModel();
+        model.setCampaignId("camp-1");
+        when(reservationResponseMapper.entityToResponseModel(r1)).thenReturn(model);
+
+        AdCampaign campaign = mock(AdCampaign.class);
+        AdCampaignIdentifier capId = new AdCampaignIdentifier("camp-1");
+        when(campaign.getCampaignId()).thenReturn(capId);
+        when(campaign.getName()).thenReturn("Verified Campaign");
+        when(adCampaignRepository.findAllByCampaignId_CampaignIdIn(anyList())).thenReturn(List.of(campaign));
+
+        // Act
+        List<ReservationResponseModel> result = reservationService.getAllReservationByMediaOwnerBusinessId(mediaToken, myBusinessId);
+
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Verified Campaign", result.get(0).getCampaignName());
+        verify(jwtUtils).validateUserIsEmployeeOfBusiness(mediaToken, myBusinessId);
+    }
+
+    @Test
+    void getAllReservationByMediaOwnerBusinessId_whenUnauthorized_shouldThrowException() {
+        String businessId = UUID.randomUUID().toString();
+        doThrow(new org.springframework.security.access.AccessDeniedException("Unauthorized"))
+                .when(jwtUtils).validateUserIsEmployeeOfBusiness(mediaToken, businessId);
+
+        assertThrows(org.springframework.security.access.AccessDeniedException.class, () ->
+                reservationService.getAllReservationByMediaOwnerBusinessId(mediaToken, businessId));
+    }
+
+    @Test
+    void updateReservationStatus_whenReservationNotFound_shouldThrowException() {
+        String mediaId = UUID.randomUUID().toString();
+        String resId = "non-existent-res";
+        stubMediaLookup(mediaId);
+
+        when(reservationRepository.findByReservationId(resId)).thenReturn(Optional.empty());
+
+        assertThrows(ReservationNotFoundException.class, () ->
+                reservationService.updateReservationStatus(mediaToken, mediaId, resId, ReservationStatus.APPROVED));
+    }
+
+    @Test
+    void getAllReservationByMediaOwnerBusinessId_whenMediaRecordMissing_shouldSkipReservation() {
+        String myBusinessId = UUID.randomUUID().toString();
+        Reservation r1 = new Reservation();
+        r1.setMediaId(UUID.randomUUID());
+
+        when(reservationRepository.findAll()).thenReturn(List.of(r1));
+        // Simulate media record being missing from DB
+        when(mediaRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+
+        List<ReservationResponseModel> result = reservationService.getAllReservationByMediaOwnerBusinessId(mediaToken, myBusinessId);
+
+        assertTrue(result.isEmpty());
+        verify(reservationResponseMapper, never()).entityToResponseModel(any());
+    }
+
+    @Test
+    void updateReservationStatus_whenValidPending_shouldReject() {
+        String mediaId = UUID.randomUUID().toString();
+        String resId = "res-456";
+        stubMediaLookup(mediaId);
+
+        Reservation reservation = new Reservation();
+        reservation.setStatus(ReservationStatus.PENDING);
+        when(reservationRepository.findByReservationId(resId)).thenReturn(Optional.of(reservation));
+        when(reservationResponseMapper.entityToResponseModel(any())).thenReturn(new ReservationResponseModel());
+
+        reservationService.updateReservationStatus(mediaToken, mediaId, resId, ReservationStatus.DENIED);
+
+        assertEquals(ReservationStatus.DENIED, reservation.getStatus());
+        verify(reservationRepository).save(reservation);
+    }
+
 }
