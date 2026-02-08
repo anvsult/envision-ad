@@ -36,7 +36,8 @@
       "media": "Media",
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests",
-      "proof": "Submit Proof"
+      "proof": "Submit Proof",
+      "locations": "My Locations"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -1056,5 +1057,106 @@
     "checkingStatus": "Checking account status...",
     "errorTitle": "Connection Error",
     "connectionError": "Failed to connect Stripe account. Please try again."
+  },
+  "mediaLocations": {
+    "page": {
+      "title": "My Locations",
+      "createButton": "Create Location"
+    },
+    "table": {
+      "noLocations": "No locations found. Create one to get started!",
+      "assignMedia": "Assign Media",
+      "assignedMedia": "Assigned Media",
+      "mediaTitle": "Title",
+      "mediaType": "Type",
+      "resolution": "Resolution",
+      "noAssignedMedia": "No media assigned yet."
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Load Failed",
+        "message": "Failed to load media locations."
+      },
+      "create": {
+        "success": {
+          "title": "Success",
+          "message": "Media location created successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to create media location."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Success",
+          "message": "Media location deleted successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to delete media location."
+        }
+      }
+    },
+    "confirmations": {
+      "delete": {
+        "title": "Delete Location",
+        "message": "Are you sure you want to delete this location?",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "CreateMediaLocationModal": {
+    "title": "Create Media Location",
+    "validation": {
+      "nameTooShort": "Name is too short",
+      "required": "Required"
+    },
+    "labels": {
+      "name": "Name",
+      "street": "Street",
+      "city": "City",
+      "province": "Province/State",
+      "country": "Country",
+      "postalCode": "Postal Code",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "placeholders": {
+      "name": "E.g. Downtown Billboards",
+      "street": "123 Main St",
+      "city": "New York",
+      "province": "NY",
+      "country": "USA",
+      "postalCode": "10001"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create"
+    }
+  },
+  "AssignMediaModal": {
+    "title": "Assign Media",
+    "description": "Select a media item to display at this location.",
+    "selectMedia": "Select Media",
+    "selectPlaceholder": "Choose a media",
+    "noMediaFound": "No media found",
+    "cancel": "Cancel",
+    "assign": "Assign",
+    "success": {
+      "title": "Success",
+      "message": "Media assigned successfully"
+    },
+    "errors": {
+      "fetchFailed": {
+        "title": "Error",
+        "message": "Failed to fetch media list"
+      },
+      "assignFailed": {
+        "title": "Error",
+        "message": "Failed to assign media"
+      }
+    }
   }
 }

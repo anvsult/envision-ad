@@ -20,22 +20,22 @@ import {
   Box,
   Tooltip,
 } from "@mantine/core";
-import {IconAlertCircle, IconArrowLeft} from "@tabler/icons-react";
-import {BackButton} from "@/widgets/BackButton";
-import {useParams} from "next/navigation";
-import {useEffect, useMemo, useState} from "react";
-import {getMediaById, SpecialSort} from "@/features/media-management/api";
-import {getMediaReservations} from "@/features/reservation-management/api";
-import {useLocale, useTranslations} from "next-intl";
-import {getJoinedAddress, Media} from "@/entities/media";
-import {ReserveMediaModal} from "@/widgets/Media/Modals/ReserveMediaModal";
-import {MediaCardCarouselLoader} from "@/widgets/Carousel/CardCarousel";
-import {FilteredActiveMediaProps} from "@/entities/media/model/media";
-import {getOrganizationById} from "@/features/organization-management/api";
-import {LatLngLiteral} from "leaflet";
-import {ReservationStatus} from "@/entities/reservation";
-import {usePermissions} from "@/app/providers";
-import {useUser} from "@auth0/nextjs-auth0/client";
+import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
+import { BackButton } from "@/widgets/BackButton";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { getMediaById, SpecialSort } from "@/features/media-management/api";
+import { getMediaReservations } from "@/features/reservation-management/api";
+import { useLocale, useTranslations } from "next-intl";
+import { getJoinedAddress, Media } from "@/entities/media";
+import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
+import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
+import { FilteredActiveMediaProps } from "@/entities/media/model/media";
+import { getOrganizationById } from "@/features/organization-management/api";
+import { LatLngLiteral } from "leaflet";
+import { ReservationStatus } from "@/entities/reservation";
+import { usePermissions } from "@/app/providers";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -382,17 +382,17 @@ export default function MediaDetailsPage() {
                     {priceLabel}
                   </Text>
                   <Tooltip
-                      label={!user.user ? t("loginRequired") : t("noPermission")}
-                      disabled={!!user.user && permissions.includes("create:reservation")}
-                      position="top"
-                      withArrow
+                    label={!user.user ? t("loginRequired") : t("noPermission")}
+                    disabled={!!user.user && permissions.includes("create:reservation")}
+                    position="top"
+                    withArrow
                   >
                     <Box w="100%">
                       <Button
-                          radius="xl"
-                          fullWidth
-                          onClick={() => setReserveModalOpen(true)}
-                          disabled={!user.user || !permissions.includes("create:reservation")}
+                        radius="xl"
+                        fullWidth
+                        onClick={() => setReserveModalOpen(true)}
+                        disabled={!user.user || !permissions.includes("create:reservation")}
                       >
                         {t("reserveButton")}
                       </Button>

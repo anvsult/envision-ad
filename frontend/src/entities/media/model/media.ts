@@ -53,7 +53,7 @@ export interface MediaListResponseDTO {
 export interface MediaLocation {
     id: string | null;
     name: string;
-    description: string;
+
     country: string;
     province: string;
     street: string;
@@ -63,7 +63,7 @@ export interface MediaLocation {
     longitude: number;
 }
 
-export interface FilteredActiveMediaProps{
+export interface FilteredActiveMediaProps {
     title?: string | null,
     businessId?: string | null,
     minPrice?: number | null,
@@ -111,7 +111,7 @@ export const MediaAdStatusMap = {
 
 export type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
 
-export interface UseMediaListProps{
+export interface UseMediaListProps {
     filteredMediaProps: FilteredActiveMediaProps,
     loadingLocation?: boolean
     setMediaStatus?: React.Dispatch<React.SetStateAction<MediaStatus>>

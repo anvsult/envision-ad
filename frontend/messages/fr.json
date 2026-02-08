@@ -1057,5 +1057,106 @@
     "checkingStatus": "Vérification de l'état du compte...",
     "errorTitle": "Erreur de connexion",
     "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
+  },
+  "mediaLocations": {
+    "page": {
+      "title": "Mes Emplacements",
+      "createButton": "Créer un emplacement"
+    },
+    "table": {
+      "noLocations": "Aucun emplacement trouvé. Créez-en un pour commencer !",
+      "assignMedia": "Attribuer un média",
+      "assignedMedia": "Médias attribués",
+      "mediaTitle": "Titre",
+      "mediaType": "Type",
+      "resolution": "Résolution",
+      "noAssignedMedia": "Aucun média attribué pour le moment."
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Échec du chargement",
+        "message": "Impossible de charger les emplacements médias."
+      },
+      "create": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média créé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création de l'emplacement média."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média supprimé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la suppression de l'emplacement média."
+        }
+      }
+    },
+    "confirmations": {
+      "delete": {
+        "title": "Supprimer l'emplacement",
+        "message": "Êtes-vous sûr de vouloir supprimer cet emplacement ?",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "CreateMediaLocationModal": {
+    "title": "Créer un emplacement média",
+    "validation": {
+      "nameTooShort": "Le nom est trop court",
+      "required": "Requis"
+    },
+    "labels": {
+      "name": "Nom",
+      "street": "Rue",
+      "city": "Ville",
+      "province": "Province/État",
+      "country": "Pays",
+      "postalCode": "Code Postal",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "placeholders": {
+      "name": "Ex. Panneaux Centre-ville",
+      "street": "123 Rue Principale",
+      "city": "Montréal",
+      "province": "QC",
+      "country": "Canada",
+      "postalCode": "H1A 1A1"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "create": "Créer"
+    }
+  },
+  "AssignMediaModal": {
+    "title": "Attribuer un média",
+    "description": "Sélectionnez un média à afficher à cet emplacement.",
+    "selectMedia": "Sélectionner un média",
+    "selectPlaceholder": "Choisir un média",
+    "noMediaFound": "Aucun média trouvé",
+    "cancel": "Annuler",
+    "assign": "Attribuer",
+    "success": {
+      "title": "Succès",
+      "message": "Média attribué avec succès"
+    },
+    "errors": {
+      "fetchFailed": {
+        "title": "Erreur",
+        "message": "Échec de la récupération de la liste des médias"
+      },
+      "assignFailed": {
+        "title": "Erreur",
+        "message": "Échec de l'attribution du média"
+      }
+    }
   }
 }

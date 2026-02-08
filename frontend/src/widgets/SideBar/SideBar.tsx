@@ -11,6 +11,7 @@ import {
     IconFileDescription,
     IconInbox,
     IconSpeakerphone,
+    IconMapPin,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";
@@ -29,6 +30,16 @@ export default function SideBar() {
                 label={t("media-owner.media")}
                 leftSection={<IconDeviceTv size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/media-owner/media")}
+            />
+        ),
+        (permissions.includes('create:media')) && (
+            <NavLink
+                key="locations"
+                component={Link}
+                href="/dashboard/media-owner/locations"
+                label={t("media-owner.locations")}
+                leftSection={<IconMapPin size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/media-owner/locations")}
             />
         ),
         (permissions.includes("create:media")) && (
@@ -65,14 +76,14 @@ export default function SideBar() {
             />
         ),
         (permissions.includes('read:campaign')) && (
-                <NavLink
-                    key="campaigns"
-                    component={Link}
-                    href="/dashboard/advertiser/campaigns"
-                    label={t("advertiser.myAds")}
-                    leftSection={<IconAd size={20} stroke={1.5} />}
-                    active={pathname?.endsWith("/advertiser/campaigns")}
-                />
+            <NavLink
+                key="campaigns"
+                component={Link}
+                href="/dashboard/advertiser/campaigns"
+                label={t("advertiser.myAds")}
+                leftSection={<IconAd size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/campaigns")}
+            />
         ),
         (permissions.includes('readAll:reservation')) && (
             <NavLink
