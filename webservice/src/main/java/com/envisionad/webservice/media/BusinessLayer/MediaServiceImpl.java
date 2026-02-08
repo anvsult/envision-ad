@@ -5,6 +5,7 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
@@ -138,15 +139,17 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public Media updateMedia(Media media) {
         Media existingMedia = mediaRepository.findById(media.getId())
-                .orElseThrow(() -> new RuntimeException("Media not found with id: " + media.getId()));
+                .orElseThrow(() -> new MediaNotFoundException(media.getId().toString()));
 
         String oldUrl = existingMedia.getImageUrl();
         String newUrl = media.getImageUrl();
 
-        // Delete old image if the URL changed
-        if (newUrl != null && !newUrl.equals(oldUrl)) {
-            String oldPublicId = CloudinaryConfig.getPublicIdFromUrl(oldUrl);
-            String oldResourceType = CloudinaryConfig.getResourceTypeFromUrl(oldUrl);
+        String normalizedOldUrl = (oldUrl != null && !oldUrl.trim().isEmpty()) ? oldUrl.trim() : null;
+        String normalizedNewUrl = (newUrl != null && !newUrl.trim().isEmpty()) ? newUrl.trim() : null;
+
+        if (normalizedOldUrl != null && !Objects.equals(normalizedNewUrl, normalizedOldUrl)) {
+            String oldPublicId = CloudinaryConfig.getPublicIdFromUrl(normalizedOldUrl);
+            String oldResourceType = CloudinaryConfig.getResourceTypeFromUrl(normalizedOldUrl);
 
             if (oldPublicId != null) {
                 try {
@@ -159,13 +162,14 @@ public class MediaServiceImpl implements MediaService {
                 }
             }
         }
+        media.setImageUrl(normalizedNewUrl);
         return mediaRepository.save(media);
     }
 
     @Override
     public void deleteMedia(UUID id) {
         Media media = mediaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Media not found"));
+                .orElseThrow(() -> new MediaNotFoundException(id.toString()));
 
         String publicId = CloudinaryConfig.getPublicIdFromUrl(media.getImageUrl());
         String resourceType = CloudinaryConfig.getResourceTypeFromUrl(media.getImageUrl());

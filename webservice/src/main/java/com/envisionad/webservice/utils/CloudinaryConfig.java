@@ -42,7 +42,7 @@ public class CloudinaryConfig {
              // - Any transformation segments (ex: a cropped image will change the URL to c_fill,w_400/)
              // - The version segment (ex: v157121/)
              // And gets the rest as the Public ID
-             String regex = "/upload/(?:[a-zA-Z0-9_,=]+/)*(?:v\\d+/)?(.+?)(?:\\.[a-z0-9]+)?$";
+             String regex = "/upload/(?:[^/]+/)*(?:v\\d+/)?(.+?)(?:\\.[a-z0-9]+)?$";
              Pattern pattern = Pattern.compile(regex);
              Matcher matcher = pattern.matcher(url);
 
@@ -50,6 +50,7 @@ public class CloudinaryConfig {
                  return matcher.group(1);
              }
          } catch (Exception e) {
+             log.error("Error parsing Public ID from URL: {}", e.getMessage());
              return null;
          }
          return null;

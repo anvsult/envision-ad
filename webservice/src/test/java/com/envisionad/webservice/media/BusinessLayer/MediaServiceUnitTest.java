@@ -664,9 +664,7 @@ class MediaServiceUnitTest {
         mediaService.deleteMedia(id);
 
         // Assert
-        ArgumentCaptor<Map> mapCaptor = ArgumentCaptor.forClass(Map.class);
-        verify(uploader).destroy(eq("my_video"), mapCaptor.capture());
-
+        ArgumentCaptor<Map<String, Object>> mapCaptor = ArgumentCaptor.forClass(Map.class);        verify(uploader).destroy(eq("my_video"), mapCaptor.capture());
         assertEquals("video", mapCaptor.getValue().get("resource_type"));
     }
 
