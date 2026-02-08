@@ -65,8 +65,7 @@ public class MediaController {
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
             @RequestParam(required = false) List<Double> bounds,
-            @RequestParam(required = false) String excludedId
-            ) {
+            @RequestParam(required = false) String excludedId) {
 
         if (minPrice != null && minPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("minPrice must be non-negative.");
@@ -96,13 +95,10 @@ public class MediaController {
                 userLat,
                 userLng,
                 bounds,
-                excludedId
-                ).map(responseMapper::entityToResponseModel);
+                excludedId).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {

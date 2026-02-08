@@ -96,7 +96,6 @@ class MediaControllerIntegrationTest {
                 when(mockStripeAccount.isChargesEnabled()).thenReturn(true);
                 when(mockStripeAccount.isPayoutsEnabled()).thenReturn(true);
                 when(stripeAccountRepository.findByBusinessId(anyString())).thenReturn(Optional.of(mockStripeAccount));
-                location.setDescription("Large DIGITAL billboard");
                 location.setCountry("Canada");
                 location.setProvince("ON");
                 location.setCity("Toronto");

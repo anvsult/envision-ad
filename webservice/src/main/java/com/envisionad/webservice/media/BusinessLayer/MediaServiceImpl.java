@@ -1,9 +1,11 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
@@ -26,10 +28,13 @@ public class MediaServiceImpl implements MediaService {
 
     private final MediaRepository mediaRepository;
     private final StripeAccountRepository stripeAccountRepository;
+    private final MediaLocationRepository mediaLocationRepository;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository,
+            MediaLocationRepository mediaLocationRepository) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
+        this.mediaLocationRepository = mediaLocationRepository;
     }
 
     @Override
@@ -49,8 +54,7 @@ public class MediaServiceImpl implements MediaService {
             Double userLat,
             Double userLng,
             List<Double> bounds,
-            String excludedId
-            ) {
+            String excludedId) {
 
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
@@ -92,10 +96,8 @@ public class MediaServiceImpl implements MediaService {
                                 userLat,
                                 userLng,
                                 m.getMediaLocation().getLatitude(),
-                                m.getMediaLocation().getLongitude()
-                        );
-                    }
-            ));
+                                m.getMediaLocation().getLongitude());
+                    }));
 
             int pageStart = (int) pageable.getOffset();
             int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
@@ -126,8 +128,10 @@ public class MediaServiceImpl implements MediaService {
 
         Optional<StripeAccount> stripeAccountOpt = stripeAccountRepository.findByBusinessId(businessId.toString());
 
-        if (stripeAccountOpt.isEmpty() || !stripeAccountOpt.get().isOnboardingComplete() || !stripeAccountOpt.get().isChargesEnabled() || !stripeAccountOpt.get().isPayoutsEnabled()) {
-            throw new StripeAccountNotOnboardedException("Your business must have a fully configured Stripe account to create media. Please complete your Stripe onboarding.");
+        if (stripeAccountOpt.isEmpty() || !stripeAccountOpt.get().isOnboardingComplete()
+                || !stripeAccountOpt.get().isChargesEnabled() || !stripeAccountOpt.get().isPayoutsEnabled()) {
+            throw new StripeAccountNotOnboardedException(
+                    "Your business must have a fully configured Stripe account to create media. Please complete your Stripe onboarding.");
         }
 
         return mediaRepository.save(media);
@@ -143,7 +147,32 @@ public class MediaServiceImpl implements MediaService {
         mediaRepository.deleteById(id);
     }
 
-    // Calculating distance using the Haversine Formula
+    @Override
+    public Media assignMediaToLocation(UUID mediaId, UUID locationId) {
+        Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new IllegalArgumentException("Media not found: " + mediaId));
 
+        MediaLocation location = mediaLocationRepository.findById(locationId)
+                .orElseThrow(() -> new IllegalArgumentException("Media Location not found: " + locationId));
+
+        // Validate that Media and Location belong to the same business
+        if (!media.getBusinessId().equals(location.getBusinessId())) {
+            throw new IllegalArgumentException("Media and Location must belong to the same business.");
+        }
+
+        media.setMediaLocation(location);
+        return mediaRepository.save(media);
+    }
+
+    @Override
+    public Media unassignMediaFromLocation(UUID mediaId) {
+        Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new IllegalArgumentException("Media not found: " + mediaId));
+
+        media.setMediaLocation(null);
+        return mediaRepository.save(media);
+    }
+
+    // Calculating distance using the Haversine Formula
 
 }
