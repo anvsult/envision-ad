@@ -17,4 +17,6 @@ public interface MediaLocationService {
     void deleteMediaLocation(UUID id);
 
     void assignMediaToLocation(UUID locationId, UUID mediaId);
+
+    void unassignMediaFromLocation(UUID locationId, UUID mediaId);
 }

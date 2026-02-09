@@ -130,4 +130,11 @@ public class MediaLocationController {
         mediaLocationService.assignMediaToLocation(UUID.fromString(id), UUID.fromString(mediaId));
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/{id}/media/{mediaId}")
+    @PreAuthorize("hasAuthority('update:media_location')")
+    public ResponseEntity<Void> unassignMediaFromLocation(@PathVariable String id, @PathVariable String mediaId) {
+        mediaLocationService.unassignMediaFromLocation(UUID.fromString(id), UUID.fromString(mediaId));
+        return ResponseEntity.noContent().build();
+    }
 }

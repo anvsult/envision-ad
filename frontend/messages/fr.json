@@ -1070,7 +1070,8 @@
       "mediaTitle": "Titre",
       "mediaType": "Type",
       "resolution": "Résolution",
-      "noAssignedMedia": "Aucun média attribué pour le moment."
+      "noAssignedMedia": "Aucun média attribué pour le moment.",
+      "edit": "Modifier"
     },
     "notifications": {
       "loadFailed": {
@@ -1095,6 +1096,56 @@
         "error": {
           "title": "Erreur",
           "message": "Échec de la suppression de l'emplacement média."
+        }
+      },
+      "unassign": {
+        "success": {
+          "title": "Succès",
+          "message": "Média désassigné avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la désassignation du média de l'emplacement."
+        }
+      }
+    },
+    "modals": {
+      "edit": {
+        "title": "Modifier l'emplacement média",
+        "fields": {
+          "name": "Nom",
+          "street": "Rue",
+          "city": "Ville",
+          "province": "Province/État",
+          "country": "Pays",
+          "postalCode": "Code Postal",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        },
+        "placeholders": {
+          "name": "Ex. Panneaux Centre-ville",
+          "street": "123 Rue Principale",
+          "city": "Montréal",
+          "province": "QC",
+          "country": "Canada",
+          "postalCode": "H1A 1A1"
+        },
+        "validation": {
+          "name": "Le nom est trop court",
+          "latitude": "Latitude invalide",
+          "longitude": "Longitude invalide"
+        },
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer"
+        },
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la mise à jour de l'emplacement"
         }
       }
     },

@@ -12,6 +12,8 @@ public interface MediaService {
 
     List<Media> getAllMedia();
 
+    List<Media> getAllMediaByBusinessId(UUID businessId);
+
     Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,

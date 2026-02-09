@@ -8,9 +8,11 @@ interface MediaLocationsTableProps {
     locations: MediaLocation[];
     onDeleteLocation: (id: string) => void;
     onAssignMedia: (locationId: string) => void;
+    onEditLocation: (location: MediaLocation) => void;
+    onUnassignMedia: (locationId: string, mediaId: string) => void;
 }
 
-export function MediaLocationsTable({ locations, onDeleteLocation, onAssignMedia }: MediaLocationsTableProps) {
+export function MediaLocationsTable({ locations, onDeleteLocation, onAssignMedia, onEditLocation, onUnassignMedia }: MediaLocationsTableProps) {
     const t = useTranslations("mediaLocations.table");
 
     if (locations.length === 0) {
@@ -50,6 +52,16 @@ export function MediaLocationsTable({ locations, onDeleteLocation, onAssignMedia
                             >
                                 {t('assignMedia')}
                             </Button>
+                            <Button
+                                size="xs"
+                                variant="subtle"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onEditLocation(location);
+                                }}
+                            >
+                                <Text size="sm">{t('edit')}</Text>
+                            </Button>
                             <ActionIcon
                                 variant="subtle"
                                 color="red"
@@ -75,6 +87,7 @@ export function MediaLocationsTable({ locations, onDeleteLocation, onAssignMedia
                                         <Table.Tr>
                                             <Table.Th>{t('mediaTitle')}</Table.Th>
                                             <Table.Th>{t('mediaType')}</Table.Th>
+                                            <Table.Th style={{ width: 50 }} />
                                         </Table.Tr>
                                     </Table.Thead>
                                     <Table.Tbody>
@@ -82,6 +95,17 @@ export function MediaLocationsTable({ locations, onDeleteLocation, onAssignMedia
                                             <Table.Tr key={media.id}>
                                                 <Table.Td>{media.title}</Table.Td>
                                                 <Table.Td>{media.typeOfDisplay}</Table.Td>
+                                                <Table.Td>
+                                                    {media.id && (
+                                                        <ActionIcon
+                                                            color="red"
+                                                            variant="subtle"
+                                                            onClick={() => media.id && onUnassignMedia(location.id, media.id)}
+                                                        >
+                                                            <IconTrash size={16} />
+                                                        </ActionIcon>
+                                                    )}
+                                                </Table.Td>
                                             </Table.Tr>
                                         ))}
                                     </Table.Tbody>

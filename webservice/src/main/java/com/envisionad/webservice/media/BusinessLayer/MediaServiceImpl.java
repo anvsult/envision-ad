@@ -43,6 +43,11 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    public List<Media> getAllMediaByBusinessId(UUID businessId) {
+        return mediaRepository.findAllByBusinessId(businessId);
+    }
+
+    @Override
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,

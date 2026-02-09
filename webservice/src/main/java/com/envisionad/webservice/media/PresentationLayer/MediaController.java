@@ -49,7 +49,28 @@ public class MediaController {
     }
 
     @GetMapping
-    public List<MediaResponseModel> getAllMedia() {
+    public List<MediaResponseModel> getAllMedia(@AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String businessId) {
+
+        String targetBusinessId = businessId;
+
+        // If businessId is not provided, try to infer from JWT
+        if (targetBusinessId == null && jwt != null) {
+            try {
+                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+                if (business != null) {
+                    targetBusinessId = business.getBusinessId();
+                }
+            } catch (Exception e) {
+                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage());
+            }
+        }
+
+        if (targetBusinessId != null) {
+            return responseMapper.entityListToResponseModelList(
+                    mediaService.getAllMediaByBusinessId(UUID.fromString(targetBusinessId)));
+        }
+
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
 
@@ -138,8 +159,15 @@ public class MediaController {
     public ResponseEntity<MediaResponseModel> updateMedia(@PathVariable String id,
             @RequestBody MediaRequestModel requestModel) {
         MediaRequestValidator.validateMediaRequest(requestModel);
+
+        Media existingMedia = mediaService.getMediaById(UUID.fromString(id));
+        if (existingMedia == null) {
+            return ResponseEntity.notFound().build();
+        }
+
         Media entity = requestMapper.requestModelToEntity(requestModel);
         entity.setId(UUID.fromString(id));
+        entity.setBusinessId(existingMedia.getBusinessId()); // Persist businessId
 
         Media updatedEntity = mediaService.updateMedia(entity);
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updatedEntity));

@@ -209,7 +209,7 @@ class MediaControllerUnitTest {
                 when(mediaService.getAllMedia()).thenReturn(mediaList);
                 when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-                List<MediaResponseModel> response = mediaController.getAllMedia();
+                List<MediaResponseModel> response = mediaController.getAllMedia(null, null);
 
                 assertNotNull(response);
                 assertEquals(1, response.size());
@@ -217,6 +217,21 @@ class MediaControllerUnitTest {
                 assertEquals("Test Media", response.get(0).getTitle());
                 verify(mediaService, times(1)).getAllMedia();
                 verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
+        }
+
+        @Test
+        void getAllMedia_WithBusinessId_ShouldReturnFilteredMedia() {
+                List<Media> mediaList = Arrays.asList(media);
+                List<MediaResponseModel> responseList = Arrays.asList(responseModel);
+
+                when(mediaService.getAllMediaByBusinessId(UUID.fromString(businessId))).thenReturn(mediaList);
+                when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
+
+                List<MediaResponseModel> response = mediaController.getAllMedia(null, businessId);
+
+                assertNotNull(response);
+                assertEquals(1, response.size());
+                verify(mediaService, times(1)).getAllMediaByBusinessId(UUID.fromString(businessId));
         }
 
         @Test
@@ -548,8 +563,42 @@ class MediaControllerUnitTest {
         }
 
         @Test
+        void updateMedia_ShouldPreserveBusinessId() {
+                // Given
+                Media existingMedia = new Media();
+                existingMedia.setId(mediaId);
+                existingMedia.setBusinessId(UUID.fromString(businessId));
+
+                Media updateEntity = new Media();
+                updateEntity.setId(mediaId);
+                // Business ID is null in update entity (simulating request mapper behavior)
+
+                when(mediaService.getMediaById(mediaId)).thenReturn(existingMedia);
+                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(updateEntity);
+                when(mediaService.updateMedia(any(Media.class))).thenAnswer(invocation -> invocation.getArgument(0));
+                when(responseMapper.entityToResponseModel(any(Media.class))).thenAnswer(invocation -> {
+                        Media m = invocation.getArgument(0);
+                        MediaResponseModel response = new MediaResponseModel();
+                        response.setId(m.getId());
+                        response.setBusinessId(m.getBusinessId() != null ? m.getBusinessId().toString() : null);
+                        return response;
+                });
+
+                // When
+                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(String.valueOf(mediaId),
+                                requestModel);
+
+                // Then
+                assertNotNull(response.getBody());
+                assertEquals(businessId, response.getBody().getBusinessId(), "Business ID should be preserved");
+                verify(mediaService).updateMedia(argThat(m -> businessId
+                                .equals(m.getBusinessId() != null ? m.getBusinessId().toString() : null)));
+        }
+
+        @Test
         void updateMedia_ShouldReturnUpdatedMedia() {
                 when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+                when(mediaService.getMediaById(mediaId)).thenReturn(media); // Add this mock
                 when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
                 when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 

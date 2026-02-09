@@ -120,4 +120,17 @@ class MediaLocationControllerUnitTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         verify(mediaLocationService).assignMediaToLocation(mediaLocationId, mediaId);
     }
+
+    @Test
+    void unassignMediaFromLocation_ShouldReturnNoContent() {
+        UUID mediaId = UUID.randomUUID();
+
+        doNothing().when(mediaLocationService).unassignMediaFromLocation(mediaLocationId, mediaId);
+
+        ResponseEntity<Void> response = mediaLocationController.unassignMediaFromLocation(
+                mediaLocationId.toString(), mediaId.toString());
+
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        verify(mediaLocationService).unassignMediaFromLocation(mediaLocationId, mediaId);
+    }
 }

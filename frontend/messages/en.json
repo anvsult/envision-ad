@@ -1070,7 +1070,8 @@
       "mediaTitle": "Title",
       "mediaType": "Type",
       "resolution": "Resolution",
-      "noAssignedMedia": "No media assigned yet."
+      "noAssignedMedia": "No media assigned yet.",
+      "edit": "Edit"
     },
     "notifications": {
       "loadFailed": {
@@ -1095,6 +1096,56 @@
         "error": {
           "title": "Error",
           "message": "Failed to delete media location."
+        }
+      },
+      "unassign": {
+        "success": {
+          "title": "Success",
+          "message": "Media unassigned successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to unassign media from location."
+        }
+      }
+    },
+    "modals": {
+      "edit": {
+        "title": "Edit Media Location",
+        "fields": {
+          "name": "Name",
+          "street": "Street",
+          "city": "City",
+          "province": "Province/State",
+          "country": "Country",
+          "postalCode": "Postal Code",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        },
+        "placeholders": {
+          "name": "E.g. Downtown Billboards",
+          "street": "123 Main St",
+          "city": "New York",
+          "province": "NY",
+          "country": "USA",
+          "postalCode": "10001"
+        },
+        "validation": {
+          "name": "Name is too short",
+          "latitude": "Invalid Latitude",
+          "longitude": "Invalid Longitude"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save"
+        },
+        "success": {
+          "title": "Success",
+          "message": "Location updated successfully"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to update location"
         }
       }
     },

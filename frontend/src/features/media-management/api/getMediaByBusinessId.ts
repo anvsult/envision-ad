@@ -1,21 +1,13 @@
 import { Media } from "@/entities/media";
 import axiosInstance from "@/shared/api/axios/axios";
 
-interface Page<T> {
-    content: T[];
-    totalPages: number;
-    totalElements: number;
-    size: number;
-    number: number;
-}
 
 export async function getMediaByBusinessId(businessId: string): Promise<Media[]> {
-    // Request a large page size to get all media for now
-    const response = await axiosInstance.get<Page<Media>>(`/media/active`, {
+    // Request all media for the business (active, pending, etc.)
+    const response = await axiosInstance.get<Media[]>(`/media`, {
         params: {
-            businessId,
-            size: 100
+            businessId
         }
     });
-    return response.data.content;
+    return response.data;
 }

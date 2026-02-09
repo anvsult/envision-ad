@@ -66,4 +66,23 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         media.setMediaLocation(location);
         mediaRepository.save(media);
     }
+
+    @Override
+    public void unassignMediaFromLocation(UUID locationId, UUID mediaId) {
+        // Check if location exists
+        if (!mediaLocationRepository.existsById(locationId)) {
+            throw new IllegalArgumentException("Location not found");
+        }
+
+        com.envisionad.webservice.media.DataAccessLayer.Media media = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new IllegalArgumentException("Media not found"));
+
+        // Verify media is actually assigned to this location
+        if (media.getMediaLocation() != null && media.getMediaLocation().getId().equals(locationId)) {
+            media.setMediaLocation(null);
+            mediaRepository.save(media);
+        } else {
+            throw new IllegalArgumentException("Media is not assigned to this location");
+        }
+    }
 }

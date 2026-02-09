@@ -16,8 +16,10 @@ import { getEmployeeOrganization } from "@/features/organization-management/api"
 
 import { MediaLocationsTable } from "@/pages/dashboard/media-owner/ui/tables/MediaLocationsTable";
 import { CreateMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/CreateMediaLocationModal";
+import { EditMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/EditMediaLocationModal";
 import { AssignMediaModal } from "@/pages/dashboard/media-owner/ui/modals/AssignMediaModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
+import { unassignMediaFromLocation } from "@/features/media-location-management/api";
 
 export default function MediaLocations() {
     const t = useTranslations('mediaLocations');
@@ -29,6 +31,8 @@ export default function MediaLocations() {
 
     // Modals
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [locationToEdit, setLocationToEdit] = useState<MediaLocation | null>(null);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
     const [assignLocationId, setAssignLocationId] = useState<string | null>(null);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
@@ -130,6 +134,34 @@ export default function MediaLocations() {
         loadLocations();
     };
 
+    const handleEditLocation = (location: MediaLocation) => {
+        setLocationToEdit(location);
+        setIsEditModalOpen(true);
+    };
+
+    const handleUpdateSuccess = () => {
+        loadLocations();
+    };
+
+    const handleUnassignMedia = async (locationId: string, mediaId: string) => {
+        try {
+            await unassignMediaFromLocation(locationId, mediaId);
+            notifications.show({
+                title: t('notifications.unassign.success.title'),
+                message: t('notifications.unassign.success.message'),
+                color: "green"
+            });
+            loadLocations();
+        } catch (error) {
+            console.error(error);
+            notifications.show({
+                title: t('notifications.unassign.error.title'),
+                message: t('notifications.unassign.error.message'),
+                color: "red"
+            });
+        }
+    };
+
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
@@ -143,12 +175,21 @@ export default function MediaLocations() {
                 locations={locations}
                 onDeleteLocation={handleDeleteLocation}
                 onAssignMedia={handleAssignMedia}
+                onEditLocation={handleEditLocation}
+                onUnassignMedia={handleUnassignMedia}
             />
 
             <CreateMediaLocationModal
                 opened={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={handleCreateLocation}
+            />
+
+            <EditMediaLocationModal
+                opened={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                location={locationToEdit}
+                onSuccess={handleUpdateSuccess}
             />
 
             <AssignMediaModal
