@@ -143,9 +143,18 @@ export default function MediaLocations() {
         loadLocations();
     };
 
-    const handleUnassignMedia = async (locationId: string, mediaId: string) => {
+    const [confirmUnassignOpen, setConfirmUnassignOpen] = useState(false);
+    const [mediaToUnassign, setMediaToUnassign] = useState<{ locationId: string, mediaId: string } | null>(null);
+
+    const handleUnassignMedia = (locationId: string, mediaId: string) => {
+        setMediaToUnassign({ locationId, mediaId });
+        setConfirmUnassignOpen(true);
+    };
+
+    const confirmUnassign = async () => {
+        if (!mediaToUnassign) return;
         try {
-            await unassignMediaFromLocation(locationId, mediaId);
+            await unassignMediaFromLocation(mediaToUnassign.locationId, mediaToUnassign.mediaId);
             notifications.show({
                 title: t('notifications.unassign.success.title'),
                 message: t('notifications.unassign.success.message'),
@@ -159,6 +168,9 @@ export default function MediaLocations() {
                 message: t('notifications.unassign.error.message'),
                 color: "red"
             });
+        } finally {
+            setConfirmUnassignOpen(false);
+            setMediaToUnassign(null);
         }
     };
 
@@ -209,6 +221,17 @@ export default function MediaLocations() {
                 confirmColor="red"
                 onConfirm={confirmDelete}
                 onCancel={() => setConfirmDeleteOpen(false)}
+            />
+
+            <ConfirmationModal
+                opened={confirmUnassignOpen}
+                title={t('confirmations.unassign.title')}
+                message={t('confirmations.unassign.message')}
+                confirmLabel={t('confirmations.unassign.confirm')}
+                cancelLabel={t('confirmations.unassign.cancel')}
+                confirmColor="red"
+                onConfirm={confirmUnassign}
+                onCancel={() => setConfirmUnassignOpen(false)}
             />
         </Stack>
     );

@@ -1155,6 +1155,12 @@
         "message": "Êtes-vous sûr de vouloir supprimer cet emplacement ?",
         "confirm": "Supprimer",
         "cancel": "Annuler"
+      },
+      "unassign": {
+        "title": "Désassigner le média",
+        "message": "Êtes-vous sûr de vouloir désassigner ce média ? Le média lui-même ne sera pas supprimé.",
+        "confirm": "Désassigner",
+        "cancel": "Annuler"
       }
     }
   },

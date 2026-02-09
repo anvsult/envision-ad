@@ -1155,6 +1155,12 @@
         "message": "Are you sure you want to delete this location?",
         "confirm": "Delete",
         "cancel": "Cancel"
+      },
+      "unassign": {
+        "title": "Unassign Media",
+        "message": "Are you sure you want to unassign this media? The media itself will not be deleted.",
+        "confirm": "Unassign",
+        "cancel": "Cancel"
       }
     }
   },

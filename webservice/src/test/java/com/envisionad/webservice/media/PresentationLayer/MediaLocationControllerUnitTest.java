@@ -133,4 +133,35 @@ class MediaLocationControllerUnitTest {
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         verify(mediaLocationService).unassignMediaFromLocation(mediaLocationId, mediaId);
     }
+
+    @Test
+    void updateMediaLocation_ShouldUpdateFields() {
+        MediaLocation existing = new MediaLocation();
+        existing.setId(mediaLocationId);
+        existing.setBusinessId(UUID.fromString(businessId));
+        existing.setName("Old Name");
+
+        MediaLocationRequestModel updateRequest = new MediaLocationRequestModel();
+        updateRequest.setName("New Name");
+        updateRequest.setLatitude(10.0);
+        updateRequest.setLongitude(20.0);
+
+        MediaLocation updatedEntity = new MediaLocation();
+        updatedEntity.setId(mediaLocationId);
+        updatedEntity.setBusinessId(UUID.fromString(businessId));
+        updatedEntity.setName("New Name");
+        updatedEntity.setLatitude(10.0);
+        updatedEntity.setLongitude(20.0);
+
+        when(mediaLocationService.getMediaLocationById(mediaLocationId)).thenReturn(existing);
+        when(requestMapper.requestModelToEntity(any(MediaLocationRequestModel.class))).thenReturn(updatedEntity);
+        when(mediaLocationService.updateMediaLocation(any(MediaLocation.class))).thenReturn(updatedEntity);
+        when(responseMapper.entityToResponseModel(any(MediaLocation.class))).thenReturn(responseModel);
+
+        ResponseEntity<MediaLocationResponseModel> response = mediaLocationController.updateMediaLocation(
+                mediaLocationId.toString(), updateRequest);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        verify(mediaLocationService).updateMediaLocation(any(MediaLocation.class));
+    }
 }
