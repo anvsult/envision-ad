@@ -75,4 +75,12 @@ export default class HomePage {
         await this.userDropdown(username).click();
         await this.profileLink().click();
     }
+
+    public async setLanguageToEnglish() {
+        // if the current url contains /fr, we are in french mode
+        if (this.page.url().includes('/fr')) {
+            await this.languageButton().click();
+        }
+
+    }
 }
