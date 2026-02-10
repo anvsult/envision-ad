@@ -1,15 +1,15 @@
 "use client";
 
-import { Button, Modal, ScrollArea, Grid, Text } from "@mantine/core";
-import { useMemo } from "react";
-import { IconUpload } from "@tabler/icons-react";
-import { CldUploadWidget, CloudinaryUploadWidgetResults } from "next-cloudinary";
-import { notifications } from "@mantine/notifications";
-import { MediaDetailsForm } from "./MediaDetailsForm";
-import { ScheduleSelector } from "./ScheduleSelector";
-import { ImageCornerSelector } from "../components/ImageCornerSelector";
-import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
-import { useTranslations } from "next-intl";
+import {Button, Modal, ScrollArea, Grid, Text} from "@mantine/core";
+import {useMemo} from "react";
+import {IconUpload} from "@tabler/icons-react";
+import {CldUploadWidget, CloudinaryUploadWidgetResults} from "next-cloudinary";
+import {notifications} from "@mantine/notifications";
+import {MediaDetailsForm} from "./MediaDetailsForm";
+import {ScheduleSelector} from "./ScheduleSelector";
+import {ImageCornerSelector} from "../components/ImageCornerSelector";
+import type {MediaFormState} from "@/pages/dashboard/media-owner/hooks/useMediaForm";
+import {useTranslations} from "next-intl";
 
 // Why do we need this?
 interface MediaModalProps {
@@ -26,14 +26,14 @@ interface MediaModalProps {
 }
 
 export function MediaModal({
-    opened,
-    onClose,
-    onSave,
-    formState,
-    onFieldChange,
-    onDayTimeChange,
-    isEditing,
-}: MediaModalProps) {
+                               opened,
+                               onClose,
+                               onSave,
+                               formState,
+                               onFieldChange,
+                               onDayTimeChange,
+                               isEditing,
+                           }: MediaModalProps) {
     const t = useTranslations("mediaModal");
 
     // Cloudinary Widget Options
@@ -42,6 +42,12 @@ export function MediaModal({
         resourceType: 'image',
         multiple: false,
         maxFileSize: 10000000,
+        cropping: true,
+        showSkipCropButton: false, // Prevents users from bypassing the crop
+        croppingAspectRatio: 1,
+        croppingDefaultSelectionRatio: 1,
+        singleUploadAutoClose: true,
+        uploadPreset: 'square_media_image'
     };
 
     const handleUploadSuccess = (results: CloudinaryUploadWidgetResults) => {
@@ -54,9 +60,9 @@ export function MediaModal({
     };
 
     const initialCorners = useMemo(() =>
-        formState.previewConfiguration
-            ? JSON.parse(formState.previewConfiguration)
-            : undefined
+            formState.previewConfiguration
+                ? JSON.parse(formState.previewConfiguration)
+                : undefined
         , [formState.previewConfiguration]);
 
     return (
@@ -66,13 +72,13 @@ export function MediaModal({
             title={isEditing ? t("title.update") : t("title.create")}
             size="xl"
             centered
-            overlayProps={{ opacity: 0.55 }}
+            overlayProps={{opacity: 0.55}}
         >
-            <ScrollArea style={{ height: 600 }}>
-                <div style={{ paddingRight: 8, overflowX: 'hidden' }}>
+            <ScrollArea style={{height: 600}}>
+                <div style={{paddingRight: 8, overflowX: 'hidden'}}>
                     <Grid gutter="xl">
                         {/* LEFT COLUMN: FORM */}
-                        <Grid.Col span={{ base: 12, md: 6 }}>
+                        <Grid.Col span={{base: 12, md: 6}}>
                             <MediaDetailsForm
                                 formState={formState}
                                 onFieldChange={onFieldChange}
@@ -80,39 +86,52 @@ export function MediaModal({
                         </Grid.Col>
 
                         {/* RIGHT COLUMN: UPLOAD */}
-                        <Grid.Col span={{ base: 12, md: 6 }}>
+                        <Grid.Col span={{base: 12, md: 6}}>
                             <Text size="sm" fw={500} mb={4}>
-                                {t("labels.mediaImage")} <span style={{ color: "var(--mantine-color-red-6)" }}>*</span>
+                                {t("labels.mediaImage")} <span style={{color: "var(--mantine-color-red-6)"}}>*</span>
                             </Text>
 
                             {!formState.imageUrl ? (
-                                <CldUploadWidget
-                                    signatureEndpoint="/api/cloudinary/sign-upload"
-                                    onSuccess={handleUploadSuccess}
-                                    options={widgetOptions}
-                                >
-                                    {({ open }) => (
-                                        <div
-                                            style={{
-                                                border: '2px dashed var(--mantine-color-gray-4)',
-                                                borderRadius: '8px',
-                                                height: '300px',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                cursor: 'pointer',
-                                                backgroundColor: 'var(--mantine-color-gray-0)',
-                                            }}
-                                            onClick={() => open()}
+                                <div>
+                                    <div style={{
+                                        border: '1px solid var(--mantine-color-gray-3)',
+                                        borderRadius: '8px',
+                                        padding: '8px',
+                                        position: 'relative',
+                                        backgroundColor: 'var(--mantine-color-gray-0)'
+                                    }}>
+                                        <CldUploadWidget
+                                            signatureEndpoint="/api/cloudinary/sign-upload"
+                                            onSuccess={handleUploadSuccess}
+                                            options={widgetOptions}
                                         >
-                                            <IconUpload size={40} color="var(--mantine-color-gray-5)" />
-                                            <Text size="sm" c="dimmed" mt="sm">
-                                                {t("buttons.uploadFile")}
-                                            </Text>
-                                        </div>
-                                    )}
-                                </CldUploadWidget>
+                                            {({open}) => (
+                                                <div
+                                                    style={{
+                                                        border: '2px dashed var(--mantine-color-gray-4)',
+                                                        borderRadius: '8px',
+                                                        height: '300px',
+                                                        display: 'flex',
+                                                        flexDirection: 'column',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        backgroundColor: 'var(--mantine-color-gray-0)',
+                                                    }}
+                                                    onClick={() => open()}
+                                                >
+                                                    <IconUpload size={40} color="var(--mantine-color-gray-5)"/>
+                                                    <Text size="sm" c="dimmed" mt="sm">
+                                                        {t("buttons.uploadFile")}
+                                                    </Text>
+                                                </div>
+                                            )}
+                                        </CldUploadWidget>
+                                        <Text size="xs" ta="center" mt={4}>
+                                            {t("warning.onlySquareImages")}
+                                        </Text>
+                                    </div>
+                                </div>
                             ) : (
                                 <div>
                                     <Text size="sm" fw={500} mb={4}>
@@ -142,11 +161,11 @@ export function MediaModal({
                                             onSuccess={handleUploadSuccess}
                                             options={widgetOptions}
                                         >
-                                            {({ open }) => (
+                                            {({open}) => (
                                                 <Button
                                                     size="xs"
                                                     variant="default"
-                                                    style={{ marginTop: 12, width: '100%' }}
+                                                    style={{marginTop: 12, width: '100%'}}
                                                     onClick={() => open()}
                                                 >
                                                     {t("buttons.changeFile")}
@@ -163,7 +182,7 @@ export function MediaModal({
                         </Grid.Col>
                     </Grid>
 
-                    <div style={{ height: 24 }} />
+                    <div style={{height: 24}}/>
 
                     <ScheduleSelector
                         formState={formState}
@@ -180,7 +199,7 @@ export function MediaModal({
                     marginTop: 12,
                 }}
             >
-                <Button variant="default" onClick={onClose} style={{ marginRight: 8 }}>
+                <Button variant="default" onClick={onClose} style={{marginRight: 8}}>
                     {t("buttons.cancel")}
                 </Button>
                 <Button onClick={() => {
@@ -192,12 +211,12 @@ export function MediaModal({
                     }
 
                     if (!formState.imageUrl) {
-                        notifications.show({ message: t("errors.mediaImageRequired"), color: "red" });
+                        notifications.show({message: t("errors.mediaImageRequired"), color: "red"});
                         return;
                     }
 
                     if (formState.imageUrl && !formState.previewConfiguration) {
-                        notifications.show({ message: t("errors.previewCornersRequired"), color: "red" });
+                        notifications.show({message: t("errors.previewCornersRequired"), color: "red"});
                         return;
                     }
 
@@ -229,13 +248,13 @@ export function MediaModal({
 
                     const hasActiveDay = Object.values(formState.activeDaysOfWeek).some(v => v);
                     if (!hasActiveDay) {
-                        notifications.show({ message: t("errors.scheduleRequired"), color: "red" });
+                        notifications.show({message: t("errors.scheduleRequired"), color: "red"});
                         return;
                     }
 
                     for (const [day, isActive] of Object.entries(formState.activeDaysOfWeek)) {
                         if (isActive) {
-                            const { start, end } = formState.dailyOperatingHours[day];
+                            const {start, end} = formState.dailyOperatingHours[day];
                             if (!start) {
                                 newErrors[`${day}_start`] = t("errors.required");
                             }
@@ -259,6 +278,6 @@ export function MediaModal({
                     onSave();
                 }}>{t("buttons.save")}</Button>
             </div>
-        </Modal >
+        </Modal>
     );
 }

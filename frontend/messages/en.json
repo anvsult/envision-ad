@@ -610,6 +610,9 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       }
+    },
+    "warning": {
+        "onlySquareImages": "Only square aspect ratio is accepted"
     }
   },
   "AddAdModal": {
@@ -986,33 +989,46 @@
     },
     "noStatus": "Could not retrieve Stripe account status.",
     "status": {
-      "connected": {
-        "title": "Stripe Account Connected",
-        "description": "Your account is fully configured and ready to receive payments from advertisers.",
-        "accountId": "Your Stripe Account ID"
+      "identityRequired": {
+        "title": "Additional Verification Needed",
+        "description": "To receive payouts, Stripe requires identity verification. Click below to complete this step."
       },
-      "incomplete": {
-        "title": "Finish Setting Up Your Payments",
-        "description": "To list media and receive payments, you need to complete your Stripe account setup.",
-        "checks": {
-          "onboarding": "Onboarding process",
-          "charges": "Can accept payments",
-          "payouts": "Can receive payouts"
-        }
+      "verifying": {
+        "title": "Verification in Progress",
+        "description": "Stripe is verifying your information. This usually takes 1-2 minutes. The page will update automatically."
+      },
+      "connected": {
+        "title": "Stripe Account Fully Set Up",
+        "description": "Your Stripe account is fully set up and ready to receive payments!",
+        "accountId": "Connected Account ID: {accountId}"
+    },
+    "incomplete": {
+      "title": "Finish Setting Up Your Payments",
+      "description": "To list media and receive payments, you need to complete your Stripe account setup.",
+      "checks": {
+        "onboarding": "Onboarding process",
+        "charges": "Can accept payments",
+        "payouts": "Can receive payouts"
       }
+    }
     },
     "buttons": {
       "connect": "Connect with Stripe",
-      "continueOnboarding": "Continue Onboarding"
+      "continueOnboarding": "Continue Onboarding",
+      "verifyIdentity": "Complete Identity Verification"
     },
     "notifications": {
-      "success": {
-        "title": "Onboarding Complete!",
-        "message": "Your account is ready. We're just confirming the final details with Stripe."
+      "identityRequired": {
+        "title": "Identity Verification Required",
+        "message": "Please complete identity verification to enable payouts"
       },
-      "refresh": {
-        "title": "Onboarding Session Expired",
-        "message": "Your session expired. Please try connecting again."
+      "verifying": {
+        "title": "Verifying Your Identity",
+        "message": "Please wait while Stripe verifies your information..."
+      },
+      "verified": {
+        "title": "Verification Complete",
+        "message": "Your Stripe account is now fully set up!"
       }
     }
   },
