@@ -610,6 +610,9 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       }
+    },
+    "warning": {
+      "onlySquareImages": "Only square aspect ratio is accepted"
     }
   },
   "AddAdModal": {
