@@ -986,25 +986,61 @@
     "errors": {
       "noBusiness": "Aucune entreprise trouvée pour votre utilisateur.",
       "fetchFailed": "Échec de la récupération du statut du compte Stripe.",
-      "connectFailed": "Échec de l'initialisation de la connexion Stripe."
+      "connectFailed": "Échec de l'initiation de la connexion Stripe."
     },
     "noStatus": "Impossible de récupérer le statut du compte Stripe.",
     "status": {
+      "identityRequired": {
+        "title": "Vérification Supplémentaire Requise",
+        "description": "Pour recevoir des paiements, Stripe nécessite une vérification d'identité. Cliquez ci-dessous pour compléter cette étape."
+      },
+      "verifying": {
+        "title": "Vérification en Cours",
+        "description": "Stripe vérifie vos informations. Cela prend généralement 1 à 2 minutes. La page se mettra à jour automatiquement."
+      },
       "connected": {
-        "title": "Compte Stripe connecté",
-        "description": "Votre compte est entièrement configuré et prêt à recevoir les paiements des annonceurs.",
-        "accountId": "Votre identifiant de compte Stripe"
+        "title": "Compte Stripe Entièrement Configuré",
+        "description": "Votre compte Stripe est entièrement configuré et prêt à recevoir des paiements !",
+        "accountId": "ID du compte connecté"
       },
       "incomplete": {
-        "title": "Terminez la configuration de vos paiements",
-        "description": "Pour afficher des médias et recevoir des paiements, vous devez terminer la configuration de votre compte Stripe.",
+        "title": "Terminez la Configuration de Vos Paiements",
+        "description": "Pour lister des médias et recevoir des paiements, vous devez compléter la configuration de votre compte Stripe.",
         "checks": {
           "onboarding": "Processus d'intégration",
-          "charges": "Peut accepter les paiements",
-          "payouts": "Peut recevoir des paiements"
+          "charges": "Peut accepter des paiements",
+          "payouts": "Peut recevoir des virements"
         }
       }
     },
+    "buttons": {
+      "connect": "Se Connecter avec Stripe",
+      "continueOnboarding": "Continuer l'Intégration",
+      "verifyIdentity": "Compléter la Vérification d'Identité"
+    },
+    "notifications": {
+      "identityRequired": {
+        "title": "Vérification d'Identité Requise",
+        "message": "Veuillez compléter la vérification d'identité pour activer les virements"
+      },
+      "verifying": {
+        "title": "Vérification de Votre Identité",
+        "message": "Veuillez patienter pendant que Stripe vérifie vos informations..."
+      },
+      "verified": {
+        "title": "Vérification Terminée",
+        "message": "Votre compte Stripe est maintenant entièrement configuré !"
+      },
+      "success": {
+        "title": "Succès",
+        "message": "Configuration réussie !"
+      },
+      "refresh": {
+        "title": "Rafraîchissement",
+        "message": "Les informations ont été mises à jour"
+      }
+    }
+  },
     "buttons": {
       "connect": "Se connecter avec Stripe",
       "continueOnboarding": "Continuer l'intégration"
@@ -1018,7 +1054,6 @@
         "title": "Session d'intégration expirée",
         "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
       }
-    }
   },
   "invitation": {
     "loading": "Chargement...",
