@@ -612,7 +612,7 @@
       }
     },
     "warning": {
-        "onlySquareImages": "Only square aspect ratio is accepted"
+      "onlySquareImages": "Only square images are accepted."
     }
   },
   "AddAdModal": {

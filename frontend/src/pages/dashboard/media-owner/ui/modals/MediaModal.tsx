@@ -36,6 +36,10 @@ export function MediaModal({
                            }: MediaModalProps) {
     const t = useTranslations("mediaModal");
 
+    if (!process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES) {
+        throw new Error('NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES environment variable is not set');
+    }
+
     // Cloudinary Widget Options
     const widgetOptions = {
         sources: ['local', 'url'] as ('local' | 'url')[],
@@ -47,7 +51,7 @@ export function MediaModal({
         croppingAspectRatio: 1,
         croppingDefaultSelectionRatio: 1,
         singleUploadAutoClose: true,
-        uploadPreset: 'square_media_image'
+        uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES
     };
 
     const handleUploadSuccess = (results: CloudinaryUploadWidgetResults) => {
