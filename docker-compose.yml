@@ -82,6 +82,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      CLOUDINARY_URL: "cloudinary://${NEXT_PUBLIC_CLOUDINARY_API_KEY}:${CLOUDINARY_API_SECRET}@${NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}"
       APP_BASE_URL: "${APP_BASE_URL}"
       SPRING_PROFILES_ACTIVE: "local"
 #     AUTH0
