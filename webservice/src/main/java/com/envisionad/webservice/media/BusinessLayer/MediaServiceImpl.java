@@ -147,10 +147,7 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel) {
-        Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElse(null);
-        if (existingMedia == null) {
-            throw new MediaNotFoundException(id);
-        }
+        Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElseThrow(() -> new MediaNotFoundException(id));
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, existingMedia.getBusinessId().toString());
 
