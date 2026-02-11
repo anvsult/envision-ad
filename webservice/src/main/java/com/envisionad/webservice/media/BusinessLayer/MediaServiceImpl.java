@@ -5,6 +5,7 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
@@ -35,7 +36,6 @@ public class MediaServiceImpl implements MediaService {
     private final MediaResponseMapper mediaResponseMapper;
     private final JwtUtils jwtUtils;
     private final Cloudinary cloudinary;
-
     public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, MediaResponseMapper mediaResponseMapper, JwtUtils jwtUtils, Cloudinary cloudinary) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
@@ -149,7 +149,7 @@ public class MediaServiceImpl implements MediaService {
     public MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel) {
         Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElse(null);
         if (existingMedia == null) {
-            throw new IllegalArgumentException("Media with the specified ID does not exist.");
+            throw new MediaNotFoundException(id);
         }
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, existingMedia.getBusinessId().toString());
@@ -182,9 +182,28 @@ public class MediaServiceImpl implements MediaService {
 
         // Update fields
         existingMedia.setTitle(requestModel.getTitle());
+        existingMedia.setMediaOwnerName(requestModel.getMediaOwnerName());
         existingMedia.setPrice(requestModel.getPrice());
         existingMedia.setDailyImpressions(requestModel.getDailyImpressions());
         existingMedia.setTypeOfDisplay(requestModel.getTypeOfDisplay());
+
+        // Update display-specific fields based on type
+        if (requestModel.getTypeOfDisplay() == TypeOfDisplay.DIGITAL) {
+            existingMedia.setLoopDuration(requestModel.getLoopDuration());
+            existingMedia.setResolution(requestModel.getResolution());
+            existingMedia.setAspectRatio(requestModel.getAspectRatio());
+            // Clear poster fields
+            existingMedia.setWidth(null);
+            existingMedia.setHeight(null);
+        } else if (requestModel.getTypeOfDisplay() == TypeOfDisplay.POSTER) {
+            existingMedia.setWidth(requestModel.getWidth());
+            existingMedia.setHeight(requestModel.getHeight());
+            // Clear digital fields
+            existingMedia.setLoopDuration(null);
+            existingMedia.setResolution(null);
+            existingMedia.setAspectRatio(null);
+        }
+
         existingMedia.setSchedule(requestModel.getSchedule());
         existingMedia.setImageUrl(normalizedNewUrl);
         existingMedia.setPreviewConfiguration(requestModel.getPreviewConfiguration());
