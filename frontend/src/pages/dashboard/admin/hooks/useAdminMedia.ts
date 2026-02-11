@@ -31,9 +31,9 @@ export function useAdminMedia() {
             loopDuration: m.loopDuration ?? 0,
             resolution: m.resolution ?? "",
             aspectRatio: m.aspectRatio ?? "",
-            width: m.width,
-            height: m.height,
-            price: m.price,
+            width: m.width ?? 0,
+            height: m.height ?? 0,
+            price: m.price ?? 0,
             dailyImpressions: m.dailyImpressions ?? 0,
 
             schedule: m.schedule,
