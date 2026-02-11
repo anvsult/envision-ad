@@ -41,6 +41,7 @@ export function useAdminMedia() {
         return updateMedia(id, payload as MediaRequestDTO);
     };
 
+    // This will be changed to use the patch endpoint once it's implemented, so we can just send the status instead of the whole media object
     const approveMedia = (id: string) => setStatus(id);
     const denyMedia = (id: string) => setStatus(id);
 
