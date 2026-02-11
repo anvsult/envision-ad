@@ -33,7 +33,7 @@ public interface MediaService {
 
     Media addMedia(Media media);
 
-//    Media updateMedia(Media media);
+
     MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);
     void deleteMedia(UUID id);
 }

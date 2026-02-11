@@ -62,7 +62,7 @@ class MediaControllerUnitTest {
 
         @BeforeEach
         void setUp() {
-                // ... (setup remains same until end of method)
+                // Initialize JWT token, media location, schedule, and media request/response models used across tests
 
             mediaToken = createJwtToken("media-token", "auth0|696a89137cfdb558ea4a4a4a",
                     List.of("create:media", "update:media", "update:business", "read:employee",
@@ -570,7 +570,7 @@ class MediaControllerUnitTest {
         @Test
         void updateMedia_ShouldReturnUpdatedMedia() {
                 when(mediaService.updateMediaById(mediaToken, String.valueOf(mediaId), requestModel)).thenReturn(responseModel);
-                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
+
 
                 ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(
                         mediaToken,

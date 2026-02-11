@@ -149,7 +149,11 @@ public class MediaServiceImpl implements MediaService {
     public MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel) {
         Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElseThrow(() -> new MediaNotFoundException(id));
 
-        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, existingMedia.getBusinessId().toString());
+        UUID businessId = existingMedia.getBusinessId();
+        if (businessId == null) {
+            throw new IllegalStateException("Existing media has no associated business; cannot update.");
+        }
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId.toString());
 
         // Validate the request model
         MediaRequestValidator.validateMediaRequest(requestModel);
