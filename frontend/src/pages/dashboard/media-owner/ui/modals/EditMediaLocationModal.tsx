@@ -29,7 +29,10 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
             businessId: "",
         },
         validate: {
-            name: (value) => (value.length < 2 ? t('validation.name') : null),
+            name: (value) => (!value.trim() ? t('validation.nameRequired') : value.length < 2 ? t('validation.name') : null),
+            street: (value) => (!value.trim() ? t('validation.streetRequired') : null),
+            city: (value) => (!value.trim() ? t('validation.cityRequired') : null),
+            country: (value) => (!value.trim() ? t('validation.countryRequired') : null),
             latitude: (value) => (value < -90 || value > 90 ? t('validation.latitude') : null),
             longitude: (value) => (value < -180 || value > 180 ? t('validation.longitude') : null),
         },
@@ -75,7 +78,7 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
 
     return (
         <Modal opened={opened} onClose={onClose} title={t('title')} size="lg">
-            <form onSubmit={form.onSubmit(handleSubmit)}>
+            <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
                 <Stack>
                     <TextInput label={t('fields.name')} placeholder={t('placeholders.name')} {...form.getInputProps("name")} />
                     <TextInput label={t('fields.street')} placeholder={t('placeholders.street')} {...form.getInputProps("street")} />
@@ -87,10 +90,7 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
                         <TextInput label={t('fields.postalCode')} placeholder={t('placeholders.postalCode')} {...form.getInputProps("postalCode")} />
                         <TextInput label={t('fields.country')} placeholder={t('placeholders.country')} {...form.getInputProps("country")} />
                     </Group>
-                    <Group grow>
-                        <NumberInput label={t('fields.latitude')} decimalScale={6} {...form.getInputProps("latitude")} />
-                        <NumberInput label={t('fields.longitude')} decimalScale={6} {...form.getInputProps("longitude")} />
-                    </Group>
+
 
                     <Group justify="flex-end" mt="md">
                         <Button variant="default" onClick={onClose}>

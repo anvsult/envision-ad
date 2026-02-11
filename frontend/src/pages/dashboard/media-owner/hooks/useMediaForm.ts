@@ -25,7 +25,7 @@ const getInitialFormState = (): MediaFormState => ({
     imageUrl: null,
     previewConfiguration: null,
     mediaOwnerName: "",
-    mediaLocationId: "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001",
+    mediaLocationId: "",
     resolution: "",
     displayType: "DIGITAL",
     loopDuration: "",

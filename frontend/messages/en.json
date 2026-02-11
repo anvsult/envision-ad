@@ -1065,6 +1065,7 @@
     },
     "table": {
       "noLocations": "No locations found. Create one to get started!",
+      "addMedia": "Add Media",
       "assignMedia": "Assign Media",
       "assignedMedia": "Assigned Media",
       "mediaTitle": "Title",
@@ -1133,7 +1134,11 @@
         "validation": {
           "name": "Name is too short",
           "latitude": "Invalid Latitude",
-          "longitude": "Invalid Longitude"
+          "longitude": "Invalid Longitude",
+          "nameRequired": "Name is required",
+          "streetRequired": "Street is required",
+          "cityRequired": "City is required",
+          "countryRequired": "Country is required"
         },
         "buttons": {
           "cancel": "Cancel",
@@ -1168,7 +1173,11 @@
     "title": "Create Media Location",
     "validation": {
       "nameTooShort": "Name is too short",
-      "required": "Required"
+      "required": "Required",
+      "nameRequired": "Name is required",
+      "streetRequired": "Street is required",
+      "cityRequired": "City is required",
+      "countryRequired": "Country is required"
     },
     "labels": {
       "name": "Name",

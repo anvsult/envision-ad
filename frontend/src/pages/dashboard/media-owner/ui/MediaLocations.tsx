@@ -5,13 +5,17 @@ import { Button, Group, Stack, Title } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useTranslations } from 'next-intl';
+import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
+import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
+import { IconCheck } from "@tabler/icons-react";
 
 import { MediaLocation, MediaLocationRequestDTO } from "@/entities/media-location/model/mediaLocation";
 import {
     createMediaLocation,
     deleteMediaLocation,
-    getAllMediaLocations
+    getAllMediaLocations,
 } from "@/features/media-location-management/api";
+import { useMediaList } from "@/pages/dashboard/media-owner/hooks/useMediaList";
 import { getEmployeeOrganization } from "@/features/organization-management/api";
 
 import { MediaLocationsTable } from "@/pages/dashboard/media-owner/ui/tables/MediaLocationsTable";
@@ -34,9 +38,16 @@ export default function MediaLocations() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [locationToEdit, setLocationToEdit] = useState<MediaLocation | null>(null);
     const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+
     const [assignLocationId, setAssignLocationId] = useState<string | null>(null);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [locationToDelete, setLocationToDelete] = useState<string | null>(null);
+
+    // Media Creation State
+    const { formState, updateField, updateDayTime, resetForm, setFormState } = useMediaForm();
+    const { addNewMedia, editMedia, deleteMediaById, toggleMediaStatus, fetchMediaById } = useMediaList();
+    const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
+    const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
     // Fetch Business ID
     useEffect(() => {
@@ -68,7 +79,7 @@ export default function MediaLocations() {
                 color: "red"
             });
         }
-    }, [backendBusinessId, t]);
+    }, [backendBusinessId]);
 
     useEffect(() => {
         if (backendBusinessId) {
@@ -126,8 +137,160 @@ export default function MediaLocations() {
     };
 
     const handleAssignMedia = (locationId: string) => {
-        setAssignLocationId(locationId);
-        setIsAssignModalOpen(true);
+        // Set the location ID in the form state for the new media
+        updateField("mediaLocationId", locationId);
+        setIsMediaModalOpen(true);
+    };
+
+    const handleSaveMedia = async () => {
+        try {
+            await addNewMedia(formState);
+            notifications.show({
+                title: t('notifications.createMedia.success.title'),
+                message: t('notifications.createMedia.success.message'),
+                color: "green",
+                icon: <IconCheck size="1.1rem" />,
+            });
+            setIsMediaModalOpen(false);
+            resetForm();
+            loadLocations(); // Refresh locations to show new media
+        } catch (error) {
+            console.error("Failed to create media", error);
+            let errorMessage = t("notifications.createMedia.error.message");
+
+            if (error && typeof error === 'object' && 'response' in error) {
+                const response = (error as { response?: { data?: { message?: string } } }).response;
+                errorMessage = response?.data?.message || errorMessage;
+            }
+
+            notifications.show({
+                title: t('notifications.createMedia.error.title'),
+                message: errorMessage,
+                color: "red"
+            });
+        }
+    };
+
+    const handleEditMedia = async (id: string | number) => {
+        try {
+            const backend = await fetchMediaById(id);
+            // Map backend DTO to MediaFormState shape - Reusing logic from MediaOwnerDashboard would be better, but implementing here for now
+            const schedule = backend.schedule || {
+                selectedMonths: [],
+                weeklySchedule: [],
+            };
+
+            const activeDaysOfWeek: Record<string, boolean> = {
+                Monday: false, Tuesday: false, Wednesday: false, Thursday: false, Friday: false, Saturday: false, Sunday: false,
+            };
+
+            const dailyOperatingHours: Record<string, { start: string; end: string }> = {
+                Monday: { start: "00:00", end: "00:00" }, Tuesday: { start: "00:00", end: "00:00" },
+                Wednesday: { start: "00:00", end: "00:00" }, Thursday: { start: "00:00", end: "00:00" },
+                Friday: { start: "00:00", end: "00:00" }, Saturday: { start: "00:00", end: "00:00" },
+                Sunday: { start: "00:00", end: "00:00" },
+            };
+
+            if (schedule.weeklySchedule) {
+                schedule.weeklySchedule.forEach((entry: any) => {
+                    const dayKey = entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
+                    if (activeDaysOfWeek.hasOwnProperty(dayKey)) {
+                        activeDaysOfWeek[dayKey] = entry.isActive;
+                        dailyOperatingHours[dayKey] = {
+                            start: entry.startTime ?? "00:00",
+                            end: entry.endTime ?? "00:00",
+                        };
+                    }
+                });
+            }
+
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            const activeMonths: Record<string, boolean> = {};
+            months.forEach((m) => (activeMonths[m] = (schedule.selectedMonths || []).includes(m)));
+
+            setFormState({
+                mediaTitle: backend.title ?? "",
+                mediaOwnerName: backend.mediaOwnerName ?? "",
+                mediaLocationId: backend.mediaLocation.id ?? "",
+                resolution: backend.resolution ?? "",
+                displayType: backend.typeOfDisplay ?? null,
+                loopDuration: backend.loopDuration != null ? String(backend.loopDuration) : "",
+                aspectRatio: backend.aspectRatio ?? "",
+                widthCm: backend.width != null ? String(backend.width) : "",
+                heightCm: backend.height != null ? String(backend.height) : "",
+                weeklyPrice: backend.price != null ? Number(backend.price).toFixed(2) : "",
+                dailyImpressions: backend.dailyImpressions != null ? String(backend.dailyImpressions) : "",
+                activeDaysOfWeek,
+                dailyOperatingHours,
+                activeMonths,
+                errors: {},
+                imageUrl: backend.imageUrl ?? null,
+                previewConfiguration: backend.previewConfiguration ?? null
+            });
+
+            setEditingMediaId(String(id));
+            setIsMediaModalOpen(true);
+        } catch (error) {
+            console.error("Failed to load media", error);
+            notifications.show({
+                title: "Error",
+                message: t("notifications.loadMedia.error.message"),
+                color: "red",
+            });
+        }
+    };
+
+    const handleSaveMediaSubmit = async () => {
+        if (editingMediaId) {
+            try {
+                await editMedia(editingMediaId, formState);
+                notifications.show({
+                    title: t("notifications.updateMedia.success.title"),
+                    message: t("notifications.updateMedia.success.message"),
+                    color: "green",
+                    icon: <IconCheck size="1.1rem" />,
+                });
+                setIsMediaModalOpen(false);
+                setEditingMediaId(null);
+                resetForm();
+                loadLocations();
+            } catch (error) {
+                console.error("Failed to update media", error);
+                notifications.show({ title: "Error", message: t("notifications.updateMedia.error.message"), color: "red" });
+            }
+        } else {
+            await handleSaveMedia();
+        }
+    }
+
+    const handleDeleteMedia = async (id: string | number) => {
+        try {
+            await deleteMediaById(id);
+            notifications.show({
+                title: t("notifications.deleteMedia.success.title"),
+                message: t("notifications.deleteMedia.success.message"),
+                color: "green",
+            });
+            loadLocations();
+        } catch (error) {
+            console.error("Failed to delete media", error);
+            notifications.show({ title: "Error", message: t("notifications.deleteMedia.error.message"), color: "red" });
+        }
+    };
+
+    const handleToggleMediaStatus = async (id: string | number) => {
+        try {
+            await toggleMediaStatus(id);
+            notifications.show({
+                title: t("notifications.statusMedia.success.title"),
+                message: t("notifications.statusMedia.success.message"),
+                color: "green",
+            });
+            loadLocations();
+        } catch (error) {
+            console.error("Failed to toggle status", error);
+            notifications.show({ title: "Error", message: t("notifications.statusMedia.error.message"), color: "red" });
+        }
     };
 
     const handleAssignSuccess = () => {
@@ -186,9 +349,12 @@ export default function MediaLocations() {
             <MediaLocationsTable
                 locations={locations}
                 onDeleteLocation={handleDeleteLocation}
-                onAssignMedia={handleAssignMedia}
+                onAddMedia={handleAssignMedia}
                 onEditLocation={handleEditLocation}
                 onUnassignMedia={handleUnassignMedia}
+                onEditMedia={handleEditMedia}
+                onDeleteMedia={handleDeleteMedia}
+                onToggleMediaStatus={handleToggleMediaStatus}
             />
 
             <CreateMediaLocationModal
@@ -232,6 +398,20 @@ export default function MediaLocations() {
                 confirmColor="red"
                 onConfirm={confirmUnassign}
                 onCancel={() => setConfirmUnassignOpen(false)}
+            />
+
+            <MediaModal
+                opened={isMediaModalOpen}
+                onClose={() => {
+                    setIsMediaModalOpen(false);
+                    setEditingMediaId(null);
+                    resetForm();
+                }}
+                onSave={handleSaveMediaSubmit}
+                formState={formState}
+                onFieldChange={updateField}
+                onDayTimeChange={updateDayTime}
+                isEditing={!!editingMediaId}
             />
         </Stack>
     );

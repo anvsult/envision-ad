@@ -26,20 +26,10 @@ export default function SideBar() {
             <NavLink
                 key="media"
                 component={Link}
-                href="/dashboard/media-owner/media"
+                href="/dashboard/media-owner/locations"
                 label={t("media-owner.media")}
                 leftSection={<IconDeviceTv size={20} stroke={1.5} />}
-                active={pathname?.endsWith("/media-owner/media")}
-            />
-        ),
-        (permissions.includes('create:media')) && (
-            <NavLink
-                key="locations"
-                component={Link}
-                href="/dashboard/media-owner/locations"
-                label={t("media-owner.locations")}
-                leftSection={<IconMapPin size={20} stroke={1.5} />}
-                active={pathname?.endsWith("/media-owner/locations")}
+                active={pathname?.includes("/media-owner/locations")}
             />
         ),
         (permissions.includes("create:media")) && (

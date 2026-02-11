@@ -29,10 +29,10 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
             longitude: 0,
         },
         validate: {
-            name: (value) => (value.length < 2 ? t('validation.nameTooShort') : null),
-            street: (value) => (value.length < 2 ? t('validation.required') : null),
-            city: (value) => (value.length < 2 ? t('validation.required') : null),
-            country: (value) => (value.length < 2 ? t('validation.required') : null),
+            name: (value) => (!value.trim() ? t('validation.nameRequired') : value.length < 2 ? t('validation.nameTooShort') : null),
+            street: (value) => (!value.trim() ? t('validation.streetRequired') : null),
+            city: (value) => (!value.trim() ? t('validation.cityRequired') : null),
+            country: (value) => (!value.trim() ? t('validation.countryRequired') : null),
         },
     });
 
@@ -79,7 +79,7 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
 
     return (
         <Modal opened={opened} onClose={handleClose} title={t('title')} centered closeOnClickOutside={!submitting}>
-            <form onSubmit={form.onSubmit(handleSubmit)}>
+            <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
                 <Stack gap="md">
                     <TextInput
                         label={t('labels.name')}
@@ -129,20 +129,7 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                         />
                     </Group>
 
-                    <Group grow>
-                        <NumberInput
-                            label={t('labels.latitude')}
-                            decimalScale={6}
-                            disabled
-                            {...form.getInputProps('latitude')}
-                        />
-                        <NumberInput
-                            label={t('labels.longitude')}
-                            decimalScale={6}
-                            disabled
-                            {...form.getInputProps('longitude')}
-                        />
-                    </Group>
+
 
                     <Group justify="flex-end" mt="md">
                         <Button variant="default" onClick={handleClose} disabled={submitting}>{t('buttons.cancel')}</Button>
