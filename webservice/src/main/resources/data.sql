@@ -23,8 +23,9 @@ INSERT INTO employee (employee_id, user_id, business_id, email)
 VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
        ('a7413e1c-1fca-4cc8-8bc5-6a673b9635d5', 'auth0|6979541a0aa6c868cf029d34', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'megadoxs@gmail.com'),
        ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
-       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com')
-ON CONFLICT (employee_id) DO NOTHING;
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com'),
+       ('5bac8f38-4cc6-44d3-b355-7e4c6ccd24e1', 'auth0|6972cb215b943c997508c737', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com')
+    ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
 VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', NOW(), NOW() + INTERVAL '1 hour')
