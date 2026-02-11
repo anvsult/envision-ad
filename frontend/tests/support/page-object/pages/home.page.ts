@@ -78,8 +78,12 @@ export default class HomePage {
 
     public async setLanguageToEnglish() {
         // if the current url contains /fr, we are in french mode
-        if (this.page.url().includes('/fr')) {
-            await this.languageButton().click();
+        const currentUrl = this.page.url();
+        if (currentUrl.includes('/fr')) {
+            await Promise.all([
+                this.page.waitForURL(url => !url.toString().includes('/fr')),
+                this.languageButton().click(),
+            ]);
         }
 
     }
