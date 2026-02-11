@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
+import com.cloudinary.Cloudinary;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -22,10 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,10 +38,16 @@ class MediaServiceUnitTest {
         @Mock
         private MediaRepository mediaRepository;
 
-        private String business1Id;
-        private String business2Id;
-        private Business business1;
-        private Business business2;
+    @Mock
+    private Cloudinary cloudinary;
+
+    @Mock
+    private com.cloudinary.Uploader uploader;
+
+    private String business1Id;
+    private String business2Id;
+    private Business business1;
+    private Business business2;
 
         private Media media1;
         private Media media2;
@@ -60,12 +64,13 @@ class MediaServiceUnitTest {
                 business1Id = business1.getBusinessId().getBusinessId();
                 business2Id = business2.getBusinessId().getBusinessId();
 
-                // Create MediaLocations with different coordinates
-                location1 = createMediaLocation(
-                                "Downtown Billboard A",
-                                "Large billboard",
-                                43.651070, // Toronto downtown
-                                -79.347015);
+        // Create MediaLocations with different coordinates
+        location1 = createMediaLocation(
+                "Downtown Billboard A",
+                "Large billboard",
+                43.651070,  // Toronto downtown
+                -79.347015
+        );
 
                 location2 = createMediaLocation(
                                 "Midtown Billboard B",
@@ -102,7 +107,9 @@ class MediaServiceUnitTest {
                                 location3,
                                 new BigDecimal("100.00"),
                                 10000,
-                                Status.ACTIVE);
+                                Status.ACTIVE
+                );
+            lenient().when(cloudinary.uploader()).thenReturn(uploader);
         }
 
         // ==================== getAllFilteredActiveMedia Tests ====================
@@ -546,6 +553,134 @@ class MediaServiceUnitTest {
                 assertEquals(2, result.getContent().size());
         }
 
+    // ==================== CRUD & Cloudinary Tests ====================
+
+
+    @Test
+    void deleteMedia_ShouldTriggerCloudinaryDeletion() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        media1.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader).destroy(eq("sample"), anyMap());
+        verify(mediaRepository).delete(media1);
+    }
+
+    @Test
+    void updateMedia_WhenImageChanges_ShouldDeleteOldImage() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        media1.setImageUrl(".../upload/old_id.png");
+
+        Media updatedMedia = new Media();
+        updatedMedia.setId(id);
+        updatedMedia.setImageUrl(".../upload/new_id.png");
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+        when(mediaRepository.save(any(Media.class))).thenReturn(updatedMedia);
+
+        // Act
+        mediaService.updateMedia(updatedMedia);
+
+        // Assert
+        verify(uploader).destroy(eq("old_id"), anyMap());
+    }
+
+    @Test
+    void updateMedia_WhenImageDoesNotChange_ShouldNotCallCloudinary() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        String sameUrl = "https://res.cloudinary.com/demo/image/upload/v1/sample.png";
+        media1.setImageUrl(sameUrl);
+
+        Media updatedMedia = createMedia("Updated Title", business1Id, location1,
+                new BigDecimal("500.00"), 50000, Status.ACTIVE);
+        updatedMedia.setId(id);
+        updatedMedia.setImageUrl(sameUrl);
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+        when(mediaRepository.save(any(Media.class))).thenReturn(updatedMedia);
+
+        // Act
+        mediaService.updateMedia(updatedMedia);
+
+        // Assert
+        verify(uploader, never()).destroy(anyString(), anyMap());
+        verify(mediaRepository).save(any(Media.class));
+    }
+
+    @Test
+    void deleteMedia_WhenCloudinaryFails_ShouldStillDeleteFromRepository() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        media1.setImageUrl(".../upload/sample.png");
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Simulate Cloudinary exception
+        when(uploader.destroy(anyString(), anyMap())).thenThrow(new RuntimeException("API Down"));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> mediaService.deleteMedia(id));
+        verify(mediaRepository).delete(media1);
+    }
+
+    @Test
+    void deleteMedia_WithCroppedUrl_ShouldStillFindCorrectPublicId() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        // Complex URL with crop and version
+        String croppedUrl = "https://res.cloudinary.com/demo/image/upload/c_crop,w_200/v1/my_image.jpg";
+
+        Media media = new Media();
+        media.setId(id);
+        media.setImageUrl(croppedUrl);
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader).destroy(eq("my_image"), anyMap());
+    }
+
+    @Test
+    void deleteMedia_VideoFile_ShouldPassVideoResourceTypeToCloudinary() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        String videoUrl = "https://res.cloudinary.com/demo/video/upload/v1/my_video.mp4";
+        media1.setImageUrl(videoUrl);
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        ArgumentCaptor<Map<String, Object>> mapCaptor = ArgumentCaptor.forClass(Map.class);        verify(uploader).destroy(eq("my_video"), mapCaptor.capture());
+        assertEquals("video", mapCaptor.getValue().get("resource_type"));
+    }
+
+    @Test
+    void deleteMedia_WithNullImageUrl_ShouldNotCallCloudinary() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        media1.setImageUrl(null);
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader, never()).destroy(anyString(), anyMap());
+        verify(mediaRepository).delete(media1); // Should still delete from DB
+    }
+
+    // ==================== Helper Methods ====================
         // ==================== Helper Methods ====================
 
         private Business createBusiness(Integer id) {
