@@ -49,28 +49,7 @@ public class MediaController {
     }
 
     @GetMapping
-    public List<MediaResponseModel> getAllMedia(@AuthenticationPrincipal Jwt jwt,
-            @RequestParam(required = false) String businessId) {
-
-        String targetBusinessId = businessId;
-
-        // If businessId is not provided, try to infer from JWT
-        if (targetBusinessId == null && jwt != null) {
-            try {
-                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
-                if (business != null) {
-                    targetBusinessId = business.getBusinessId();
-                }
-            } catch (Exception e) {
-                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage());
-            }
-        }
-
-        if (targetBusinessId != null) {
-            return responseMapper.entityListToResponseModelList(
-                    mediaService.getAllMediaByBusinessId(UUID.fromString(targetBusinessId)));
-        }
-
+    public List<MediaResponseModel> getAllMedia() {
         return responseMapper.entityListToResponseModelList(mediaService.getAllMedia());
     }
 

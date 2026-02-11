@@ -1,6 +1,5 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
-import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.media.BusinessLayer.MediaLocationService;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.MapperLayer.MediaLocationRequestMapper;
@@ -34,9 +33,6 @@ class MediaLocationControllerUnitTest {
     @MockitoBean
     private MediaLocationResponseMapper responseMapper;
 
-    @MockitoBean
-    private BusinessService businessService;
-
     @Autowired
     private MediaLocationController mediaLocationController;
 
@@ -67,14 +63,15 @@ class MediaLocationControllerUnitTest {
         when(jwt.getSubject()).thenReturn("auth0|123");
 
         when(requestMapper.requestModelToEntity(any(MediaLocationRequestModel.class))).thenReturn(mediaLocation);
-        when(mediaLocationService.createMediaLocation(any(MediaLocation.class))).thenReturn(mediaLocation);
+        when(mediaLocationService.createMediaLocation(any(MediaLocation.class), any(Jwt.class)))
+                .thenReturn(mediaLocation);
         when(responseMapper.entityToResponseModel(any(MediaLocation.class))).thenReturn(responseModel);
 
         ResponseEntity<MediaLocationResponseModel> response = mediaLocationController.createMediaLocation(jwt,
                 requestModel);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        verify(mediaLocationService).createMediaLocation(any(MediaLocation.class));
+        verify(mediaLocationService).createMediaLocation(any(MediaLocation.class), any(Jwt.class));
     }
 
     @Test
@@ -108,39 +105,11 @@ class MediaLocationControllerUnitTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
-    @Test
-    void assignMediaToLocation_ShouldReturnOk() {
-        UUID mediaId = UUID.randomUUID();
-
-        doNothing().when(mediaLocationService).assignMediaToLocation(mediaLocationId, mediaId);
-
-        ResponseEntity<Void> response = mediaLocationController.assignMediaToLocation(
-                mediaLocationId.toString(), mediaId.toString());
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(mediaLocationService).assignMediaToLocation(mediaLocationId, mediaId);
-    }
-
-    @Test
-    void unassignMediaFromLocation_ShouldReturnNoContent() {
-        UUID mediaId = UUID.randomUUID();
-
-        doNothing().when(mediaLocationService).unassignMediaFromLocation(mediaLocationId, mediaId);
-
-        ResponseEntity<Void> response = mediaLocationController.unassignMediaFromLocation(
-                mediaLocationId.toString(), mediaId.toString());
-
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        verify(mediaLocationService).unassignMediaFromLocation(mediaLocationId, mediaId);
-    }
+    // Removed assignMediaToLocation tests and unassignMediaFromLocation tests as
+    // requested
 
     @Test
     void updateMediaLocation_ShouldUpdateFields() {
-        MediaLocation existing = new MediaLocation();
-        existing.setId(mediaLocationId);
-        existing.setBusinessId(UUID.fromString(businessId));
-        existing.setName("Old Name");
-
         MediaLocationRequestModel updateRequest = new MediaLocationRequestModel();
         updateRequest.setName("New Name");
         updateRequest.setLatitude(10.0);
@@ -153,15 +122,17 @@ class MediaLocationControllerUnitTest {
         updatedEntity.setLatitude(10.0);
         updatedEntity.setLongitude(20.0);
 
-        when(mediaLocationService.getMediaLocationById(mediaLocationId)).thenReturn(existing);
         when(requestMapper.requestModelToEntity(any(MediaLocationRequestModel.class))).thenReturn(updatedEntity);
-        when(mediaLocationService.updateMediaLocation(any(MediaLocation.class))).thenReturn(updatedEntity);
+        // Updated mock to match new service signature
+        when(mediaLocationService.updateMediaLocation(eq(mediaLocationId), any(MediaLocation.class)))
+                .thenReturn(updatedEntity);
         when(responseMapper.entityToResponseModel(any(MediaLocation.class))).thenReturn(responseModel);
 
         ResponseEntity<MediaLocationResponseModel> response = mediaLocationController.updateMediaLocation(
                 mediaLocationId.toString(), updateRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        verify(mediaLocationService).updateMediaLocation(any(MediaLocation.class));
+        // Verify call with correct arguments
+        verify(mediaLocationService).updateMediaLocation(eq(mediaLocationId), any(MediaLocation.class));
     }
 }

@@ -4,24 +4,52 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import org.springframework.stereotype.Service;
 
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.oauth2.jwt.Jwt;
+
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class MediaLocationServiceImpl implements MediaLocationService {
 
     private final MediaLocationRepository mediaLocationRepository;
-    private final com.envisionad.webservice.media.DataAccessLayer.MediaRepository mediaRepository;
+    private final MediaRepository mediaRepository;
+    private final BusinessService businessService;
 
     public MediaLocationServiceImpl(MediaLocationRepository mediaLocationRepository,
-            com.envisionad.webservice.media.DataAccessLayer.MediaRepository mediaRepository) {
+            MediaRepository mediaRepository,
+            BusinessService businessService) {
         this.mediaLocationRepository = mediaLocationRepository;
         this.mediaRepository = mediaRepository;
+        this.businessService = businessService;
     }
 
     @Override
-    public List<MediaLocation> getAllMediaLocationsByBusinessId(UUID businessId) {
-        return mediaLocationRepository.findAllByBusinessId(businessId);
+    public List<MediaLocation> getAllMediaLocations(Jwt jwt, String businessId) {
+        String targetBusinessId = businessId;
+
+        // If businessId is not provided, try to infer from JWT
+        if (targetBusinessId == null && jwt != null) {
+            try {
+                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+                if (business != null) {
+                    targetBusinessId = business.getBusinessId();
+                }
+            } catch (Exception e) {
+                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage());
+            }
+        }
+
+        if (targetBusinessId == null) {
+            throw new IllegalArgumentException("Business ID is required");
+        }
+
+        return mediaLocationRepository.findAllByBusinessId(UUID.fromString(targetBusinessId));
     }
 
     @Override
@@ -30,7 +58,18 @@ public class MediaLocationServiceImpl implements MediaLocationService {
     }
 
     @Override
-    public MediaLocation createMediaLocation(MediaLocation mediaLocation) {
+    public MediaLocation createMediaLocation(MediaLocation mediaLocation, Jwt jwt) {
+        if (jwt != null) {
+            try {
+                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+                if (business != null && business.getBusinessId() != null) {
+                    mediaLocation.setBusinessId(UUID.fromString(business.getBusinessId()));
+                }
+            } catch (Exception e) {
+                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
+            }
+        }
+
         if (mediaLocation.getBusinessId() == null) {
             throw new IllegalArgumentException("Business ID is required to create a media location.");
         }
@@ -38,7 +77,15 @@ public class MediaLocationServiceImpl implements MediaLocationService {
     }
 
     @Override
-    public MediaLocation updateMediaLocation(MediaLocation mediaLocation) {
+    public MediaLocation updateMediaLocation(UUID id, MediaLocation mediaLocation) {
+        MediaLocation existing = mediaLocationRepository.findById(id).orElse(null);
+        if (existing == null) {
+            return null;
+        }
+
+        mediaLocation.setId(id);
+        mediaLocation.setBusinessId(existing.getBusinessId());
+
         return mediaLocationRepository.save(mediaLocation);
     }
 
@@ -53,36 +100,5 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             }
         }
         mediaLocationRepository.deleteById(id);
-    }
-
-    @Override
-    public void assignMediaToLocation(UUID locationId, UUID mediaId) {
-        MediaLocation location = mediaLocationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Location not found"));
-
-        com.envisionad.webservice.media.DataAccessLayer.Media media = mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new IllegalArgumentException("Media not found"));
-
-        media.setMediaLocation(location);
-        mediaRepository.save(media);
-    }
-
-    @Override
-    public void unassignMediaFromLocation(UUID locationId, UUID mediaId) {
-        // Check if location exists
-        if (!mediaLocationRepository.existsById(locationId)) {
-            throw new IllegalArgumentException("Location not found");
-        }
-
-        com.envisionad.webservice.media.DataAccessLayer.Media media = mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new IllegalArgumentException("Media not found"));
-
-        // Verify media is actually assigned to this location
-        if (media.getMediaLocation() != null && media.getMediaLocation().getId().equals(locationId)) {
-            media.setMediaLocation(null);
-            mediaRepository.save(media);
-        } else {
-            throw new IllegalArgumentException("Media is not assigned to this location");
-        }
     }
 }

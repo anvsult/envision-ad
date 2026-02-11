@@ -209,7 +209,7 @@ class MediaControllerUnitTest {
                 when(mediaService.getAllMedia()).thenReturn(mediaList);
                 when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
 
-                List<MediaResponseModel> response = mediaController.getAllMedia(null, null);
+                List<MediaResponseModel> response = mediaController.getAllMedia();
 
                 assertNotNull(response);
                 assertEquals(1, response.size());
@@ -219,20 +219,11 @@ class MediaControllerUnitTest {
                 verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
         }
 
-        @Test
-        void getAllMedia_WithBusinessId_ShouldReturnFilteredMedia() {
-                List<Media> mediaList = Arrays.asList(media);
-                List<MediaResponseModel> responseList = Arrays.asList(responseModel);
-
-                when(mediaService.getAllMediaByBusinessId(UUID.fromString(businessId))).thenReturn(mediaList);
-                when(responseMapper.entityListToResponseModelList(mediaList)).thenReturn(responseList);
-
-                List<MediaResponseModel> response = mediaController.getAllMedia(null, businessId);
-
-                assertNotNull(response);
-                assertEquals(1, response.size());
-                verify(mediaService, times(1)).getAllMediaByBusinessId(UUID.fromString(businessId));
-        }
+        // Test removed as getAllMedia does not support filtering by businessId anymore
+        // @Test
+        // void getAllMedia_WithBusinessId_ShouldReturnFilteredMedia() {
+        // ...
+        // }
 
         @Test
         void getAllFilteredActiveMedia_NoFilters_ShouldReturnPage() {

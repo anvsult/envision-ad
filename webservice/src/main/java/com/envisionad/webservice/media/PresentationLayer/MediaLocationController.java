@@ -1,7 +1,5 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
-import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.media.BusinessLayer.MediaLocationService;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.MapperLayer.MediaLocationRequestMapper;
@@ -28,42 +26,25 @@ public class MediaLocationController {
     private final MediaLocationService mediaLocationService;
     private final MediaLocationRequestMapper requestMapper;
     private final MediaLocationResponseMapper responseMapper;
-    private final BusinessService businessService;
 
     public MediaLocationController(MediaLocationService mediaLocationService,
             MediaLocationRequestMapper requestMapper,
-            MediaLocationResponseMapper responseMapper,
-            BusinessService businessService) {
+            MediaLocationResponseMapper responseMapper) {
         this.mediaLocationService = mediaLocationService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
-        this.businessService = businessService;
     }
 
     @GetMapping
     public ResponseEntity<List<MediaLocationResponseModel>> getAllMediaLocations(@AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) String businessId) {
 
-        String targetBusinessId = businessId;
-
-        // If businessId is not provided, try to infer from JWT
-        if (targetBusinessId == null && jwt != null) {
-            try {
-                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
-                if (business != null) {
-                    targetBusinessId = business.getBusinessId();
-                }
-            } catch (Exception e) {
-                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage());
-            }
-        }
-
-        if (targetBusinessId == null) {
+        try {
+            return ResponseEntity.ok(responseMapper.entityListToResponseModelList(
+                    mediaLocationService.getAllMediaLocations(jwt, businessId)));
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
-
-        return ResponseEntity.ok(responseMapper.entityListToResponseModelList(
-                mediaLocationService.getAllMediaLocationsByBusinessId(UUID.fromString(targetBusinessId))));
     }
 
     @GetMapping("/{id}")
@@ -81,39 +62,29 @@ public class MediaLocationController {
     public ResponseEntity<MediaLocationResponseModel> createMediaLocation(@AuthenticationPrincipal Jwt jwt,
             @RequestBody MediaLocationRequestModel requestModel) {
 
-        if (jwt != null) {
-            try {
-                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
-                if (business != null && business.getBusinessId() != null) {
-                    requestModel.setBusinessId(business.getBusinessId());
-                }
-            } catch (Exception e) {
-                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
-            }
-        }
-
         MediaLocation entity = requestMapper.requestModelToEntity(requestModel);
-        MediaLocation savedEntity = mediaLocationService.createMediaLocation(entity);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseMapper.entityToResponseModel(savedEntity));
+        try {
+            MediaLocation savedEntity = mediaLocationService.createMediaLocation(entity, jwt);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(responseMapper.entityToResponseModel(savedEntity));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('update:media_location')")
     public ResponseEntity<MediaLocationResponseModel> updateMediaLocation(@PathVariable String id,
             @RequestBody MediaLocationRequestModel requestModel) {
-        MediaLocation existing = mediaLocationService.getMediaLocationById(UUID.fromString(id));
-        if (existing == null) {
+
+        MediaLocation updateEntity = requestMapper.requestModelToEntity(requestModel);
+        MediaLocation updated = mediaLocationService.updateMediaLocation(UUID.fromString(id), updateEntity);
+
+        if (updated == null) {
             return ResponseEntity.notFound().build();
         }
 
-        // Map updates to entity - simple version
-        MediaLocation updateEntity = requestMapper.requestModelToEntity(requestModel);
-        updateEntity.setId(UUID.fromString(id));
-        updateEntity.setBusinessId(existing.getBusinessId()); // Keep original businessId
-
-        MediaLocation updated = mediaLocationService.updateMediaLocation(updateEntity);
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updated));
     }
 
@@ -124,17 +95,4 @@ public class MediaLocationController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}/assign/{mediaId}")
-    @PreAuthorize("hasAuthority('update:media_location')") // Change to update:media when added to Auth0
-    public ResponseEntity<Void> assignMediaToLocation(@PathVariable String id, @PathVariable String mediaId) {
-        mediaLocationService.assignMediaToLocation(UUID.fromString(id), UUID.fromString(mediaId));
-        return ResponseEntity.ok().build();
-    }
-
-    @DeleteMapping("/{id}/media/{mediaId}")
-    @PreAuthorize("hasAuthority('update:media_location')")
-    public ResponseEntity<Void> unassignMediaFromLocation(@PathVariable String id, @PathVariable String mediaId) {
-        mediaLocationService.unassignMediaFromLocation(UUID.fromString(id), UUID.fromString(mediaId));
-        return ResponseEntity.noContent().build();
-    }
 }
