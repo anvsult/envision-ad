@@ -134,7 +134,7 @@ export function useMediaList() {
                             name: updated.title,
                             image: updated.imageUrl ?? r.image,
                             status: updated.status ?? r.status,
-                            price: updated.price ? `${Number(updated.price)}` : r.price
+                            price: updated.price ? `${Number(updated.price).toFixed(2)}` : r.price
                         }
                         : r
                 )
