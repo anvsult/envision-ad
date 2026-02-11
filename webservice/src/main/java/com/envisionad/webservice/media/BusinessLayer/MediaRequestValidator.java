@@ -5,6 +5,7 @@ import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestMode
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -143,8 +144,11 @@ public class MediaRequestValidator {
             throw new IllegalArgumentException("Image is required");
         }
         try {
-            new java.net.URL(imageUrl);
-        } catch (java.net.MalformedURLException e) {
+            java.net.URI uri = new java.net.URI(imageUrl);
+            if (!uri.isAbsolute()) {
+                throw new IllegalArgumentException("Image URL must be a valid URL");
+            }
+        } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Image URL must be a valid URL");
         }
 

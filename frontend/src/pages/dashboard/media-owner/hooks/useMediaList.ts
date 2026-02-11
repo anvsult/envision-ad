@@ -77,7 +77,6 @@ export function useMediaList() {
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
-            status: 'PENDING',
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
         };
@@ -120,7 +119,6 @@ export function useMediaList() {
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
-            status: 'PENDING',
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
@@ -129,7 +127,17 @@ export function useMediaList() {
         try {
             const updated = await updateMedia(String(id), payload as MediaRequestDTO);
             setMedia((prev) =>
-                prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${Number(updated.price).toFixed(2)}` : r.price } : r))
+                prev.map((r) =>
+                    String(r.id) === String(id)
+                        ? {
+                            ...r,
+                            name: updated.title,
+                            image: updated.imageUrl ?? r.image,
+                            status: updated.status ?? r.status,
+                            price: updated.price ? `${Number(updated.price)}` : r.price
+                        }
+                        : r
+                )
             );
             return updated;
         } catch (err: unknown) {
@@ -198,8 +206,6 @@ export function useMediaList() {
                     br: { x: 100, y: 100 },
                     bl: { x: 0, y: 100 },
                 }),
-                // STATUS CHANGE HERE
-                status: nextStatus,
             };
 
             const updated = await updateMedia(targetId, payload);

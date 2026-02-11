@@ -1,7 +1,5 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
-import com.envisionad.webservice.business.dataaccesslayer.Business;
-import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -20,9 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -62,9 +58,16 @@ class MediaControllerUnitTest {
     private final List<Double> bounds = Arrays.asList(-51.0, -50.0, 30.0, 31.0);
     private final List<Double> invalidBounds = Arrays.asList(-51.0, -50.0, 30.0);
 
+    private Jwt mediaToken;
+
         @BeforeEach
         void setUp() {
                 // ... (setup remains same until end of method)
+
+            mediaToken = createJwtToken("media-token", "auth0|696a89137cfdb558ea4a4a4a",
+                    List.of("create:media", "update:media", "update:business", "read:employee",
+                            "create:employee", "delete:employee", "read:verification", "create:verification"));
+
 
             MediaLocation mediaLocation = getMediaLocation();
 
@@ -121,6 +124,15 @@ class MediaControllerUnitTest {
             requestModel.setImageUrl("http://example.com/image.jpg");
             requestModel.setPreviewConfiguration("{\"corners\": []}");
         }
+
+    private Jwt createJwtToken(String tokenValue, String subject, List<String> permissions) {
+        return Jwt.withTokenValue(tokenValue)
+                .header("alg", "none")
+                .claim("sub", subject)
+                .claim("scope", "read write")
+                .claim("permissions", permissions)
+                .build();
+    }
 
     private MediaLocationResponseModel getMediaLocationResponseModel() {
         MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
@@ -557,20 +569,19 @@ class MediaControllerUnitTest {
 
         @Test
         void updateMedia_ShouldReturnUpdatedMedia() {
-                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
-                when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
+                when(mediaService.updateMediaById(mediaToken, String.valueOf(mediaId), requestModel)).thenReturn(responseModel);
                 when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(String.valueOf(mediaId),
-                                requestModel);
+                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(
+                        mediaToken,
+                        String.valueOf(mediaId),
+                        requestModel);
 
                 assertNotNull(response);
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
                 assertEquals(mediaId, response.getBody().getId());
-                verify(requestMapper, times(1)).requestModelToEntity(any(MediaRequestModel.class));
-                verify(mediaService, times(1)).updateMedia(any(Media.class));
-                verify(responseMapper, times(1)).entityToResponseModel(any(Media.class));
+                verify(mediaService, times(1)).updateMediaById(mediaToken, String.valueOf(mediaId), requestModel);
         }
 
         @Test

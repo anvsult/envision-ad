@@ -4,12 +4,17 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
+import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.utils.MathFunctions;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -26,10 +31,14 @@ public class MediaServiceImpl implements MediaService {
 
     private final MediaRepository mediaRepository;
     private final StripeAccountRepository stripeAccountRepository;
+    private final MediaResponseMapper mediaResponseMapper;
+    private final JwtUtils jwtUtils;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, MediaResponseMapper mediaResponseMapper, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
+        this.mediaResponseMapper = mediaResponseMapper;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -134,8 +143,31 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Media updateMedia(Media media) {
-        return mediaRepository.save(media);
+    public MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel) {
+        Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElse(null);
+        if (existingMedia == null) {
+            throw new IllegalArgumentException("Media with the specified ID does not exist.");
+        }
+
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, existingMedia.getBusinessId().toString());
+
+        // Validate the request model
+        MediaRequestValidator.validateMediaRequest(requestModel);
+
+        // Update fields
+        existingMedia.setTitle(requestModel.getTitle());
+        existingMedia.setPrice(requestModel.getPrice());
+        existingMedia.setDailyImpressions(requestModel.getDailyImpressions());
+        existingMedia.setTypeOfDisplay(requestModel.getTypeOfDisplay());
+        existingMedia.setSchedule(requestModel.getSchedule());
+        existingMedia.setImageUrl(requestModel.getImageUrl());
+        existingMedia.setPreviewConfiguration(requestModel.getPreviewConfiguration());
+
+        // Set status to pending after update
+        existingMedia.setStatus(Status.PENDING);
+
+        Media updatedMedia = mediaRepository.save(existingMedia);
+        return mediaResponseMapper.entityToResponseModel(updatedMedia);
     }
 
     @Override
