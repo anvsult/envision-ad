@@ -1,13 +1,18 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
+import com.cloudinary.Cloudinary;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
+import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
+import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.utils.MathFunctions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,12 +25,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,6 +42,21 @@ class MediaServiceUnitTest {
 
     @Mock
     private MediaRepository mediaRepository;
+
+    @Mock
+    private Cloudinary cloudinary;
+
+    @Mock
+    private com.cloudinary.Uploader uploader;
+
+    @Mock
+    private JwtUtils jwtUtils;
+
+    @Mock
+    private MediaResponseMapper mediaResponseMapper;
+
+    @Mock
+    private Jwt mockJwt;
 
     private String business1Id;
     private String business2Id;
@@ -109,6 +127,7 @@ class MediaServiceUnitTest {
                 10000,
                 Status.ACTIVE
         );
+        lenient().when(cloudinary.uploader()).thenReturn(uploader);
     }
 
     // ==================== getAllFilteredActiveMedia Tests ====================
@@ -549,6 +568,152 @@ class MediaServiceUnitTest {
 
         // Assert - Both should be returned as they're at the same distance
         assertEquals(2, result.getContent().size());
+    }
+
+    // ==================== CRUD & Cloudinary Tests ====================
+
+
+    @Test
+    void deleteMedia_ShouldTriggerCloudinaryDeletion() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        media1.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader).destroy(eq("sample"), anyMap());
+        verify(mediaRepository).delete(media1);
+    }
+
+    @Test
+    void updateMedia_WhenImageChanges_ShouldDeleteOldImage() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        media1.setImageUrl(".../upload/old_id.png");
+
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setTitle("Updated Title");
+        requestModel.setPrice(media1.getPrice());
+        requestModel.setDailyImpressions(media1.getDailyImpressions());
+        requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        requestModel.setLoopDuration(10);
+        requestModel.setResolution("1920x1080");
+        requestModel.setAspectRatio("16:9");
+        requestModel.setSchedule(media1.getSchedule());
+        requestModel.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+        requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
+        requestModel.setMediaLocationId(media1.getMediaLocation().getId().toString());
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+        when(mediaRepository.save(any(Media.class))).thenReturn(media1);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
+
+        // Act
+        mediaService.updateMediaById(mockJwt, id.toString(), requestModel);
+
+        // Assert
+        verify(uploader).destroy(eq("old_id"), anyMap());
+    }
+
+    @Test
+    void updateMedia_WhenImageDoesNotChange_ShouldNotCallCloudinary() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        String sameUrl = "https://res.cloudinary.com/demo/image/upload/v1/sample.png";
+        media1.setImageUrl(sameUrl);
+
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setTitle("Updated Title");
+        requestModel.setPrice(new BigDecimal("500.00"));
+        requestModel.setDailyImpressions(50000);
+        requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        requestModel.setLoopDuration(10);
+        requestModel.setResolution("1920x1080");
+        requestModel.setAspectRatio("16:9");
+        requestModel.setSchedule(media1.getSchedule());
+        requestModel.setImageUrl(sameUrl);
+        requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
+        requestModel.setMediaLocationId(media1.getMediaLocation().getId().toString());
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+        when(mediaRepository.save(any(Media.class))).thenReturn(media1);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
+
+        // Act
+        mediaService.updateMediaById(mockJwt, id.toString(), requestModel);
+
+        // Assert
+        verify(uploader, never()).destroy(anyString(), anyMap());
+        verify(mediaRepository).save(any(Media.class));
+    }
+
+    @Test
+    void deleteMedia_WhenCloudinaryFails_ShouldStillDeleteFromRepository() throws Exception {
+        // Arrange
+        UUID id = media1.getId();
+        media1.setImageUrl(".../upload/sample.png");
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Simulate Cloudinary exception
+        when(uploader.destroy(anyString(), anyMap())).thenThrow(new RuntimeException("API Down"));
+
+        // Act & Assert
+        assertDoesNotThrow(() -> mediaService.deleteMedia(id));
+        verify(mediaRepository).delete(media1);
+    }
+
+    @Test
+    void deleteMedia_WithCroppedUrl_ShouldStillFindCorrectPublicId() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        // Complex URL with crop and version
+        String croppedUrl = "https://res.cloudinary.com/demo/image/upload/c_crop,w_200/v1/my_image.jpg";
+
+        Media media = new Media();
+        media.setId(id);
+        media.setImageUrl(croppedUrl);
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader).destroy(eq("my_image"), anyMap());
+    }
+
+    @Test
+    void deleteMedia_VideoFile_ShouldPassVideoResourceTypeToCloudinary() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        String videoUrl = "https://res.cloudinary.com/demo/video/upload/v1/my_video.mp4";
+        media1.setImageUrl(videoUrl);
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        ArgumentCaptor<Map<String, Object>> mapCaptor = ArgumentCaptor.forClass(Map.class);        verify(uploader).destroy(eq("my_video"), mapCaptor.capture());
+        assertEquals("video", mapCaptor.getValue().get("resource_type"));
+    }
+
+    @Test
+    void deleteMedia_WithNullImageUrl_ShouldNotCallCloudinary() throws Exception {
+        // Arrange
+        UUID id = UUID.randomUUID();
+        media1.setImageUrl(null);
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+
+        // Act
+        mediaService.deleteMedia(id);
+
+        // Assert
+        verify(uploader, never()).destroy(anyString(), anyMap());
+        verify(mediaRepository).delete(media1); // Should still delete from DB
     }
 
     // ==================== Helper Methods ====================

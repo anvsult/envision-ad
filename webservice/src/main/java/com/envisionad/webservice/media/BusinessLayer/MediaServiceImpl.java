@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
+import com.cloudinary.Cloudinary;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -7,38 +8,40 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
+import com.envisionad.webservice.utils.CloudinaryConfig;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.utils.MathFunctions;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
-
 import java.math.BigDecimal;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
+@Slf4j
 public class MediaServiceImpl implements MediaService {
 
     private final MediaRepository mediaRepository;
     private final StripeAccountRepository stripeAccountRepository;
     private final MediaResponseMapper mediaResponseMapper;
     private final JwtUtils jwtUtils;
+    private final Cloudinary cloudinary;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, MediaResponseMapper mediaResponseMapper, JwtUtils jwtUtils) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, MediaResponseMapper mediaResponseMapper, JwtUtils jwtUtils, Cloudinary cloudinary) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
         this.mediaResponseMapper = mediaResponseMapper;
         this.jwtUtils = jwtUtils;
+        this.cloudinary = cloudinary;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class MediaServiceImpl implements MediaService {
             Double userLng,
             List<Double> bounds,
             String excludedId
-            ) {
+    ) {
 
         // FILTERING
         Specification<Media> spec = MediaSpecifications.hasStatus(Status.ACTIVE);
@@ -154,13 +157,36 @@ public class MediaServiceImpl implements MediaService {
         // Validate the request model
         MediaRequestValidator.validateMediaRequest(requestModel);
 
+        // Handle Cloudinary cleanup if image URL is changing
+        String oldUrl = existingMedia.getImageUrl();
+        String newUrl = requestModel.getImageUrl();
+
+        String normalizedOldUrl = (oldUrl != null && !oldUrl.trim().isEmpty()) ? oldUrl.trim() : null;
+        String normalizedNewUrl = (newUrl != null && !newUrl.trim().isEmpty()) ? newUrl.trim() : null;
+
+        if (normalizedOldUrl != null && !Objects.equals(normalizedNewUrl, normalizedOldUrl)) {
+            String oldPublicId = CloudinaryConfig.getPublicIdFromUrl(normalizedOldUrl);
+            String oldResourceType = CloudinaryConfig.getResourceTypeFromUrl(normalizedOldUrl);
+
+            if (oldPublicId != null) {
+                try {
+                    log.info("Update: Deleting old {} asset: {}", oldResourceType, oldPublicId);
+                    cloudinary.uploader().destroy(oldPublicId, Map.of(
+                            "invalidate", true,
+                            "resource_type", oldResourceType));
+                } catch (Exception e) {
+                    log.error("Failed to clean up old {} asset: {}", oldResourceType, e.getMessage());
+                }
+            }
+        }
+
         // Update fields
         existingMedia.setTitle(requestModel.getTitle());
         existingMedia.setPrice(requestModel.getPrice());
         existingMedia.setDailyImpressions(requestModel.getDailyImpressions());
         existingMedia.setTypeOfDisplay(requestModel.getTypeOfDisplay());
         existingMedia.setSchedule(requestModel.getSchedule());
-        existingMedia.setImageUrl(requestModel.getImageUrl());
+        existingMedia.setImageUrl(normalizedNewUrl);
         existingMedia.setPreviewConfiguration(requestModel.getPreviewConfiguration());
 
         // Set status to pending after update
@@ -172,10 +198,23 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public void deleteMedia(UUID id) {
-        mediaRepository.deleteById(id);
+        Media media = mediaRepository.findById(id)
+                .orElseThrow(() -> new MediaNotFoundException(id.toString()));
+
+        String publicId = CloudinaryConfig.getPublicIdFromUrl(media.getImageUrl());
+        String resourceType = CloudinaryConfig.getResourceTypeFromUrl(media.getImageUrl());
+
+        if (publicId != null) {
+            try {
+                cloudinary.uploader().destroy(publicId, Map.of(
+                        "invalidate", true,
+                        "resource_type", resourceType
+                ));
+                log.info("Successfully deleted {} asset: {}", resourceType, publicId);
+            } catch (Exception e) {
+                log.error("Cloudinary cleanup failed for {} {}: {}", resourceType, publicId, e.getMessage());
+            }
+        }
+        mediaRepository.delete(media);
     }
-
-    // Calculating distance using the Haversine Formula
-
-
 }
