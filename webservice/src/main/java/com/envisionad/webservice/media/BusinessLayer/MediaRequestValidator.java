@@ -3,8 +3,11 @@ package com.envisionad.webservice.media.BusinessLayer;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
@@ -143,21 +146,31 @@ public class MediaRequestValidator {
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
             throw new IllegalArgumentException("Image is required");
         }
+
+        URI uri;
         try {
-            java.net.URI uri = new java.net.URI(imageUrl);
-            if (!uri.isAbsolute()) {
-                throw new IllegalArgumentException("Image URL must be a valid URL");
-            }
+            uri = new URI(imageUrl.trim());
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Image URL must be a valid URL");
+        }
+
+        String scheme = uri.getScheme();
+        if (scheme == null ||
+                !(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
+            throw new IllegalArgumentException("Image URL must use http or https");
+        }
+
+        if (uri.getHost() == null || uri.getHost().isBlank()) {
+            throw new IllegalArgumentException("Image URL must contain a valid host");
         }
 
         if (previewConfiguration == null || previewConfiguration.trim().isEmpty()) {
             throw new IllegalArgumentException("Preview configuration (corners) is required when an image is uploaded");
         }
+
         try {
-            new com.fasterxml.jackson.databind.ObjectMapper().readTree(previewConfiguration);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            new ObjectMapper().readTree(previewConfiguration);
+        } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Preview configuration must be valid JSON");
         }
     }

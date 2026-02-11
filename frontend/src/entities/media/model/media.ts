@@ -8,8 +8,8 @@ export interface Media {
     resolution: string;
     aspectRatio: string;
     loopDuration: number | null;
-    width: number;
-    height: number;
+    width: number | null;
+    height: number | null;
     price: number;
     dailyImpressions: number | null;
     schedule: MonthlyScheduleModel;

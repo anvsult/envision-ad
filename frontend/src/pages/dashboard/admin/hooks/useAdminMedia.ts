@@ -3,12 +3,9 @@
 import { getMediaById, updateMedia } from "@/features/media-management/api";
 import type { MediaRequestDTO, Media } from "@/entities/media";
 
-type AdminStatus = "ACTIVE" | "REJECTED";
-
 export function useAdminMedia() {
-    const setStatus = async (id: string, status: AdminStatus) => {
+    const setStatus = async (id: string) => {
         const m: Media = await getMediaById(id);
-        console.log('Fetched media for update:', m);
 
         // Prefer explicit mediaLocationId if DTO has it, fallback to mediaLocation.id
         const locationId =
@@ -44,8 +41,8 @@ export function useAdminMedia() {
         return updateMedia(id, payload as MediaRequestDTO);
     };
 
-    const approveMedia = (id: string) => setStatus(id, "ACTIVE");
-    const denyMedia = (id: string) => setStatus(id, "REJECTED");
+    const approveMedia = (id: string) => setStatus(id);
+    const denyMedia = (id: string) => setStatus(id);
 
     return { approveMedia, denyMedia };
 }
