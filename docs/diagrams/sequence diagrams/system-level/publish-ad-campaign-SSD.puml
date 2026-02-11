@@ -1,0 +1,69 @@
+@startuml
+
+title <u>System Sequence Diagram</u>\nAdvertiser Publish Ad Campaign
+
+actor Advertiser
+participant System
+actor "Media Owner" as MediaOwner
+
+ref over System, Advertiser
+    <i>Browse Media Use Case</i>
+end ref
+
+Advertiser -> System: reserveMedia(mediaId, adCampaignId, startDate, endDate)
+
+ref over System
+    <i>Validate Date Availability</i>
+end ref
+
+ref over System
+    <i>Validate Advertiser</i>
+    <i>Authorization</i>
+end ref
+
+alt Validation succeeds
+    System --> Advertiser: reservationDetails
+else Validation fails
+    System --> Advertiser: validationError
+end
+
+note right of System
+  reservationDetails contains:
+  - adPreview
+  - totalPrice
+  - mediaDetails
+end note
+
+Advertiser -> System: confirmReservation()
+
+System --> Advertiser: reservationPending
+
+note right of System
+  Reservation created with PENDING status.
+  Media Owner approval required.
+end note
+
+ref over System, MediaOwner
+    <i>Manage Reservation Use Case</i>
+    (Media Owner approves request)
+end ref
+
+System --> Advertiser: approvalNotification
+
+Advertiser -> System: submitPayment(paymentInfo)
+
+alt Payment succeeds
+    System --> Advertiser: paymentConfirmation
+else Payment fails
+    System --> Advertiser: paymentError
+end
+
+note right of System
+  paymentConfirmation contains:
+  - reservationId
+  - campaignStartDate
+  - campaignEndDate
+  - activeStatus
+end note
+
+@enduml

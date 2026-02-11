@@ -1,0 +1,127 @@
+@startuml
+
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign
+
+actor Advertiser
+participant "<<UI>>\nMedia Details Page" as MediaDetailsPage
+participant "<<UI>>\nReservationMediaModal" as ReservationModal
+
+participant "<<control>>\n__:ReservationController__" as Controller
+participant "<<control>>\n__:ReservationService__" as Service
+participant "<<entity>>\nreservation__:Reservation__" as Reservation
+participant "<<mapper>>\n__:ReservationResponseMapper__" as ResponseMapper
+participant "<<mapper>>\n__:ReservationRequestMapper__" as RequestMapper
+participant "<<utility>>\n__:ReservationValidator__" as Validator
+participant "<<utility>>\n__:JwtUtils__" as JwtUtils
+participant "<<entity>>\nmedia__:Media__" as Media
+participant "<<entity>>\ncampaign__:AdCampaign__" as Campaign
+participant "<<repository>>\n__:MediaRepository__" as MediaRepo
+participant "<<repository>>\n__:AdCampaignRepository__" as CampaignRepo
+participant "<<repository>>\n__:ReservationRepository__" as ReservationRepo
+database "<<database>>\n:Database" as DB
+
+Advertiser -> MediaDetailsPage: Initiate Reservation
+activate MediaDetailsPage
+
+MediaDetailsPage -> ReservationModal: render()
+activate ReservationModal
+
+ReservationModal -> Controller: POST /api/v1/media/{mediaId}/reservations
+activate Controller
+
+Controller -> Service: createReservation(jwt, mediaId, reservationRequestModel)
+note bottom
+  Payload:
+  - campaignId
+  - startDate
+  - endDate
+end note
+activate Service
+
+Service -> Validator: validateReservation(requestModel, mediaId)
+activate Validator
+Validator --> Service
+deactivate Validator
+
+Service -> JwtUtils: extractUserId(jwt)
+activate JwtUtils
+JwtUtils --> Service: userId
+deactivate JwtUtils
+
+Service -> Service: loadAndValidateMedia(mediaId)
+Service -> MediaRepo: findById(mediaId)
+activate MediaRepo
+MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaIdactivate DB
+activate DB
+DB --> MediaRepo
+deactivate DB
+deactivate DB
+MediaRepo --> Service: media
+deactivate MediaRepo
+
+Service -> Service: loadAndValidateCampaign(requestModel.getCampaignId())
+Service -> CampaignRepo: findById(campaignId)
+activate CampaignRepo
+CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
+activate DB
+DB --> CampaignRepo
+deactivate DB
+CampaignRepo --> Service: campaign
+deactivate CampaignRepo
+
+Service -> Campaign: getBusinessId()
+activate Campaign
+Campaign --> Service: businessId
+deactivate Campaign
+
+Service -> JwtUtils: validateUserIsEmployeeOfBusiness(userId, businessId)
+activate JwtUtils
+JwtUtils --> Service
+deactivate JwtUtils
+
+Service -> Service: calculateTotalPrice(media, requestModel)
+Service -> Service: totalPrice
+
+Service -> Service: createPendingReservation(requestModel, media, userId, totalPrice)
+
+Service -> RequestMapper: requestModelToEntity(requestModel)
+activate RequestMapper
+RequestMapper -> Reservation: new Reservation()
+activate Reservation
+deactivate Reservation
+RequestMapper --> Service: reservation
+deactivate RequestMapper
+
+Service -> Reservation: setReservationId(UUID.randomUUID().toString())
+Service -> Reservation: setMediaId(media.getId())
+Service -> Reservation: setTotalPrice(totalPrice)
+Service -> Reservation: setAdvertiserId(userId)
+Service -> Reservation: setStatus(PENDING)
+
+note left
+  Reservation created with PENDING status.
+  Requires media owner approval.
+end note
+
+Service -> ReservationRepo: save(reservation)
+activate ReservationRepo
+ReservationRepo -> DB: INSERT INTO reservations (details) VALUES (details)
+activate DB
+DB --> ReservationRepo
+deactivate DB
+ReservationRepo --> Service: savedReservation
+deactivate ReservationRepo
+
+Service -> ResponseMapper: entityToResponseModel(savedReservation)
+activate ResponseMapper
+ResponseMapper --> Service: reservationResponse
+deactivate ResponseMapper
+
+Service --> Controller: reservationResponse
+deactivate Service
+
+Controller --> ReservationModal: reservationResponse (HTTP 201)
+deactivate Controller
+deactivate MediaDetailsPage
+
+@enduml

@@ -36,12 +36,5 @@ public class JwtUtils {
             throw new AccessDeniedException("Access Denied");
     }
 
-    public void validateBusinessOwnsCampaign(String businessId, AdCampaign campaign) {
-        String campaignBusinessId = campaign.getBusinessId().getBusinessId();
-        if (!campaignBusinessId.equals(businessId)) {
-            throw new AccessDeniedException("Campaign does not belong to the specified business");
-        }
-    }
-
 }
 
