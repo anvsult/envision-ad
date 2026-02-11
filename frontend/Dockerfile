@@ -37,7 +37,7 @@ ARG NODE_OPTIONS
 
 # Validate that all required build-time environment variables are set to fail fast if any are missing
 RUN if [ -z "$NEXT_PUBLIC_API_URL" ]; then echo "ERROR: NEXT_PUBLIC_API_URL is not set"; exit 1; fi
-RUN if [ -z "NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES" ]; then echo "ERROR: NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES is not set"; exit 1; fi
+RUN if [ -z "$NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES" ]; then echo "ERROR: NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET_SQUARE_IMAGES is not set"; exit 1; fi
 
 # Set them as ENV so the 'next build' process picks them up
 ENV NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=$NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
