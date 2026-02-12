@@ -1,7 +1,9 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.cloudinary.Cloudinary;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -132,8 +134,17 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId) {
-        businessRepository.findById(businessId)
-                .orElseThrow(() -> new IllegalArgumentException("Business with ID " + businessId + " does not exist."));
+
+        try {
+            UUID.fromString(businessId);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid businessId format: " + businessId, ex);
+        }
+
+        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);
+        if (existingBusiness == null) {
+            throw new BusinessNotFoundException(businessId);
+        }
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 

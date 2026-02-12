@@ -21,7 +21,7 @@ public class BusinessMediaController {
     }
 
     @GetMapping()
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAuthority('read:media')")
     public ResponseEntity<List<MediaResponseModel>> getMediaByBusinessId(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId) {
         return ResponseEntity.ok(mediaService.getMediaByBusinessId(jwt, businessId));
     }
