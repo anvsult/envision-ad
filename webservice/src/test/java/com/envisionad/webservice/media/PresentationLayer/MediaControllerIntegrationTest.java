@@ -259,7 +259,7 @@ class MediaControllerIntegrationTest {
 
                 Media updatedMedia = mediaRepository.findById(UUID.fromString(this.mediaId)).orElseThrow();
                 assertEquals("Updated Title", updatedMedia.getTitle());
-                assertEquals(updatedMedia.getBusinessId(), UUID.fromString(BUSINESS_ID));
+                assertEquals(UUID.fromString(BUSINESS_ID), updatedMedia.getBusinessId());
         }
 
         @Test

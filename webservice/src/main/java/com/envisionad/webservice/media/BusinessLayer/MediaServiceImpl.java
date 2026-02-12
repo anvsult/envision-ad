@@ -156,7 +156,7 @@ public class MediaServiceImpl implements MediaService {
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId.toString());
 
         // Validate the request model
-        MediaRequestValidator.validateMediaRequest(requestModel);
+        MediaRequestValidator.validateMediaUpdateRequest(requestModel);
 
         // Handle Cloudinary cleanup if image URL is changing
         String oldUrl = existingMedia.getImageUrl();

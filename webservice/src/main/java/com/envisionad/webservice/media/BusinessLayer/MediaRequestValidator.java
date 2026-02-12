@@ -31,6 +31,22 @@ public class MediaRequestValidator {
         validateImageAndConfiguration(request.getImageUrl(), request.getPreviewConfiguration());
     }
 
+    public static void validateMediaUpdateRequest(MediaRequestModel request) {
+        // When updating a media, we allow partial updates,
+        // so we only validate fields that are provided, excluding mediaLocationId which cannot be updated.
+
+        if (request == null) {
+            throw new IllegalArgumentException("Media request cannot be null");
+        }
+
+        validateTitle(request.getTitle());
+        validatePrice(request.getPrice());
+        validateDailyImpressions(request.getDailyImpressions());
+        validateTypeOfDisplay(request);
+        validateSchedule(request);
+        validateImageAndConfiguration(request.getImageUrl(), request.getPreviewConfiguration());
+    }
+
     private static void validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
