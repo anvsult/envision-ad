@@ -157,7 +157,10 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     }
 
     private void deleteCloudinaryAssetIfPresent(String url) {
-        if (url == null || url.isBlank()) return;
+        if (url == null) return;
+
+        url = url.trim();
+        if (url.isBlank()) return;
 
         try {
             String publicId = CloudinaryConfig.getPublicIdFromUrl(url);

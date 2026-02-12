@@ -31,7 +31,6 @@ class AdCampaignServiceUnitTest {
     @Mock private AdCampaignRepository adCampaignRepository;
     @Mock private AdCampaignRequestMapper adCampaignRequestMapper;
     @Mock private AdCampaignResponseMapper adCampaignResponseMapper;
-    @Mock private AdRequestMapper adRequestMapper;
     @Mock private AdResponseMapper adResponseMapper;
     @Mock private JwtUtils jwtUtils;
     @Mock private ReservationRepository reservationRepository;
@@ -147,6 +146,47 @@ class AdCampaignServiceUnitTest {
     }
 
     @Test
+    void deleteAdFromCampaign_whenUrlHasLeadingTrailingWhitespace_stillCallsCloudinaryDestroy() throws Exception {
+
+        // Arrange
+        String campaignId = "camp-1";
+        String urlWithSpaces =
+                " https://res.cloudinary.com/demo/image/upload/v12345/envisionad/ads/banner_01.jpg ";
+
+        CampaignAndAdId data = campaignWithSingleAd(campaignId, urlWithSpaces);
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId))
+                .thenReturn(data.campaign);
+        when(adCampaignRepository.save(any()))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(adResponseMapper.entityToResponseModel(any()))
+                .thenReturn(null);
+
+        when(uploader.destroy(anyString(), anyMap()))
+                .thenReturn(Map.of("result", "ok"));
+
+        // Act
+        service.deleteAdFromCampaign(campaignId, data.adId);
+
+        // Assert
+        ArgumentCaptor<String> publicIdCaptor = ArgumentCaptor.forClass(String.class);
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, Object>> optionsCaptor = ArgumentCaptor.forClass(Map.class);
+
+        verify(uploader).destroy(publicIdCaptor.capture(), optionsCaptor.capture());
+
+        assertNotNull(publicIdCaptor.getValue());
+        assertFalse(publicIdCaptor.getValue().isBlank());
+
+        Map<String, Object> opts = optionsCaptor.getValue();
+        assertEquals(true, opts.get("invalidate"));
+        assertNotNull(opts.get("resource_type"));
+
+        verify(adCampaignRepository).save(data.campaign);
+        assertEquals(0, data.campaign.getAds().size());
+    }
+
+    @Test
     void deleteAdFromCampaign_whenUrlHasTransformations_stillDeletesAsset() throws Exception {
 
         // Arrange
@@ -169,10 +209,9 @@ class AdCampaignServiceUnitTest {
 
         // Assert
         verify(uploader).destroy(anyString(), argThat(opts ->
-                Boolean.TRUE.equals(opts.get("invalidate"))
+                Boolean.TRUE.equals(opts.get("invalidate")) &&
+                        opts.get("resource_type") != null
         ));
-        verify(adCampaignRepository).save(data.campaign);
-        assertEquals(0, data.campaign.getAds().size());
     }
 
     @Test
@@ -198,7 +237,8 @@ class AdCampaignServiceUnitTest {
 
         // Assert
         verify(uploader).destroy(anyString(), argThat(opts ->
-                "video".equals(opts.get("resource_type"))
+                Boolean.TRUE.equals(opts.get("invalidate")) &&
+                        "video".equals(opts.get("resource_type"))
         ));
     }
 
@@ -224,8 +264,10 @@ class AdCampaignServiceUnitTest {
         service.deleteAdFromCampaign(campaignId, data.adId);
 
         // Assert
+        verify(uploader, times(1)).destroy(anyString(), anyMap());
         verify(adCampaignRepository).save(data.campaign);
         assertEquals(0, data.campaign.getAds().size());
+
     }
 
     @Test
