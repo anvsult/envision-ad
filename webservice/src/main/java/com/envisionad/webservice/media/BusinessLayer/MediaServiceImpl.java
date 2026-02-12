@@ -39,15 +39,11 @@ public class MediaServiceImpl implements MediaService {
     private final MediaResponseMapper mediaResponseMapper;
     private final JwtUtils jwtUtils;
     private final Cloudinary cloudinary;
-    private final MediaResponseMapper mediaResponseMapper;
     private final BusinessRepository businessRepository;
-    private final JwtUtils jwtUtils;
 
     public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
-        this.mediaResponseMapper = mediaResponseMapper;
-        this.jwtUtils = jwtUtils;
         this.cloudinary = cloudinary;
         this.mediaResponseMapper = mediaResponseMapper;
         this.businessRepository = businessRepository;
