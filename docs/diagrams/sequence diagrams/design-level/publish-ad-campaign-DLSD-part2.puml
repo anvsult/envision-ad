@@ -1,0 +1,20 @@
+@startuml
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 1)
+
+actor "Media Owner" as MediaOwner
+ref over MediaOwner
+    <i>Media Owner reviews pending
+    <i>reservation and approves it</i>
+    <i>(Manage Reservation Use Case)</i>
+end ref
+actor Advertiser
+
+
+
+
+Advertiser -> AdvertisementsPage: Initiate Payment
+activate AdvertisementsPage
+AdvertisementsPage -> PaymentModal: PaymentModal()
+
+activate PaymentModal
+@enduml
