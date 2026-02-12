@@ -141,8 +141,8 @@ public class MediaServiceImpl implements MediaService {
             throw new IllegalArgumentException("Invalid businessId format: " + businessId, ex);
         }
 
-        Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);
-        if (existingBusiness == null) {
+        boolean businessExists = businessRepository.existsByBusinessId_BusinessId(businessId);
+        if (!businessExists) {
             throw new BusinessNotFoundException(businessId);
         }
 
