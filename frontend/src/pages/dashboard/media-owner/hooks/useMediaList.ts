@@ -1,21 +1,46 @@
 import { useState, useEffect } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
     addMedia,
-    getAllMedia,
+    getMediaByBusinessId,
     getMediaById,
     updateMedia,
     deleteMedia,
 } from "@/features/media-management/api";
+import { getEmployeeOrganization } from "@/features/organization-management/api";
 import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequestDTO } from "@/entities/media";
 
 export function useMediaList() {
     const [media, setMedia] = useState<MediaRowData[]>([]);
+    const [businessId, setBusinessId] = useState<string | undefined>();
+    const { user } = useUser();
 
-
+    // Fetch businessId on mount
     useEffect(() => {
-        getAllMedia()
+        if (!user) return;
+
+        const fetchBusinessId = async () => {
+            try {
+                const business = await getEmployeeOrganization(user.sub);
+                if (!business) {
+                    throw new Error('Business not found');
+                }
+                setBusinessId(business.businessId);
+            } catch (err) {
+                console.error("Failed to load business info:", err);
+            }
+        };
+
+        fetchBusinessId();
+    }, [user]);
+
+    // Fetch media when businessId is available
+    useEffect(() => {
+        if (!businessId) return;
+
+        getMediaByBusinessId(businessId)
             .then((data) => {
                 const items = (data || []).filter((m) => m.id != null);
                 const mapped = items.map((m) => ({
@@ -33,7 +58,7 @@ export function useMediaList() {
             .catch((err) => {
                 console.error("Failed to load media:", err);
             });
-    }, []);
+    }, [businessId]);
 
     const buildScheduleFromForm = (formState: MediaFormState) => {
         const selectedMonths = Object.keys(formState.activeMonths).filter(

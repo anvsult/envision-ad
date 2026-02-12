@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -27,6 +28,8 @@ public interface MediaService {
     );
 
     Media getMediaById(UUID id);
+
+    List<MediaResponseModel> getMediaByBusinessId(String businessId);
 
     Media addMedia(Media media);
 

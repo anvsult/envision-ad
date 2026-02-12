@@ -5,6 +5,8 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
@@ -28,11 +30,13 @@ public class MediaServiceImpl implements MediaService {
     private final MediaRepository mediaRepository;
     private final StripeAccountRepository stripeAccountRepository;
     private final Cloudinary cloudinary;
+    private final MediaResponseMapper mediaResponseMapper;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
         this.cloudinary = cloudinary;
+        this.mediaResponseMapper = mediaResponseMapper;
     }
 
     @Override
@@ -117,6 +121,12 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public Media getMediaById(UUID id) {
         return mediaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<MediaResponseModel> getMediaByBusinessId(String businessId) {
+        List<Media> mediaList = mediaRepository.findMediaByBusinessId(UUID.fromString(businessId));
+        return mediaList.stream().map(mediaResponseMapper::entityToResponseModel).toList();
     }
 
     @Override
