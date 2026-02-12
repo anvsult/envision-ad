@@ -44,10 +44,8 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     private final JwtUtils jwtUtils;
     private final ReservationRepository reservationRepository;
     private final Cloudinary cloudinary;
-    private final CloudinaryConfig cloudinaryConfig;
 
-    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils, ReservationRepository reservationRepository,         Cloudinary cloudinary,
-                                 CloudinaryConfig cloudinaryConfig) {
+    public AdCampaignServiceImpl(AdCampaignRepository adCampaignRepository, AdCampaignRequestMapper adCampaignRequestMapper, AdCampaignResponseMapper adCampaignResponseMapper, AdRequestMapper adRequestMapper, AdResponseMapper adResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils, ReservationRepository reservationRepository, Cloudinary cloudinary) {
         this.businessRepository = businessRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignRequestMapper = adCampaignRequestMapper;
@@ -56,7 +54,6 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         this.adResponseMapper = adResponseMapper;
         this.jwtUtils = jwtUtils;
         this.cloudinary = cloudinary;
-        this.cloudinaryConfig = cloudinaryConfig;
         this.reservationRepository = reservationRepository;
     }
 
@@ -163,10 +160,10 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         if (url == null || url.isBlank()) return;
 
         try {
-            String publicId = cloudinaryConfig.getPublicIdFromUrl(url);
+            String publicId = CloudinaryConfig.getPublicIdFromUrl(url);
             if (publicId == null || publicId.isBlank()) return;
 
-            String resourceType = cloudinaryConfig.getResourceTypeFromUrl(url);
+            String resourceType = CloudinaryConfig.getResourceTypeFromUrl(url);
 
             Map<String, Object> options = new HashMap<>();
             options.put("invalidate", true);
