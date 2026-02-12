@@ -5,7 +5,7 @@ import path from 'path';
 test.describe('Media Creation', () => {
 
     test.use({
-        baseURL: 'http://localhost:3000',
+        baseURL: 'http://localhost:3000/en',
     });
 
     test.beforeEach(async ({ page, homePage, mediaDashboardPage }) => {
@@ -55,6 +55,7 @@ test.describe('Media Creation', () => {
         await homePage.goto();
         await homePage.login('megadoxs', 'Password1!'); // Using credentials from loginSuccess.spec.ts
         await homePage.assertUserLoggedIn('megadoxs');
+        await homePage.setLanguageToEnglish();
 
         // Navigate to Media Owner Dashboard via Sidebar
         await page.goto('/dashboard');
@@ -127,7 +128,9 @@ test.describe('Media Creation', () => {
 
         // Wait for widget iframe
         const widgetFrame = page.frameLocator('iframe[src*="cloudinary"]');
-        await widgetFrame.locator('input[type="file"]').setInputFiles(path.join(__dirname, '../../fixtures/test-image.jpg'));
+
+        // Set the file
+        await widgetFrame.locator('input[type="file"]').setInputFiles(path.join(__dirname, '../../fixtures/test-ad-image.jpg'));
 
         // Mock Cloudinary upload response logic
         await page.route('https://api.cloudinary.com/v1_1/**/image/upload', async route => {
@@ -140,7 +143,17 @@ test.describe('Media Creation', () => {
             });
         });
 
+        // Wait for crop UI to appear and complete the crop step
+        try {
+            const cropButton = widgetFrame.getByRole('button', { name: /crop|done|apply/i });
+            await cropButton.waitFor({ state: 'visible', timeout: 5000 });
+            await cropButton.click();
+        } catch (e) {
+            console.warn('Crop button not found or not required:', e);
+        }
+
         await expect(page.getByText('Preview & Set Corners')).toBeVisible({ timeout: 10000 });
+
 
         // Interact with ImageCornerSelector to ensure previewConfiguration is set
         const circles = page.locator('circle');
