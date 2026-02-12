@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.cloudinary.Cloudinary;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -12,10 +13,12 @@ import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
 import com.envisionad.webservice.utils.CloudinaryConfig;
+import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.utils.MathFunctions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
@@ -31,12 +34,16 @@ public class MediaServiceImpl implements MediaService {
     private final StripeAccountRepository stripeAccountRepository;
     private final Cloudinary cloudinary;
     private final MediaResponseMapper mediaResponseMapper;
+    private final BusinessRepository businessRepository;
+    private final JwtUtils jwtUtils;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
         this.cloudinary = cloudinary;
         this.mediaResponseMapper = mediaResponseMapper;
+        this.businessRepository = businessRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -124,8 +131,14 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public List<MediaResponseModel> getMediaByBusinessId(String businessId) {
+    public List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId) {
+        businessRepository.findById(businessId)
+                .orElseThrow(() -> new IllegalArgumentException("Business with ID " + businessId + " does not exist."));
+
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
+
         List<Media> mediaList = mediaRepository.findMediaByBusinessId(UUID.fromString(businessId));
+
         return mediaList.stream().map(mediaResponseMapper::entityToResponseModel).toList();
     }
 

@@ -3,6 +3,9 @@ package com.envisionad.webservice.media.PresentationLayer;
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,7 +21,8 @@ public class BusinessMediaController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<MediaResponseModel>> getMediaByBusinessId(@PathVariable String businessId) {
-        return ResponseEntity.ok(mediaService.getMediaByBusinessId(businessId));
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<MediaResponseModel>> getMediaByBusinessId(@AuthenticationPrincipal Jwt jwt, @PathVariable String businessId) {
+        return ResponseEntity.ok(mediaService.getMediaByBusinessId(jwt, businessId));
     }
 }
