@@ -58,9 +58,16 @@ class MediaControllerUnitTest {
         private final List<Double> bounds = Arrays.asList(-51.0, -50.0, 30.0, 31.0);
         private final List<Double> invalidBounds = Arrays.asList(-51.0, -50.0, 30.0);
 
+    private Jwt mediaToken;
+
         @BeforeEach
         void setUp() {
-                // ... (setup remains same until end of method)
+                // Initialize JWT token, media location, schedule, and media request/response models used across tests
+
+            mediaToken = createJwtToken("media-token", "auth0|696a89137cfdb558ea4a4a4a",
+                    List.of("create:media", "update:media", "update:business", "read:employee",
+                            "create:employee", "delete:employee", "read:verification", "create:verification"));
+
 
                 MediaLocation mediaLocation = getMediaLocation();
 
@@ -118,19 +125,28 @@ class MediaControllerUnitTest {
                 requestModel.setPreviewConfiguration("{\"corners\": []}");
         }
 
-        private MediaLocationResponseModel getMediaLocationResponseModel() {
-                MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
-                mediaLocationResponseModel.setId(mediaLocationId);
-                mediaLocationResponseModel.setName("Name");
-                mediaLocationResponseModel.setCountry("Canada");
-                mediaLocationResponseModel.setProvince("Quebec");
-                mediaLocationResponseModel.setCity("Montreal");
-                mediaLocationResponseModel.setStreet("Sesame Street 101");
-                mediaLocationResponseModel.setPostalCode("J3G");
-                mediaLocationResponseModel.setLatitude(30.5);
-                mediaLocationResponseModel.setLongitude(-50.7);
-                return mediaLocationResponseModel;
-        }
+    private Jwt createJwtToken(String tokenValue, String subject, List<String> permissions) {
+        return Jwt.withTokenValue(tokenValue)
+                .header("alg", "none")
+                .claim("sub", subject)
+                .claim("scope", "read write")
+                .claim("permissions", permissions)
+                .build();
+    }
+
+    private MediaLocationResponseModel getMediaLocationResponseModel() {
+        MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
+        mediaLocationResponseModel.setId(mediaLocationId);
+        mediaLocationResponseModel.setName("Name");
+        mediaLocationResponseModel.setCountry("Canada");
+        mediaLocationResponseModel.setProvince("Quebec");
+        mediaLocationResponseModel.setCity("Montreal");
+        mediaLocationResponseModel.setStreet("Sesame Street 101");
+        mediaLocationResponseModel.setPostalCode("J3G");
+        mediaLocationResponseModel.setLatitude(30.5);
+        mediaLocationResponseModel.setLongitude(-50.7);
+        return mediaLocationResponseModel;
+    }
 
         private MediaLocation getMediaLocation() {
                 MediaLocation mediaLocation = new MediaLocation();
@@ -218,12 +234,6 @@ class MediaControllerUnitTest {
                 verify(mediaService, times(1)).getAllMedia();
                 verify(responseMapper, times(1)).entityListToResponseModelList(mediaList);
         }
-
-        // Test removed as getAllMedia does not support filtering by businessId anymore
-        // @Test
-        // void getAllMedia_WithBusinessId_ShouldReturnFilteredMedia() {
-        // ...
-        // }
 
         @Test
         void getAllFilteredActiveMedia_NoFilters_ShouldReturnPage() {
@@ -332,13 +342,14 @@ class MediaControllerUnitTest {
                 Pageable pageable = PageRequest.of(0, 10);
                 Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
-                when(mediaService.getAllFilteredActiveMedia(
-                                pageable,
-                                null,
-                                businessId,
-                                null, null, null,
-                                null, null, null,
-                                null, null)).thenReturn(mediaPage);
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null,
+                businessId,
+                null, null, null,
+                null, null, null,
+                null, null
+        )).thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
 
@@ -588,21 +599,23 @@ class MediaControllerUnitTest {
 
         @Test
         void updateMedia_ShouldReturnUpdatedMedia() {
+                when(mediaService.updateMediaById(mediaToken, String.valueOf(mediaId), requestModel)).thenReturn(responseModel);
                 when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
                 when(mediaService.getMediaById(mediaId)).thenReturn(media); // Add this mock
                 when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
                 when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
 
-                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(String.valueOf(mediaId),
-                                requestModel);
+
+                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(
+                        mediaToken,
+                        String.valueOf(mediaId),
+                        requestModel);
 
                 assertNotNull(response);
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 assertNotNull(response.getBody());
                 assertEquals(mediaId, response.getBody().getId());
-                verify(requestMapper, times(1)).requestModelToEntity(any(MediaRequestModel.class));
-                verify(mediaService, times(1)).updateMedia(any(Media.class));
-                verify(responseMapper, times(1)).entityToResponseModel(any(Media.class));
+                verify(mediaService, times(1)).updateMediaById(mediaToken, String.valueOf(mediaId), requestModel);
         }
 
         @Test

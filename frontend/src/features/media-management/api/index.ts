@@ -7,4 +7,3 @@ export { updateMedia } from './updateMedia';
 export { getMediaByBusinessId } from './getMediaByBusinessId';
 
 
-

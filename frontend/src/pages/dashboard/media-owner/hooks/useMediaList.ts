@@ -1,21 +1,46 @@
 import { useState, useEffect } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
     addMedia,
-    getAllMedia,
+    getMediaByBusinessId,
     getMediaById,
     updateMedia,
     deleteMedia,
 } from "@/features/media-management/api";
+import { getEmployeeOrganization } from "@/features/organization-management/api";
 import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequestDTO } from "@/entities/media";
 
 export function useMediaList() {
     const [media, setMedia] = useState<MediaRowData[]>([]);
+    const [businessId, setBusinessId] = useState<string | undefined>();
+    const { user } = useUser();
 
-
+    // Fetch businessId on mount
     useEffect(() => {
-        getAllMedia()
+        if (!user?.sub) return;
+
+        const fetchBusinessId = async () => {
+            try {
+                const business = await getEmployeeOrganization(user.sub as string);
+                if (!business) {
+                    throw new Error('Business not found');
+                }
+                setBusinessId(business.businessId);
+            } catch (err) {
+                console.error("Failed to load business info:", err);
+            }
+        };
+
+        fetchBusinessId();
+    }, [user]);
+
+    // Fetch media when businessId is available
+    useEffect(() => {
+        if (!businessId) return;
+
+        getMediaByBusinessId(businessId)
             .then((data) => {
                 const items = (data || []).filter((m) => m.id != null);
                 const mapped = items.map((m) => ({
@@ -33,7 +58,7 @@ export function useMediaList() {
             .catch((err) => {
                 console.error("Failed to load media:", err);
             });
-    }, []);
+    }, [businessId]);
 
     const buildScheduleFromForm = (formState: MediaFormState) => {
         const selectedMonths = Object.keys(formState.activeMonths).filter(
@@ -77,7 +102,6 @@ export function useMediaList() {
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
-            status: 'PENDING',
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
         };
@@ -120,7 +144,6 @@ export function useMediaList() {
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: schedule,
-            status: 'PENDING',
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
@@ -129,7 +152,17 @@ export function useMediaList() {
         try {
             const updated = await updateMedia(String(id), payload as MediaRequestDTO);
             setMedia((prev) =>
-                prev.map((r) => (String(r.id) === String(id) ? { ...r, name: updated.title, image: updated.imageUrl ?? r.image, status: updated.status ?? r.status, price: updated.price ? `$${Number(updated.price).toFixed(2)}` : r.price } : r))
+                prev.map((r) =>
+                    String(r.id) === String(id)
+                        ? {
+                            ...r,
+                            name: updated.title,
+                            image: updated.imageUrl ?? r.image,
+                            status: updated.status ?? r.status,
+                            price: updated.price ? `${Number(updated.price).toFixed(2)}` : r.price
+                        }
+                        : r
+                )
             );
             return updated;
         } catch (err: unknown) {
@@ -198,8 +231,6 @@ export function useMediaList() {
                     br: { x: 100, y: 100 },
                     bl: { x: 0, y: 100 },
                 }),
-                // STATUS CHANGE HERE
-                status: nextStatus,
             };
 
             const updated = await updateMedia(targetId, payload);

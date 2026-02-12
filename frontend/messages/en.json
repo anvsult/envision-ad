@@ -611,6 +611,9 @@
         "saturday": "Saturday",
         "sunday": "Sunday"
       }
+    },
+    "warning": {
+      "onlySquareImages": "Only square images are accepted."
     }
   },
   "AddAdModal": {

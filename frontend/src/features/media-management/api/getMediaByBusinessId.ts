@@ -3,11 +3,6 @@ import axiosInstance from "@/shared/api/axios/axios";
 
 
 export async function getMediaByBusinessId(businessId: string): Promise<Media[]> {
-    // Request all media for the business (active, pending, etc.)
-    const response = await axiosInstance.get<Media[]>(`/media`, {
-        params: {
-            businessId
-        }
-    });
+    const response = await axiosInstance.get(`/businesses/${businessId}/media`);
     return response.data;
 }
