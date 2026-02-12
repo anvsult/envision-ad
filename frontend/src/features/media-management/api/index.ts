@@ -4,6 +4,6 @@ export { getAllFilteredActiveMedia, SpecialSort } from './getAllFilteredActiveMe
 export { getAllMedia } from './getAllMedia';
 export { getMediaById } from './getMediaById';
 export { updateMedia } from './updateMedia';
-
+export { getMediaByBusinessId } from './getMediaByBusinessId';
 
 

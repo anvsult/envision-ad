@@ -31,6 +31,8 @@ public interface MediaService {
 
     Media getMediaById(UUID id);
 
+    List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId);
+
     Media addMedia(Media media);
 
     MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);

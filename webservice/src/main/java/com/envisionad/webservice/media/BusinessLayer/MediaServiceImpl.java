@@ -1,6 +1,9 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.cloudinary.Cloudinary;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
@@ -36,12 +39,19 @@ public class MediaServiceImpl implements MediaService {
     private final MediaResponseMapper mediaResponseMapper;
     private final JwtUtils jwtUtils;
     private final Cloudinary cloudinary;
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, MediaResponseMapper mediaResponseMapper, JwtUtils jwtUtils, Cloudinary cloudinary) {
+    private final MediaResponseMapper mediaResponseMapper;
+    private final BusinessRepository businessRepository;
+    private final JwtUtils jwtUtils;
+
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
         this.mediaResponseMapper = mediaResponseMapper;
         this.jwtUtils = jwtUtils;
         this.cloudinary = cloudinary;
+        this.mediaResponseMapper = mediaResponseMapper;
+        this.businessRepository = businessRepository;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override
@@ -126,6 +136,27 @@ public class MediaServiceImpl implements MediaService {
     @Override
     public Media getMediaById(UUID id) {
         return mediaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId) {
+        UUID businessUuid;
+        try {
+            businessUuid = UUID.fromString(businessId);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException("Invalid businessId format: " + businessId, ex);
+        }
+
+        boolean businessExists = businessRepository.existsByBusinessId_BusinessId(businessId);
+        if (!businessExists) {
+            throw new BusinessNotFoundException(businessId);
+        }
+
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
+
+        List<Media> mediaList = mediaRepository.findMediaByBusinessId(businessUuid);
+
+        return mediaList.stream().map(mediaResponseMapper::entityToResponseModel).toList();
     }
 
     @Override

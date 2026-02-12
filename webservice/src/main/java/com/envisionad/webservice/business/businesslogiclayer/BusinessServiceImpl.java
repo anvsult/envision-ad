@@ -96,7 +96,7 @@ public class BusinessServiceImpl implements BusinessService {
     public BusinessResponseModel getBusinessById(String businessId) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         return businessMapper.toResponse(business);
     }
@@ -107,7 +107,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         Business existingBusiness = businessRepository.findByBusinessId_BusinessId(businessId);
         if (existingBusiness == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         if (businessRepository.existsByNameAndBusinessId_BusinessIdNot(businessRequestModel.getName(), businessId))
             throw new DuplicateBusinessNameException();
@@ -150,7 +150,7 @@ public class BusinessServiceImpl implements BusinessService {
     public VerificationResponseModel requestVerification(Jwt jwt, String businessId) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
@@ -183,7 +183,7 @@ public class BusinessServiceImpl implements BusinessService {
     public InvitationResponseModel createInvitation(Jwt jwt, String businessId, InvitationRequestModel invitationRequest) {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
@@ -207,7 +207,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public void cancelInvitation(Jwt jwt, String businessId, String invitationId) {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
@@ -222,7 +222,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public List<EmployeeResponseModel> getAllEmployeesByBusinessId(Jwt jwt, String businessId) {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
@@ -235,7 +235,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public List<InvitationResponseModel> getAllInvitationsByBusinessId(Jwt jwt, String businessId) {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
 
@@ -250,7 +250,7 @@ public class BusinessServiceImpl implements BusinessService {
     @Override
     public EmployeeResponseModel addBusinessEmployee(Jwt jwt, String businessId, String token) {
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         Invitation invitation = invitationRepository.findByToken(token);
         if (invitation == null)
@@ -287,7 +287,7 @@ public class BusinessServiceImpl implements BusinessService {
             throw new BadBusinessRequestException();
 
         if (!businessRepository.existsByBusinessId_BusinessId(businessId))
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         List<Employee> employees = employeeRepository.findAllByBusinessId_BusinessId(businessId);
 
@@ -311,9 +311,10 @@ public class BusinessServiceImpl implements BusinessService {
         if (employee == null)
             throw new BusinessEmployeeNotFoundException(userId);
 
-        Business business = businessRepository.findByBusinessId_BusinessId(employee.getBusinessId().getBusinessId());
+        String businessId = employee.getBusinessId().getBusinessId();
+        Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         return businessMapper.toResponse(business);
     }
@@ -328,7 +329,7 @@ public class BusinessServiceImpl implements BusinessService {
 
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
         if (business == null)
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
 
         if (business.isVerified())
             throw new BusinessAlreadyVerifiedException();

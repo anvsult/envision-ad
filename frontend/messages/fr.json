@@ -611,6 +611,9 @@
         "saturday": "Samedi",
         "sunday": "Dimanche"
       }
+    },
+    "warning": {
+      "onlySquareImages": "Seules les images carrées sont acceptées."
     }
   },
   "profilePage": {
