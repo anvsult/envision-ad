@@ -34,11 +34,9 @@ class MediaSpecificationsRepositoryTest {
         UUID businessIdA = UUID.randomUUID();
         UUID businessIdB = UUID.randomUUID();
 
-
         // Create a location (required relation)
         MediaLocation location = new MediaLocation();
         location.setName("Test Location");
-        location.setDescription("Test Desc");
         location.setCountry("Canada");
         location.setProvince("QC");
         location.setCity("Montreal");
@@ -46,6 +44,7 @@ class MediaSpecificationsRepositoryTest {
         location.setPostalCode("H1H 1H1");
         location.setLatitude(45.0);
         location.setLongitude(-73.0);
+        location.setBusinessId(businessIdA);
         mediaLocationRepository.save(location);
 
         // Media 1: Active, "Digital Board", Price 100, Imp 1000

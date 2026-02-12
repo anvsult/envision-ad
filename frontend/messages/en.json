@@ -36,7 +36,8 @@
       "media": "Media",
       "displayedAds": "Displayed ads",
       "adRequests": "Ad requests",
-      "proof": "Submit Proof"
+      "proof": "Submit Proof",
+      "locations": "My Locations"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -1059,5 +1060,208 @@
     "checkingStatus": "Checking account status...",
     "errorTitle": "Connection Error",
     "connectionError": "Failed to connect Stripe account. Please try again."
+  },
+  "mediaLocations": {
+    "page": {
+      "title": "My Media",
+      "createButton": "Create Location"
+    },
+    "table": {
+      "noLocations": "No locations found. Create one to get started!",
+      "addMedia": "Add Media",
+      "assignMedia": "Assign Media",
+      "assignedMedia": "Assigned Media",
+      "mediaTitle": "Title",
+      "mediaType": "Type",
+      "resolution": "Resolution",
+      "noAssignedMedia": "No media assigned yet.",
+      "edit": "Edit"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Load Failed",
+        "message": "Failed to load media locations."
+      },
+      "create": {
+        "success": {
+          "title": "Success",
+          "message": "Media location created successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to create media location.",
+          "addressGuidance": "Please verify street, city, province/state, country, and postal code."
+        }
+      },
+      "createMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media created and assigned to this location successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to create media."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Success",
+          "message": "Media location deleted successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to delete media location.",
+          "activeMedia": "Cannot delete this location because it has active, pending, or rejected media assigned. Please delete the media first."
+        }
+      },
+      "loadMedia": {
+        "error": {
+          "message": "Failed to load media details."
+        }
+      },
+      "updateMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media updated successfully."
+        },
+        "error": {
+          "message": "Failed to update media."
+        }
+      },
+      "deleteMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media deleted successfully."
+        },
+        "error": {
+          "message": "Failed to delete media."
+        }
+      },
+      "statusMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media status updated successfully."
+        },
+        "error": {
+          "message": "Failed to update media status."
+        }
+      },
+      "unassign": {
+        "success": {
+          "title": "Success",
+          "message": "Media unassigned successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to unassign media from location."
+        }
+      }
+    },
+    "modals": {
+      "edit": {
+        "title": "Edit Media Location",
+        "fields": {
+          "name": "Name",
+          "street": "Street",
+          "city": "City",
+          "province": "Province/State",
+          "country": "Country",
+          "postalCode": "Postal Code",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        },
+        "placeholders": {
+          "name": "E.g. Downtown Billboards",
+          "street": "123 Main St",
+          "city": "New York",
+          "province": "NY",
+          "country": "USA",
+          "postalCode": "10001"
+        },
+        "validation": {
+          "name": "Name is too short",
+          "latitude": "Invalid Latitude",
+          "longitude": "Invalid Longitude",
+          "nameRequired": "Name is required",
+          "streetRequired": "Street is required",
+          "cityRequired": "City is required",
+          "provinceRequired": "Province/State is required",
+          "countryRequired": "Country is required",
+          "postalCodeRequired": "Postal code is required",
+          "streetInvalidServer": "Please verify the street name or number.",
+          "cityInvalidServer": "Please verify the city value.",
+          "provinceInvalidServer": "Please verify the province/state value.",
+          "countryInvalidServer": "Please verify the country value.",
+          "postalCodeInvalidServer": "Please verify the postal code value."
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save"
+        },
+        "success": {
+          "title": "Success",
+          "message": "Location updated successfully"
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to update location",
+          "addressGuidance": "Please verify street, city, province/state, country, and postal code."
+        }
+      }
+    },
+    "confirmations": {
+      "delete": {
+        "title": "Delete Location",
+        "message": "Are you sure you want to delete this location?",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "unassign": {
+        "title": "Unassign Media",
+        "message": "Are you sure you want to unassign this media? The media itself will not be deleted.",
+        "confirm": "Unassign",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "CreateMediaLocationModal": {
+    "title": "Create Media Location",
+    "validation": {
+      "nameTooShort": "Name is too short",
+      "required": "Required",
+      "nameRequired": "Name is required",
+      "streetRequired": "Street is required",
+      "cityRequired": "City is required",
+      "provinceRequired": "Province/State is required",
+      "countryRequired": "Country is required",
+      "postalCodeRequired": "Postal code is required",
+      "streetInvalidServer": "Please verify the street name or number.",
+      "cityInvalidServer": "Please verify the city value.",
+      "provinceInvalidServer": "Please verify the province/state value.",
+      "countryInvalidServer": "Please verify the country value.",
+      "postalCodeInvalidServer": "Please verify the postal code value."
+    },
+    "labels": {
+      "name": "Name",
+      "street": "Street",
+      "city": "City",
+      "province": "Province/State",
+      "country": "Country",
+      "postalCode": "Postal Code",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "placeholders": {
+      "name": "E.g. Downtown Billboards",
+      "street": "123 Main St",
+      "city": "New York",
+      "province": "NY",
+      "country": "USA",
+      "postalCode": "10001"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "create": "Create"
+    }
   }
 }

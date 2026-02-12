@@ -81,8 +81,6 @@ public class Media {
     @Column(name = "image_data")
     private byte[] imageData;
 
-
-
     @Column(name = "preview_configuration")
     @JdbcTypeCode(SqlTypes.JSON)
     private String previewConfiguration;

@@ -90,14 +90,15 @@ CREATE TABLE invitation
 CREATE TABLE media_location (
     media_location_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
-    description TEXT NOT NULL,
     country VARCHAR(100) NOT NULL,
     province VARCHAR(100) NOT NULL,
     city VARCHAR(100) NOT NULL,
     street VARCHAR(255) NOT NULL,
     postal_code VARCHAR(20) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
-    longitude DOUBLE PRECISION NOT NULL
+    longitude DOUBLE PRECISION NOT NULL,
+    geocoding_response TEXT,
+    business_id UUID NOT NULL
 );
 
 -- 5. Create Media Table
@@ -195,4 +196,3 @@ CREATE TABLE payment_intents
     -- Note: No foreign key constraint on reservation_id to allow temporary/pending reservations
     -- that haven't been saved to the reservations table yet (e.g., "temp-123456789")
 );
-
