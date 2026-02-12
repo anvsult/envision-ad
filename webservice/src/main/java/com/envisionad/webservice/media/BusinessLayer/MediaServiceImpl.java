@@ -5,7 +5,6 @@ import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
-import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
@@ -14,7 +13,6 @@ import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
-import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
 import com.envisionad.webservice.payment.exceptions.StripeAccountNotOnboardedException;
@@ -41,13 +39,11 @@ public class MediaServiceImpl implements MediaService {
     private final MediaResponseMapper mediaResponseMapper;
     private final JwtUtils jwtUtils;
     private final Cloudinary cloudinary;
-    private final MediaLocationRepository mediaLocationRepository;
     private final BusinessRepository businessRepository;
 
-    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository,MediaLocationRepository mediaLocationRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
+    public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
         this.stripeAccountRepository = stripeAccountRepository;
-        this.mediaLocationRepository = mediaLocationRepository;
         this.cloudinary = cloudinary;
         this.mediaResponseMapper = mediaResponseMapper;
         this.businessRepository = businessRepository;

@@ -17,7 +17,7 @@ public class MediaLocationValidationErrorResponse {
     private final Map<String, String> fieldErrors;
 
     public MediaLocationValidationErrorResponse(HttpStatus httpStatus, String message, Map<String, String> fieldErrors) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("America/Montreal"));
 
         this.timestamp = now.format(formatter);

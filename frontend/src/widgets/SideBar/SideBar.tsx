@@ -11,7 +11,6 @@ import {
     IconFileDescription,
     IconInbox,
     IconSpeakerphone,
-    IconMapPin,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";

@@ -34,9 +34,9 @@ public class GeocodingServiceImpl implements GeocodingService {
     @Override
     public Optional<String> geocodeAddress(String address) {
         String cacheKey = normalizeCacheKey(address);
-        Optional<String> cachedResponse = getCached(cacheKey);
+        CacheEntry cachedResponse = getCached(cacheKey);
         if (cachedResponse != null) {
-            return cachedResponse;
+            return cachedResponse.value();
         }
 
         try {
@@ -73,7 +73,7 @@ public class GeocodingServiceImpl implements GeocodingService {
         return address.trim().replaceAll("\\s+", " ").toLowerCase(Locale.ROOT);
     }
 
-    private Optional<String> getCached(String cacheKey) {
+    private CacheEntry getCached(String cacheKey) {
         CacheEntry entry = geocodingCache.get(cacheKey);
         if (entry == null) {
             return null;
@@ -82,7 +82,7 @@ public class GeocodingServiceImpl implements GeocodingService {
             geocodingCache.remove(cacheKey);
             return null;
         }
-        return entry.value();
+        return entry;
     }
 
     private void putCached(String cacheKey, Optional<String> result) {

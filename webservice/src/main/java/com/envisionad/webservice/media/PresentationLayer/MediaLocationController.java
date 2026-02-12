@@ -1,5 +1,7 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
+import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.media.BusinessLayer.MediaLocationService;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.MapperLayer.MediaLocationRequestMapper;
@@ -26,13 +28,16 @@ public class MediaLocationController {
     private final MediaLocationService mediaLocationService;
     private final MediaLocationRequestMapper requestMapper;
     private final MediaLocationResponseMapper responseMapper;
+    private final BusinessService businessService;
 
     public MediaLocationController(MediaLocationService mediaLocationService,
             MediaLocationRequestMapper requestMapper,
-            MediaLocationResponseMapper responseMapper) {
+            MediaLocationResponseMapper responseMapper,
+            BusinessService businessService) {
         this.mediaLocationService = mediaLocationService;
         this.requestMapper = requestMapper;
         this.responseMapper = responseMapper;
+        this.businessService = businessService;
     }
 
     @GetMapping
@@ -50,10 +55,14 @@ public class MediaLocationController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('read:media_location')")
-    public ResponseEntity<MediaLocationResponseModel> getMediaLocationById(@PathVariable String id) {
+    public ResponseEntity<MediaLocationResponseModel> getMediaLocationById(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id) {
         MediaLocation location = mediaLocationService.getMediaLocationById(UUID.fromString(id));
         if (location == null) {
             return ResponseEntity.notFound().build();
+        }
+        if (!canAccessLocation(jwt, location)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
         return ResponseEntity.ok(responseMapper.entityToResponseModel(location));
     }
@@ -71,8 +80,17 @@ public class MediaLocationController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('update:media_location')")
-    public ResponseEntity<MediaLocationResponseModel> updateMediaLocation(@PathVariable String id,
+    public ResponseEntity<MediaLocationResponseModel> updateMediaLocation(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
             @RequestBody MediaLocationRequestModel requestModel) {
+
+        MediaLocation existing = mediaLocationService.getMediaLocationById(UUID.fromString(id));
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!canAccessLocation(jwt, existing)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         MediaLocation updateEntity = requestMapper.requestModelToEntity(requestModel);
         MediaLocation updated = mediaLocationService.updateMediaLocation(UUID.fromString(id), updateEntity);
@@ -84,9 +102,31 @@ public class MediaLocationController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('delete:media_location')") // Change to delete:media when added to Auth0
-    public ResponseEntity<Void> deleteMediaLocation(@PathVariable String id) {
+    public ResponseEntity<Void> deleteMediaLocation(@AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id) {
+        MediaLocation location = mediaLocationService.getMediaLocationById(UUID.fromString(id));
+        if (location != null && !canAccessLocation(jwt, location)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
         mediaLocationService.deleteMediaLocation(UUID.fromString(id));
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean canAccessLocation(Jwt jwt, MediaLocation location) {
+        if (jwt == null || location == null || location.getBusinessId() == null) {
+            return false;
+        }
+        try {
+            BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+            if (business == null || business.getBusinessId() == null) {
+                return false;
+            }
+            UUID authenticatedBusinessId = UUID.fromString(business.getBusinessId());
+            return authenticatedBusinessId.equals(location.getBusinessId());
+        } catch (Exception e) {
+            log.error("Error authorizing media location access for user {}: {}", jwt.getSubject(), e.getMessage(), e);
+            return false;
+        }
     }
 
 }
