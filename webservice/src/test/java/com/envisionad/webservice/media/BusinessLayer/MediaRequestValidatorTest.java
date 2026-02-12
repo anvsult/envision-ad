@@ -378,11 +378,19 @@ class MediaRequestValidatorTest {
     }
 
     @Test
-    void validateMediaRequest_ImageUrlIsInvalid_ShouldThrowException() {
-        request.setImageUrl("invalid-url");
+    void validateMediaRequest_ImageUrlSchemeNotHttpOrHttps_ShouldThrowException() {
+        request.setImageUrl("ftp://example.com/image.jpg");
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> MediaRequestValidator.validateMediaRequest(request));
-        assertEquals("Image URL must be a valid URL", exception.getMessage());
+        assertEquals("Image URL must use http or https", exception.getMessage());
+    }
+
+    @Test
+    void validateMediaRequest_ImageUrlMissingHost_ShouldThrowException() {
+        request.setImageUrl("http:///image.jpg");
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> MediaRequestValidator.validateMediaRequest(request));
+        assertEquals("Image URL must contain a valid host", exception.getMessage());
     }
 
     @Test

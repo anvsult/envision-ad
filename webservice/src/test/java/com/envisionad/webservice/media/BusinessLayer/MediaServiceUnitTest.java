@@ -7,8 +7,12 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
+import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
+import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.utils.MathFunctions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -43,6 +48,15 @@ class MediaServiceUnitTest {
 
     @Mock
     private com.cloudinary.Uploader uploader;
+
+    @Mock
+    private JwtUtils jwtUtils;
+
+    @Mock
+    private MediaResponseMapper mediaResponseMapper;
+
+    @Mock
+    private Jwt mockJwt;
 
     private String business1Id;
     private String business2Id;
@@ -580,15 +594,25 @@ class MediaServiceUnitTest {
         UUID id = media1.getId();
         media1.setImageUrl(".../upload/old_id.png");
 
-        Media updatedMedia = new Media();
-        updatedMedia.setId(id);
-        updatedMedia.setImageUrl(".../upload/new_id.png");
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setTitle("Updated Title");
+        requestModel.setPrice(media1.getPrice());
+        requestModel.setDailyImpressions(media1.getDailyImpressions());
+        requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        requestModel.setLoopDuration(10);
+        requestModel.setResolution("1920x1080");
+        requestModel.setAspectRatio("16:9");
+        requestModel.setSchedule(media1.getSchedule());
+        requestModel.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+        requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
+        requestModel.setMediaLocationId(media1.getMediaLocation().getId().toString());
 
         when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
-        when(mediaRepository.save(any(Media.class))).thenReturn(updatedMedia);
+        when(mediaRepository.save(any(Media.class))).thenReturn(media1);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
 
         // Act
-        mediaService.updateMedia(updatedMedia);
+        mediaService.updateMediaById(mockJwt, id.toString(), requestModel);
 
         // Assert
         verify(uploader).destroy(eq("old_id"), anyMap());
@@ -601,16 +625,25 @@ class MediaServiceUnitTest {
         String sameUrl = "https://res.cloudinary.com/demo/image/upload/v1/sample.png";
         media1.setImageUrl(sameUrl);
 
-        Media updatedMedia = createMedia("Updated Title", business1Id, location1,
-                new BigDecimal("500.00"), 50000, Status.ACTIVE);
-        updatedMedia.setId(id);
-        updatedMedia.setImageUrl(sameUrl);
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setTitle("Updated Title");
+        requestModel.setPrice(new BigDecimal("500.00"));
+        requestModel.setDailyImpressions(50000);
+        requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        requestModel.setLoopDuration(10);
+        requestModel.setResolution("1920x1080");
+        requestModel.setAspectRatio("16:9");
+        requestModel.setSchedule(media1.getSchedule());
+        requestModel.setImageUrl(sameUrl);
+        requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
+        requestModel.setMediaLocationId(media1.getMediaLocation().getId().toString());
 
         when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
-        when(mediaRepository.save(any(Media.class))).thenReturn(updatedMedia);
+        when(mediaRepository.save(any(Media.class))).thenReturn(media1);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
 
         // Act
-        mediaService.updateMedia(updatedMedia);
+        mediaService.updateMediaById(mockJwt, id.toString(), requestModel);
 
         // Assert
         verify(uploader, never()).destroy(anyString(), anyMap());
