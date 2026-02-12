@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
+import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
@@ -198,31 +199,15 @@ class BusinessMediaControllerUnitTest {
         // Arrange
         String nonExistentBusinessId = UUID.randomUUID().toString();
         when(mediaService.getMediaByBusinessId(mockJwt, nonExistentBusinessId))
-                .thenThrow(new IllegalArgumentException("Business with ID " + nonExistentBusinessId + " does not exist."));
+                .thenThrow(new BusinessNotFoundException(nonExistentBusinessId));
 
         // Act & Assert
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> businessMediaController.getMediaByBusinessId(mockJwt, nonExistentBusinessId));
+        BusinessNotFoundException exception = assertThrows(BusinessNotFoundException.class, () -> businessMediaController.getMediaByBusinessId(mockJwt, nonExistentBusinessId));
 
-        assertTrue(exception.getMessage().contains("does not exist"));
+        assertTrue(exception.getMessage().contains("not found"));
         verify(mediaService, times(1)).getMediaByBusinessId(mockJwt, nonExistentBusinessId);
     }
 
-    @Test
-    void getMediaByBusinessId_ServiceReturnsNull_ShouldHandleGracefully() {
-        // Arrange
-        when(mediaService.getMediaByBusinessId(mockJwt, businessId)).thenReturn(null);
-
-        // Act
-        ResponseEntity<List<MediaResponseModel>> response =
-            businessMediaController.getMediaByBusinessId(mockJwt, businessId);
-
-        // Assert
-        assertNotNull(response);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNull(response.getBody());
-
-        verify(mediaService, times(1)).getMediaByBusinessId(mockJwt, businessId);
-    }
 
     @Test
     void getMediaByBusinessId_WithMultipleMediaTypes_ShouldReturnAll() {

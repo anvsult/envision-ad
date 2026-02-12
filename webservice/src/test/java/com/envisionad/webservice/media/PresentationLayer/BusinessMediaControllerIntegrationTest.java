@@ -55,13 +55,16 @@ class BusinessMediaControllerIntegrationTest {
 
     private String businessId;
     private String businessId2;
+    private String businessId_noMedia;
+    private String userId;
 
     @BeforeEach
     void setUp() {
         // Setup user ID and business ID
-        String userId = "auth0|65702e81e9661e14ab3aac89";
+        userId = "auth0|65702e81e9661e14ab3aac89";
         businessId = UUID.randomUUID().toString();
         businessId2 = UUID.randomUUID().toString();
+        businessId_noMedia = UUID.randomUUID().toString();
 
         // Create business 1 in database
         Business business1 = new Business();
@@ -72,14 +75,14 @@ class BusinessMediaControllerIntegrationTest {
 
         // Create business 2 in database (with no media)
         Business business2 = new Business();
-        business2.setBusinessId(new BusinessIdentifier(businessId2));
+        business2.setBusinessId(new BusinessIdentifier(businessId_noMedia));
         business2.setName("Test Business 2");
         business2.setOwnerId(userId);
         businessRepository.save(business2);
 
         // Mock employee repository to allow access for this user to both businesses
         when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId)).thenReturn(true);
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId2)).thenReturn(true);
+        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId_noMedia)).thenReturn(true);
 
         // Create a media location
         MediaLocation location = new MediaLocation();
@@ -143,6 +146,26 @@ class BusinessMediaControllerIntegrationTest {
         media2.setPreviewConfiguration("{\"corners\": []}");
         mediaRepository.save(media2);
 
+        // Create a third media for a different business to ensure it doesn't show up in results
+        Media media3 = new Media();
+        media3.setBusinessId(UUID.fromString(businessId2));
+        media3.setMediaLocation(location);
+        media3.setTitle("Other Business Media");
+        media3.setMediaOwnerName("Test Owner");
+        media3.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        media3.setLoopDuration(30);
+        media3.setResolution("1920x1080");
+        media3.setAspectRatio("16:9");
+        media3.setWidth(1920.0);
+        media3.setHeight(1080.0);
+        media3.setPrice(new BigDecimal("150.00"));
+        media3.setDailyImpressions(25000);
+        media3.setStatus(Status.ACTIVE);
+        media3.setSchedule(schedule);
+        media3.setImageUrl("http://example.com/image3.jpg");
+        media3.setPreviewConfiguration("{\"corners\": []}");
+        mediaRepository.save(media3);
+
         // Mock JWT
         Jwt jwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")
@@ -185,7 +208,7 @@ class BusinessMediaControllerIntegrationTest {
     void getMediaByBusinessId_WithNoMedia_ShouldReturnEmptyList() {
         // Use a different business ID that has no media
         webTestClient.get()
-                .uri(BASE_URI, businessId2)
+                .uri(BASE_URI, businessId_noMedia)
                 .accept(MediaType.APPLICATION_JSON)
                 .headers(headers -> headers.setBearerAuth("mock-token"))
                 .exchange()
@@ -208,7 +231,7 @@ class BusinessMediaControllerIntegrationTest {
     }
 
     @Test
-    void getMediaByBusinessId_WithNonExistentBusinessId_ShouldReturn400() {
+    void getMediaByBusinessId_WithNonExistentBusinessId_ShouldReturn404() {
         String nonExistentBusinessId = UUID.randomUUID().toString();
 
         webTestClient.get()
