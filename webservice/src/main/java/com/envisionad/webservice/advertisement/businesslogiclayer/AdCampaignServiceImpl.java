@@ -71,7 +71,7 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         Business business = businessRepository.findByBusinessId_BusinessId(businessId);
 
         if (business == null) {
-            throw new BusinessNotFoundException();
+            throw new BusinessNotFoundException(businessId);
         }
 
         String userId = jwtUtils.extractUserId(jwt);

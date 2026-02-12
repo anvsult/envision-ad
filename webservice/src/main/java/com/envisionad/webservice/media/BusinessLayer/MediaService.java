@@ -1,8 +1,10 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
 import java.math.BigDecimal;
@@ -27,6 +29,8 @@ public interface MediaService {
     );
 
     Media getMediaById(UUID id);
+
+    List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId);
 
     Media addMedia(Media media);
 
