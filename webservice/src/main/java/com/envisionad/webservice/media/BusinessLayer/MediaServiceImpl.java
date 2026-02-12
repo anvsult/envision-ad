@@ -134,9 +134,9 @@ public class MediaServiceImpl implements MediaService {
 
     @Override
     public List<MediaResponseModel> getMediaByBusinessId(Jwt jwt, String businessId) {
-
+        UUID businessUuid;
         try {
-            UUID.fromString(businessId);
+            businessUuid = UUID.fromString(businessId);
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Invalid businessId format: " + businessId, ex);
         }
@@ -148,7 +148,7 @@ public class MediaServiceImpl implements MediaService {
 
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
-        List<Media> mediaList = mediaRepository.findMediaByBusinessId(UUID.fromString(businessId));
+        List<Media> mediaList = mediaRepository.findMediaByBusinessId(businessUuid);
 
         return mediaList.stream().map(mediaResponseMapper::entityToResponseModel).toList();
     }
