@@ -13,4 +13,6 @@ public interface MediaRepository extends JpaRepository<Media, UUID>, JpaSpecific
 
     @Query("SELECT DISTINCT m FROM Media m LEFT JOIN FETCH m.mediaLocation WHERE m.id IN :mediaIds")
     List<Media> findAllByIdWithLocation(@Param("mediaIds") List<UUID> mediaIds);
+
+    List<Media> findByStatus(Status status);
 }

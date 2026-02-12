@@ -12,6 +12,7 @@ import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaStatusPatchRequestModel;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
@@ -22,10 +23,15 @@ import com.envisionad.webservice.utils.MathFunctions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.GetMapping;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaStatusPatchRequestModel;
+import org.springframework.security.access.AccessDeniedException;
+
 import java.math.BigDecimal;
 
 import java.util.*;
@@ -305,4 +311,51 @@ public class MediaServiceImpl implements MediaService {
 
         return new PageImpl<>(list.subList(pageStart, pageEnd), pageable, list.size());
     }
+
+    @Override
+    public MediaResponseModel patchMediaStatusById(Jwt jwt, String id, MediaStatusPatchRequestModel request) {
+
+        if (jwt == null) {
+            throw new AccessDeniedException("Access Denied");
+        }
+
+        boolean hasUpdateMedia = jwt.getClaimAsStringList("permissions") != null
+                && jwt.getClaimAsStringList("permissions").contains("update:media");
+
+        if (!hasUpdateMedia) {
+            throw new AccessDeniedException("Access Denied");
+        }
+
+        Media media = mediaRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new MediaNotFoundException(id));
+
+        Status current = media.getStatus();
+        Status target = request.getStatus();
+
+        if (current == target) {
+            return mediaResponseMapper.entityToResponseModel(media);
+        }
+
+        // Approve/deny only from PENDING
+        boolean allowed =
+                (current == Status.PENDING && (target == Status.ACTIVE || target == Status.REJECTED))
+                        || (current == Status.ACTIVE && target == Status.INACTIVE)
+                        || (current == Status.INACTIVE && target == Status.ACTIVE);
+
+        if (!allowed) {
+            throw new IllegalStateException("Invalid status transition: " + current + " -> " + target);
+        }
+
+        media.setStatus(target);
+        Media saved = mediaRepository.save(media);
+
+        return mediaResponseMapper.entityToResponseModel(saved);
+    }
+
+    @Override
+    public List<Media> getMediaByStatus(Status status) {
+        return mediaRepository.findByStatus(status);
+    }
+
+
 }

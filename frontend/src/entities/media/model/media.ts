@@ -1,6 +1,14 @@
 import { LatLngBounds, LatLngLiteral } from "leaflet";
 import {MediaLocation} from "@/entities/media-location";
 
+export enum MediaStatusEnum {
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    PENDING = "PENDING",
+    REJECTED = "REJECTED",
+}
+
+
 export interface Media {
     id?: string;
     title: string;
@@ -14,7 +22,7 @@ export interface Media {
     price: number;
     dailyImpressions: number | null;
     schedule: MonthlyScheduleModel;
-    status: string | null; // The status should not be optional. We should probably remove the null option
+    status: MediaStatusEnum;
     typeOfDisplay: string;
     imageUrl: string;
     previewConfiguration: string;
@@ -62,6 +70,10 @@ export interface FilteredActiveMediaProps {
     excludedId?: string | null,
     page?: number,
     size?: number
+}
+
+export interface MediaStatusPatchDTO {
+    status: MediaStatusEnum;
 }
 
 export interface MonthlyScheduleModel {
