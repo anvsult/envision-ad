@@ -39,6 +39,17 @@ const getApiErrorMessage = (error: unknown): string | null => {
     return data.message ?? null;
 };
 
+const getApiErrorStatus = (error: unknown): number | null => {
+    if (!error || typeof error !== "object") {
+        return null;
+    }
+    if (!("response" in error)) {
+        return null;
+    }
+    const response = (error as { response?: { status?: unknown } }).response;
+    return typeof response?.status === "number" ? response.status : null;
+};
+
 const hasApiFieldErrors = (error: unknown): boolean => {
     if (!error || typeof error !== "object" || !("response" in error)) {
         return false;
@@ -158,10 +169,15 @@ export default function MediaLocations() {
                 color: "green"
             });
             loadLocations();
-        } catch {
+        } catch (error) {
+            const apiStatus = getApiErrorStatus(error);
+            const apiMessage = getApiErrorMessage(error);
+            const message = apiStatus === 409
+                ? t('notifications.delete.error.activeMedia')
+                : (apiMessage || t('notifications.delete.error.message'));
             notifications.show({
                 title: t('notifications.delete.error.title'),
-                message: t('notifications.delete.error.message'),
+                message,
                 color: "red"
             });
         } finally {

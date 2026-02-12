@@ -1,7 +1,10 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
+import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
+import com.envisionad.webservice.media.exceptions.MediaLocationDeletionNotAllowedException;
 import com.envisionad.webservice.media.exceptions.GeocodingServiceUnavailableException;
 import com.envisionad.webservice.media.exceptions.MediaLocationValidationException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,6 +50,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
     private static final String INVALID_ADDRESS_ERROR = "Address could not be verified.";
     private static final String COORDINATE_EXTRACTION_ERROR = "Address was matched but coordinates could not be determined. Please check street, city, province/state, country, and postal code.";
     private static final String GEOCODING_UNAVAILABLE_ERROR = "Address validation service is temporarily unavailable. Please try again shortly.";
+    private static final String LOCATION_DELETE_BLOCKED_MEDIA_ERROR = "Cannot delete media location while active, pending, or rejected media are assigned. Please delete those media first.";
     private static final Map<String, String> ADDRESS_VERIFICATION_ERRORS = Map.of(
             STREET_FIELD, "Verify the street name or number.",
             CITY_FIELD, "Verify the city value.",
@@ -125,6 +129,18 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         if (location == null) {
             return;
         }
+
+        List<Media> assignedMedia = location.getMediaList();
+        if (assignedMedia != null && !assignedMedia.isEmpty()) {
+            boolean hasBlockedMedia = assignedMedia.stream().anyMatch(media ->
+                    media.getStatus() == Status.ACTIVE
+                            || media.getStatus() == Status.PENDING
+                            || media.getStatus() == Status.REJECTED);
+            if (hasBlockedMedia) {
+                throw new MediaLocationDeletionNotAllowedException(LOCATION_DELETE_BLOCKED_MEDIA_ERROR);
+            }
+        }
+
         mediaLocationRepository.delete(location);
     }
 

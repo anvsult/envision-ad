@@ -191,6 +191,52 @@ class MediaControllerUnitTest {
         }
 
         @Test
+        void addMedia_WhenBusinessLookupThrows_ShouldStillCreateMedia() {
+                String userId = "auth0|123";
+                Jwt jwt = mock(Jwt.class);
+                when(jwt.getSubject()).thenReturn(userId);
+
+                when(businessService.getBusinessByUserId(jwt, userId))
+                        .thenThrow(new RuntimeException("lookup failed"));
+                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+                when(mediaService.addMedia(any(Media.class))).thenReturn(media);
+                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
+
+                ResponseEntity<MediaResponseModel> response = mediaController.addMedia(jwt, requestModel);
+
+                assertEquals(HttpStatus.CREATED, response.getStatusCode());
+                assertNotNull(response.getBody());
+                assertNull(requestModel.getBusinessId());
+                verify(businessService).getBusinessByUserId(jwt, userId);
+                verify(requestMapper).requestModelToEntity(any(MediaRequestModel.class));
+                verify(mediaService).addMedia(any(Media.class));
+        }
+
+        @Test
+        void addMedia_WhenBusinessResponseHasNullBusinessId_ShouldNotSetBusinessId() {
+                String userId = "auth0|123";
+                Jwt jwt = mock(Jwt.class);
+                when(jwt.getSubject()).thenReturn(userId);
+
+                com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel businessResponse = new com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel();
+                businessResponse.setBusinessId(null);
+                when(businessService.getBusinessByUserId(jwt, userId)).thenReturn(businessResponse);
+
+                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
+                when(mediaService.addMedia(any(Media.class))).thenReturn(media);
+                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
+
+                ResponseEntity<MediaResponseModel> response = mediaController.addMedia(jwt, requestModel);
+
+                assertEquals(HttpStatus.CREATED, response.getStatusCode());
+                assertNotNull(response.getBody());
+                assertNull(requestModel.getBusinessId());
+                verify(businessService).getBusinessByUserId(jwt, userId);
+                verify(requestMapper).requestModelToEntity(any(MediaRequestModel.class));
+                verify(mediaService).addMedia(any(Media.class));
+        }
+
+        @Test
         void addMedia_ResolutionExceedsLimit_ShouldThrowException() {
                 requestModel.setResolution("A".repeat(21));
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {

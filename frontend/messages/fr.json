@@ -1110,7 +1110,40 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de la suppression de l'emplacement média."
+          "message": "Échec de la suppression de l'emplacement média.",
+          "activeMedia": "Impossible de supprimer cet emplacement car des médias actifs, en attente ou rejetés y sont attribués. Veuillez d'abord supprimer les médias."
+        }
+      },
+      "loadMedia": {
+        "error": {
+          "message": "Échec du chargement des détails du média."
+        }
+      },
+      "updateMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du média."
+        }
+      },
+      "deleteMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média supprimé avec succès."
+        },
+        "error": {
+          "message": "Échec de la suppression du média."
+        }
+      },
+      "statusMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le statut du média a été mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du statut du média."
         }
       },
       "unassign": {

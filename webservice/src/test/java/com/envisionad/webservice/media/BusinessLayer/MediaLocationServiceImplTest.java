@@ -2,9 +2,12 @@ package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
+import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.exceptions.GeocodingServiceUnavailableException;
+import com.envisionad.webservice.media.exceptions.MediaLocationDeletionNotAllowedException;
 import com.envisionad.webservice.media.exceptions.MediaLocationValidationException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -314,6 +317,20 @@ class MediaLocationServiceImplTest {
     }
 
     @Test
+    void createMediaLocation_WhenResolvedBusinessIdIsNull_ThrowsIllegalArgumentException() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        when(businessService.getBusinessByUserId(any(), anyString())).thenReturn(null);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> mediaLocationService.createMediaLocation(mediaLocation, jwt));
+
+        assertEquals("Business ID is required to create a media location.", exception.getMessage());
+        verify(mediaLocationRepository, never()).save(any(MediaLocation.class));
+        verify(geocodingService, never()).geocodeAddress(anyString());
+    }
+
+    @Test
     void createMediaLocation_WhenProvidedBusinessIdDiffersFromJwt_ThrowsIllegalArgumentException() {
         Jwt jwt = mock(Jwt.class);
         when(jwt.getSubject()).thenReturn("auth0|123");
@@ -515,6 +532,57 @@ class MediaLocationServiceImplTest {
         mediaLocationService.deleteMediaLocation(id);
 
         verify(mediaLocationRepository).delete(existing);
+    }
+
+    @Test
+    void deleteMediaLocation_WhenActiveMediaAssigned_ThrowsMediaLocationDeletionNotAllowedException() {
+        UUID id = UUID.randomUUID();
+        MediaLocation existing = new MediaLocation();
+        Media activeMedia = new Media();
+        activeMedia.setStatus(Status.ACTIVE);
+        existing.setMediaList(List.of(activeMedia));
+        when(mediaLocationRepository.findById(id)).thenReturn(Optional.of(existing));
+
+        MediaLocationDeletionNotAllowedException exception = assertThrows(
+                MediaLocationDeletionNotAllowedException.class,
+                () -> mediaLocationService.deleteMediaLocation(id));
+
+        assertEquals("Cannot delete media location while active, pending, or rejected media are assigned. Please delete those media first.", exception.getMessage());
+        verify(mediaLocationRepository, never()).delete(any(MediaLocation.class));
+    }
+
+    @Test
+    void deleteMediaLocation_WhenPendingMediaAssigned_ThrowsMediaLocationDeletionNotAllowedException() {
+        UUID id = UUID.randomUUID();
+        MediaLocation existing = new MediaLocation();
+        Media pendingMedia = new Media();
+        pendingMedia.setStatus(Status.PENDING);
+        existing.setMediaList(List.of(pendingMedia));
+        when(mediaLocationRepository.findById(id)).thenReturn(Optional.of(existing));
+
+        MediaLocationDeletionNotAllowedException exception = assertThrows(
+                MediaLocationDeletionNotAllowedException.class,
+                () -> mediaLocationService.deleteMediaLocation(id));
+
+        assertEquals("Cannot delete media location while active, pending, or rejected media are assigned. Please delete those media first.", exception.getMessage());
+        verify(mediaLocationRepository, never()).delete(any(MediaLocation.class));
+    }
+
+    @Test
+    void deleteMediaLocation_WhenRejectedMediaAssigned_ThrowsMediaLocationDeletionNotAllowedException() {
+        UUID id = UUID.randomUUID();
+        MediaLocation existing = new MediaLocation();
+        Media rejectedMedia = new Media();
+        rejectedMedia.setStatus(Status.REJECTED);
+        existing.setMediaList(List.of(rejectedMedia));
+        when(mediaLocationRepository.findById(id)).thenReturn(Optional.of(existing));
+
+        MediaLocationDeletionNotAllowedException exception = assertThrows(
+                MediaLocationDeletionNotAllowedException.class,
+                () -> mediaLocationService.deleteMediaLocation(id));
+
+        assertEquals("Cannot delete media location while active, pending, or rejected media are assigned. Please delete those media first.", exception.getMessage());
+        verify(mediaLocationRepository, never()).delete(any(MediaLocation.class));
     }
 
     @Test

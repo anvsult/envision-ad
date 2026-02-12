@@ -1110,7 +1110,40 @@
         },
         "error": {
           "title": "Error",
-          "message": "Failed to delete media location."
+          "message": "Failed to delete media location.",
+          "activeMedia": "Cannot delete this location because it has active, pending, or rejected media assigned. Please delete the media first."
+        }
+      },
+      "loadMedia": {
+        "error": {
+          "message": "Failed to load media details."
+        }
+      },
+      "updateMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media updated successfully."
+        },
+        "error": {
+          "message": "Failed to update media."
+        }
+      },
+      "deleteMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media deleted successfully."
+        },
+        "error": {
+          "message": "Failed to delete media."
+        }
+      },
+      "statusMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media status updated successfully."
+        },
+        "error": {
+          "message": "Failed to update media status."
         }
       },
       "unassign": {
