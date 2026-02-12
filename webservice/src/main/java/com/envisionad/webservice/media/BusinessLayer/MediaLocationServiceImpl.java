@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
-import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -56,7 +55,6 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             POSTAL_CODE_FIELD, "Verify the postal code value.");
 
     private final MediaLocationRepository mediaLocationRepository;
-    private final MediaRepository mediaRepository;
     private final BusinessService businessService;
     private final GeocodingService geocodingService;
     private final ObjectMapper objectMapper;
@@ -121,7 +119,6 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         if (location == null) {
             return;
         }
-        unassignMediaFromLocation(location);
         mediaLocationRepository.delete(location);
     }
 
@@ -139,16 +136,6 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         } catch (Exception e) {
             log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
             return Optional.empty();
-        }
-    }
-
-    private void unassignMediaFromLocation(MediaLocation location) {
-        if (location == null || location.getMediaList() == null) {
-            return;
-        }
-        for (com.envisionad.webservice.media.DataAccessLayer.Media media : location.getMediaList()) {
-            media.setMediaLocation(null);
-            mediaRepository.save(media);
         }
     }
 

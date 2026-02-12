@@ -645,6 +645,46 @@ class MediaServiceUnitTest {
     }
 
     @Test
+    void updateMedia_WhenTypeIsPoster_ShouldSetPosterFieldsAndClearDigitalFields() {
+        // Arrange
+        UUID id = media1.getId();
+        media1.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
+        media1.setLoopDuration(20);
+        media1.setResolution("1920x1080");
+        media1.setAspectRatio("16:9");
+        media1.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+
+        MediaRequestModel requestModel = new MediaRequestModel();
+        requestModel.setTitle("Poster Update");
+        requestModel.setMediaOwnerName("Poster Owner");
+        requestModel.setPrice(new BigDecimal("350.00"));
+        requestModel.setDailyImpressions(15000);
+        requestModel.setTypeOfDisplay(TypeOfDisplay.POSTER);
+        requestModel.setWidth(48.0);
+        requestModel.setHeight(96.0);
+        requestModel.setSchedule(media1.getSchedule());
+        requestModel.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
+        requestModel.setPreviewConfiguration(
+                "{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
+
+        when(mediaRepository.findById(id)).thenReturn(Optional.of(media1));
+        when(mediaRepository.save(any(Media.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), anyString());
+
+        // Act
+        mediaService.updateMediaById(mockJwt, id.toString(), requestModel);
+
+        // Assert
+        assertEquals(TypeOfDisplay.POSTER, media1.getTypeOfDisplay());
+        assertEquals(48.0, media1.getWidth());
+        assertEquals(96.0, media1.getHeight());
+        assertNull(media1.getLoopDuration());
+        assertNull(media1.getResolution());
+        assertNull(media1.getAspectRatio());
+        verify(mediaRepository).save(media1);
+    }
+
+    @Test
     void deleteMedia_WhenCloudinaryFails_ShouldStillDeleteFromRepository() throws Exception {
         // Arrange
         UUID id = media1.getId();

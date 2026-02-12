@@ -39,7 +39,4 @@ public interface MediaService {
     MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);
     void deleteMedia(UUID id);
 
-    Media assignMediaToLocation(UUID mediaId, UUID locationId);
-
-    Media unassignMediaFromLocation(UUID mediaId);
 }

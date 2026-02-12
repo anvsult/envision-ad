@@ -4,12 +4,13 @@ import com.envisionad.webservice.media.exceptions.GeocodingServiceUnavailableExc
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -32,6 +33,8 @@ class GeocodingServiceImplTest {
     private WebClient.RequestHeadersSpec requestHeadersSpec;
     @Mock
     private WebClient.ResponseSpec responseSpec;
+    @Mock
+    private UriBuilder uriBuilder;
 
     private GeocodingServiceImpl geocodingService;
 
@@ -66,6 +69,38 @@ class GeocodingServiceImplTest {
     }
 
     @Test
+    void geocodeAddress_BuildsExpectedUriAndQueryParams() throws Exception {
+        String jsonResponse = "[{\"lat\":\"45.5017\", \"lon\":\"-73.5673\"}]";
+        String address = "123 Main St, Montreal";
+
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class))).thenAnswer(invocation -> {
+            Function<UriBuilder, URI> uriFunction = invocation.getArgument(0);
+            uriFunction.apply(uriBuilder);
+            return requestHeadersSpec;
+        });
+        when(uriBuilder.path("/search")).thenReturn(uriBuilder);
+        when(uriBuilder.queryParam("q", address)).thenReturn(uriBuilder);
+        when(uriBuilder.queryParam("format", "json")).thenReturn(uriBuilder);
+        when(uriBuilder.queryParam("addressdetails", 1)).thenReturn(uriBuilder);
+        when(uriBuilder.queryParam("limit", 1)).thenReturn(uriBuilder);
+        when(uriBuilder.build()).thenReturn(new URI("https://nominatim.openstreetmap.org/search"));
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.just(jsonResponse));
+
+        Optional<String> result = geocodingService.geocodeAddress(address);
+
+        assertTrue(result.isPresent());
+        verify(uriBuilder).path("/search");
+        verify(uriBuilder).queryParam("q", address);
+        verify(uriBuilder).queryParam("format", "json");
+        verify(uriBuilder).queryParam("addressdetails", 1);
+        verify(uriBuilder).queryParam("limit", 1);
+        verify(uriBuilder).build();
+    }
+
+    @Test
     void geocodeAddress_InvalidAddress_ReturnsEmpty() {
         String jsonResponse = "[]";
 
@@ -78,6 +113,19 @@ class GeocodingServiceImplTest {
         Optional<String> result = geocodingService.geocodeAddress("Invalid Address");
 
         assertFalse(result.isPresent());
+    }
+
+    @Test
+    void geocodeAddress_NullResponse_ReturnsEmpty() {
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.justOrEmpty((String) null));
+
+        Optional<String> result = geocodingService.geocodeAddress("No Response Address");
+
+        assertTrue(result.isEmpty());
     }
 
     @Test

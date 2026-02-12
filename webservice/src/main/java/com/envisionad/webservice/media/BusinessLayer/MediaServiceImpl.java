@@ -276,30 +276,4 @@ public class MediaServiceImpl implements MediaService {
         }
         mediaRepository.delete(media);
     }
-
-    @Override
-    public Media assignMediaToLocation(UUID mediaId, UUID locationId) {
-        Media media = mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new IllegalArgumentException("Media not found: " + mediaId));
-
-        MediaLocation location = mediaLocationRepository.findById(locationId)
-                .orElseThrow(() -> new IllegalArgumentException("Media Location not found: " + locationId));
-
-        // Validate that Media and Location belong to the same business
-        if (!media.getBusinessId().equals(location.getBusinessId())) {
-            throw new IllegalArgumentException("Media and Location must belong to the same business.");
-        }
-
-        media.setMediaLocation(location);
-        return mediaRepository.save(media);
-    }
-
-    @Override
-    public Media unassignMediaFromLocation(UUID mediaId) {
-        Media media = mediaRepository.findById(mediaId)
-                .orElseThrow(() -> new IllegalArgumentException("Media not found: " + mediaId));
-
-        media.setMediaLocation(null);
-        return mediaRepository.save(media);
-    }
 }

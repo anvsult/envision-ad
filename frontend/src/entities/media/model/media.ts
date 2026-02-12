@@ -1,4 +1,5 @@
 import { LatLngBounds, LatLngLiteral } from "leaflet";
+import {MediaLocation} from "@/entities/media-location";
 
 export interface Media {
     id?: string;
@@ -46,19 +47,6 @@ export interface MediaListResponseDTO {
     last: boolean;
     first: boolean;
     empty: boolean;
-}
-
-export interface MediaLocation {
-    id: string | null;
-    name: string;
-
-    country: string;
-    province: string;
-    street: string;
-    city: string;
-    postalCode: string;
-    latitude: number;
-    longitude: number;
 }
 
 export interface FilteredActiveMediaProps {
