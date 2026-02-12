@@ -19,11 +19,11 @@ export function useMediaList() {
 
     // Fetch businessId on mount
     useEffect(() => {
-        if (!user) return;
+        if (!user?.sub) return;
 
         const fetchBusinessId = async () => {
             try {
-                const business = await getEmployeeOrganization(user.sub);
+                const business = await getEmployeeOrganization(user.sub as string);
                 if (!business) {
                     throw new Error('Business not found');
                 }
