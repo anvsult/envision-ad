@@ -6,13 +6,11 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignReposit
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
-import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.reservation.dataaccesslayer.*;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
-import com.envisionad.webservice.reservation.exceptions.BadReservationRequestException;
 import com.envisionad.webservice.reservation.exceptions.ReservationAlreadyProcessedException;
 import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
+import com.envisionad.webservice.reservation.presentationlayer.models.DenialDetailsRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
@@ -217,7 +215,7 @@ class ReservationServiceImplUnitTest {
     }
 
     @Test
-    void updateReservationStatus_whenValidPending_shouldApprove() {
+    void approveReservation_whenValidPending_shouldApprove() {
         // Arrange
         String mediaId = UUID.randomUUID().toString();
         String resId = "res-123";
@@ -231,8 +229,7 @@ class ReservationServiceImplUnitTest {
         when(reservationResponseMapper.entityToResponseModel(any())).thenReturn(new ReservationResponseModel());
 
         // Act
-        ReservationResponseModel result = reservationService.updateReservationStatus(
-                mediaToken, mediaId, resId, ReservationStatus.APPROVED);
+        ReservationResponseModel result = reservationService.approveReservation(mediaToken, mediaId, resId);
 
         // Assert
         assertNotNull(result);
@@ -241,16 +238,16 @@ class ReservationServiceImplUnitTest {
     }
 
     @Test
-    void updateReservationStatus_whenMediaNotFound_shouldThrowException() {
+    void approveReservation_whenMediaNotFound_shouldThrowException() {
         String mediaId = UUID.randomUUID().toString();
         when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.empty());
 
         assertThrows(MediaNotFoundException.class, () ->
-                reservationService.updateReservationStatus(mediaToken, mediaId, "any", ReservationStatus.APPROVED));
+                reservationService.approveReservation(mediaToken, mediaId, "any"));
     }
 
     @Test
-    void updateReservationStatus_whenAlreadyProcessed_shouldThrowException() {
+    void approveReservation_whenAlreadyProcessed_shouldThrowException() {
         String mediaId = UUID.randomUUID().toString();
         stubMediaLookup(mediaId);
 
@@ -259,20 +256,7 @@ class ReservationServiceImplUnitTest {
         when(reservationRepository.findByReservationId("res-123")).thenReturn(Optional.of(reservation));
 
         assertThrows(ReservationAlreadyProcessedException.class, () ->
-                reservationService.updateReservationStatus(mediaToken, mediaId, "res-123", ReservationStatus.APPROVED));
-    }
-
-    @Test
-    void updateReservationStatus_whenSettingInvalidStatus_shouldThrowException() {
-        String mediaId = UUID.randomUUID().toString();
-        stubMediaLookup(mediaId);
-
-        Reservation reservation = new Reservation();
-        reservation.setStatus(ReservationStatus.PENDING);
-        when(reservationRepository.findByReservationId("res-123")).thenReturn(Optional.of(reservation));
-
-        assertThrows(BadReservationRequestException.class, () ->
-                reservationService.updateReservationStatus(mediaToken, mediaId, "res-123", ReservationStatus.PENDING));
+                reservationService.approveReservation(mediaToken, mediaId, "res-123"));
     }
 
     @Test
@@ -328,15 +312,14 @@ class ReservationServiceImplUnitTest {
     }
 
     @Test
-    void updateReservationStatus_whenReservationNotFound_shouldThrowException() {
+    void approveReservationStatus_whenReservationNotFound_shouldThrowException() {
         String mediaId = UUID.randomUUID().toString();
         String resId = "non-existent-res";
         stubMediaLookup(mediaId);
 
         when(reservationRepository.findByReservationId(resId)).thenReturn(Optional.empty());
 
-        assertThrows(ReservationNotFoundException.class, () ->
-                reservationService.updateReservationStatus(mediaToken, mediaId, resId, ReservationStatus.APPROVED));
+        assertThrows(ReservationNotFoundException.class, () -> reservationService.approveReservation(mediaToken, mediaId, resId));
     }
 
     @Test
@@ -356,17 +339,21 @@ class ReservationServiceImplUnitTest {
     }
 
     @Test
-    void updateReservationStatus_whenValidPending_shouldReject() {
+    void approveReservation_whenValidPending_shouldReject() {
         String mediaId = UUID.randomUUID().toString();
         String resId = "res-456";
         stubMediaLookup(mediaId);
 
         Reservation reservation = new Reservation();
         reservation.setStatus(ReservationStatus.PENDING);
+        DenialDetailsRequestModel details = new DenialDetailsRequestModel();
+        details.setReason(DenialReason.OTHER);
+        details.setDescription("test");
+
         when(reservationRepository.findByReservationId(resId)).thenReturn(Optional.of(reservation));
         when(reservationResponseMapper.entityToResponseModel(any())).thenReturn(new ReservationResponseModel());
 
-        reservationService.updateReservationStatus(mediaToken, mediaId, resId, ReservationStatus.DENIED);
+        reservationService.denyReservation(mediaToken, mediaId, resId, details);
 
         assertEquals(ReservationStatus.DENIED, reservation.getStatus());
         verify(reservationRepository).save(reservation);

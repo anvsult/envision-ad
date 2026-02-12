@@ -472,5 +472,79 @@ class ReservationControllerIntegrationTest {
         // Verify no reservation was saved
         assertEquals(0, reservationRepository.count());
     }
+
+    @Test
+    void getAllReservationByAdvertiserBusinessId_ShouldReturnReservationsForBusiness() {
+        // Arrange - Create some reservations for this business
+        Reservation reservation1 = new Reservation();
+        reservation1.setReservationId(UUID.randomUUID().toString());
+        reservation1.setMediaId(UUID.fromString(this.mediaId));
+        reservation1.setCampaignId(this.campaignId);
+        reservation1.setAdvertiserId(USER_ID);
+        reservation1.setStatus(ReservationStatus.PENDING);
+        reservation1.setStartDate(LocalDateTime.now().plusDays(1));
+        reservation1.setEndDate(LocalDateTime.now().plusDays(8));
+        reservation1.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(reservation1);
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setReservationId(UUID.randomUUID().toString());
+        reservation2.setMediaId(UUID.fromString(this.mediaId));
+        reservation2.setCampaignId(this.campaignId);
+        reservation2.setAdvertiserId(USER_ID);
+        reservation2.setStatus(ReservationStatus.CONFIRMED);
+        reservation2.setStartDate(LocalDateTime.now().plusDays(10));
+        reservation2.setEndDate(LocalDateTime.now().plusDays(17));
+        reservation2.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(reservation2);
+
+        // Act & Assert
+        webTestClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/api/v1/media/reservations/advertiser")
+                        .queryParam("businessId", BUSINESS_ID)
+                        .build())
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.length()").isEqualTo(2)
+                .jsonPath("$[0].reservationId").isNotEmpty()
+                .jsonPath("$[0].campaignId").isEqualTo(this.campaignId)
+                .jsonPath("$[1].reservationId").isNotEmpty()
+                .jsonPath("$[1].campaignId").isEqualTo(this.campaignId);
+    }
+
+    @Test
+    void getMediaReservationById_ShouldReturnSpecificReservation() {
+        // Arrange - Create a reservation
+        Reservation reservation = new Reservation();
+        String reservationId = UUID.randomUUID().toString();
+        reservation.setReservationId(reservationId);
+        reservation.setMediaId(UUID.fromString(this.mediaId));
+        reservation.setCampaignId(this.campaignId);
+        reservation.setAdvertiserId(USER_ID);
+        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setStartDate(LocalDateTime.now().plusDays(1));
+        reservation.setEndDate(LocalDateTime.now().plusDays(8));
+        reservation.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.get()
+                .uri("/api/v1/media/reservations/{reservationId}", reservationId)
+                .accept(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.reservationId").isEqualTo(reservationId)
+                .jsonPath("$.campaignId").isEqualTo(this.campaignId)
+                .jsonPath("$.status").isEqualTo("PENDING")
+                .jsonPath("$.totalPrice").isEqualTo(150.00);
+    }
 }
 

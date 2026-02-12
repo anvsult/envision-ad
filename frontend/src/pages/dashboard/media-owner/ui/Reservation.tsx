@@ -8,10 +8,11 @@ import {
     Text,
     Loader,
     Center,
+    SegmentedControl,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 
 import {
     ReservationResponseDTO,
@@ -19,16 +20,18 @@ import {
 } from "@/entities/reservation";
 import { getAllReservationByMediaOwnerBusinessId } from "@/features/reservation-management/api";
 import { getEmployeeOrganization } from "@/features/organization-management/api";
-import { AdRequestCards } from "@/pages/dashboard/media-owner/ui/components/AdRequestCard";
+import {ReservationCards} from "@/shared/ui";
 
-export default function AdRequests() {
+export default function Reservation() {
     const t = useTranslations("adRequests");
+    const locale = useLocale();
     const { user } = useUser();
 
-    const [pendingRequests, setPendingRequests] = useState<
-        ReservationResponseDTO[]
-    >([]);
+    const [reservations, setReservations] = useState<ReservationResponseDTO[]>([]);
+    const [statusFilter, setStatusFilter] = useState<string>("pending");
     const [loading, setLoading] = useState(true);
+
+    const baseRoute = `/${locale}/dashboard/media-owner/ad-requests`;
 
     useEffect(() => {
         if (!user) return;
@@ -38,19 +41,15 @@ export default function AdRequests() {
                 setLoading(true);
 
                 const business = await getEmployeeOrganization(user.sub);
-                if (business == null){
-                    new Error("Failed to load business information");
+                if (business == null) {
+                    throw new Error("Failed to load business information");
                 }
                 const allReservations =
                     await getAllReservationByMediaOwnerBusinessId(
-                        business!.businessId
+                        business.businessId
                     );
 
-                const pending = allReservations.filter(
-                    (r) => r.status === ReservationStatus.PENDING
-                );
-
-                setPendingRequests(pending);
+                setReservations(allReservations);
             } catch (error) {
                 console.error("Failed to load ad requests", error);
                 notifications.show({
@@ -66,6 +65,17 @@ export default function AdRequests() {
         loadAdRequests();
     }, [user, t]);
 
+    const pendingRequests = reservations.filter(
+        (r) => r.status === ReservationStatus.PENDING
+    );
+    const confirmedRequests = reservations.filter(
+        (r) => r.status === ReservationStatus.CONFIRMED
+    );
+
+    const filteredRequests = statusFilter === "pending"
+        ? pendingRequests
+        : confirmedRequests;
+
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
@@ -80,12 +90,32 @@ export default function AdRequests() {
                 )}
             </Group>
 
+            {!loading && (
+                <SegmentedControl
+                    value={statusFilter}
+                    onChange={setStatusFilter}
+                    data={[
+                        {
+                            label: `${t("page.tabs.pending")} (${pendingRequests.length})`,
+                            value: "pending",
+                        },
+                        {
+                            label: `${t("page.tabs.confirmed")} (${confirmedRequests.length})`,
+                            value: "confirmed",
+                        },
+                    ]}
+                />
+            )}
+
             {loading ? (
                 <Center py="xl">
                     <Loader />
                 </Center>
             ) : (
-                <AdRequestCards requests={pendingRequests} />
+                <ReservationCards
+                    reservations={filteredRequests}
+                    viewType="media-owner"
+                />
             )}
         </Stack>
     );

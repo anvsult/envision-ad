@@ -157,6 +157,9 @@ CREATE TABLE reservations
     end_date TIMESTAMP,
 
     status VARCHAR(50) NOT NULL,
+    reason VARCHAR(50),
+    description varchar(512),
+
     total_price DECIMAL(10, 2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
