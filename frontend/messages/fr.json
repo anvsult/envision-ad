@@ -1086,7 +1086,8 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de la création de l'emplacement média."
+          "message": "Échec de la création de l'emplacement média.",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
         }
       },
       "delete": {
@@ -1138,7 +1139,14 @@
           "nameRequired": "Le nom est requis",
           "streetRequired": "La rue est requise",
           "cityRequired": "La ville est requise",
-          "countryRequired": "Le pays est requis"
+          "provinceRequired": "La province/l'état est requis(e)",
+          "countryRequired": "Le pays est requis",
+          "postalCodeRequired": "Le code postal est requis",
+          "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+          "cityInvalidServer": "Veuillez vérifier la ville.",
+          "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+          "countryInvalidServer": "Veuillez vérifier le pays.",
+          "postalCodeInvalidServer": "Veuillez vérifier le code postal."
         },
         "buttons": {
           "cancel": "Annuler",
@@ -1150,7 +1158,8 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de la mise à jour de l'emplacement"
+          "message": "Échec de la mise à jour de l'emplacement",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
         }
       }
     },
@@ -1177,7 +1186,14 @@
       "nameRequired": "Le nom est requis",
       "streetRequired": "La rue est requise",
       "cityRequired": "La ville est requise",
-      "countryRequired": "Le pays est requis"
+      "provinceRequired": "La province/l'état est requis(e)",
+      "countryRequired": "Le pays est requis",
+      "postalCodeRequired": "Le code postal est requis",
+      "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+      "cityInvalidServer": "Veuillez vérifier la ville.",
+      "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+      "countryInvalidServer": "Veuillez vérifier le pays.",
+      "postalCodeInvalidServer": "Veuillez vérifier le code postal."
     },
     "labels": {
       "name": "Nom",

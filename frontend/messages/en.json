@@ -1086,7 +1086,8 @@
         },
         "error": {
           "title": "Error",
-          "message": "Failed to create media location."
+          "message": "Failed to create media location.",
+          "addressGuidance": "Please verify street, city, province/state, country, and postal code."
         }
       },
       "delete": {
@@ -1138,7 +1139,14 @@
           "nameRequired": "Name is required",
           "streetRequired": "Street is required",
           "cityRequired": "City is required",
-          "countryRequired": "Country is required"
+          "provinceRequired": "Province/State is required",
+          "countryRequired": "Country is required",
+          "postalCodeRequired": "Postal code is required",
+          "streetInvalidServer": "Please verify the street name or number.",
+          "cityInvalidServer": "Please verify the city value.",
+          "provinceInvalidServer": "Please verify the province/state value.",
+          "countryInvalidServer": "Please verify the country value.",
+          "postalCodeInvalidServer": "Please verify the postal code value."
         },
         "buttons": {
           "cancel": "Cancel",
@@ -1150,7 +1158,8 @@
         },
         "error": {
           "title": "Error",
-          "message": "Failed to update location"
+          "message": "Failed to update location",
+          "addressGuidance": "Please verify street, city, province/state, country, and postal code."
         }
       }
     },
@@ -1177,7 +1186,14 @@
       "nameRequired": "Name is required",
       "streetRequired": "Street is required",
       "cityRequired": "City is required",
-      "countryRequired": "Country is required"
+      "provinceRequired": "Province/State is required",
+      "countryRequired": "Country is required",
+      "postalCodeRequired": "Postal code is required",
+      "streetInvalidServer": "Please verify the street name or number.",
+      "cityInvalidServer": "Please verify the city value.",
+      "provinceInvalidServer": "Please verify the province/state value.",
+      "countryInvalidServer": "Please verify the country value.",
+      "postalCodeInvalidServer": "Please verify the postal code value."
     },
     "labels": {
       "name": "Name",

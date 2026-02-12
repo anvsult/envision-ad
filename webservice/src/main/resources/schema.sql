@@ -97,6 +97,7 @@ CREATE TABLE media_location (
     postal_code VARCHAR(20) NOT NULL,
     latitude DOUBLE PRECISION NOT NULL,
     longitude DOUBLE PRECISION NOT NULL,
+    geocoding_response TEXT,
     business_id UUID NOT NULL
 );
 
@@ -195,4 +196,3 @@ CREATE TABLE payment_intents
     -- Note: No foreign key constraint on reservation_id to allow temporary/pending reservations
     -- that haven't been saved to the reservations table yet (e.g., "temp-123456789")
 );
-

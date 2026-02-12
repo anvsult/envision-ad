@@ -63,14 +63,9 @@ public class MediaLocationController {
             @RequestBody MediaLocationRequestModel requestModel) {
 
         MediaLocation entity = requestMapper.requestModelToEntity(requestModel);
-
-        try {
-            MediaLocation savedEntity = mediaLocationService.createMediaLocation(entity, jwt);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(responseMapper.entityToResponseModel(savedEntity));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        MediaLocation savedEntity = mediaLocationService.createMediaLocation(entity, jwt);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(responseMapper.entityToResponseModel(savedEntity));
     }
 
     @PutMapping("/{id}")
@@ -80,11 +75,9 @@ public class MediaLocationController {
 
         MediaLocation updateEntity = requestMapper.requestModelToEntity(requestModel);
         MediaLocation updated = mediaLocationService.updateMediaLocation(UUID.fromString(id), updateEntity);
-
         if (updated == null) {
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(responseMapper.entityToResponseModel(updated));
     }
 

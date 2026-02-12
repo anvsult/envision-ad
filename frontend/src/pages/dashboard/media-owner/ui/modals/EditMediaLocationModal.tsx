@@ -1,10 +1,52 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm } from "@mantine/form";
-import { Modal, TextInput, NumberInput, Group, Button, Stack } from "@mantine/core";
+import { Modal, TextInput, Group, Button, Stack } from "@mantine/core";
 import { useTranslations } from "next-intl";
 import { MediaLocation, MediaLocationRequestDTO } from "@/entities/media-location/model/mediaLocation";
 import { updateMediaLocation } from "@/features/media-location-management/api";
 import { notifications } from "@mantine/notifications";
+
+interface MediaLocationValidationErrorResponse {
+    message?: string;
+    fieldErrors?: Partial<Record<keyof MediaLocationRequestDTO, string>>;
+}
+
+const getValidationResponse = (error: unknown): MediaLocationValidationErrorResponse | null => {
+    if (!error || typeof error !== "object") {
+        return null;
+    }
+    if (!("response" in error)) {
+        return null;
+    }
+    const response = (error as { response?: { data?: unknown } }).response;
+    if (!response?.data || typeof response.data !== "object") {
+        return null;
+    }
+    return response.data as MediaLocationValidationErrorResponse;
+};
+
+const mapServerFieldErrors = (
+    fieldErrors: Partial<Record<keyof MediaLocationRequestDTO, string>>,
+    t: ReturnType<typeof useTranslations>
+): Partial<Record<keyof MediaLocationRequestDTO, string>> => {
+    const mappedErrors: Partial<Record<keyof MediaLocationRequestDTO, string>> = {};
+    if (fieldErrors.street) {
+        mappedErrors.street = t("validation.streetInvalidServer");
+    }
+    if (fieldErrors.city) {
+        mappedErrors.city = t("validation.cityInvalidServer");
+    }
+    if (fieldErrors.province) {
+        mappedErrors.province = t("validation.provinceInvalidServer");
+    }
+    if (fieldErrors.country) {
+        mappedErrors.country = t("validation.countryInvalidServer");
+    }
+    if (fieldErrors.postalCode) {
+        mappedErrors.postalCode = t("validation.postalCodeInvalidServer");
+    }
+    return mappedErrors;
+};
 
 interface EditMediaLocationModalProps {
     opened: boolean;
@@ -15,6 +57,8 @@ interface EditMediaLocationModalProps {
 
 export function EditMediaLocationModal({ opened, onClose, location, onSuccess }: EditMediaLocationModalProps) {
     const t = useTranslations("mediaLocations.modals.edit");
+    const [submitting, setSubmitting] = useState(false);
+    const lastInitializedLocationId = useRef<string | null>(null);
 
     const form = useForm<MediaLocationRequestDTO>({
         initialValues: {
@@ -32,14 +76,16 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
             name: (value) => (!value.trim() ? t('validation.nameRequired') : value.length < 2 ? t('validation.name') : null),
             street: (value) => (!value.trim() ? t('validation.streetRequired') : null),
             city: (value) => (!value.trim() ? t('validation.cityRequired') : null),
+            province: (value) => (!value.trim() ? t('validation.provinceRequired') : null),
             country: (value) => (!value.trim() ? t('validation.countryRequired') : null),
+            postalCode: (value) => (!value.trim() ? t('validation.postalCodeRequired') : null),
             latitude: (value) => (value < -90 || value > 90 ? t('validation.latitude') : null),
             longitude: (value) => (value < -180 || value > 180 ? t('validation.longitude') : null),
         },
     });
 
     useEffect(() => {
-        if (location) {
+        if (opened && location && location.id !== lastInitializedLocationId.current) {
             form.setValues({
                 name: location.name,
                 street: location.street,
@@ -51,12 +97,17 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
                 longitude: location.longitude,
                 businessId: location.businessId,
             });
+            lastInitializedLocationId.current = location.id;
         }
-    }, [location, form]);
+        if (!opened) {
+            lastInitializedLocationId.current = null;
+        }
+    }, [opened, location, form]);
 
     const handleSubmit = async (values: MediaLocationRequestDTO) => {
         if (!location) return;
 
+        setSubmitting(true);
         try {
             await updateMediaLocation(location.id, values);
             notifications.show({
@@ -68,16 +119,24 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
             onClose();
         } catch (error) {
             console.error(error);
+            const validationResponse = getValidationResponse(error);
+            const fieldErrors = validationResponse?.fieldErrors;
+            const hasFieldErrors = !!fieldErrors && Object.keys(fieldErrors).length > 0;
+            if (hasFieldErrors) {
+                form.setErrors(mapServerFieldErrors(fieldErrors, t));
+            }
             notifications.show({
                 title: t('error.title'),
-                message: t('error.message'),
+                message: validationResponse?.message || (hasFieldErrors ? t('error.addressGuidance') : t('error.message')),
                 color: "red",
             });
+        } finally {
+            setSubmitting(false);
         }
     };
 
     return (
-        <Modal opened={opened} onClose={onClose} title={t('title')} size="lg">
+        <Modal opened={opened} onClose={onClose} title={t('title')} size="lg" closeOnClickOutside={!submitting}>
             <form onSubmit={form.onSubmit(handleSubmit)} noValidate>
                 <Stack>
                     <TextInput label={t('fields.name')} placeholder={t('placeholders.name')} {...form.getInputProps("name")} />
@@ -93,10 +152,10 @@ export function EditMediaLocationModal({ opened, onClose, location, onSuccess }:
 
 
                     <Group justify="flex-end" mt="md">
-                        <Button variant="default" onClick={onClose}>
+                        <Button type="button" variant="default" onClick={onClose} disabled={submitting}>
                             {t('buttons.cancel')}
                         </Button>
-                        <Button type="submit">{t('buttons.save')}</Button>
+                        <Button type="submit" loading={submitting}>{t('buttons.save')}</Button>
                     </Group>
                 </Stack>
             </form>

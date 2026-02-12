@@ -48,6 +48,9 @@ public class MediaLocation {
     @Column(name = "business_id", nullable = false)
     private UUID businessId;
 
+    @Column(name = "geocoding_response", columnDefinition = "TEXT")
+    private String geocodingResponse;
+
     @OneToMany(mappedBy = "mediaLocation", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     private List<Media> mediaList = new ArrayList<>();
 }

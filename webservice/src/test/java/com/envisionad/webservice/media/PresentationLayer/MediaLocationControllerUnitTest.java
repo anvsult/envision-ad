@@ -6,6 +6,7 @@ import com.envisionad.webservice.media.MapperLayer.MediaLocationRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaLocationResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationResponseModel;
+import com.envisionad.webservice.media.exceptions.MediaLocationValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,5 +135,23 @@ class MediaLocationControllerUnitTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
         // Verify call with correct arguments
         verify(mediaLocationService).updateMediaLocation(eq(mediaLocationId), any(MediaLocation.class));
+    }
+
+    @Test
+    void updateMediaLocation_InvalidAddress_ShouldReturnBadRequest() {
+        MediaLocationRequestModel updateRequest = new MediaLocationRequestModel();
+        updateRequest.setName("New Name");
+
+        MediaLocation mediaLocation = new MediaLocation();
+        mediaLocation.setId(mediaLocationId);
+        java.util.Map<String, String> fieldErrors = java.util.Map.of("street", "Verify the street name or number.");
+
+        when(requestMapper.requestModelToEntity(any(MediaLocationRequestModel.class))).thenReturn(mediaLocation);
+        when(mediaLocationService.updateMediaLocation(eq(mediaLocationId), any(MediaLocation.class)))
+                .thenThrow(new MediaLocationValidationException("Please verify street, city, province/state, and country.",
+                        fieldErrors));
+
+        assertThrows(MediaLocationValidationException.class, () -> mediaLocationController.updateMediaLocation(
+                mediaLocationId.toString(), updateRequest));
     }
 }

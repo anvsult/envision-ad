@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
 import { IconCheck } from "@tabler/icons-react";
+import { WeeklyScheduleModel } from "@/entities/media";
 
 import { MediaLocation, MediaLocationRequestDTO } from "@/entities/media-location/model/mediaLocation";
 import {
@@ -24,6 +25,36 @@ import { EditMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/
 import { AssignMediaModal } from "@/pages/dashboard/media-owner/ui/modals/AssignMediaModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
 import { unassignMediaFromLocation } from "@/features/media-location-management/api";
+
+const getApiErrorMessage = (error: unknown): string | null => {
+    if (!error || typeof error !== "object") {
+        return null;
+    }
+    if (!("response" in error)) {
+        return null;
+    }
+    const response = (error as { response?: { data?: unknown } }).response;
+    if (!response?.data || typeof response.data !== "object") {
+        return null;
+    }
+    const data = response.data as { message?: string };
+    return data.message ?? null;
+};
+
+const hasApiFieldErrors = (error: unknown): boolean => {
+    if (!error || typeof error !== "object" || !("response" in error)) {
+        return false;
+    }
+    const response = (error as { response?: { data?: unknown } }).response;
+    if (!response?.data || typeof response.data !== "object") {
+        return false;
+    }
+    const data = response.data as { fieldErrors?: unknown };
+    if (!data.fieldErrors || typeof data.fieldErrors !== "object") {
+        return false;
+    }
+    return Object.keys(data.fieldErrors as Record<string, unknown>).length > 0;
+};
 
 export default function MediaLocations() {
     const t = useTranslations('mediaLocations');
@@ -79,7 +110,7 @@ export default function MediaLocations() {
                 color: "red"
             });
         }
-    }, [backendBusinessId]);
+    }, [backendBusinessId, t]);
 
     useEffect(() => {
         if (backendBusinessId) {
@@ -89,23 +120,30 @@ export default function MediaLocations() {
 
     // Handlers
     const handleCreateLocation = async (payload: MediaLocationRequestDTO) => {
-        if (!backendBusinessId) return;
         try {
+            if (!backendBusinessId) {
+                throw new Error("Business ID is required");
+            }
             await createMediaLocation({ ...payload, businessId: backendBusinessId });
             notifications.show({
                 title: t('notifications.create.success.title'),
                 message: t('notifications.create.success.message'),
                 color: "green"
             });
-            setIsCreateModalOpen(false);
-            loadLocations();
+            await loadLocations();
         } catch (error) {
             console.error(error);
+            const apiMessage = getApiErrorMessage(error);
+            const message = apiMessage
+                || (hasApiFieldErrors(error)
+                    ? t('notifications.create.error.addressGuidance')
+                    : t('notifications.create.error.message'));
             notifications.show({
                 title: t('notifications.create.error.title'),
-                message: t('notifications.create.error.message'),
+                message,
                 color: "red"
             });
+            throw error;
         }
     };
 
@@ -138,6 +176,7 @@ export default function MediaLocations() {
 
     const handleAssignMedia = (locationId: string) => {
         // Set the location ID in the form state for the new media
+        setAssignLocationId(locationId);
         updateField("mediaLocationId", locationId);
         setIsMediaModalOpen(true);
     };
@@ -177,7 +216,7 @@ export default function MediaLocations() {
             // Map backend DTO to MediaFormState shape - Reusing logic from MediaOwnerDashboard would be better, but implementing here for now
             const schedule = backend.schedule || {
                 selectedMonths: [],
-                weeklySchedule: [],
+                weeklySchedule: [] as WeeklyScheduleModel[],
             };
 
             const activeDaysOfWeek: Record<string, boolean> = {
@@ -192,7 +231,7 @@ export default function MediaLocations() {
             };
 
             if (schedule.weeklySchedule) {
-                schedule.weeklySchedule.forEach((entry: any) => {
+                schedule.weeklySchedule.forEach((entry: WeeklyScheduleModel) => {
                     const dayKey = entry.dayOfWeek.charAt(0).toUpperCase() + entry.dayOfWeek.slice(1);
                     if (activeDaysOfWeek.hasOwnProperty(dayKey)) {
                         activeDaysOfWeek[dayKey] = entry.isActive;
@@ -365,7 +404,10 @@ export default function MediaLocations() {
 
             <EditMediaLocationModal
                 opened={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
+                onClose={() => {
+                    setIsEditModalOpen(false);
+                    setLocationToEdit(null);
+                }}
                 location={locationToEdit}
                 onSuccess={handleUpdateSuccess}
             />
