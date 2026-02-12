@@ -1230,28 +1230,5 @@
       "cancel": "Cancel",
       "create": "Create"
     }
-  },
-  "AssignMediaModal": {
-    "title": "Assign Media",
-    "description": "Select a media item to display at this location.",
-    "selectMedia": "Select Media",
-    "selectPlaceholder": "Choose a media",
-    "noMediaFound": "No media found",
-    "cancel": "Cancel",
-    "assign": "Assign",
-    "success": {
-      "title": "Success",
-      "message": "Media assigned successfully"
-    },
-    "errors": {
-      "fetchFailed": {
-        "title": "Error",
-        "message": "Failed to fetch media list"
-      },
-      "assignFailed": {
-        "title": "Error",
-        "message": "Failed to assign media"
-      }
-    }
   }
 }

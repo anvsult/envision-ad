@@ -125,6 +125,7 @@ class ReservationControllerIntegrationTest {
                 // Create Media Location
                 com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
                 location.setName("Downtown Billboard A");
+                location.setBusinessId(UUID.fromString(businessId));
                 location.setCountry("Canada");
                 location.setProvince("ON");
                 location.setCity("Toronto");

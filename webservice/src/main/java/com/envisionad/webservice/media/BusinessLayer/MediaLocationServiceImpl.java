@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
@@ -114,10 +115,14 @@ public class MediaLocationServiceImpl implements MediaLocationService {
     }
 
     @Override
+    @Transactional
     public void deleteMediaLocation(UUID id) {
         MediaLocation location = mediaLocationRepository.findById(id).orElse(null);
+        if (location == null) {
+            return;
+        }
         unassignMediaFromLocation(location);
-        mediaLocationRepository.deleteById(id);
+        mediaLocationRepository.delete(location);
     }
 
     private Optional<UUID> resolveBusinessId(Jwt jwt) {

@@ -11,7 +11,6 @@ interface MediaLocationsTableProps {
     onDeleteLocation: (id: string) => void;
     onAddMedia: (locationId: string) => void;
     onEditLocation: (location: MediaLocation) => void;
-    onUnassignMedia: (locationId: string, mediaId: string) => void;
     onEditMedia: (id: string | number) => void;
     onDeleteMedia: (id: string | number) => void;
     onToggleMediaStatus: (id: string | number) => void;
@@ -22,7 +21,6 @@ export function MediaLocationsTable({
     onDeleteLocation,
     onAddMedia,
     onEditLocation,
-    onUnassignMedia,
     onEditMedia,
     onDeleteMedia,
     onToggleMediaStatus

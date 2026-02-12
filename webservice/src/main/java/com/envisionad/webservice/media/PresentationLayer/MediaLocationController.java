@@ -36,6 +36,7 @@ public class MediaLocationController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('read:media_location')")
     public ResponseEntity<List<MediaLocationResponseModel>> getAllMediaLocations(@AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) String businessId) {
 

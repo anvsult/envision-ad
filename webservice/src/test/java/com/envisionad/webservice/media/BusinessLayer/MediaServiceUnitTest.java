@@ -81,20 +81,17 @@ class MediaServiceUnitTest {
         // Create MediaLocations with different coordinates
         location1 = createMediaLocation(
                 "Downtown Billboard A",
-                "Large billboard",
                 43.651070,  // Toronto downtown
                 -79.347015
         );
 
                 location2 = createMediaLocation(
                                 "Midtown Billboard B",
-                                "Medium billboard",
                                 43.700000, // North Toronto
                                 -79.400000);
 
                 location3 = createMediaLocation(
                                 "Suburb Billboard C",
-                                "Small billboard",
                                 43.800000, // Far north
                                 -79.500000);
 
@@ -724,8 +721,7 @@ class MediaServiceUnitTest {
                 return business;
         }
 
-        private MediaLocation createMediaLocation(String name, String description,
-                        Double latitude, Double longitude) {
+        private MediaLocation createMediaLocation(String name, Double latitude, Double longitude) {
                 MediaLocation location = new MediaLocation();
                 location.setId(UUID.randomUUID());
                 location.setName(name);

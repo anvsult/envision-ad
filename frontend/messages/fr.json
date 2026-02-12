@@ -1230,28 +1230,5 @@
       "cancel": "Annuler",
       "create": "Créer"
     }
-  },
-  "AssignMediaModal": {
-    "title": "Attribuer un média",
-    "description": "Sélectionnez un média à afficher à cet emplacement.",
-    "selectMedia": "Sélectionner un média",
-    "selectPlaceholder": "Choisir un média",
-    "noMediaFound": "Aucun média trouvé",
-    "cancel": "Annuler",
-    "assign": "Attribuer",
-    "success": {
-      "title": "Succès",
-      "message": "Média attribué avec succès"
-    },
-    "errors": {
-      "fetchFailed": {
-        "title": "Erreur",
-        "message": "Échec de la récupération de la liste des médias"
-      },
-      "assignFailed": {
-        "title": "Erreur",
-        "message": "Échec de l'attribution du média"
-      }
-    }
   }
 }

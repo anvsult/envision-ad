@@ -22,9 +22,7 @@ import { getEmployeeOrganization } from "@/features/organization-management/api"
 import { MediaLocationsTable } from "@/pages/dashboard/media-owner/ui/tables/MediaLocationsTable";
 import { CreateMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/CreateMediaLocationModal";
 import { EditMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/EditMediaLocationModal";
-import { AssignMediaModal } from "@/pages/dashboard/media-owner/ui/modals/AssignMediaModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
-import { unassignMediaFromLocation } from "@/features/media-location-management/api";
 
 const getApiErrorMessage = (error: unknown): string | null => {
     if (!error || typeof error !== "object") {
@@ -68,9 +66,7 @@ export default function MediaLocations() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [locationToEdit, setLocationToEdit] = useState<MediaLocation | null>(null);
-    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
-    const [assignLocationId, setAssignLocationId] = useState<string | null>(null);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [locationToDelete, setLocationToDelete] = useState<string | null>(null);
 
@@ -176,7 +172,6 @@ export default function MediaLocations() {
 
     const handleAssignMedia = (locationId: string) => {
         // Set the location ID in the form state for the new media
-        setAssignLocationId(locationId);
         updateField("mediaLocationId", locationId);
         setIsMediaModalOpen(true);
     };
@@ -300,7 +295,7 @@ export default function MediaLocations() {
         } else {
             await handleSaveMedia();
         }
-    }
+    };
 
     const handleDeleteMedia = async (id: string | number) => {
         try {
@@ -332,10 +327,6 @@ export default function MediaLocations() {
         }
     };
 
-    const handleAssignSuccess = () => {
-        loadLocations();
-    };
-
     const handleEditLocation = (location: MediaLocation) => {
         setLocationToEdit(location);
         setIsEditModalOpen(true);
@@ -343,37 +334,6 @@ export default function MediaLocations() {
 
     const handleUpdateSuccess = () => {
         loadLocations();
-    };
-
-    const [confirmUnassignOpen, setConfirmUnassignOpen] = useState(false);
-    const [mediaToUnassign, setMediaToUnassign] = useState<{ locationId: string, mediaId: string } | null>(null);
-
-    const handleUnassignMedia = (locationId: string, mediaId: string) => {
-        setMediaToUnassign({ locationId, mediaId });
-        setConfirmUnassignOpen(true);
-    };
-
-    const confirmUnassign = async () => {
-        if (!mediaToUnassign) return;
-        try {
-            await unassignMediaFromLocation(mediaToUnassign.locationId, mediaToUnassign.mediaId);
-            notifications.show({
-                title: t('notifications.unassign.success.title'),
-                message: t('notifications.unassign.success.message'),
-                color: "green"
-            });
-            loadLocations();
-        } catch (error) {
-            console.error(error);
-            notifications.show({
-                title: t('notifications.unassign.error.title'),
-                message: t('notifications.unassign.error.message'),
-                color: "red"
-            });
-        } finally {
-            setConfirmUnassignOpen(false);
-            setMediaToUnassign(null);
-        }
     };
 
     return (
@@ -390,7 +350,6 @@ export default function MediaLocations() {
                 onDeleteLocation={handleDeleteLocation}
                 onAddMedia={handleAssignMedia}
                 onEditLocation={handleEditLocation}
-                onUnassignMedia={handleUnassignMedia}
                 onEditMedia={handleEditMedia}
                 onDeleteMedia={handleDeleteMedia}
                 onToggleMediaStatus={handleToggleMediaStatus}
@@ -412,14 +371,6 @@ export default function MediaLocations() {
                 onSuccess={handleUpdateSuccess}
             />
 
-            <AssignMediaModal
-                opened={isAssignModalOpen}
-                onClose={() => setIsAssignModalOpen(false)}
-                locationId={assignLocationId}
-                businessId={backendBusinessId}
-                onSuccess={handleAssignSuccess}
-            />
-
             <ConfirmationModal
                 opened={confirmDeleteOpen}
                 title={t('confirmations.delete.title')}
@@ -429,17 +380,6 @@ export default function MediaLocations() {
                 confirmColor="red"
                 onConfirm={confirmDelete}
                 onCancel={() => setConfirmDeleteOpen(false)}
-            />
-
-            <ConfirmationModal
-                opened={confirmUnassignOpen}
-                title={t('confirmations.unassign.title')}
-                message={t('confirmations.unassign.message')}
-                confirmLabel={t('confirmations.unassign.confirm')}
-                cancelLabel={t('confirmations.unassign.cancel')}
-                confirmColor="red"
-                onConfirm={confirmUnassign}
-                onCancel={() => setConfirmUnassignOpen(false)}
             />
 
             <MediaModal

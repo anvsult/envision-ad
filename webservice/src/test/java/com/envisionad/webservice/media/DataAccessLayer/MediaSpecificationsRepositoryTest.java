@@ -44,6 +44,7 @@ class MediaSpecificationsRepositoryTest {
         location.setPostalCode("H1H 1H1");
         location.setLatitude(45.0);
         location.setLongitude(-73.0);
+        location.setBusinessId(businessIdA);
         mediaLocationRepository.save(location);
 
         // Media 1: Active, "Digital Board", Price 100, Imp 1000
