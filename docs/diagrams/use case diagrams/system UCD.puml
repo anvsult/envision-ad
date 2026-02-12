@@ -1,9 +1,9 @@
 @startuml
-left to right direction
 
 ' --- Increase spacing and make the box larger ---
-skinparam ranksep 40
-skinparam nodesep 20
+left to right direction
+'skinparam linetype ortho
+
 skinparam rectangle {
   Padding 40
   Margin 40
@@ -25,8 +25,10 @@ skinparam rectangle<<Temporal>> {
 
 rectangle "Envision Ad" {
   ' --- Advertiser use cases ---
-  usecase "UC_02 Publish Ad" as PublishAd
+  usecase "UC_02 Publish Ad Campaign" as PublishAd
+  usecase " View Media Details" as ViewMediaDetails
   usecase "UC_01 Browse Media Inventory" as Browse
+  usecase "UC_06 Provide Proof of Display" as ProvideProof
 
   ' --- Media Owner use cases ---
   usecase "UC_09 Manage Media Listing" as ManageListing
@@ -54,6 +56,7 @@ end note
   ' --- Actor connections (solid lines) ---
 '  ADV -- Browse
   ADV -- PublishAd
+  ADV -- Browse
 '  ADV -- ConfirmProof
 
   ' keep media owner lines inside rectangle
@@ -63,6 +66,7 @@ end note
   MO -- Browse
   MO -- ViewAd
   MO -- ManageListing
+  MO -- ProvideProof
 
   ADM -- ApproveListing
   ADM -- ContentWarning
@@ -74,7 +78,8 @@ end note
   GU -- Browse
   GU -[hidden]- PublishAd
   ' --- Relationships (dotted, no arrows, all contained) ---
-  PublishAd ..> Browse     : <<includes>>
+  PublishAd -> ViewMediaDetails     : <<extends>>
+  ViewMediaDetails -> Browse : <<extends>>
 '  Request <-- ApproveAd     : <<extends>>
 '  ConfirmProof <-- Proof   : <<includes>>
 '  ApproveAd <-- Proof      : <<includes>>

@@ -1,41 +1,38 @@
 @startuml
 
-title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 1)
 
 actor Advertiser
+actor "Media Owner" as MediaOwner
 participant "<<UI>>\nMedia Details Page" as MediaDetailsPage
 participant "<<UI>>\nReservationMediaModal" as ReservationModal
-
-participant "<<control>>\n__:ReservationController__" as Controller
-participant "<<control>>\n__:ReservationService__" as Service
-participant "<<entity>>\nreservation__:Reservation__" as Reservation
-participant "<<mapper>>\n__:ReservationResponseMapper__" as ResponseMapper
-participant "<<mapper>>\n__:ReservationRequestMapper__" as RequestMapper
-participant "<<utility>>\n__:ReservationValidator__" as Validator
-participant "<<utility>>\n__:JwtUtils__" as JwtUtils
-participant "<<entity>>\nmedia__:Media__" as Media
-participant "<<entity>>\ncampaign__:AdCampaign__" as Campaign
-participant "<<repository>>\n__:MediaRepository__" as MediaRepo
-participant "<<repository>>\n__:AdCampaignRepository__" as CampaignRepo
-participant "<<repository>>\n__:ReservationRepository__" as ReservationRepo
+' Name all objects
+' make the media entity used
+' Add state
+participant "<<control>>\nreservationController\n:ReservationController" as Controller
+participant "<<control>>\nreservationService\n:ReservationService" as Service
+participant "<<entity>>\nreservation\n:Reservation" as Reservation
+participant "<<mapper>>\nreservationResponseMapper\n:ReservationResponseMapper" as ResponseMapper
+participant "<<mapper>>\nreservationRequestMapper\n:ReservationRequestMapper" as RequestMapper
+participant "<<utility>>\nreservationValidator\n:ReservationValidator" as Validator
+participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
+participant "<<entity>>\nadCampaign\n:AdCampaign" as Campaign
+participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
+participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
+participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
 database "<<database>>\n:Database" as DB
 
 Advertiser -> MediaDetailsPage: Initiate Reservation
 activate MediaDetailsPage
 
-MediaDetailsPage -> ReservationModal: render()
+MediaDetailsPage -> ReservationModal: ReservationMediaModal()
 activate ReservationModal
 
-ReservationModal -> Controller: POST /api/v1/media/{mediaId}/reservations
+ReservationModal -> Controller: POST /api/v1/media/{mediaId}/reservations\ncreateReservation(campaignId, startDate, endDate)
 activate Controller
 
 Controller -> Service: createReservation(jwt, mediaId, reservationRequestModel)
-note bottom
-  Payload:
-  - campaignId
-  - startDate
-  - endDate
-end note
+
 activate Service
 
 Service -> Validator: validateReservation(requestModel, mediaId)
@@ -121,7 +118,14 @@ Service --> Controller: reservationResponse
 deactivate Service
 
 Controller --> ReservationModal: reservationResponse (HTTP 201)
+ReservationModal --> MediaDetailsPage: close()
 deactivate Controller
 deactivate MediaDetailsPage
+deactivate ReservationModal
 
+ref over MediaOwner
+    <i>Media Owner reviews pending
+    <i>reservation and approves it</i>
+    <i>(Manage Reservation Use Case)</i>
+end ref
 @enduml
