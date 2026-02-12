@@ -1,10 +1,11 @@
 import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useLocale, useTranslations } from "next-intl";
-import { getJoinedAddress, MediaLocation } from "@/entities/media";
+import { getJoinedAddress } from "@/entities/media";
 import { useEffect, useState } from "react";
 import { getOrganizationById } from "@/features/organization-management/api";
 import { useMediaQuery } from "@mantine/hooks";
+import {MediaLocation} from "@/entities/media-location";
 
 export interface MediaCardProps {
     index: string;
