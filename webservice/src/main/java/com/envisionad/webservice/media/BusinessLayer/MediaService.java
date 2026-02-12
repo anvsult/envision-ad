@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +35,6 @@ public interface MediaService {
 
     Media addMedia(Media media);
 
-    Media updateMedia(Media media);
-
+    MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);
     void deleteMedia(UUID id);
 }

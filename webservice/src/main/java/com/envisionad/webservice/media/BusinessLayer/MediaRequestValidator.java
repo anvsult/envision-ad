@@ -3,8 +3,12 @@ package com.envisionad.webservice.media.BusinessLayer;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -20,6 +24,22 @@ public class MediaRequestValidator {
         if (request.getMediaLocationId() == null || request.getMediaLocationId().trim().isEmpty()) {
             throw new IllegalArgumentException("Media location ID is required");
         }
+        validatePrice(request.getPrice());
+        validateDailyImpressions(request.getDailyImpressions());
+        validateTypeOfDisplay(request);
+        validateSchedule(request);
+        validateImageAndConfiguration(request.getImageUrl(), request.getPreviewConfiguration());
+    }
+
+    public static void validateMediaUpdateRequest(MediaRequestModel request) {
+        // When updating a media, we allow partial updates,
+        // so we only validate fields that are provided, excluding mediaLocationId which cannot be updated.
+
+        if (request == null) {
+            throw new IllegalArgumentException("Media request cannot be null");
+        }
+
+        validateTitle(request.getTitle());
         validatePrice(request.getPrice());
         validateDailyImpressions(request.getDailyImpressions());
         validateTypeOfDisplay(request);
@@ -142,18 +162,31 @@ public class MediaRequestValidator {
         if (imageUrl == null || imageUrl.trim().isEmpty()) {
             throw new IllegalArgumentException("Image is required");
         }
+
+        URI uri;
         try {
-            new java.net.URL(imageUrl);
-        } catch (java.net.MalformedURLException e) {
+            uri = new URI(imageUrl.trim());
+        } catch (URISyntaxException e) {
             throw new IllegalArgumentException("Image URL must be a valid URL");
+        }
+
+        String scheme = uri.getScheme();
+        if (scheme == null ||
+                !(scheme.equalsIgnoreCase("http") || scheme.equalsIgnoreCase("https"))) {
+            throw new IllegalArgumentException("Image URL must use http or https");
+        }
+
+        if (uri.getHost() == null || uri.getHost().isBlank()) {
+            throw new IllegalArgumentException("Image URL must contain a valid host");
         }
 
         if (previewConfiguration == null || previewConfiguration.trim().isEmpty()) {
             throw new IllegalArgumentException("Preview configuration (corners) is required when an image is uploaded");
         }
+
         try {
-            new com.fasterxml.jackson.databind.ObjectMapper().readTree(previewConfiguration);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            new ObjectMapper().readTree(previewConfiguration);
+        } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Preview configuration must be valid JSON");
         }
     }

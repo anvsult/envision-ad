@@ -8,7 +8,9 @@ import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaSpecifications;
+import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
@@ -34,10 +36,10 @@ public class MediaServiceImpl implements MediaService {
 
     private final MediaRepository mediaRepository;
     private final StripeAccountRepository stripeAccountRepository;
-    private final Cloudinary cloudinary;
     private final MediaResponseMapper mediaResponseMapper;
-    private final BusinessRepository businessRepository;
     private final JwtUtils jwtUtils;
+    private final Cloudinary cloudinary;
+    private final BusinessRepository businessRepository;
 
     public MediaServiceImpl(MediaRepository mediaRepository, StripeAccountRepository stripeAccountRepository, Cloudinary cloudinary, MediaResponseMapper mediaResponseMapper, BusinessRepository businessRepository, JwtUtils jwtUtils) {
         this.mediaRepository = mediaRepository;
@@ -171,12 +173,21 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
-    public Media updateMedia(Media media) {
-        Media existingMedia = mediaRepository.findById(media.getId())
-                .orElseThrow(() -> new MediaNotFoundException(media.getId().toString()));
+    public MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel) {
+        Media existingMedia = mediaRepository.findById(UUID.fromString(id)).orElseThrow(() -> new MediaNotFoundException(id));
 
+        UUID businessId = existingMedia.getBusinessId();
+        if (businessId == null) {
+            throw new IllegalStateException("Existing media has no associated business; cannot update.");
+        }
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId.toString());
+
+        // Validate the request model
+        MediaRequestValidator.validateMediaUpdateRequest(requestModel);
+
+        // Handle Cloudinary cleanup if image URL is changing
         String oldUrl = existingMedia.getImageUrl();
-        String newUrl = media.getImageUrl();
+        String newUrl = requestModel.getImageUrl();
 
         String normalizedOldUrl = (oldUrl != null && !oldUrl.trim().isEmpty()) ? oldUrl.trim() : null;
         String normalizedNewUrl = (newUrl != null && !newUrl.trim().isEmpty()) ? newUrl.trim() : null;
@@ -196,8 +207,40 @@ public class MediaServiceImpl implements MediaService {
                 }
             }
         }
-        media.setImageUrl(normalizedNewUrl);
-        return mediaRepository.save(media);
+
+        // Update fields
+        existingMedia.setTitle(requestModel.getTitle());
+        existingMedia.setMediaOwnerName(requestModel.getMediaOwnerName());
+        existingMedia.setPrice(requestModel.getPrice());
+        existingMedia.setDailyImpressions(requestModel.getDailyImpressions());
+        existingMedia.setTypeOfDisplay(requestModel.getTypeOfDisplay());
+
+        // Update display-specific fields based on type
+        if (requestModel.getTypeOfDisplay() == TypeOfDisplay.DIGITAL) {
+            existingMedia.setLoopDuration(requestModel.getLoopDuration());
+            existingMedia.setResolution(requestModel.getResolution());
+            existingMedia.setAspectRatio(requestModel.getAspectRatio());
+            // Clear poster fields
+            existingMedia.setWidth(null);
+            existingMedia.setHeight(null);
+        } else if (requestModel.getTypeOfDisplay() == TypeOfDisplay.POSTER) {
+            existingMedia.setWidth(requestModel.getWidth());
+            existingMedia.setHeight(requestModel.getHeight());
+            // Clear digital fields
+            existingMedia.setLoopDuration(null);
+            existingMedia.setResolution(null);
+            existingMedia.setAspectRatio(null);
+        }
+
+        existingMedia.setSchedule(requestModel.getSchedule());
+        existingMedia.setImageUrl(normalizedNewUrl);
+        existingMedia.setPreviewConfiguration(requestModel.getPreviewConfiguration());
+
+        // Set status to pending after update
+        existingMedia.setStatus(Status.PENDING);
+
+        Media updatedMedia = mediaRepository.save(existingMedia);
+        return mediaResponseMapper.entityToResponseModel(updatedMedia);
     }
 
     @Override

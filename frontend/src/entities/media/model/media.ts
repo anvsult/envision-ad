@@ -10,10 +10,10 @@ export interface Media {
     loopDuration: number | null;
     width: number | null;
     height: number | null;
-    price: number | null;
+    price: number;
     dailyImpressions: number | null;
     schedule: MonthlyScheduleModel;
-    status: string | null;
+    status: string | null; // The status should not be optional. We should probably remove the null option
     typeOfDisplay: string;
     imageUrl: string;
     previewConfiguration: string;
@@ -33,10 +33,8 @@ export interface MediaRequestDTO {
     price: number;
     dailyImpressions: number;
     schedule: MonthlyScheduleModel | null;
-    status: string;
     imageUrl: string | null;
-    previewConfiguration?: string | null;
-    businessId?: string | null;
+    previewConfiguration: string | null;
 }
 
 export interface MediaListResponseDTO {
