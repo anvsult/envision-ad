@@ -87,7 +87,6 @@ class BusinessMediaControllerIntegrationTest {
         // Create a media location
         MediaLocation location = new MediaLocation();
         location.setName("Downtown Billboard");
-        location.setDescription("Large billboard in downtown");
         location.setCountry("Canada");
         location.setProvince("ON");
         location.setCity("Toronto");
@@ -95,6 +94,7 @@ class BusinessMediaControllerIntegrationTest {
         location.setPostalCode("M5H 1A1");
         location.setLatitude(43.651070);
         location.setLongitude(-79.347015);
+        location.setBusinessId(UUID.fromString(businessId));
         mediaLocationRepository.save(location);
 
         // Create schedule
@@ -268,4 +268,3 @@ class BusinessMediaControllerIntegrationTest {
                 .expectStatus().isForbidden();
     }
 }
-

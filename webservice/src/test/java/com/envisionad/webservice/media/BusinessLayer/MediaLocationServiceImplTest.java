@@ -55,7 +55,6 @@ class MediaLocationServiceImplTest {
         mediaLocation.setProvince("Province");
         mediaLocation.setCountry("Country");
         mediaLocation.setPostalCode("12345");
-        mediaLocation.setBusinessId(businessId);
     }
 
     @Test

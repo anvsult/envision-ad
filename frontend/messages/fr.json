@@ -1093,6 +1093,16 @@
           "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
         }
       },
+      "createMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le média a été créé et assigné à cet emplacement avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création du média."
+        }
+      },
       "delete": {
         "success": {
           "title": "Succès",

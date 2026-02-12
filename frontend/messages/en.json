@@ -1093,6 +1093,16 @@
           "addressGuidance": "Please verify street, city, province/state, country, and postal code."
         }
       },
+      "createMedia": {
+        "success": {
+          "title": "Success",
+          "message": "Media created and assigned to this location successfully."
+        },
+        "error": {
+          "title": "Error",
+          "message": "Failed to create media."
+        }
+      },
       "delete": {
         "success": {
           "title": "Success",

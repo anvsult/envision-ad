@@ -4,6 +4,9 @@ import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.exceptions.GeocodingServiceUnavailableException;
 import com.envisionad.webservice.media.exceptions.MediaLocationValidationException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
@@ -19,12 +22,15 @@ import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MediaLocationServiceImpl implements MediaLocationService {
 
     private static final int STREET_MAX_LENGTH = 255;
@@ -38,49 +44,31 @@ public class MediaLocationServiceImpl implements MediaLocationService {
     private static final String CITY_FIELD = "city";
     private static final String STREET_FIELD = "street";
     private static final String POSTAL_CODE_FIELD = "postalCode";
+    private static final String INVALID_ADDRESS_ERROR = "Address could not be verified.";
+    private static final String COORDINATE_EXTRACTION_ERROR = "Address was matched but coordinates could not be determined. Please check street, city, province/state, country, and postal code.";
+    private static final String GEOCODING_UNAVAILABLE_ERROR = "Address validation service is temporarily unavailable. Please try again shortly.";
+    private static final Map<String, String> ADDRESS_VERIFICATION_ERRORS = Map.of(
+            STREET_FIELD, "Verify the street name or number.",
+            CITY_FIELD, "Verify the city value.",
+            PROVINCE_FIELD, "Verify the province/state value.",
+            COUNTRY_FIELD, "Verify the country value.",
+            POSTAL_CODE_FIELD, "Verify the postal code value.");
 
     private final MediaLocationRepository mediaLocationRepository;
     private final MediaRepository mediaRepository;
     private final BusinessService businessService;
     private final GeocodingService geocodingService;
-    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
-    private static final class GeocodingLookupResult {
-        private final String query;
-        private final String jsonResponse;
-
-        private GeocodingLookupResult(String query, String jsonResponse) {
-            this.query = query;
-            this.jsonResponse = jsonResponse;
-        }
-    }
-
-    public MediaLocationServiceImpl(MediaLocationRepository mediaLocationRepository,
-            MediaRepository mediaRepository,
-            BusinessService businessService,
-            GeocodingService geocodingService,
-            com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
-        this.mediaLocationRepository = mediaLocationRepository;
-        this.mediaRepository = mediaRepository;
-        this.businessService = businessService;
-        this.geocodingService = geocodingService;
-        this.objectMapper = objectMapper;
+    private record GeocodingLookupResult(String query, String jsonResponse) {
     }
 
     @Override
     public List<MediaLocation> getAllMediaLocations(Jwt jwt, String businessId) {
         String targetBusinessId = businessId;
 
-        // If businessId is not provided, try to infer from JWT
-        if (targetBusinessId == null && jwt != null) {
-            try {
-                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
-                if (business != null) {
-                    targetBusinessId = business.getBusinessId();
-                }
-            } catch (Exception e) {
-                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage());
-            }
+        if (targetBusinessId == null) {
+            targetBusinessId = resolveBusinessId(jwt).map(UUID::toString).orElse(null);
         }
 
         if (targetBusinessId == null) {
@@ -97,15 +85,8 @@ public class MediaLocationServiceImpl implements MediaLocationService {
 
     @Override
     public MediaLocation createMediaLocation(MediaLocation mediaLocation, Jwt jwt) {
-        if (jwt != null) {
-            try {
-                BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
-                if (business != null && business.getBusinessId() != null) {
-                    mediaLocation.setBusinessId(UUID.fromString(business.getBusinessId()));
-                }
-            } catch (Exception e) {
-                log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
-            }
+        if (mediaLocation.getBusinessId() == null) {
+            mediaLocation.setBusinessId(resolveBusinessId(jwt).orElse(null));
         }
 
         if (mediaLocation.getBusinessId() == null) {
@@ -134,56 +115,60 @@ public class MediaLocationServiceImpl implements MediaLocationService {
 
     @Override
     public void deleteMediaLocation(UUID id) {
-        // Unassign all media from this location before deleting
         MediaLocation location = mediaLocationRepository.findById(id).orElse(null);
-        if (location != null && location.getMediaList() != null) {
-            for (com.envisionad.webservice.media.DataAccessLayer.Media media : location.getMediaList()) {
-                media.setMediaLocation(null);
-                mediaRepository.save(media);
-            }
-        }
+        unassignMediaFromLocation(location);
         mediaLocationRepository.deleteById(id);
+    }
+
+    private Optional<UUID> resolveBusinessId(Jwt jwt) {
+        if (jwt == null) {
+            return Optional.empty();
+        }
+
+        try {
+            BusinessResponseModel business = businessService.getBusinessByUserId(jwt, jwt.getSubject());
+            if (business == null || business.getBusinessId() == null) {
+                return Optional.empty();
+            }
+            return Optional.of(UUID.fromString(business.getBusinessId()));
+        } catch (Exception e) {
+            log.error("Error fetching business for user {}: {}", jwt.getSubject(), e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
+
+    private void unassignMediaFromLocation(MediaLocation location) {
+        if (location == null || location.getMediaList() == null) {
+            return;
+        }
+        for (com.envisionad.webservice.media.DataAccessLayer.Media media : location.getMediaList()) {
+            media.setMediaLocation(null);
+            mediaRepository.save(media);
+        }
     }
 
     private void validateAndGeocode(MediaLocation mediaLocation) {
         validateAndNormalizeAddressFields(mediaLocation);
-
-        final String invalidAddressError = "Address could not be verified.";
-        final String coordinateExtractionError = "Address was matched but coordinates could not be determined. Please check street, city, province/state, country, and postal code.";
-        final String geocodingUnavailableError = "Address validation service is temporarily unavailable. Please try again shortly.";
-        final Map<String, String> addressVerificationErrors = Map.of(
-                STREET_FIELD, "Verify the street name or number.",
-                CITY_FIELD, "Verify the city value.",
-                PROVINCE_FIELD, "Verify the province/state value.",
-                COUNTRY_FIELD, "Verify the country value.",
-                POSTAL_CODE_FIELD, "Verify the postal code value.");
 
         GeocodingLookupResult lookupResult = geocodeWithFallbacks(
                 mediaLocation.getStreet(),
                 mediaLocation.getCity(),
                 mediaLocation.getProvince(),
                 mediaLocation.getCountry(),
-                mediaLocation.getPostalCode(),
-                invalidAddressError,
-                geocodingUnavailableError,
-                addressVerificationErrors);
-        String address = lookupResult.query;
-        String jsonResponse = lookupResult.jsonResponse;
+                mediaLocation.getPostalCode());
+        String address = lookupResult.query();
+        String jsonResponse = lookupResult.jsonResponse();
 
         mediaLocation.setGeocodingResponse(jsonResponse);
 
         try {
-            com.fasterxml.jackson.databind.JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            if (!rootNode.isArray() || rootNode.size() == 0) {
-                throw new IllegalStateException(coordinateExtractionError);
-            }
-
-            com.fasterxml.jackson.databind.JsonNode firstResult = rootNode.get(0);
+            JsonNode firstResult = readFirstResult(jsonResponse)
+                    .orElseThrow(() -> new IllegalStateException(COORDINATE_EXTRACTION_ERROR));
             if (!firstResult.has("lat") || !firstResult.has("lon")) {
-                throw new IllegalStateException(coordinateExtractionError);
+                throw new IllegalStateException(COORDINATE_EXTRACTION_ERROR);
             }
 
-            validateGeocodedAddressConsistency(mediaLocation, firstResult, addressVerificationErrors, invalidAddressError);
+            validateGeocodedAddressConsistency(mediaLocation, firstResult);
 
             mediaLocation.setLatitude(Double.parseDouble(firstResult.get("lat").asText()));
             mediaLocation.setLongitude(Double.parseDouble(firstResult.get("lon").asText()));
@@ -192,7 +177,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         } catch (Exception e) {
             log.error("Error extracting coordinates from geocoding response for address '{}': {}", address,
                     e.getMessage(), e);
-            throw new MediaLocationValidationException(coordinateExtractionError, addressVerificationErrors, e);
+            throw new MediaLocationValidationException(COORDINATE_EXTRACTION_ERROR, ADDRESS_VERIFICATION_ERRORS, e);
         }
     }
 
@@ -200,10 +185,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             String city,
             String province,
             String country,
-            String postalCode,
-            String invalidAddressError,
-            String geocodingUnavailableError,
-            Map<String, String> addressVerificationErrors) {
+            String postalCode) {
         List<String> candidates = buildAddressCandidates(street, city, province, country, postalCode);
 
         for (String candidate : candidates) {
@@ -214,7 +196,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
                 }
             } catch (GeocodingServiceUnavailableException e) {
                 log.error("Geocoding service unavailable for address '{}': {}", candidate, e.getMessage(), e);
-                throw new GeocodingServiceUnavailableException(geocodingUnavailableError, e);
+                throw new GeocodingServiceUnavailableException(GEOCODING_UNAVAILABLE_ERROR, e);
             }
         }
 
@@ -225,11 +207,18 @@ public class MediaLocationServiceImpl implements MediaLocationService {
                 province,
                 country,
                 postalCode,
-                geocodingUnavailableError,
-                addressVerificationErrors);
+                GEOCODING_UNAVAILABLE_ERROR);
         throw new MediaLocationValidationException(
-                buildAddressVerificationMessage(invalidAddressError, pinpointErrors),
+                buildAddressVerificationMessage(INVALID_ADDRESS_ERROR, pinpointErrors),
                 pinpointErrors);
+    }
+
+    private Optional<JsonNode> readFirstResult(String jsonResponse) throws Exception {
+        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+        if (!rootNode.isArray() || rootNode.size() == 0) {
+            return Optional.empty();
+        }
+        return Optional.of(rootNode.get(0));
     }
 
     private List<String> buildAddressCandidates(String street, String city, String province, String country, String postalCode) {
@@ -258,23 +247,19 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             String province,
             String country,
             String postalCode,
-            String geocodingUnavailableError,
-            Map<String, String> addressVerificationErrors) {
-        // Prefer a single pinpoint field by checking whether removing exactly one field restores a match.
-        if (hasGeocodingMatch(String.format("%s, %s, %s, %s", street, city, province, postalCode), geocodingUnavailableError)) {
-            return Map.of(COUNTRY_FIELD, addressVerificationErrors.get(COUNTRY_FIELD));
-        }
-        if (hasGeocodingMatch(String.format("%s, %s, %s, %s", street, city, country, postalCode), geocodingUnavailableError)) {
-            return Map.of(PROVINCE_FIELD, addressVerificationErrors.get(PROVINCE_FIELD));
-        }
-        if (hasGeocodingMatch(String.format("%s, %s, %s, %s", street, province, country, postalCode), geocodingUnavailableError)) {
-            return Map.of(CITY_FIELD, addressVerificationErrors.get(CITY_FIELD));
-        }
-        if (hasGeocodingMatch(String.format("%s, %s, %s, %s", street, city, province, country), geocodingUnavailableError)) {
-            return Map.of(POSTAL_CODE_FIELD, addressVerificationErrors.get(POSTAL_CODE_FIELD));
-        }
-        if (hasGeocodingMatch(String.format("%s, %s, %s, %s", city, province, country, postalCode), geocodingUnavailableError)) {
-            return Map.of(STREET_FIELD, addressVerificationErrors.get(STREET_FIELD));
+            String geocodingUnavailableError) {
+        List<Map.Entry<String, String>> diagnosticQueries = List.of(
+                Map.entry(COUNTRY_FIELD, String.format("%s, %s, %s, %s", street, city, province, postalCode)),
+                Map.entry(PROVINCE_FIELD, String.format("%s, %s, %s, %s", street, city, country, postalCode)),
+                Map.entry(CITY_FIELD, String.format("%s, %s, %s, %s", street, province, country, postalCode)),
+                Map.entry(POSTAL_CODE_FIELD, String.format("%s, %s, %s, %s", street, city, province, country)),
+                Map.entry(STREET_FIELD, String.format("%s, %s, %s, %s", city, province, country, postalCode)));
+
+        for (Map.Entry<String, String> diagnostic : diagnosticQueries) {
+            if (hasGeocodingMatch(diagnostic.getValue(), geocodingUnavailableError)) {
+                String field = diagnostic.getKey();
+                return Map.of(field, ADDRESS_VERIFICATION_ERRORS.get(field));
+            }
         }
 
         Map<String, String> referenceMismatches = inferFieldErrorsFromReferenceLookup(
@@ -283,13 +268,12 @@ public class MediaLocationServiceImpl implements MediaLocationService {
                 province,
                 country,
                 postalCode,
-                geocodingUnavailableError,
-                addressVerificationErrors);
+                geocodingUnavailableError);
         if (!referenceMismatches.isEmpty()) {
             return referenceMismatches;
         }
 
-        return addressVerificationErrors;
+        return ADDRESS_VERIFICATION_ERRORS;
     }
 
     private boolean hasGeocodingMatch(String query, String geocodingUnavailableError) {
@@ -306,8 +290,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             String province,
             String country,
             String postalCode,
-            String geocodingUnavailableError,
-            Map<String, String> addressVerificationErrors) {
+            String geocodingUnavailableError) {
         List<String> referenceQueries = List.of(
                 String.format("%s, %s", postalCode, country),
                 String.format("%s, %s, %s", street, postalCode, country),
@@ -320,28 +303,13 @@ public class MediaLocationServiceImpl implements MediaLocationService {
                 continue;
             }
 
-            com.fasterxml.jackson.databind.JsonNode addressNode = reference.get().path("address");
+            JsonNode addressNode = reference.get().path("address");
             if (addressNode == null || !addressNode.isObject()) {
                 continue;
             }
 
-            Map<String, String> mismatches = new LinkedHashMap<>();
-            if (!matchesCountry(country, addressNode)) {
-                mismatches.put(COUNTRY_FIELD, addressVerificationErrors.get(COUNTRY_FIELD));
-            }
-            if (!matchesProvince(province, addressNode)) {
-                mismatches.put(PROVINCE_FIELD, addressVerificationErrors.get(PROVINCE_FIELD));
-            }
-            if (!matchesCity(city, addressNode)) {
-                mismatches.put(CITY_FIELD, addressVerificationErrors.get(CITY_FIELD));
-            }
-            if (!matchesPostalCode(postalCode, addressNode)) {
-                mismatches.put(POSTAL_CODE_FIELD, addressVerificationErrors.get(POSTAL_CODE_FIELD));
-            }
-            if (!matchesStreet(street, addressNode)) {
-                mismatches.put(STREET_FIELD, addressVerificationErrors.get(STREET_FIELD));
-            }
-
+            Map<String, String> mismatches = collectAddressMismatches(street, city, province, country, postalCode,
+                    addressNode);
             if (!mismatches.isEmpty()) {
                 return mismatches;
             }
@@ -350,24 +318,20 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         return Map.of();
     }
 
-    private java.util.Optional<com.fasterxml.jackson.databind.JsonNode> lookupFirstGeocodingResult(String query,
+    private Optional<JsonNode> lookupFirstGeocodingResult(String query,
             String geocodingUnavailableError) {
         try {
             var response = geocodingService.geocodeAddress(query);
             if (response.isEmpty()) {
-                return java.util.Optional.empty();
+                return Optional.empty();
             }
-            com.fasterxml.jackson.databind.JsonNode rootNode = objectMapper.readTree(response.get());
-            if (!rootNode.isArray() || rootNode.size() == 0) {
-                return java.util.Optional.empty();
-            }
-            return java.util.Optional.of(rootNode.get(0));
+            return readFirstResult(response.get());
         } catch (GeocodingServiceUnavailableException e) {
             log.error("Geocoding service unavailable for diagnostic query '{}': {}", query, e.getMessage(), e);
             throw new GeocodingServiceUnavailableException(geocodingUnavailableError, e);
         } catch (Exception e) {
             log.debug("Could not parse geocoding response for diagnostic query '{}': {}", query, e.getMessage());
-            return java.util.Optional.empty();
+            return Optional.empty();
         }
     }
 
@@ -379,8 +343,9 @@ public class MediaLocationServiceImpl implements MediaLocationService {
             String fieldName = toReadableFieldName(fieldErrors.keySet().iterator().next());
             return String.format("%s Please verify the %s.", baseMessage, fieldName);
         }
-        String fieldList = fieldErrors.keySet().stream().map(this::toReadableFieldName).reduce((a, b) -> a + ", " + b)
-                .orElse("address fields");
+        String fieldList = fieldErrors.keySet().stream()
+                .map(this::toReadableFieldName)
+                .collect(Collectors.joining(", "));
         return String.format("%s Please verify: %s.", baseMessage, fieldList);
     }
 
@@ -395,41 +360,55 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         };
     }
 
-    private void validateGeocodedAddressConsistency(MediaLocation mediaLocation,
-            com.fasterxml.jackson.databind.JsonNode geocodingResult,
-            Map<String, String> addressVerificationErrors,
-            String invalidAddressError) {
-        com.fasterxml.jackson.databind.JsonNode addressNode = geocodingResult.path("address");
+    private Map<String, String> collectAddressMismatches(String street,
+            String city,
+            String province,
+            String country,
+            String postalCode,
+            JsonNode addressNode) {
+        Map<String, String> mismatches = new LinkedHashMap<>();
+
+        if (!matchesCountry(country, addressNode)) {
+            mismatches.put(COUNTRY_FIELD, ADDRESS_VERIFICATION_ERRORS.get(COUNTRY_FIELD));
+        }
+        if (!matchesProvince(province, addressNode)) {
+            mismatches.put(PROVINCE_FIELD, ADDRESS_VERIFICATION_ERRORS.get(PROVINCE_FIELD));
+        }
+        if (!matchesCity(city, addressNode)) {
+            mismatches.put(CITY_FIELD, ADDRESS_VERIFICATION_ERRORS.get(CITY_FIELD));
+        }
+        if (!matchesPostalCode(postalCode, addressNode)) {
+            mismatches.put(POSTAL_CODE_FIELD, ADDRESS_VERIFICATION_ERRORS.get(POSTAL_CODE_FIELD));
+        }
+        if (!matchesStreet(street, addressNode)) {
+            mismatches.put(STREET_FIELD, ADDRESS_VERIFICATION_ERRORS.get(STREET_FIELD));
+        }
+
+        return mismatches;
+    }
+
+    private void validateGeocodedAddressConsistency(MediaLocation mediaLocation, JsonNode geocodingResult) {
+        JsonNode addressNode = geocodingResult.path("address");
         if (addressNode == null || !addressNode.isObject()) {
             return;
         }
 
-        Map<String, String> mismatchedFields = new LinkedHashMap<>();
-
-        if (!matchesCountry(mediaLocation.getCountry(), addressNode)) {
-            mismatchedFields.put(COUNTRY_FIELD, addressVerificationErrors.get(COUNTRY_FIELD));
-        }
-        if (!matchesProvince(mediaLocation.getProvince(), addressNode)) {
-            mismatchedFields.put(PROVINCE_FIELD, addressVerificationErrors.get(PROVINCE_FIELD));
-        }
-        if (!matchesCity(mediaLocation.getCity(), addressNode)) {
-            mismatchedFields.put(CITY_FIELD, addressVerificationErrors.get(CITY_FIELD));
-        }
-        if (!matchesPostalCode(mediaLocation.getPostalCode(), addressNode)) {
-            mismatchedFields.put(POSTAL_CODE_FIELD, addressVerificationErrors.get(POSTAL_CODE_FIELD));
-        }
-        if (!matchesStreet(mediaLocation.getStreet(), addressNode)) {
-            mismatchedFields.put(STREET_FIELD, addressVerificationErrors.get(STREET_FIELD));
-        }
+        Map<String, String> mismatchedFields = collectAddressMismatches(
+                mediaLocation.getStreet(),
+                mediaLocation.getCity(),
+                mediaLocation.getProvince(),
+                mediaLocation.getCountry(),
+                mediaLocation.getPostalCode(),
+                addressNode);
 
         if (!mismatchedFields.isEmpty()) {
             throw new MediaLocationValidationException(
-                    buildAddressVerificationMessage(invalidAddressError, mismatchedFields),
+                    buildAddressVerificationMessage(INVALID_ADDRESS_ERROR, mismatchedFields),
                     mismatchedFields);
         }
     }
 
-    private boolean matchesCountry(String expectedCountry, com.fasterxml.jackson.databind.JsonNode addressNode) {
+    private boolean matchesCountry(String expectedCountry, JsonNode addressNode) {
         String expected = normalizeComparable(expectedCountry);
         String country = normalizeComparable(addressNode.path("country").asText(null));
         String countryCode = normalizeComparable(addressNode.path("country_code").asText(null));
@@ -439,7 +418,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         return countryCode != null && countryCode.equals(expected);
     }
 
-    private boolean matchesProvince(String expectedProvince, com.fasterxml.jackson.databind.JsonNode addressNode) {
+    private boolean matchesProvince(String expectedProvince, JsonNode addressNode) {
         String expected = normalizeComparable(expectedProvince);
         if (expected == null) {
             return false;
@@ -456,7 +435,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         return anyCandidateMatches(expected, candidates, false);
     }
 
-    private boolean matchesCity(String expectedCity, com.fasterxml.jackson.databind.JsonNode addressNode) {
+    private boolean matchesCity(String expectedCity, JsonNode addressNode) {
         String expected = normalizeComparable(expectedCity);
         if (expected == null) {
             return false;
@@ -473,7 +452,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         return anyCandidateMatches(expected, candidates, true);
     }
 
-    private boolean matchesPostalCode(String expectedPostalCode, com.fasterxml.jackson.databind.JsonNode addressNode) {
+    private boolean matchesPostalCode(String expectedPostalCode, JsonNode addressNode) {
         String expected = normalizePostalComparable(expectedPostalCode);
         String actual = normalizePostalComparable(addressNode.path("postcode").asText(null));
         if (actual == null) {
@@ -482,7 +461,7 @@ public class MediaLocationServiceImpl implements MediaLocationService {
         return expected.equals(actual);
     }
 
-    private boolean matchesStreet(String expectedStreet, com.fasterxml.jackson.databind.JsonNode addressNode) {
+    private boolean matchesStreet(String expectedStreet, JsonNode addressNode) {
         Set<String> expectedTokens = normalizeStreetTokens(expectedStreet);
         if (expectedTokens.isEmpty()) {
             return false;
