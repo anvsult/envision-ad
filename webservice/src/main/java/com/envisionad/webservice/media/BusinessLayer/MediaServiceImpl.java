@@ -60,6 +60,11 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    public List<Media> getAllMediaByBusinessId(UUID businessId) {
+        return mediaRepository.findMediaByBusinessId(businessId);
+    }
+
+    @Override
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
@@ -164,6 +169,9 @@ public class MediaServiceImpl implements MediaService {
         if (businessId == null) {
             throw new IllegalArgumentException("Business ID is required to create media.");
         }
+
+        // New media always enters moderation flow first.
+        media.setStatus(Status.PENDING);
 
         Optional<StripeAccount> stripeAccountOpt = stripeAccountRepository.findByBusinessId(businessId.toString());
 

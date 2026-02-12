@@ -565,47 +565,8 @@ class MediaControllerUnitTest {
         }
 
         @Test
-        void updateMedia_ShouldPreserveBusinessId() {
-                // Given
-                Media existingMedia = new Media();
-                existingMedia.setId(mediaId);
-                existingMedia.setBusinessId(UUID.fromString(businessId));
-
-                Media updateEntity = new Media();
-                updateEntity.setId(mediaId);
-                // Business ID is null in update entity (simulating request mapper behavior)
-
-                when(mediaService.getMediaById(mediaId)).thenReturn(existingMedia);
-                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(updateEntity);
-                when(mediaService.updateMedia(any(Media.class))).thenAnswer(invocation -> invocation.getArgument(0));
-                when(responseMapper.entityToResponseModel(any(Media.class))).thenAnswer(invocation -> {
-                        Media m = invocation.getArgument(0);
-                        MediaResponseModel response = new MediaResponseModel();
-                        response.setId(m.getId());
-                        response.setBusinessId(m.getBusinessId() != null ? m.getBusinessId().toString() : null);
-                        return response;
-                });
-
-                // When
-                ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(String.valueOf(mediaId),
-                                requestModel);
-
-                // Then
-                assertNotNull(response.getBody());
-                assertEquals(businessId, response.getBody().getBusinessId(), "Business ID should be preserved");
-                verify(mediaService).updateMedia(argThat(m -> businessId
-                                .equals(m.getBusinessId() != null ? m.getBusinessId().toString() : null)));
-        }
-
-        @Test
         void updateMedia_ShouldReturnUpdatedMedia() {
                 when(mediaService.updateMediaById(mediaToken, String.valueOf(mediaId), requestModel)).thenReturn(responseModel);
-                when(requestMapper.requestModelToEntity(any(MediaRequestModel.class))).thenReturn(media);
-                when(mediaService.getMediaById(mediaId)).thenReturn(media); // Add this mock
-                when(mediaService.updateMedia(any(Media.class))).thenReturn(media);
-                when(responseMapper.entityToResponseModel(any(Media.class))).thenReturn(responseModel);
-
-
                 ResponseEntity<MediaResponseModel> response = mediaController.updateMedia(
                         mediaToken,
                         String.valueOf(mediaId),
