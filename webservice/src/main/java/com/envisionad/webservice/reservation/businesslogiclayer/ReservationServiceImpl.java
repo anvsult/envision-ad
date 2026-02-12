@@ -172,6 +172,10 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationAlreadyProcessedException();
         }
 
+        if (denialDetailsRequestModel == null || denialDetailsRequestModel.getReason() == null) {
+            throw new BadReservationRequestException();
+        }
+
         if (denialDetailsRequestModel.getReason().equals(DenialReason.OTHER) && (denialDetailsRequestModel.getDescription() == null || denialDetailsRequestModel.getDescription().isBlank())){
             throw new BadReservationRequestException();
         }

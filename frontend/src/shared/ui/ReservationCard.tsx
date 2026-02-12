@@ -130,7 +130,7 @@ function ReservationCard({
                 })
                 .catch(error => {
                     console.error('Translation error:', error);
-                    setTranslatedDescription(reservation.denialDetails.description);
+                    setTranslatedDescription(reservation.denialDetails?.description || '');
                 })
                 .finally(() => {
                     setIsTranslating(false);
@@ -140,7 +140,7 @@ function ReservationCard({
 
     const handleCardClick = () => {
         if (viewType === "media-owner") {
-            router.push(`/media-owner/reservations/${reservation.reservationId}`);
+            router.push(`/${locale}/dashboard/media-owner/advertisements/${reservation.reservationId}`);
         }
     };
 

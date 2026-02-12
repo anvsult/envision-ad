@@ -1,6 +1,5 @@
 package com.envisionad.webservice.reservation.businesslogiclayer;
 
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.presentationlayer.models.DenialDetailsRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;

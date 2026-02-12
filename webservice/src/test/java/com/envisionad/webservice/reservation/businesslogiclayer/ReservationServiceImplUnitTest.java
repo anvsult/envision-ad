@@ -339,7 +339,7 @@ class ReservationServiceImplUnitTest {
     }
 
     @Test
-    void approveReservation_whenValidPending_shouldReject() {
+    void denyReservation_whenValidPending_shouldReject() {
         String mediaId = UUID.randomUUID().toString();
         String resId = "res-456";
         stubMediaLookup(mediaId);

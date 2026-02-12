@@ -10,7 +10,7 @@ export interface ReservationResponseDTO {
     campaignId: string;
     campaignName?: string;
     status: ReservationStatus;
-    denialDetails: DenialDetails;
+    denialDetails: DenialDetails | null;
     totalPrice: number;
     startDate: string;
     endDate: string;
