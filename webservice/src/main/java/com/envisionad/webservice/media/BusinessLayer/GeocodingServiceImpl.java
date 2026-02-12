@@ -4,6 +4,7 @@ import com.envisionad.webservice.media.exceptions.GeocodingServiceUnavailableExc
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.Optional;
 
 @Service
@@ -11,6 +12,7 @@ public class GeocodingServiceImpl implements GeocodingService {
 
     private final WebClient webClient;
     private static final String NOMINATIM_BASE_URL = "https://nominatim.openstreetmap.org";
+    private static final Duration GEOCODING_TIMEOUT = Duration.ofSeconds(5);
 
     public GeocodingServiceImpl(WebClient.Builder webClientBuilder) {
         this.webClient = webClientBuilder.baseUrl(NOMINATIM_BASE_URL).build();
@@ -30,6 +32,7 @@ public class GeocodingServiceImpl implements GeocodingService {
                     .header("User-Agent", "EnvisionAd/1.0") // Nominatim requires a User-Agent
                     .retrieve()
                     .bodyToMono(String.class)
+                    .timeout(GEOCODING_TIMEOUT)
                     .block();
 
             if (response != null && !response.equals("[]")) {

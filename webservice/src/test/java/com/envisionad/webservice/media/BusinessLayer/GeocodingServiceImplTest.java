@@ -11,6 +11,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.concurrent.TimeoutException;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -135,6 +136,19 @@ class GeocodingServiceImplTest {
         when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
         when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
         when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.error(new RuntimeException("API Error")));
+
+        GeocodingServiceUnavailableException exception = assertThrows(GeocodingServiceUnavailableException.class,
+                () -> geocodingService.geocodeAddress("Montreal, QC"));
+        assertEquals("Address validation service is temporarily unavailable.", exception.getMessage());
+    }
+
+    @Test
+    void geocodeAddress_Timeout_ThrowsServiceUnavailableException() {
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(any(Function.class))).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.header(anyString(), anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(String.class)).thenReturn(Mono.error(new TimeoutException("timeout")));
 
         GeocodingServiceUnavailableException exception = assertThrows(GeocodingServiceUnavailableException.class,
                 () -> geocodingService.geocodeAddress("Montreal, QC"));

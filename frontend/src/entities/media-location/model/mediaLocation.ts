@@ -1,3 +1,5 @@
+import { Media } from "@/entities/media";
+
 export interface MediaLocation {
     id: string;
     businessId: string;
@@ -11,8 +13,6 @@ export interface MediaLocation {
     longitude: number;
     mediaList?: Media[];
 }
-
-import { Media } from "@/entities/media";
 
 export interface MediaLocationRequestDTO {
     name: string;

@@ -2,6 +2,7 @@ package com.envisionad.webservice.media.MapperLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationResponseModel;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public class MediaLocationResponseMapper {
         model.setLongitude(entity.getLongitude());
         model.setBusinessId(entity.getBusinessId());
 
-        if (entity.getMediaList() != null) {
+        if (entity.getMediaList() != null && Hibernate.isInitialized(entity.getMediaList())) {
             model.setMediaList(mediaResponseMapper.entityListToResponseModelList(entity.getMediaList()));
         }
 

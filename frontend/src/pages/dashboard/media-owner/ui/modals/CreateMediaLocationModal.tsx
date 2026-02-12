@@ -144,7 +144,6 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                         label={t('labels.street')}
                         placeholder={t('placeholders.street')}
                         required
-                        onBlur={fetchCoordinates}
                         {...form.getInputProps('street')}
                     />
 
@@ -153,13 +152,11 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                             label={t('labels.city')}
                             placeholder={t('placeholders.city')}
                             required
-                            onBlur={fetchCoordinates}
                             {...form.getInputProps('city')}
                         />
                         <TextInput
                             label={t('labels.province')}
                             placeholder={t('placeholders.province')}
-                            onBlur={fetchCoordinates}
                             {...form.getInputProps('province')}
                         />
                     </Group>
@@ -169,7 +166,6 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                             label={t('labels.country')}
                             placeholder={t('placeholders.country')}
                             required
-                            onBlur={fetchCoordinates}
                             {...form.getInputProps('country')}
                         />
                         <TextInput

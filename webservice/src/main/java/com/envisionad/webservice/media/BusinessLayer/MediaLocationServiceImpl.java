@@ -64,17 +64,21 @@ public class MediaLocationServiceImpl implements MediaLocationService {
 
     @Override
     public List<MediaLocation> getAllMediaLocations(Jwt jwt, String businessId) {
-        String targetBusinessId = businessId;
-
-        if (targetBusinessId == null) {
-            targetBusinessId = resolveBusinessId(jwt).map(UUID::toString).orElse(null);
-        }
-
-        if (targetBusinessId == null) {
+        UUID resolvedBusinessId = resolveBusinessId(jwt).orElse(null);
+        if (resolvedBusinessId == null) {
             throw new IllegalArgumentException("Business ID is required");
         }
 
-        return mediaLocationRepository.findAllByBusinessId(UUID.fromString(targetBusinessId));
+        UUID targetBusinessId = resolvedBusinessId;
+        if (businessId != null) {
+            UUID requestedBusinessId = UUID.fromString(businessId);
+            if (!requestedBusinessId.equals(resolvedBusinessId)) {
+                throw new IllegalArgumentException("Requested business ID does not match the authenticated user's business.");
+            }
+            targetBusinessId = requestedBusinessId;
+        }
+
+        return mediaLocationRepository.findAllByBusinessId(targetBusinessId);
     }
 
     @Override
@@ -84,13 +88,15 @@ public class MediaLocationServiceImpl implements MediaLocationService {
 
     @Override
     public MediaLocation createMediaLocation(MediaLocation mediaLocation, Jwt jwt) {
-        if (mediaLocation.getBusinessId() == null) {
-            mediaLocation.setBusinessId(resolveBusinessId(jwt).orElse(null));
-        }
-
-        if (mediaLocation.getBusinessId() == null) {
+        UUID resolvedBusinessId = resolveBusinessId(jwt).orElse(null);
+        if (resolvedBusinessId == null) {
             throw new IllegalArgumentException("Business ID is required to create a media location.");
         }
+        UUID incomingBusinessId = mediaLocation.getBusinessId();
+        if (incomingBusinessId != null && !incomingBusinessId.equals(resolvedBusinessId)) {
+            throw new IllegalArgumentException("Provided business ID does not match the authenticated user's business.");
+        }
+        mediaLocation.setBusinessId(resolvedBusinessId);
 
         validateAndGeocode(mediaLocation);
 

@@ -22,7 +22,7 @@ public class Media {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "media_location_id", nullable = true)
+    @JoinColumn(name = "media_location_id", nullable = false)
     private MediaLocation mediaLocation;
 
     @Column(name = "business_id")

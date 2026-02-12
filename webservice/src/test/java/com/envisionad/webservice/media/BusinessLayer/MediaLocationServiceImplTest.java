@@ -314,15 +314,37 @@ class MediaLocationServiceImplTest {
     }
 
     @Test
-    void getAllMediaLocations_WithExplicitBusinessId_ReturnsLocations() {
-        UUID targetBusinessId = UUID.randomUUID();
-        List<MediaLocation> expected = List.of(new MediaLocation());
-        when(mediaLocationRepository.findAllByBusinessId(targetBusinessId)).thenReturn(expected);
+    void createMediaLocation_WhenProvidedBusinessIdDiffersFromJwt_ThrowsIllegalArgumentException() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        BusinessResponseModel businessModel = new BusinessResponseModel();
+        businessModel.setBusinessId(businessId.toString());
+        when(businessService.getBusinessByUserId(any(), anyString())).thenReturn(businessModel);
 
-        List<MediaLocation> result = mediaLocationService.getAllMediaLocations(null, targetBusinessId.toString());
+        mediaLocation.setBusinessId(UUID.randomUUID());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> mediaLocationService.createMediaLocation(mediaLocation, jwt));
+
+        assertEquals("Provided business ID does not match the authenticated user's business.", exception.getMessage());
+        verify(mediaLocationRepository, never()).save(any(MediaLocation.class));
+    }
+
+    @Test
+    void getAllMediaLocations_WithJwtAndMatchingBusinessId_ReturnsLocations() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        BusinessResponseModel businessModel = new BusinessResponseModel();
+        businessModel.setBusinessId(businessId.toString());
+        when(businessService.getBusinessByUserId(jwt, "auth0|123")).thenReturn(businessModel);
+
+        List<MediaLocation> expected = List.of(new MediaLocation());
+        when(mediaLocationRepository.findAllByBusinessId(businessId)).thenReturn(expected);
+
+        List<MediaLocation> result = mediaLocationService.getAllMediaLocations(jwt, businessId.toString());
 
         assertSame(expected, result);
-        verifyNoInteractions(businessService);
+        verify(businessService).getBusinessByUserId(jwt, "auth0|123");
     }
 
     @Test
@@ -348,6 +370,32 @@ class MediaLocationServiceImplTest {
                 () -> mediaLocationService.getAllMediaLocations(null, null));
 
         assertEquals("Business ID is required", exception.getMessage());
+        verify(mediaLocationRepository, never()).findAllByBusinessId(any(UUID.class));
+    }
+
+    @Test
+    void getAllMediaLocations_WithNoJwtAndExplicitBusinessId_ThrowsIllegalArgumentException() {
+        UUID targetBusinessId = UUID.randomUUID();
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> mediaLocationService.getAllMediaLocations(null, targetBusinessId.toString()));
+
+        assertEquals("Business ID is required", exception.getMessage());
+        verify(mediaLocationRepository, never()).findAllByBusinessId(any(UUID.class));
+    }
+
+    @Test
+    void getAllMediaLocations_WithJwtAndMismatchedBusinessId_ThrowsIllegalArgumentException() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getSubject()).thenReturn("auth0|123");
+        BusinessResponseModel businessModel = new BusinessResponseModel();
+        businessModel.setBusinessId(businessId.toString());
+        when(businessService.getBusinessByUserId(jwt, "auth0|123")).thenReturn(businessModel);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> mediaLocationService.getAllMediaLocations(jwt, UUID.randomUUID().toString()));
+
+        assertEquals("Requested business ID does not match the authenticated user's business.", exception.getMessage());
         verify(mediaLocationRepository, never()).findAllByBusinessId(any(UUID.class));
     }
 
