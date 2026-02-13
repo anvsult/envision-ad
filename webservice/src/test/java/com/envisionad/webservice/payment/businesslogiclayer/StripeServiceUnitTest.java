@@ -689,7 +689,7 @@ class StripeServiceUnitTest {
         // ========== Tests for getDashboardData ==========
 
         @Test
-        void getDashboardData_shouldReturnDashboardMetrics_withGrossAndNetEarnings() throws StripeException {
+        void getDashboardData_shouldReturnDashboardMetrics_withGrossAndNetEarnings() {
                 // Given
                 String userId = "user-1";
                 String businessId = "biz-1";
@@ -769,7 +769,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldFilterByWeeklyPeriod() throws StripeException {
+        void getDashboardData_shouldFilterByWeeklyPeriod() {
                 // Given
                 String userId = "user-1";
                 String businessId = "biz-1";
@@ -821,7 +821,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldFilterByYearlyPeriod() throws StripeException {
+        void getDashboardData_shouldFilterByYearlyPeriod() {
                 // Given
                 String userId = "user-1";
                 String businessId = "biz-1";
@@ -873,7 +873,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldDefaultToMonthly_whenInvalidPeriod() throws StripeException {
+        void getDashboardData_shouldDefaultToMonthly_whenInvalidPeriod() {
                 // Given
                 String userId = "user-1";
                 String businessId = "biz-1";
@@ -919,7 +919,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldReturnAdvertiserDashboard_whenStripeAccountNotFound() throws StripeException {
+        void getDashboardData_shouldReturnAdvertiserDashboard_whenStripeAccountNotFound() {
                 // Given
                 String userId = "user-1";
                 String businessId = "nonexistent-business";
@@ -952,7 +952,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldCalculateZeroEarnings_whenNoPayments() throws StripeException {
+        void getDashboardData_shouldCalculateZeroEarnings_whenNoPayments() {
                 // Given
                 String userId = "user-1";
                 String businessId = "biz-1";
@@ -1081,7 +1081,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void syncPendingPayments_shouldUpdateStatus_whenSessionIsComplete() throws StripeException {
+        void syncPendingPayments_shouldUpdateStatus_whenSessionIsComplete() {
                 // Given
                 String businessId = "biz-1";
                 String userId = "user-1";
@@ -1151,7 +1151,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void syncPendingPayments_shouldUpdateStatus_whenSessionIsExpired() throws StripeException {
+        void syncPendingPayments_shouldUpdateStatus_whenSessionIsExpired() {
                 // Given
                 String businessId = "biz-1";
                 String userId = "user-1";
@@ -1210,7 +1210,7 @@ class StripeServiceUnitTest {
         }
 
         @Test
-        void getDashboardData_shouldCalculateTotalImpressionsCorrectly() throws Exception {
+        void getDashboardData_shouldCalculateTotalImpressionsCorrectly() {
                 String userId = "user-1";
                 String businessId = "biz-1";
                 String stripeAccountId = "acct_123";
@@ -1226,19 +1226,33 @@ class StripeServiceUnitTest {
                 account.setBusinessId(businessId);
                 account.setStripeAccountId(stripeAccountId);
 
-                // Reservation: 3 days overlap, dailyImpressions = 1000
+                // Reservation: 3 days overlap, dailyImpressions = 1000, CONFIRMED
                 Reservation reservation1 = new Reservation();
                 reservation1.setMediaId(UUID.randomUUID());
                 reservation1.setStartDate(LocalDateTime.now().minusDays(5));
                 reservation1.setEndDate(LocalDateTime.now().minusDays(2));
+                reservation1.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.CONFIRMED);
 
-                // Reservation: 2 days overlap, dailyImpressions = 500
+                // Reservation: 2 days overlap, dailyImpressions = 500, PENDING
                 Reservation reservation2 = new Reservation();
                 reservation2.setMediaId(UUID.randomUUID());
                 reservation2.setStartDate(LocalDateTime.now().minusDays(3));
                 reservation2.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation2.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.PENDING);
 
-                List<Reservation> reservations = List.of(reservation1, reservation2);
+                // Reservation: 2 days overlap, dailyImpressions = 200, DENIED
+                Reservation reservation3 = new Reservation();
+                reservation3.setMediaId(UUID.randomUUID());
+                reservation3.setStartDate(LocalDateTime.now().minusDays(3));
+                reservation3.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation3.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.DENIED);
+
+                // Reservation: 2 days overlap, dailyImpressions = 300, CANCELLED
+                Reservation reservation4 = new Reservation();
+                reservation4.setMediaId(UUID.randomUUID());
+                reservation4.setStartDate(LocalDateTime.now().minusDays(3));
+                reservation4.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation4.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.CANCELLED);
 
                 Media media1 = new Media();
                 media1.setId(reservation1.getMediaId());
@@ -1248,12 +1262,22 @@ class StripeServiceUnitTest {
                 media2.setId(reservation2.getMediaId());
                 media2.setDailyImpressions(500);
 
+                Media media3 = new Media();
+                media3.setId(reservation3.getMediaId());
+                media3.setDailyImpressions(200);
+
+                Media media4 = new Media();
+                media4.setId(reservation4.getMediaId());
+                media4.setDailyImpressions(300);
+
                 when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
                 doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(userId, businessId);
                 when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
+
+                // Only CONFIRMED reservation should be returned by the repository
                 when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(anyString(), any(), any()))
-                        .thenReturn(reservations);
-                when(mediaRepository.findAllById(any())).thenReturn(List.of(media1, media2));
+                        .thenReturn(List.of(reservation1));
+                when(mediaRepository.findAllById(any())).thenReturn(List.of(media1, media2, media3, media4));
                 when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(anyString(), any(), any()))
                         .thenReturn(Collections.emptyList());
 
@@ -1266,8 +1290,8 @@ class StripeServiceUnitTest {
 
                         Map<String, Object> dashboard = stripeService.getDashboardData(jwt, businessId, period);
 
-                        // 3 days * 1000 + 2 days * 500 = 3000 + 1000 = 4000
-                        assertEquals(4000L, dashboard.get("estimatedImpressions"));
+                        // Only CONFIRMED should be counted: 3 days * 1000 = 3000
+                        assertEquals(3000L, dashboard.get("estimatedImpressions"));
                 }
         }
 

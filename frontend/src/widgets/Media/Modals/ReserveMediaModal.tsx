@@ -195,13 +195,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                             }),
                             color: 'red'
                         });
-                    } else {
-                        notifications.show({
-                            title: t('errorTitle'),
-                            message: t('errors.reservationFailed'),
-                            color: 'red'
-                        });
                     }
+                } else {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('errors.reservationFailed'),
+                        color: 'red'
+                    });
                 }
             } finally {
                 setLoading(false);
