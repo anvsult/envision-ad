@@ -69,11 +69,11 @@ StripeService -> StripeService: calculatePriceFromDates(mediaPrice, startDate, e
 
 ' The call to createCheckoutSession is now detailed below
 StripeService -> StripeService: createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId)
-activate StripeService
-note left of StripeService #aqua
-  The following sequence details the logic
-  inside the 'createCheckoutSession' method.
-end note
+'activate StripeService
+'note left of StripeService #aqua
+'  The following sequence details the logic
+'  inside the 'createCheckoutSession' method.
+'end note
 
 StripeService -> PaymentIntentRepo: findByReservationId(reservationId)
 activate PaymentIntentRepo
@@ -125,7 +125,7 @@ deactivate DB
 PaymentIntentRepo --> StripeService: savedPaymentIntent
 deactivate PaymentIntentRepo
 
-deactivate StripeService
+'deactivate StripeService
 StripeService --> PaymentController: result: Map<String, String>
 note left
     The result map includes the session_id
