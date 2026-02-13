@@ -1,11 +1,12 @@
-.media-marker a{
+
+.media-marker > span {
     display: flex;
     align-items: center;
     justify-content: center;
-    text-decoration: none;
+    width: fit-content;
 }
 
-.media-marker span {
+.media-marker > span > a {
     background: var(--mantine-color-blue-6); /* Blue background */
     color: white;
     border: 1px solid white; 
@@ -20,7 +21,23 @@
     padding-bottom: 2px;
     padding-left: 10px;
     padding-right: 10px;
+    text-decoration: none;
     &:hover{
         transform: scale(1.08);
     }
+}
+
+.leaflet-popup-content{
+    margin: -1;
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    background-color: white;
+    border-radius: 24;
+    margin: 5;
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.leaflet-popup-tip-container {
+  display: none;
 }
