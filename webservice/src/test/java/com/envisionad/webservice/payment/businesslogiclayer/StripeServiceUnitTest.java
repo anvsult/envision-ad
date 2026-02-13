@@ -10,6 +10,7 @@ import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
@@ -1207,4 +1208,67 @@ class StripeServiceUnitTest {
                         verify(paymentIntentRepository).save(pendingPayment);
                 }
         }
+
+        @Test
+        void getDashboardData_shouldCalculateTotalImpressionsCorrectly() throws Exception {
+                String userId = "user-1";
+                String businessId = "biz-1";
+                String stripeAccountId = "acct_123";
+                String period = "monthly";
+
+                org.springframework.security.oauth2.jwt.Jwt jwt = org.springframework.security.oauth2.jwt.Jwt
+                        .withTokenValue("token")
+                        .header("alg", "none")
+                        .claim("sub", userId)
+                        .build();
+
+                StripeAccount account = new StripeAccount();
+                account.setBusinessId(businessId);
+                account.setStripeAccountId(stripeAccountId);
+
+                // Reservation: 3 days overlap, dailyImpressions = 1000
+                Reservation reservation1 = new Reservation();
+                reservation1.setMediaId(UUID.randomUUID());
+                reservation1.setStartDate(LocalDateTime.now().minusDays(5));
+                reservation1.setEndDate(LocalDateTime.now().minusDays(2));
+
+                // Reservation: 2 days overlap, dailyImpressions = 500
+                Reservation reservation2 = new Reservation();
+                reservation2.setMediaId(UUID.randomUUID());
+                reservation2.setStartDate(LocalDateTime.now().minusDays(3));
+                reservation2.setEndDate(LocalDateTime.now().minusDays(1));
+
+                List<Reservation> reservations = List.of(reservation1, reservation2);
+
+                Media media1 = new Media();
+                media1.setId(reservation1.getMediaId());
+                media1.setDailyImpressions(1000);
+
+                Media media2 = new Media();
+                media2.setId(reservation2.getMediaId());
+                media2.setDailyImpressions(500);
+
+                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(userId, businessId);
+                when(stripeAccountRepository.findByBusinessId(businessId)).thenReturn(Optional.of(account));
+                when(reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(anyString(), any(), any()))
+                        .thenReturn(reservations);
+                when(mediaRepository.findAllById(any())).thenReturn(List.of(media1, media2));
+                when(paymentIntentRepository.findSuccessfulPaymentsByBusinessIdAndDateRange(anyString(), any(), any()))
+                        .thenReturn(Collections.emptyList());
+
+                // Mock payouts
+                BalanceTransactionCollection mockPayouts = mock(BalanceTransactionCollection.class);
+                when(mockPayouts.getData()).thenReturn(new ArrayList<>());
+                try (MockedStatic<BalanceTransaction> balanceTransactionMock = mockStatic(BalanceTransaction.class)) {
+                        balanceTransactionMock.when(() -> BalanceTransaction.list(any(BalanceTransactionListParams.class), any(RequestOptions.class)))
+                                .thenReturn(mockPayouts);
+
+                        Map<String, Object> dashboard = stripeService.getDashboardData(jwt, businessId, period);
+
+                        // 3 days * 1000 + 2 days * 500 = 3000 + 1000 = 4000
+                        assertEquals(4000L, dashboard.get("estimatedImpressions"));
+                }
+        }
+
 }
