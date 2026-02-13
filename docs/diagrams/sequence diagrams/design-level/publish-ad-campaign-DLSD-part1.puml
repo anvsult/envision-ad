@@ -19,6 +19,16 @@ participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as Cam
 participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
 database "<<database>>\n:Database" as DB
 
+ref over Advertiser
+    <i>Advertiser creates an ad</i>
+    <i>campaign in his dashboard</i>
+    <i>(Create Ad Campaign Use Case)</i>
+end ref
+ref over Advertiser
+    <i>Advertiser browses media details</i>
+    <i>(Browse Media Use Case)</i>
+end ref
+
 Advertiser -> MediaDetailsPage: Initiate Reservation
 activate MediaDetailsPage
 

@@ -3,7 +3,7 @@ title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 2)
 
 actor "Media Owner" as MediaOwner
 ref over MediaOwner
-    <i>Media Owner reviews pending
+    <i>Media Owner reviews pending</i>
     <i>reservation and approves it</i>
     <i>(Manage Reservation Use Case)</i>
 end ref

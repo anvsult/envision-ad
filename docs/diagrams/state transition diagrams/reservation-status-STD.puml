@@ -1,0 +1,18 @@
+@startuml
+title <u>State Transition Diagram</u>\nReservation Status
+left to right direction
+
+[*] --> PENDING
+PENDING : Reservation is created and awaiting media owner approval
+APPROVED : Reservation has been approved by the media owner
+DENIED : Reservation has been denied by the media owner
+CONFIRMED : Reservation has been paid and is confirmed
+
+PENDING -> APPROVED : Manage Reservation Use Case /\nupdateReservationStatus("APPROVED")
+APPROVED -> CONFIRMED : Payment Completed (via Webhook) /\nupdateReservationStatus("CONFIRMED")
+PENDING -> DENIED : Manage Reservation Use Case /\nupdateReservationStatus("DENIED")
+
+CONFIRMED --> [*]
+DENIED --> [*]
+
+@enduml
