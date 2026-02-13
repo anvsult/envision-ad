@@ -3,8 +3,7 @@ import { NextResponse } from 'next/server';
 import { auth0 } from "@/shared/api/auth0/auth0";
 
 // Allowed keys for a standard upload to prevent signing unauthorized params
-const ALLOWED_CLOUDINARY_KEYS = ['timestamp', 'source', 'upload_preset', 'public_id', 'folder'];
-
+const ALLOWED_CLOUDINARY_KEYS = ['timestamp', 'source', 'upload_preset', 'public_id', 'folder', 'custom_coordinates'];
 export async function POST(request: Request) {
     // 1. Authorization Guard: Ensure the user is logged in
     const session = await auth0.getSession();

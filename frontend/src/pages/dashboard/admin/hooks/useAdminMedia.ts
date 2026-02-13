@@ -3,10 +3,8 @@
 import { getMediaById, updateMedia } from "@/features/media-management/api";
 import type { MediaRequestDTO, Media } from "@/entities/media";
 
-type AdminStatus = "ACTIVE" | "REJECTED";
-
 export function useAdminMedia() {
-    const setStatus = async (id: string, status: AdminStatus) => {
+    const setStatus = async (id: string) => {
         const m: Media = await getMediaById(id);
 
         // Prefer explicit mediaLocationId if DTO has it, fallback to mediaLocation.id
@@ -36,22 +34,16 @@ export function useAdminMedia() {
             dailyImpressions: m.dailyImpressions ?? 0,
 
             schedule: m.schedule,
-            status,
-            imageUrl: m.imageUrl ?? null,
-            previewConfiguration: m.previewConfiguration ?? (m.imageUrl ? JSON.stringify({
-                tl: { x: 0.1, y: 0.1 },
-                tr: { x: 0.9, y: 0.1 },
-                br: { x: 0.9, y: 0.9 },
-                bl: { x: 0.1, y: 0.9 },
-            }) : null),
-            businessId: m.businessId ?? null
+            imageUrl: m.imageUrl,
+            previewConfiguration: m.previewConfiguration,
         };
 
         return updateMedia(id, payload as MediaRequestDTO);
     };
 
-    const approveMedia = (id: string) => setStatus(id, "ACTIVE");
-    const denyMedia = (id: string) => setStatus(id, "REJECTED");
+    // This will be changed to use the patch endpoint once it's implemented, so we can just send the status instead of the whole media object
+    const approveMedia = (id: string) => setStatus(id);
+    const denyMedia = (id: string) => setStatus(id);
 
     return { approveMedia, denyMedia };
 }

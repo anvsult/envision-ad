@@ -2,6 +2,7 @@ package com.envisionad.webservice.media.PresentationLayer;
 
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
@@ -55,6 +56,9 @@ class MediaControllerIntegrationTest {
         private BusinessService businessService;
 
         @MockitoBean
+        private EmployeeRepository employeeRepository;
+
+        @MockitoBean
         private StripeAccountRepository stripeAccountRepository;
 
         @Autowired
@@ -87,8 +91,15 @@ class MediaControllerIntegrationTest {
                 businessResponseModel.setBusinessId(BUSINESS_ID);
                 when(businessService.getBusinessByUserId(any(), anyString())).thenReturn(businessResponseModel);
 
+                // Mock employee repository to validate user is employee of business
+                when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(
+                        "auth0|65702e81e9661e14ab3aac89",
+                        BUSINESS_ID
+                )).thenReturn(true);
+
                 com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
                 location.setName("Downtown Billboard A");
+                location.setBusinessId(UUID.fromString(BUSINESS_ID));
 
                 // Mock StripeAccountRepository to prevent StripeAccountNotOnboardedException
                 StripeAccount mockStripeAccount = mock(StripeAccount.class);
@@ -96,7 +107,6 @@ class MediaControllerIntegrationTest {
                 when(mockStripeAccount.isChargesEnabled()).thenReturn(true);
                 when(mockStripeAccount.isPayoutsEnabled()).thenReturn(true);
                 when(stripeAccountRepository.findByBusinessId(anyString())).thenReturn(Optional.of(mockStripeAccount));
-                location.setDescription("Large DIGITAL billboard");
                 location.setCountry("Canada");
                 location.setProvince("ON");
                 location.setCity("Toronto");
@@ -120,6 +130,7 @@ class MediaControllerIntegrationTest {
                 media.setPrice(new BigDecimal("150.00"));
                 media.setDailyImpressions(25000);
                 media.setStatus(Status.ACTIVE);
+                media.setBusinessId(UUID.fromString(BUSINESS_ID));
 
                 ScheduleModel schedule = new ScheduleModel();
                 WeeklyScheduleEntry entry = new WeeklyScheduleEntry();
@@ -248,6 +259,7 @@ class MediaControllerIntegrationTest {
 
                 Media updatedMedia = mediaRepository.findById(UUID.fromString(this.mediaId)).orElseThrow();
                 assertEquals("Updated Title", updatedMedia.getTitle());
+                assertEquals(UUID.fromString(BUSINESS_ID), updatedMedia.getBusinessId());
         }
 
         @Test

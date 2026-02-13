@@ -1,10 +1,11 @@
 import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
-import {useLocale, useTranslations} from "next-intl";
-import { getJoinedAddress, MediaLocation } from "@/entities/media";
+import { useLocale, useTranslations } from "next-intl";
+import { getJoinedAddress } from "@/entities/media";
 import { useEffect, useState } from "react";
 import { getOrganizationById } from "@/features/organization-management/api";
 import { useMediaQuery } from "@mantine/hooks";
+import {MediaLocation} from "@/entities/media-location";
 
 export interface MediaCardProps {
     index: string;
@@ -14,7 +15,7 @@ export interface MediaCardProps {
     mediaLocation?: MediaLocation;
     resolution: string;
     aspectRatio: string;
-    price: number ;
+    price: number;
     typeOfDisplay: string;
     imageUrl?: string | null;
     imageRatio?: number;
@@ -49,29 +50,29 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationId, me
     };
 
     useEffect(() => {
-        if (!organizationId){
-        return
+        if (!organizationId) {
+            return
         }
         const fetchOrganizationDetails = async (organizationId: string) => {
-        try {
+            try {
 
-            const response = await getOrganizationById(organizationId);
-            setOrganizationName(response.name);
-        } catch (e){
-            console.log(e)
-        }
+                const response = await getOrganizationById(organizationId);
+                setOrganizationName(response.name);
+            } catch (e) {
+                console.log(e)
+            }
         };
-        
+
         fetchOrganizationDetails(organizationId)
     }, [organizationId]);
 
-    
+
 
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never"
             style={{scrollMarginTop: "25vh"}}
         >
-            <Paper 
+            <Paper
                 shadow="sm"
                 radius="md"
                 className={styles.paper}

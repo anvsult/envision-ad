@@ -3,7 +3,7 @@ package com.envisionad.webservice.media.MapperLayer;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationResponseModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
-import org.springframework.data.domain.Page;
+
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -53,7 +53,6 @@ public class MediaResponseMapper {
         MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
         mediaLocationResponseModel.setId(media.getMediaLocation().getId());
         mediaLocationResponseModel.setName(media.getMediaLocation().getName());
-        mediaLocationResponseModel.setDescription(media.getMediaLocation().getDescription());
         mediaLocationResponseModel.setCountry(media.getMediaLocation().getCountry());
         mediaLocationResponseModel.setProvince(media.getMediaLocation().getProvince());
         mediaLocationResponseModel.setCity(media.getMediaLocation().getCity());

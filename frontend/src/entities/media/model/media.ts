@@ -1,4 +1,5 @@
 import { LatLngBounds, LatLngLiteral } from "leaflet";
+import {MediaLocation} from "@/entities/media-location";
 
 export interface Media {
     id?: string;
@@ -10,10 +11,10 @@ export interface Media {
     loopDuration: number | null;
     width: number | null;
     height: number | null;
-    price: number | null;
+    price: number;
     dailyImpressions: number | null;
     schedule: MonthlyScheduleModel;
-    status: string | null;
+    status: string | null; // The status should not be optional. We should probably remove the null option
     typeOfDisplay: string;
     imageUrl: string;
     previewConfiguration: string;
@@ -33,10 +34,8 @@ export interface MediaRequestDTO {
     price: number;
     dailyImpressions: number;
     schedule: MonthlyScheduleModel | null;
-    status: string;
     imageUrl: string | null;
-    previewConfiguration?: string | null;
-    businessId?: string | null;
+    previewConfiguration: string | null;
 }
 
 export interface MediaListResponseDTO {
@@ -50,20 +49,7 @@ export interface MediaListResponseDTO {
     empty: boolean;
 }
 
-export interface MediaLocation {
-    id: string | null;
-    name: string;
-    description: string;
-    country: string;
-    province: string;
-    street: string;
-    city: string;
-    postalCode: string;
-    latitude: number;
-    longitude: number;
-}
-
-export interface FilteredActiveMediaProps{
+export interface FilteredActiveMediaProps {
     title?: string | null,
     businessId?: string | null,
     minPrice?: number | null,
@@ -111,7 +97,7 @@ export const MediaAdStatusMap = {
 
 export type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
 
-export interface UseMediaListProps{
+export interface UseMediaListProps {
     filteredMediaProps: FilteredActiveMediaProps,
     loadingLocation?: boolean
     setMediaStatus?: React.Dispatch<React.SetStateAction<MediaStatus>>

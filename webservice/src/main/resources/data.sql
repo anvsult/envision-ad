@@ -23,8 +23,9 @@ INSERT INTO employee (employee_id, user_id, business_id, email)
 VALUES ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
        ('a7413e1c-1fca-4cc8-8bc5-6a673b9635d5', 'auth0|6979541a0aa6c868cf029d34', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'megadoxs@gmail.com'),
        ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
-       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com')
-ON CONFLICT (employee_id) DO NOTHING;
+       ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com'),
+       ('5bac8f38-4cc6-44d3-b355-7e4c6ccd24e1', 'auth0|6972cb215b943c997508c737', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com')
+    ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
 VALUES ('6bb9b68a-a072-4f28-aaa0-601087d03401', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'test@email.com', '1dd9f712-d3e8-4714-a1dd-08d95012b122', NOW(), NOW() + INTERVAL '1 hour')
@@ -36,31 +37,31 @@ VALUES ('636e63e2-a3c0-4171-ac90-bfad8aeb6613', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd3
        ('cf4dc890-d86c-48c4-9a8b-7705e0420da3', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
        ('ed2ecdbb-84e9-4625-8b06-3fb500d8d081', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'PENDING', null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-INSERT INTO media_location (media_location_id, name, description, country, province, city, street, postal_code, latitude, longitude)
+INSERT INTO media_location (media_location_id, name, country, province, city, street, postal_code, latitude, longitude, business_id)
 VALUES
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Champlain College', 'A college campus where many students and teachers congregate to learn.',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380001', 'Champlain College',
      'Canada', 'QC', 'Saint-Lambert', '900 Rue Riverside', 'J4P 3P2',
-     45.516476848520064, -73.52053208741675),
+     45.516476848520064, -73.52053208741675, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Entrepôt en Folie', 'Digital screen installed at the store’s main entrance, visible to all incoming customers. This placement delivers immediate brand exposure at the start of the shopping experience and benefits from consistent foot traffic.',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380004', 'Entrepôt en Folie',
      'Canada', 'QC', 'Longueuil', '2685 Ch. de Chambly', 'J4L 1M3',
-     45.524800, -73.465800),
+     45.524800, -73.465800, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Ping Mo', 'Screens positioned in entertainment venues or shopping centers with steady visitor flow. These environments offer broad reach and repeated visibility among a diverse audience in a dynamic and discovery-driven setting.',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380005', 'Ping Mo',
      'Canada', 'QC', 'Montreal', '3575 Av. du Parc', 'H2X 3P9',
-     45.510290, -73.575050),
+     45.510290, -73.575050, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007', 'Lola Salon', 'Digital screen installed inside a women-focused hair salon, where clients spend extended time seated during appointments. This environment offers high dwell time and sustained attention in a calm, personal setting, making it particularly effective for brands targeting a female audience, including beauty, wellness, lifestyle, and local services.',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380007', 'Lola Salon',
      'Canada', 'QC', 'Brossard', '4785 Grande Allée', 'J4Z 3G1',
-     45.481660, -73.454690),
+     45.481660, -73.454690, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009', 'Edmonton ICE', 'Large outdoor screen in entertainment district',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380009', 'Edmonton ICE',
      'Canada', 'AB', 'Edmonton', '10220 104 Ave NW', 'T5J 0H6',
-     53.546761, -113.497108),
+     53.546761, -113.497108, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
 
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010', 'Halifax Harbourfront Board', 'Waterfront display visible from pedestrian paths',
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380010', 'Halifax Harbourfront Board',
      'Canada', 'NS', 'Halifax', '150 Lower Water St', 'B3J 1R7',
-     44.646299, -63.573021);
+     44.646299, -63.573021, 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10');
 
 INSERT INTO media (
     media_location_id,
