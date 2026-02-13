@@ -942,7 +942,8 @@
       "selectDate": "Veuillez sélectionner une date de début et de fin valides",
       "missingPaymentInfo": "Informations de paiement requises manquantes",
       "reservationFailed": "Échec de la réservation. Veuillez réessayer plus tard.",
-      "paymentRequired": "Le paiement doit être complété en premier"
+      "paymentRequired": "Le paiement doit être complété en premier",
+      "reservationConflict": "Une réservation pour {campaignName} existe déjà durant cette période ({startDate} - {endDate}). Choisissez d'autres dates."
     },
     "errorTitle": "Erreur de réservation",
     "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",

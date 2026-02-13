@@ -942,7 +942,8 @@
       "selectDate": "Please select a valid start and end date",
       "missingPaymentInfo": "Missing required payment information",
       "reservationFailed": "Reservation failed. Please try again later.",
-      "paymentRequired": "Payment must be completed first"
+      "paymentRequired": "Payment must be completed first",
+      "reservationConflict": "A reservation for {campaignName} already exists during this period ({startDate} - {endDate}). Please choose different dates."
     },
     "errorTitle": "Error",
     "mediaIdMissing": "Media ID is missing",
