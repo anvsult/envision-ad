@@ -1,5 +1,5 @@
 @startuml
-title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 1)
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 2)
 
 actor "Media Owner" as MediaOwner
 ref over MediaOwner
@@ -18,6 +18,7 @@ participant "<<control>>\nstripeService\n:StripeService" as StripeService
 participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
 participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
 participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
+participant "<<repository>>\nstripeAccountRepository\n:StripeAccountRepository" as StripeAccountRepo
 participant "<<repository>>\npaymentIntentRepository\n:PaymentIntentRepository" as PaymentIntentRepo
 participant "<<external>>\nStripe API" as StripeAPI
 database "<<database>>\n:Database" as DB
@@ -46,8 +47,6 @@ CampaignRepo --> StripeService: campaign
 deactivate CampaignRepo
 
 ' Validate that the user owns the campaign
-'StripeService -> AdvertiserBusinessId: campaign.getBusinessId().campaign.getBusinessId()
-'activate AdvertiserBusinessId
 StripeService -> JwtUtils: validateUserIsEmployeeOfBusiness(jwt, advertiserBusinessId)
 note left
     Validating whether the advertiser's
@@ -65,21 +64,79 @@ DB --> MediaRepo: media
 deactivate DB
 MediaRepo --> StripeService: media
 deactivate MediaRepo
-' Calculate the total price for the reservation
 
 StripeService -> StripeService: calculatePriceFromDates(mediaPrice, startDate, endDate)
-StripeService -> StripeService: createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId)
 
+' The call to createCheckoutSession is now detailed below
+StripeService -> StripeService: createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId)
+activate StripeService
+note left of StripeService #aqua
+  The following sequence details the logic
+  inside the 'createCheckoutSession' method.
+end note
 
 StripeService -> PaymentIntentRepo: findByReservationId(reservationId)
 activate PaymentIntentRepo
-note right of PaymentIntentRepo: Check if a payment intent already exists for this reservation
-PaymentIntentRepo --> StripeService: existingPaymentIntent (nullable)
+note right: Check if a payment has already been made
+PaymentIntentRepo -> DB: SELECT * FROM payment_intents WHERE reservation_id = reservationId
+activate DB
+DB --> PaymentIntentRepo: existingPayment
+deactivate DB
+PaymentIntentRepo --> StripeService: existingPayment (Optional)
 deactivate PaymentIntentRepo
 
-StripeService --> PaymentController: result: Map<String, String>
-PaymentController --> PaymentModal: ResponseEntity.ok(result)
+'opt if payment has already succeeded
+'    StripeService -> StripeService: throw new DuplicatePaymentException()
+'end
 
+StripeService -> StripeAccountRepo: findByBusinessId(businessId)
+activate StripeAccountRepo
+note right: Find media owner's Stripe account
+StripeAccountRepo -> DB: SELECT * FROM stripe_accounts WHERE business_id = businessId
+activate DB
+DB --> StripeAccountRepo: stripeAccount
+deactivate DB
+StripeAccountRepo --> StripeService: stripeAccount
+deactivate StripeAccountRepo
+
+'opt if account not found or onboarding incomplete
+'    StripeService -> StripeService: throw new StripeAccountNotFoundException()
+'end
+
+note left of StripeService
+    - Convert amount to cents
+    - Calculate platform fee
+    - Create Idempotency Key
+end note
+
+StripeService -> StripeAPI: Session.create(SessionCreateParams)
+note right: Create checkout session with transfer data and platform fee
+activate StripeAPI
+StripeAPI --> StripeService: session
+deactivate StripeAPI
+
+StripeService -> PaymentIntentRepo: save(paymentIntent)
+note left: Create or update local payment record with PENDING status
+activate PaymentIntentRepo
+PaymentIntentRepo -> DB: INSERT/UPDATE payment_intent
+activate DB
+DB --> PaymentIntentRepo: void
+deactivate DB
+PaymentIntentRepo --> StripeService: savedPaymentIntent
+deactivate PaymentIntentRepo
+
+deactivate StripeService
+StripeService --> PaymentController: result: Map<String, String>
+note left
+    The result map includes the session_id
+    and the client_secret from the payment intent,
+    which is needed by the frontend to complete the payment.
+    This information is safe to share with the client.
+end note
+deactivate StripeService
+
+PaymentController --> PaymentModal: ResponseEntity.ok(result)
+deactivate PaymentController
 
 PaymentModal -> EmbeddedCheckoutProvider: EmbeddedCheckoutProvider(stripePromise, options)
 activate EmbeddedCheckoutProvider
@@ -90,9 +147,7 @@ note left
     form and handles the payment.
     Options argument includes the client
     secret from the payment intent
-    (safe to share with client)
-    and an onComplete callback
-    function
+    and an onComplete callback function
 end note
 
 EmbeddedCheckoutProvider -> EmbeddedCheckout: EmbeddedCheckout()
@@ -111,7 +166,7 @@ Advertiser -> EmbeddedCheckout: Enter Payment Details and submit
 
 EmbeddedCheckout -> StripeAPI: confirmPayment(clientSecret, paymentDetails)
 activate StripeAPI
-StripeAPI --> EmbeddedCheckout: PaymentIntent (status)
+StripeAPI --> EmbeddedCheckout: PaymentIntent
 deactivate StripeAPI
 
 EmbeddedCheckout --> PaymentModal: onComplete()

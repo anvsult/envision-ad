@@ -1,0 +1,127 @@
+@startuml
+title <u>Design Level Sequence Diagram</u>\nPayment Confirmation (Webhook)
+
+actor "<<external>>\nStripe API" as StripeAPI
+participant "<<control>>\nWebhookController\n:WebhookController" as WebhookController
+participant "<<utility>>\nWebhook\n(Stripe Lib)" as StripeWebhookUtil
+participant "<<control>>\nstripeWebhookService\n:StripeWebhookService" as StripeWebhookService
+participant "<<repository>>\npaymentIntentRepository\n:PaymentIntentRepository" as PaymentIntentRepo
+participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
+participant "<<control>>\nemailService\n:EmailService" as EmailService
+actor "<<external>>\nGmail SMTP System" as GmailAPI
+database "<<database>>\n:Database" as DB
+
+StripeAPI -> WebhookController: POST /api/v1/stripe/webhook\n(Event: checkout.session.completed)
+activate WebhookController
+note left
+    Stripe sends an asynchronous webhook
+    after a payment is successfully completed.
+end note
+
+WebhookController -> StripeWebhookUtil: constructEvent(payload, sigHeader, secret)
+activate StripeWebhookUtil
+note right: Verifies the event signature to ensure it's from Stripe
+StripeWebhookUtil --> WebhookController: event
+deactivate StripeWebhookUtil
+
+alt if event type is 'checkout.session.completed'
+    WebhookController -> StripeWebhookService: handleCheckoutSessionCompleted(event)
+    activate StripeWebhookService
+
+    StripeWebhookService -> EventDataObjectDeserializer: event.getDataObjectDeserializer()
+    activate EventDataObjectDeserializer
+    EventDataObjectDeserializer --> StripeWebhookService: dataObjectDeserializer
+
+
+
+
+    StripeWebhookService -> PaymentIntentRepo: findByStripeSessionId(session.getId())
+    activate PaymentIntentRepo
+    PaymentIntentRepo -> DB: SELECT * FROM payment_intents WHERE stripe_session_id = sessionId
+    activate DB
+    DB --> PaymentIntentRepo: paymentIntent
+    deactivate DB
+    PaymentIntentRepo --> StripeWebhookService: paymentIntent
+    deactivate PaymentIntentRepo
+
+    StripeWebhookService -> PaymentIntent: paymentOpt.get()
+    StripeWebhookService -> PaymentIntent: setStripePaymentIntentId(session.getPaymentIntent)
+    StripeWebhookService -> PaymentIntent: setStatus(PaymentStatus.SUCCEEDED)
+    StripeWebhookService -> PaymentIntent: setUpdatedAt(LocalDateTime.now())
+
+'    StripeWebhookService -> PaymentIntentRepo: save(payment)
+'    activate PaymentIntentRepo
+'    PaymentIntentRepo -> DB: UPDATE payment_intents SET stripe_payment_intent_id = ..., status = 'SUCCEEDED', updated_at = ... WHERE ...
+'    activate DB
+'    DB --> PaymentIntentRepo: savedPaymentIntent
+'    deactivate DB
+'    PaymentIntentRepo --> StripeWebhookService: savedPaymentIntent
+'    deactivate PaymentIntentRepo
+'
+'    StripeWebhookService -> StripeWebhookService: updateReservationStatus(reservationId, newStatus)
+'
+'    StripeWebhookService -> ReservationRepo: findByReservationId(reservationId)
+'    activate ReservationRepo
+'    ReservationRepo -> DB: SELECT * FROM reservations WHERE reservation_id = reservationId
+'    activate DB
+'    DB --> ReservationRepo: reservation
+'    deactivate DB
+'    ReservationRepo --> StripeWebhookService: reservationOpt
+'    deactivate ReservationRepo
+'
+'    StripeWebhookService -> Reservation: reservationOpt.get()
+'    activate Reservation
+'    StripeWebhookService -> Reservation: setStatus(newStatus))
+'
+
+    StripeWebhookService -> PaymentIntentRepo: save(paymentIntent.setStatus(SUCCEEDED))
+    note left: Update local payment record to SUCCEEDED
+    activate PaymentIntentRepo
+    PaymentIntentRepo -> DB: UPDATE payment_intents SET status = 'SUCCEEDED' WHERE ...
+    activate DB
+    DB --> PaymentIntentRepo: void
+    deactivate DB
+    PaymentIntentRepo --> StripeWebhookService: savedPaymentIntent
+    deactivate PaymentIntentRepo
+
+    StripeWebhookService -> ReservationRepo: findById(paymentIntent.getReservationId())
+    activate ReservationRepo
+    ReservationRepo -> DB: SELECT * FROM reservations WHERE reservation_id = reservationId
+    activate DB
+    DB --> ReservationRepo: reservation
+    deactivate DB
+    ReservationRepo --> StripeWebhookService: reservation
+    deactivate ReservationRepo
+
+    StripeWebhookService -> ReservationRepo: save(reservation.setStatus(CONFIRMED))
+    note left
+        This is the authoritative step
+        that confirms the reservation
+        on the backend.
+    end note
+    activate ReservationRepo
+    ReservationRepo -> DB: UPDATE reservations SET status = 'CONFIRMED' WHERE ...
+    activate DB
+    DB --> ReservationRepo: void
+    deactivate DB
+    ReservationRepo --> StripeWebhookService: savedReservation
+    deactivate ReservationRepo
+
+    StripeWebhookService -> EmailService: sendConfirmationEmail(savedReservation)
+    activate EmailService
+    note right: Notify Media Owner of confirmed booking
+    EmailService -> GmailAPI: SEND Email via SMTP
+    activate GmailAPI
+    GmailAPI --> EmailService: void
+    deactivate GmailAPI
+    EmailService --> StripeWebhookService: void
+    deactivate EmailService
+
+StripeWebhookService --> WebhookController: void
+deactivate StripeWebhookService
+end
+
+WebhookController --> StripeAPI: HTTP 200 OK
+deactivate WebhookController
+
+@enduml
