@@ -294,11 +294,8 @@ public class StripeServiceImpl implements StripeService {
         }
 
         // 2. SECURITY: Validate that the user owns this campaign
-        String userId = jwtUtils.extractUserId(jwt);
         String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, advertiserBusinessId);
-        log.info("User {} authorized to create payment for campaign {} (business: {})",
-                 userId, campaignId, advertiserBusinessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, advertiserBusinessId);
 
         // 3. Validate that the media exists
         UUID mediaUuid = UUID.fromString(mediaId);

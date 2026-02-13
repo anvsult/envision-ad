@@ -6,9 +6,6 @@ actor Advertiser
 actor "Media Owner" as MediaOwner
 participant "<<UI>>\nMedia Details Page" as MediaDetailsPage
 participant "<<UI>>\nReservationMediaModal" as ReservationModal
-' Name all objects
-' make the media entity used
-' Add state
 participant "<<control>>\nreservationController\n:ReservationController" as Controller
 participant "<<control>>\nreservationService\n:ReservationService" as Service
 participant "<<entity>>\nreservation\n:Reservation" as Reservation
@@ -37,7 +34,7 @@ activate Service
 
 Service -> Validator: validateReservation(requestModel, mediaId)
 activate Validator
-Validator --> Service
+Validator --> Service: void (throws exception if validation fails)
 deactivate Validator
 
 Service -> JwtUtils: extractUserId(jwt)
@@ -73,7 +70,7 @@ deactivate Campaign
 
 Service -> JwtUtils: validateUserIsEmployeeOfBusiness(userId, businessId)
 activate JwtUtils
-JwtUtils --> Service
+JwtUtils --> Service: void (throws exception if validation fails)
 deactivate JwtUtils
 
 Service -> Service: calculateTotalPrice(media, requestModel)

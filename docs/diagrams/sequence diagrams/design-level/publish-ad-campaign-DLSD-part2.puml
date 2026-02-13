@@ -9,12 +9,116 @@ ref over MediaOwner
 end ref
 actor Advertiser
 
-
+participant "<<UI>>\nAdvertisements Page" as AdvertisementsPage
+participant "<<UI>>\nPaymentModal" as PaymentModal
+participant "<<UI>>\nEmbeddedCheckoutProvider" as EmbeddedCheckoutProvider
+participant "<<UI>>\nEmbeddedCheckout" as EmbeddedCheckout
+participant "<<control>>\npaymentController\n:PaymentController" as PaymentController
+participant "<<control>>\nstripeService\n:StripeService" as StripeService
+participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
+participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
+participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
+participant "<<repository>>\npaymentIntentRepository\n:PaymentIntentRepository" as PaymentIntentRepo
+participant "<<external>>\nStripe API" as StripeAPI
+database "<<database>>\n:Database" as DB
 
 
 Advertiser -> AdvertisementsPage: Initiate Payment
 activate AdvertisementsPage
-AdvertisementsPage -> PaymentModal: PaymentModal()
 
+AdvertisementsPage -> PaymentModal: PaymentModal()
 activate PaymentModal
+
+PaymentModal -> PaymentController: POST /api/v1/payments/create-payment-intent\ncreatePaymentIntent(reservationId, mediaId, campaignId, startDate, endDate)
+activate PaymentController
+
+PaymentController -> StripeService: createAuthorizedCheckoutSession(jwt, campaignId, mediaId, reservationId, startDate, endDate)
+activate StripeService
+
+StripeService -> CampaignRepo: findByCampaignId_CampaignId(campaignId)
+activate CampaignRepo
+
+CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
+activate DB
+DB --> CampaignRepo: campaign
+deactivate DB
+CampaignRepo --> StripeService: campaign
+deactivate CampaignRepo
+
+' Validate that the user owns the campaign
+'StripeService -> AdvertiserBusinessId: campaign.getBusinessId().campaign.getBusinessId()
+'activate AdvertiserBusinessId
+StripeService -> JwtUtils: validateUserIsEmployeeOfBusiness(jwt, advertiserBusinessId)
+note left
+    Validating whether the advertiser's
+    organization owns the campaign
+end note
+activate JwtUtils
+JwtUtils --> StripeService: void (throws exception if validation fails)
+deactivate JwtUtils
+
+StripeService -> MediaRepo: findById(UUID.fromString(mediaId))
+activate MediaRepo
+MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaId
+activate DB
+DB --> MediaRepo: media
+deactivate DB
+MediaRepo --> StripeService: media
+deactivate MediaRepo
+' Calculate the total price for the reservation
+
+StripeService -> StripeService: calculatePriceFromDates(mediaPrice, startDate, endDate)
+StripeService -> StripeService: createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId)
+
+
+StripeService -> PaymentIntentRepo: findByReservationId(reservationId)
+activate PaymentIntentRepo
+note right of PaymentIntentRepo: Check if a payment intent already exists for this reservation
+PaymentIntentRepo --> StripeService: existingPaymentIntent (nullable)
+deactivate PaymentIntentRepo
+
+StripeService --> PaymentController: result: Map<String, String>
+PaymentController --> PaymentModal: ResponseEntity.ok(result)
+
+
+PaymentModal -> EmbeddedCheckoutProvider: EmbeddedCheckoutProvider(stripePromise, options)
+activate EmbeddedCheckoutProvider
+note left
+    The EmbeddedCheckoutProvider
+    is a UI component provided by
+    Stripe that renders the payment
+    form and handles the payment.
+    Options argument includes the client
+    secret from the payment intent
+    (safe to share with client)
+    and an onComplete callback
+    function
+end note
+
+EmbeddedCheckoutProvider -> EmbeddedCheckout: EmbeddedCheckout()
+activate EmbeddedCheckout
+note left
+    The EmbeddedCheckout component is
+    responsible the payment form and
+    handling user interactions.
+    It uses the Stripe.js library
+    to securely handle payment information
+    and communicate with Stripe's servers.
+end note
+
+
+Advertiser -> EmbeddedCheckout: Enter Payment Details and submit
+
+EmbeddedCheckout -> StripeAPI: confirmPayment(clientSecret, paymentDetails)
+activate StripeAPI
+StripeAPI --> EmbeddedCheckout: PaymentIntent (status)
+deactivate StripeAPI
+
+EmbeddedCheckout --> PaymentModal: onComplete()
+deactivate EmbeddedCheckout
+deactivate EmbeddedCheckoutProvider
+PaymentModal --> AdvertisementsPage: Payment Successful
+deactivate PaymentModal
+deactivate AdvertisementsPage
+
 @enduml
