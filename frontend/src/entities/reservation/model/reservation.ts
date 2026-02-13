@@ -7,8 +7,12 @@ export interface ReservationRequestDTO {
 export interface ReservationResponseDTO {
     reservationId: string;
     mediaId: string;
+    mediaTitle?: string;
+    mediaCity?: string;
     campaignId: string;
     campaignName?: string;
+    advertiserBusinessId?: string;
+    advertiserBusinessName?: string;
     status: ReservationStatus;
     totalPrice: number;
     startDate: string;

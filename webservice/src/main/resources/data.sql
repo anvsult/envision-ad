@@ -331,7 +331,8 @@ VALUES (
 INSERT INTO ad_campaigns (campaign_id, business_id, name)
 VALUES
     ('c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'Summer Sale 2025'),
-    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz');
+    ('a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Black Friday Blitz'),
+    ('f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'Spring Brand Awareness');
 
 -- 2. Insert Dummy Ads
 INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
@@ -339,6 +340,71 @@ VALUES
     ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
     ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
     ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
+
+-- 3. Insert visual-impact media reservations for dashboard metrics preview
+-- These are tied to media owned by Visual Impact business_id: b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10
+INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, advertiser_id, campaign_id, media_id)
+VALUES
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100001',
+        NOW() - INTERVAL '3 days',
+        NOW() + INTERVAL '5 days',
+        'CONFIRMED',
+        2400.00,
+        'auth0|6934e8515479d2b6d3cf7575',
+        'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+        (SELECT media_id FROM media WHERE title = 'Gym Hallway Digital Board' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100002',
+        NOW() - INTERVAL '2 days',
+        NOW() + INTERVAL '6 days',
+        'CONFIRMED',
+        1800.00,
+        'auth0|696a88eb347945897ef17093',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Entrepôt en Folie Main Entrance' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100003',
+        NOW() - INTERVAL '6 days',
+        NOW() + INTERVAL '2 days',
+        'CONFIRMED',
+        1200.00,
+        'auth0|6979541a0aa6c868cf029d34',
+        'f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c',
+        (SELECT media_id FROM media WHERE title = 'Ping Mo Store Entrance' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100004',
+        NOW() - INTERVAL '5 days',
+        NOW() + INTERVAL '1 day',
+        'CONFIRMED',
+        950.00,
+        'auth0|6934e8515479d2b6d3cf7575',
+        'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
+        (SELECT media_id FROM media WHERE title = 'Cafeteria Entrance' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100005',
+        NOW() - INTERVAL '18 days',
+        NOW() - INTERVAL '10 days',
+        'CONFIRMED',
+        1100.00,
+        'auth0|696a88eb347945897ef17093',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100006',
+        NOW() + INTERVAL '1 day',
+        NOW() + INTERVAL '9 days',
+        'PENDING',
+        1500.00,
+        'auth0|696a89137cfdb558ea4a4a4a',
+        'f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c',
+        (SELECT media_id FROM media WHERE title = 'Student Lounge 2' LIMIT 1)
+    );
 
 -- =========================== STRIPE DATA ===========================
 

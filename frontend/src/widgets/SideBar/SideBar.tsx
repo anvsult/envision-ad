@@ -19,8 +19,20 @@ export default function SideBar() {
     const { permissions } = usePermissions();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
+    const hasMediaOwnerAccess =
+        permissions.includes("create:media") || permissions.includes("update:reservation");
 
     const mediaOwnerNavItems = [
+        hasMediaOwnerAccess && (
+            <NavLink
+                key="metrics"
+                component={Link}
+                href="/dashboard/media-owner/metrics"
+                label={t("media-owner.metrics")}
+                leftSection={<IconChartDots size={20} stroke={1.5} />}
+                active={pathname?.includes("/media-owner/metrics")}
+            />
+        ),
         (permissions.includes('create:media')) && (
             <NavLink
                 key="media"

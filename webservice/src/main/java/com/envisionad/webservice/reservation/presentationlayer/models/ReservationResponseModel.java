@@ -9,8 +9,12 @@ import java.time.LocalDateTime;
 public class ReservationResponseModel {
     private String reservationId;
     private String mediaId;
+    private String mediaTitle;
+    private String mediaCity;
     private String campaignId;
     private String campaignName;
+    private String advertiserBusinessId;
+    private String advertiserBusinessName;
     private String status;
     private Double totalPrice;
     private LocalDateTime startDate;
