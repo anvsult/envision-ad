@@ -180,9 +180,9 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 setActiveStep(2);
             } catch (error) {
                 // Check for reservation conflict
-                if (error && typeof error == 'object' && 'response' in error) {
+                if (error && typeof error === 'object' && 'response' in error) {
                     const errorWithResponse = error as { response?: { status?: number } };
-                    if (errorWithResponse.response?.status == 409) {
+                    if (errorWithResponse.response?.status === 409) {
                         const selectedCampaign = campaigns?.find(c => c.campaignId === selectedCampaignId);
                         const campaignName = selectedCampaign?.name || t('Unknown Campaign');
 
