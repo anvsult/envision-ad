@@ -24,14 +24,11 @@ import {ReservationCards} from "@/shared/ui";
 
 export default function Reservation() {
     const t = useTranslations("adRequests");
-    const locale = useLocale();
     const { user } = useUser();
 
     const [reservations, setReservations] = useState<ReservationResponseDTO[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>("pending");
     const [loading, setLoading] = useState(true);
-
-    const baseRoute = `/${locale}/dashboard/media-owner/ad-requests`;
 
     useEffect(() => {
         if (!user) return;

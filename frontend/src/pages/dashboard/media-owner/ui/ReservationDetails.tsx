@@ -264,7 +264,7 @@ export default function AdRequestDetailPage() {
                 color: "green",
             });
 
-            router.push(`/${locale}/dashboard/media-owner/ad-requests`);
+            router.push(`/${locale}/dashboard/media-owner/advertisements`);
         } catch (e) {
             console.error(e);
             notifications.show({
@@ -299,7 +299,7 @@ export default function AdRequestDetailPage() {
                 color: "green",
             });
 
-            router.push(`/${locale}/dashboard/media-owner/ad-requests`);
+            router.push(`/${locale}/dashboard/media-owner/advertisements`);
         } catch (e) {
             console.error(e);
             notifications.show({
@@ -455,7 +455,6 @@ export default function AdRequestDetailPage() {
                                     </Text>
                                 </Group>
                                 <Text size="xs" c="dimmed">{t("detail.totalPrice")}</Text>
-
                                 {isPending && (
                                     <>
                                         <Divider w="100%" />
