@@ -122,8 +122,13 @@ public class ReservationServiceImpl implements ReservationService {
 //            throw new IllegalStateException("A business cannot reserve its own media");
 //        }
 
-        // 4. Validate media availability
-        validateMediaHasLoopDurationLeft(media, requestModel);
+        // 4. Validate non-conflicting reservation with same ad campaign, media and date range
+        boolean hasConflict = reservationRepository.existsByMediaIdAndCampaignIdAndDateRange(
+                media.getId(), requestModel.getCampaignId(), requestModel.getStartDate(), requestModel.getEndDate());
+
+        if (hasConflict) {
+            throw new ReservationConflictException();
+        }
 
         // 5. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
