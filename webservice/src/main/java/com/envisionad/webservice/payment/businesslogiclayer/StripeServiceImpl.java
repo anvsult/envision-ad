@@ -384,11 +384,6 @@ public class StripeServiceImpl implements StripeService {
         List<Reservation> reservations = reservationRepository.findConfirmedReservationsByAdvertiserIdAndDateRange(
                 businessId, startDate, endDate);
 
-        // Filter to only active reservations (CONFIRMED)
-        reservations = reservations.stream()
-                .filter(r -> r.getStatus() == com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.CONFIRMED)
-                .toList();
-
         // Batch fetch Media to avoid N+1 query
         Set<UUID> mediaIds = new HashSet<>();
         for (Reservation r : reservations) {
