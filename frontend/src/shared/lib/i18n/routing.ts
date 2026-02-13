@@ -46,6 +46,10 @@ export const routing = defineRouting({
       'en': '/dashboard/media-owner/advertisements',
       'fr': '/tableau-de-bord/media-owner/publicites'
     },
+    '/dashboard/media-owner/locations': {
+      'en': '/dashboard/media-owner/locations',
+      'fr': '/tableau-de-bord/media-owner/emplacements'
+    },
 
     //advertiser dashboard
     '/dashboard/advertiser/metrics': {

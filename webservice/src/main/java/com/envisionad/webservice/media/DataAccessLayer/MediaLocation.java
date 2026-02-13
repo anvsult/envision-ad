@@ -25,9 +25,6 @@ public class MediaLocation {
     private String name;
 
     @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
     private String country;
 
     @Column(nullable = false)
@@ -39,8 +36,7 @@ public class MediaLocation {
     @Column(nullable = false)
     private String street;
 
-    @Column(nullable = false,
-            name = "postal_code")
+    @Column(nullable = false, name = "postal_code")
     private String postalCode;
 
     @Column(nullable = false)
@@ -49,5 +45,12 @@ public class MediaLocation {
     @Column(nullable = false)
     private Double longitude;
 
-}
+    @Column(name = "business_id", nullable = false)
+    private UUID businessId;
 
+    @Column(name = "geocoding_response", columnDefinition = "TEXT")
+    private String geocodingResponse;
+
+    @OneToMany(mappedBy = "mediaLocation", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    private List<Media> mediaList = new ArrayList<>();
+}

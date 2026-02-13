@@ -60,7 +60,6 @@ class BusinessMediaControllerUnitTest {
         MediaLocationResponseModel mediaLocationResponseModel = new MediaLocationResponseModel();
         mediaLocationResponseModel.setId(mediaLocationId);
         mediaLocationResponseModel.setName("Test Location");
-        mediaLocationResponseModel.setDescription("Test Description");
         mediaLocationResponseModel.setCountry("Canada");
         mediaLocationResponseModel.setProvince("ON");
         mediaLocationResponseModel.setCity("Toronto");

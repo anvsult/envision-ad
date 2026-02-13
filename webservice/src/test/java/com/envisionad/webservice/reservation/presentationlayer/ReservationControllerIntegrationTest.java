@@ -126,7 +126,7 @@ class ReservationControllerIntegrationTest {
         com.envisionad.webservice.media.DataAccessLayer.MediaLocation location =
                 new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
         location.setName("Downtown Billboard A");
-        location.setDescription("Large DIGITAL billboard");
+        location.setBusinessId(UUID.fromString(businessId));
         location.setCountry("Canada");
         location.setProvince("ON");
         location.setCity("Toronto");
@@ -201,7 +201,6 @@ class ReservationControllerIntegrationTest {
 
         // Verify reservation was saved
         assertEquals(1, reservationRepository.count());
-
     }
 
     @Test
@@ -547,4 +546,3 @@ class ReservationControllerIntegrationTest {
                 .jsonPath("$.totalPrice").isEqualTo(150.00);
     }
 }
-

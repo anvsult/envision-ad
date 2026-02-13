@@ -25,10 +25,10 @@ export default function SideBar() {
             <NavLink
                 key="media"
                 component={Link}
-                href="/dashboard/media-owner/media"
+                href="/dashboard/media-owner/locations"
                 label={t("media-owner.media")}
                 leftSection={<IconDeviceTv size={20} stroke={1.5} />}
-                active={pathname?.endsWith("/media-owner/media")}
+                active={pathname?.includes("/media-owner/locations")}
             />
         ),
         (permissions.includes("create:media")) && (
@@ -65,14 +65,14 @@ export default function SideBar() {
             />
         ),
         (permissions.includes('read:campaign')) && (
-                <NavLink
-                    key="campaigns"
-                    component={Link}
-                    href="/dashboard/advertiser/campaigns"
-                    label={t("advertiser.myAds")}
-                    leftSection={<IconAd size={20} stroke={1.5} />}
-                    active={pathname?.endsWith("/advertiser/campaigns")}
-                />
+            <NavLink
+                key="campaigns"
+                component={Link}
+                href="/dashboard/advertiser/campaigns"
+                label={t("advertiser.myAds")}
+                leftSection={<IconAd size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/campaigns")}
+            />
         ),
         (permissions.includes('readAll:reservation')) && (
             <NavLink

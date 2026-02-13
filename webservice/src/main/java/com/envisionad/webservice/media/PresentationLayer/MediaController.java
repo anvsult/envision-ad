@@ -93,13 +93,10 @@ public class MediaController {
                 userLat,
                 userLng,
                 bounds,
-                excludedId
-                ).map(responseMapper::entityToResponseModel);
+                excludedId).map(responseMapper::entityToResponseModel);
 
         return ResponseEntity.ok(responsePage);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<MediaResponseModel> getMediaById(@PathVariable String id) {

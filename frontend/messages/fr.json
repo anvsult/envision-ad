@@ -1115,5 +1115,208 @@
     "checkingStatus": "Vérification de l'état du compte...",
     "errorTitle": "Erreur de connexion",
     "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
+  },
+  "mediaLocations": {
+    "page": {
+      "title": "Mes Médias",
+      "createButton": "Créer un emplacement"
+    },
+    "table": {
+      "noLocations": "Aucun emplacement trouvé. Créez-en un pour commencer !",
+      "addMedia": "Ajouter un média",
+      "assignMedia": "Attribuer un média",
+      "assignedMedia": "Médias attribués",
+      "mediaTitle": "Titre",
+      "mediaType": "Type",
+      "resolution": "Résolution",
+      "noAssignedMedia": "Aucun média attribué pour le moment.",
+      "edit": "Modifier"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Échec du chargement",
+        "message": "Impossible de charger les emplacements médias."
+      },
+      "create": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média créé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création de l'emplacement média.",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
+        }
+      },
+      "createMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le média a été créé et assigné à cet emplacement avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création du média."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média supprimé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la suppression de l'emplacement média.",
+          "activeMedia": "Impossible de supprimer cet emplacement car des médias actifs, en attente ou rejetés y sont attribués. Veuillez d'abord supprimer les médias."
+        }
+      },
+      "loadMedia": {
+        "error": {
+          "message": "Échec du chargement des détails du média."
+        }
+      },
+      "updateMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du média."
+        }
+      },
+      "deleteMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média supprimé avec succès."
+        },
+        "error": {
+          "message": "Échec de la suppression du média."
+        }
+      },
+      "statusMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le statut du média a été mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du statut du média."
+        }
+      },
+      "unassign": {
+        "success": {
+          "title": "Succès",
+          "message": "Média désassigné avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la désassignation du média de l'emplacement."
+        }
+      }
+    },
+    "modals": {
+      "edit": {
+        "title": "Modifier l'emplacement média",
+        "fields": {
+          "name": "Nom",
+          "street": "Rue",
+          "city": "Ville",
+          "province": "Province/État",
+          "country": "Pays",
+          "postalCode": "Code Postal",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        },
+        "placeholders": {
+          "name": "Ex. Panneaux Centre-ville",
+          "street": "123 Rue Principale",
+          "city": "Montréal",
+          "province": "QC",
+          "country": "Canada",
+          "postalCode": "H1A 1A1"
+        },
+        "validation": {
+          "name": "Le nom est trop court",
+          "latitude": "Latitude invalide",
+          "longitude": "Longitude invalide",
+          "nameRequired": "Le nom est requis",
+          "streetRequired": "La rue est requise",
+          "cityRequired": "La ville est requise",
+          "provinceRequired": "La province/l'état est requis(e)",
+          "countryRequired": "Le pays est requis",
+          "postalCodeRequired": "Le code postal est requis",
+          "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+          "cityInvalidServer": "Veuillez vérifier la ville.",
+          "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+          "countryInvalidServer": "Veuillez vérifier le pays.",
+          "postalCodeInvalidServer": "Veuillez vérifier le code postal."
+        },
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer"
+        },
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la mise à jour de l'emplacement",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
+        }
+      }
+    },
+    "confirmations": {
+      "delete": {
+        "title": "Supprimer l'emplacement",
+        "message": "Êtes-vous sûr de vouloir supprimer cet emplacement ?",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      },
+      "unassign": {
+        "title": "Désassigner le média",
+        "message": "Êtes-vous sûr de vouloir désassigner ce média ? Le média lui-même ne sera pas supprimé.",
+        "confirm": "Désassigner",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "CreateMediaLocationModal": {
+    "title": "Créer un emplacement média",
+    "validation": {
+      "nameTooShort": "Le nom est trop court",
+      "required": "Requis",
+      "nameRequired": "Le nom est requis",
+      "streetRequired": "La rue est requise",
+      "cityRequired": "La ville est requise",
+      "provinceRequired": "La province/l'état est requis(e)",
+      "countryRequired": "Le pays est requis",
+      "postalCodeRequired": "Le code postal est requis",
+      "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+      "cityInvalidServer": "Veuillez vérifier la ville.",
+      "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+      "countryInvalidServer": "Veuillez vérifier le pays.",
+      "postalCodeInvalidServer": "Veuillez vérifier le code postal."
+    },
+    "labels": {
+      "name": "Nom",
+      "street": "Rue",
+      "city": "Ville",
+      "province": "Province/État",
+      "country": "Pays",
+      "postalCode": "Code Postal",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "placeholders": {
+      "name": "Ex. Panneaux Centre-ville",
+      "street": "123 Rue Principale",
+      "city": "Montréal",
+      "province": "QC",
+      "country": "Canada",
+      "postalCode": "H1A 1A1"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "create": "Créer"
+    }
   }
 }
