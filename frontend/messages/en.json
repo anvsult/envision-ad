@@ -34,10 +34,8 @@
     "media-owner": {
       "overview": "Overview",
       "media": "Media",
-      "displayedAds": "Displayed ads",
       "adRequests": "Advertisements",
       "proof": "Submit Proof"
-      "locations": "My Locations"
     },
     "organizationTitle": "Organization",
     "organization": {
