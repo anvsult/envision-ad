@@ -889,7 +889,8 @@
         "image": "Image"
       },
       "noCampaigns": "No campaigns found. Add your first campaign to get started!",
-      "noAds": "No ads found in this campaign. Add your first ad to get started!"
+      "noAds": "No ads found in this campaign. Add your first ad to get started!",
+      "deleteCampaign": "Delete Campaign"
     },
     "notifications": {
       "loadFailed": {
@@ -916,6 +917,17 @@
           "message": "Failed to delete ad"
         }
       },
+      "deleteCampaign": {
+        "success": {
+          "title": "Deleted",
+          "message": "Campaign deleted"
+        },
+        "error": {
+          "title": "Error",
+          "tiedReservationMessage": "Failed to delete campaign because it still has upcoming or ongoing reservations. Please wait until all reservations for this campaign have ended before deleting.",
+          "genericMessage": "Failed to delete campaign"
+        }
+      },
       "createCampaign": {
         "success": {
           "title": "Success",
@@ -930,9 +942,15 @@
     "confirmations": {
       "deleteAd": {
         "title": "Delete Ad",
-        "message": "Are you sure you want to delete this ad? This action cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel"
+        "message": "Are you sure you want to delete this ad? This action cannot be undone."
+      },
+      "deleteCampaign": {
+        "title": "Delete Campaign",
+        "message": "Are you sure you want to delete this campaign? This action cannot be undone and all ads within this campaign will also be deleted."
+      },
+      "delete": {
+        "cancel": "Cancel",
+        "confirm": "Delete"
       }
     }
   },

@@ -7,10 +7,16 @@ import {useTranslations} from "next-intl";
 interface AdCampaignsTableProps {
     campaigns: AdCampaign[];
     onDeleteAd: (campaignId: string, adId: string) => void;
+    onDeleteAdCampaign: (campaignId: string) => void;
     onOpenAddAd: (campaignId: string) => void;
 }
 
-export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampaignsTableProps) {
+export function AdCampaignsTable({
+    campaigns,
+    onDeleteAd,
+    onDeleteAdCampaign,
+    onOpenAddAd
+}: AdCampaignsTableProps) {
     const t = useTranslations("adCampaigns.table");
     const getIcon = (type: string) => type === "VIDEO" ? <IconMovie size={16} /> : <IconPhoto size={16} />;
 
@@ -38,7 +44,7 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                         </Accordion.Control>
 
                         {/* 2. The Create Button (Rendered OUTSIDE the control) */}
-                        <Box pr="md"> 
+                        <Group gap="xs" pr="md">
                             <Button
                                 size="xs"
                                 variant="light"
@@ -47,7 +53,19 @@ export function AdCampaignsTable({ campaigns, onDeleteAd, onOpenAddAd }: AdCampa
                             >
                                 {t('newAd')}
                             </Button>
-                        </Box>
+                            <ActionIcon
+                                variant="subtle"
+                                color="red"
+                                aria-label={t('deleteCampaign')}
+                                title={t('deleteCampaign')}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeleteAdCampaign(campaign.campaignId);
+                                }}
+                            >
+                                <IconTrash size={16} />
+                            </ActionIcon>
+                        </Group>
                     </Flex>
 
                     <Accordion.Panel>

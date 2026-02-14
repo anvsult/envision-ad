@@ -51,21 +51,21 @@ export function MediaRow({
         <Avatar src={row.image} alt={row.name} size="md" radius="md" />
       </Table.Td>
       <Table.Td>
-        <Text fw={500} size="sm">
+        <Text miw={120} fw={500} size="sm">
           {row.name}
         </Text>
       </Table.Td>
-      <Table.Td>
-        <Text size="lg" fw={700} c="blue" ta="center">
+      <Table.Td ta="right">
+        <Text size="lg" fw={700} c="blue">
           {row.adsDisplayed}
         </Text>
       </Table.Td>
-      <Table.Td>
-        <Text size="lg" fw={700} c="orange" ta="center">
+      <Table.Td ta="right">
+        <Text size="lg" fw={700} c="orange">
           {row.pending}
         </Text>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Badge
           color={getStatusColor(row.status)}
           variant="light"
@@ -75,12 +75,12 @@ export function MediaRow({
           {t("status." + row.status.toLowerCase())}
         </Badge>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Text size="sm" c="dimmed">
           {row.timeUntil}
         </Text>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Text size="sm" fw={600} c="teal">
           {formatCurrency(parseFloat(row.price), { locale })}
         </Text>

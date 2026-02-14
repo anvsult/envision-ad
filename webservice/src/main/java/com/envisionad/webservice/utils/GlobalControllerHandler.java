@@ -1,9 +1,6 @@
 package com.envisionad.webservice.utils;
 
-import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
-import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
+import com.envisionad.webservice.advertisement.exceptions.*;
 import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.reservation.exceptions.ReservationAlreadyProcessedException;
 import org.springframework.http.HttpStatus;
@@ -146,7 +143,7 @@ public class GlobalControllerHandler {
     }
 
     @ResponseStatus(FORBIDDEN)
-    @ExceptionHandler({ SecurityException.class, AccessDeniedException.class })
+    @ExceptionHandler({SecurityException.class, AccessDeniedException.class})
     public HttpErrorInfo handleForbidden(Exception ex) {
         return createHttpErrorInfo(FORBIDDEN, ex);
     }
@@ -164,6 +161,25 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(INTERNAL_SERVER_ERROR, ex);
 
     }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(CampaignHasConfirmedReservationException.class)
+    public HttpErrorInfo handleCampaignHasConfirmedReservationException(CampaignHasConfirmedReservationException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(CampaignHasPendingReservationException.class)
+    public HttpErrorInfo handleCampaignHasPendingReservationException(CampaignHasPendingReservationException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(CampaignHasApprovedReservationException.class)
+    public HttpErrorInfo handleCampaignHasApprovedReservationException(CampaignHasApprovedReservationException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
+
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();

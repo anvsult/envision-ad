@@ -12,7 +12,7 @@ import {AdRequestDTO} from "@/entities/ad";
 import {AdCampaign, AdCampaignRequestDTO} from "@/entities/ad-campaign";
 import {
     addAdToCampaign,
-    createAdCampaign,
+    createAdCampaign, deleteAdCampaign,
     deleteAdFromCampaign,
     getAllAdCampaigns
 } from "@/features/ad-campaign-management/api";
@@ -38,8 +38,10 @@ export default function AdCampaigns() {
     const [isCreateCampaignOpen, setIsCreateCampaignOpen] = useState(false);
 
     // Confirmation Modal State
-    const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+    const [confirmDeleteAdOpen, setConfirmDeleteAdOpen] = useState(false);
+    const [confirmDeleteCampaignOpen, setConfirmDeleteCampaignOpen] = useState(false);
     const [adToDelete, setAdToDelete] = useState<{ campaignId: string; adId: string } | null>(null);
+    const [campaignIdToDelete, setCampaignIdToDelete] = useState<string | null>(null);
 
     // 1. Fetch Data - Single method to load campaigns
     const loadCampaigns = useCallback(async () => {
@@ -118,10 +120,15 @@ export default function AdCampaigns() {
 
     const handleDeleteAd = (campaignId: string, adId: string) => {
         setAdToDelete({campaignId, adId});
-        setConfirmDeleteOpen(true);
+        setConfirmDeleteAdOpen(true);
     };
 
-    const confirmDelete = async () => {
+    const handleDeleteAdCampaign = (campaignId: string) => {
+        setCampaignIdToDelete(campaignId);
+        setConfirmDeleteCampaignOpen(true);
+    }
+
+    const confirmDeleteAd = async () => {
         if (!adToDelete) return;
 
         try {
@@ -131,7 +138,9 @@ export default function AdCampaigns() {
                 message: t('notifications.deleteAd.success.message'),
                 color: 'green'
             });
-            loadCampaigns(); // Refresh list
+            await loadCampaigns(); // Refresh list
+            setConfirmDeleteAdOpen(false);
+            setAdToDelete(null);
         } catch (error) {
             console.error('Failed to delete ad', error);
             notifications.show({
@@ -139,11 +148,47 @@ export default function AdCampaigns() {
                 message: t('notifications.deleteAd.error.message'),
                 color: 'red'
             });
-        } finally {
-            setConfirmDeleteOpen(false);
-            setAdToDelete(null);
         }
     };
+
+    const confirmDeleteCampaign = async () => {
+        if (!campaignIdToDelete) return;
+        if (!businessId) return;
+
+        try {
+            await deleteAdCampaign(businessId, campaignIdToDelete);
+            notifications.show({
+                title: t('notifications.deleteCampaign.success.title'),
+                message: t('notifications.deleteCampaign.success.message'),
+                color: 'green'
+            });
+            await loadCampaigns(); // Refresh list
+            setConfirmDeleteCampaignOpen(false);
+            setCampaignIdToDelete(null);
+        } catch (error) {
+            console.error('Failed to delete campaign', error);
+
+            // Simple type narrowing
+            const err = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = err.response?.status;
+            const serverMessage = err.response?.data?.message;
+
+            let messageToShow: string;
+            if (status === 409) {
+                messageToShow = t('notifications.deleteCampaign.error.tiedReservationMessage');
+            } else if (serverMessage) {
+                messageToShow = serverMessage;
+            } else {
+                messageToShow = t('notifications.deleteCampaign.error.genericMessage');
+            }
+
+            notifications.show({
+                title: t('notifications.deleteCampaign.error.title'),
+                message: messageToShow,
+                color: 'red'
+            });
+        }
+    }
 
     // Create Campaign Handler
     const handleCreateCampaign = async (payload: AdCampaignRequestDTO) => {
@@ -182,6 +227,7 @@ export default function AdCampaigns() {
             <AdCampaignsTable
                 campaigns={campaigns}
                 onDeleteAd={handleDeleteAd}
+                onDeleteAdCampaign={handleDeleteAdCampaign}
                 onOpenAddAd={handleOpenAddAd}
             />
 
@@ -198,16 +244,25 @@ export default function AdCampaigns() {
             />
 
             <ConfirmationModal
-                opened={confirmDeleteOpen}
+                opened={confirmDeleteAdOpen}
                 title={t('confirmations.deleteAd.title')}
                 message={t('confirmations.deleteAd.message')}
-                confirmLabel={t('confirmations.deleteAd.confirm')}
-                cancelLabel={t('confirmations.deleteAd.cancel')}
+                confirmLabel={t('confirmations.delete.confirm')}
+                cancelLabel={t('confirmations.delete.cancel')}
                 confirmColor="red"
-                onConfirm={confirmDelete}
-                onCancel={() => setConfirmDeleteOpen(false)}
+                onConfirm={confirmDeleteAd}
+                onCancel={() => setConfirmDeleteAdOpen(false)}
             />
-
+            <ConfirmationModal
+                opened={confirmDeleteCampaignOpen}
+                title={t('confirmations.deleteCampaign.title')}
+                message={t('confirmations.deleteCampaign.message')}
+                confirmLabel={t('confirmations.delete.confirm')}
+                cancelLabel={t('confirmations.delete.cancel')}
+                confirmColor="red"
+                onConfirm={confirmDeleteCampaign}
+                onCancel={() => setConfirmDeleteCampaignOpen(false)}
+            />
         </Stack>
     );
 }
