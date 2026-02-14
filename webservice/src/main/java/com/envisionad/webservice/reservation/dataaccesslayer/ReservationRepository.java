@@ -51,4 +51,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                         @Param("advertiserId") String advertiserId,
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate);
+        boolean existsByCampaignIdAndStatus(
+                @Param("campaignId") String campaignId,
+                @Param("status") ReservationStatus status
+        );
 }

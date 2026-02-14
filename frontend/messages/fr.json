@@ -863,6 +863,16 @@
           "message": "Échec de la suppression de l’annonce"
         }
       },
+      "deleteCampaign": {
+        "success": {
+          "title": "Supprimée",
+          "message": "Campagne supprimée"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer."
+        }
+      },
       "createCampaign": {
         "success": {
           "title": "Succès",
@@ -877,9 +887,15 @@
     "confirmations": {
       "deleteAd": {
         "title": "Supprimer l’annonce",
-        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.",
-        "confirm": "Supprimer",
-        "cancel": "Annuler"
+        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible."
+      },
+      "deleteCampaign": {
+        "title": "Supprimer la campagne",
+        "message": "Êtes-vous sûr de vouloir supprimer cette campagne ? Cette action est irréversible et supprimera toutes les annonces associées à cette campagne."
+      },
+      "delete": {
+        "cancel": "Annuler",
+        "confirm": "Supprimer"
       }
     }
   },
