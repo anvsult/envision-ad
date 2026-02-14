@@ -2,8 +2,9 @@ export const ROUTE_PERMISSIONS: Record<string, string | undefined> = {
     '/profile': undefined,
     '/dashboard': undefined,
 
-    '/dashboard/media-owner/media': undefined,
-    '/dashboard/media-owner/locations': undefined,
+    '/dashboard/media-owner/media': 'read:media',
+    '/dashboard/media-owner/metrics': 'read:media',
+    '/dashboard/media-owner/locations': 'read:media',
     '/dashboard/media-owner/advertisements': 'update:reservation',
 
     '/dashboard/advertiser/metrics': 'read:campaign',

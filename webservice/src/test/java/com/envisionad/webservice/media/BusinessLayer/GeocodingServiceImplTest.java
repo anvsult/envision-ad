@@ -11,8 +11,12 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
-import java.util.concurrent.TimeoutException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Optional;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -153,5 +157,45 @@ class GeocodingServiceImplTest {
         GeocodingServiceUnavailableException exception = assertThrows(GeocodingServiceUnavailableException.class,
                 () -> geocodingService.geocodeAddress("Montreal, QC"));
         assertEquals("Address validation service is temporarily unavailable.", exception.getMessage());
+    }
+
+    @Test
+    void getCached_WhenEntryMissing_ReturnsNull() throws Exception {
+        Method getCached = GeocodingServiceImpl.class.getDeclaredMethod("getCached", String.class);
+        getCached.setAccessible(true);
+
+        Object result = getCached.invoke(geocodingService, "missing-key");
+
+        assertNull(result);
+    }
+
+    @Test
+    void getCached_WhenEntryExpired_RemovesEntryAndReturnsNull() throws Exception {
+        Field cacheField = GeocodingServiceImpl.class.getDeclaredField("geocodingCache");
+        cacheField.setAccessible(true);
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> cache = (Map<String, Object>) cacheField.get(geocodingService);
+
+        Class<?> cacheEntryClass = Class.forName(
+                "com.envisionad.webservice.media.BusinessLayer.GeocodingServiceImpl$CacheEntry"
+        );
+        Constructor<?> cacheEntryCtor = cacheEntryClass.getDeclaredConstructor(Optional.class, long.class);
+        cacheEntryCtor.setAccessible(true);
+        Object expiredEntry = cacheEntryCtor.newInstance(
+                Optional.of("{\"lat\":\"45.0\",\"lon\":\"-73.0\"}"),
+                System.currentTimeMillis() - 1
+        );
+
+        String cacheKey = "expired-key";
+        cache.put(cacheKey, expiredEntry);
+
+        Method getCached = GeocodingServiceImpl.class.getDeclaredMethod("getCached", String.class);
+        getCached.setAccessible(true);
+
+        Object result = getCached.invoke(geocodingService, cacheKey);
+
+        assertNull(result);
+        assertFalse(cache.containsKey(cacheKey));
     }
 }

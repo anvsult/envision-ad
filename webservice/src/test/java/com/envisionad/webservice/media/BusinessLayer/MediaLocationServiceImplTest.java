@@ -148,9 +148,7 @@ class MediaLocationServiceImplTest {
         when(geocodingService.geocodeAddress(anyString())).thenReturn(Optional.empty());
         when(geocodingService.geocodeAddress(eq("123 Main St, City, Province, 12345"))).thenReturn(Optional.of(geocodingJson));
 
-        MediaLocationValidationException exception = assertThrows(MediaLocationValidationException.class, () -> {
-            mediaLocationService.createMediaLocation(mediaLocation, jwt);
-        });
+        MediaLocationValidationException exception = assertThrows(MediaLocationValidationException.class, () -> mediaLocationService.createMediaLocation(mediaLocation, jwt));
         assertEquals("Address could not be verified. Please verify the country.",
                 exception.getMessage());
         assertTrue(exception.getFieldErrors().containsKey("country"));
@@ -713,5 +711,50 @@ class MediaLocationServiceImplTest {
 
         assertEquals(baseMessage, unchangedMessage);
         assertEquals("customField", unknown);
+    }
+
+    @Test
+    void collectAddressMismatches_WhenCountryAndStreetDiffer_ReturnsOnlyCountryAndStreetErrors() throws Exception {
+        Method collectMismatches = MediaLocationServiceImpl.class.getDeclaredMethod(
+                "collectAddressMismatches",
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                JsonNode.class
+        );
+        collectMismatches.setAccessible(true);
+
+        String geocodedAddressJson = """
+                {
+                  "country": "Canada",
+                  "country_code": "ca",
+                  "state": "Quebec",
+                  "city": "Montreal",
+                  "postcode": "H3Z1A4",
+                  "road": "Rue Sherbrooke Ouest",
+                  "house_number": "3040"
+                }
+                """;
+        JsonNode addressNode = new ObjectMapper().readTree(geocodedAddressJson);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> mismatches = (Map<String, String>) collectMismatches.invoke(
+                mediaLocationService,
+                "999 Unknown Road",
+                "Montreal",
+                "Quebec",
+                "United States",
+                "H3Z 1A4",
+                addressNode
+        );
+
+        assertEquals(2, mismatches.size());
+        assertTrue(mismatches.containsKey("country"));
+        assertTrue(mismatches.containsKey("street"));
+        assertFalse(mismatches.containsKey("province"));
+        assertFalse(mismatches.containsKey("city"));
+        assertFalse(mismatches.containsKey("postalCode"));
     }
 }

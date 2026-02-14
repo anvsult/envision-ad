@@ -1253,8 +1253,8 @@ class StripeServiceUnitTest {
                 // Reservation: 2 days overlap, dailyImpressions = 300, CANCELLED
                 Reservation reservation4 = new Reservation();
                 reservation4.setMediaId(UUID.randomUUID());
-                reservation4.setStartDate(LocalDateTime.now().minusDays(3));
-                reservation4.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation4.setStartDate(base.minusDays(3));
+                reservation4.setEndDate(base.minusDays(1));
                 reservation4.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.CANCELLED);
 
                 Media media1 = new Media();

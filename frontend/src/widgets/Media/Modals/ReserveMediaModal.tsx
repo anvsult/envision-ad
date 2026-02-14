@@ -31,6 +31,7 @@ import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {AdPreviewCarousel} from "@/widgets/Media/Modals/preview-step/AdPreviewCarousel";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -244,18 +245,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
     };
 
     /**
-     * Format currency for display
-     * @param amount - Amount in dollars
-     * @returns Formatted currency string (e.g., "123.45")
-     */
-    const formatCurrency = (amount: number): string => {
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: 'CAD',
-        }).format(amount);
-    };
-
-    /**
      * Reset all state when modal closes
      */
     const handleModalClose = () => {
@@ -397,7 +386,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                {formatCurrency(calculateTotalCost())}
+                                                {formatCurrency(calculateTotalCost(), { locale })}
                                             </Text>
                                         </Group>
                                     </Paper>

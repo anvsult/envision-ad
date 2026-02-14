@@ -4,6 +4,7 @@ import { Table, Badge, Avatar, Text } from "@mantine/core";
 import { useState } from "react";
 import {useLocale, useTranslations} from "next-intl";
 import { MediaActions } from "./MediaActions";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 export interface MediaRowData {
   id: string | number;
@@ -39,13 +40,6 @@ export function MediaRow({
     return statusColorMap[status] ?? "gray";
   }
   const locale = useLocale();
-
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'CAD',
-    }).format(amount);
-  };
 
   return (
     <Table.Tr
@@ -88,7 +82,7 @@ export function MediaRow({
       </Table.Td>
       <Table.Td>
         <Text size="sm" fw={600} c="teal">
-          {formatCurrency(parseFloat(row.price))}
+          {formatCurrency(parseFloat(row.price), { locale })}
         </Text>
       </Table.Td>
       {/* ACTIONS COLUMN */}
