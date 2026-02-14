@@ -400,23 +400,5 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    private void validateMediaHasLoopDurationLeft(Media media, ReservationRequestModel requestModel) {
-        List<AdCampaign> alreadyReservedCampaigns = reservationRepository.findAllActiveReservationsByMediaIdAndDateRange(
-                        media.getId(),
-                        requestModel.getStartDate(),
-                        requestModel.getEndDate()
-                ).stream()
-                .map(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()))
-                .toList();
-
-        int totalReservedDuration = alreadyReservedCampaigns.stream()
-                .flatMap(campaign -> campaign.getAds().stream())
-                .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
-                .sum();
-
-        if (media.getLoopDuration() <= totalReservedDuration) {
-            throw new InsufficientLoopDurationException();
-        }
-    }
 }
 

@@ -79,6 +79,7 @@ class ReservationControllerIntegrationTest {
 
         private String mediaId;
         private String campaignId;
+        private String campaignId2;
 
         @BeforeEach
         void setUp() {
@@ -172,6 +173,14 @@ class ReservationControllerIntegrationTest {
                 campaign.setName("Test Campaign");
                 adCampaignRepository.save(campaign);
                 this.campaignId = campaign.getCampaignId().getCampaignId();
+
+                // Create second Ad Campaign for conflict testing
+                AdCampaign campaign2 = new AdCampaign();
+                campaign2.setCampaignId(new AdCampaignIdentifier());
+                campaign2.setBusinessId(new BusinessIdentifier(businessId));
+                campaign2.setName("Test Campaign 2");
+                adCampaignRepository.save(campaign2);
+                this.campaignId2 = campaign2.getCampaignId().getCampaignId();
         }
 
         @Test
@@ -374,7 +383,7 @@ class ReservationControllerIntegrationTest {
 
                 // Attempt to create a conflicting reservation
                 ReservationRequestModel requestModel = new ReservationRequestModel();
-                requestModel.setCampaignId(this.campaignId);
+                requestModel.setCampaignId(this.campaignId2);
                 requestModel.setStartDate(LocalDateTime.now().plusDays(2)); // Overlaps with existing
                 requestModel.setEndDate(LocalDateTime.now().plusDays(9));
 
