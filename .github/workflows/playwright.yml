@@ -15,13 +15,6 @@ jobs:
       run:
         working-directory: frontend
 
-    env:
-      AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-      AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
-      AUTH0_SECRET: ${{ secrets.AUTH0_SECRET }}
-      AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
-      APP_BASE_URL: ${{ secrets.APP_BASE_URL }}
-
     steps:
       - uses: actions/checkout@v5
 
@@ -37,8 +30,12 @@ jobs:
       - name: Install Playwright Browsers & system deps
         run: npx playwright install --with-deps
 
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
       - name: Run Playwright tests
-        run: npx playwright test --reporter=github,html
+        run: |
+          doppler run --project envision-ad-backend --config dev -- \
+          npx playwright test --reporter=github,html
 
       - name: Upload Playwright report
         if: ${{ always() }}
