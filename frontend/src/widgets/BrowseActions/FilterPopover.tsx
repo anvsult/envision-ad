@@ -70,8 +70,8 @@ function FilterPopover({id, buttonName, applyActions, children}: FilterPopoverPr
   
     return(
         <Popover id={id} opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted >
-            <PopoverTarget>
-                <Button onClick={toggleOpen} variant="transparent" rightSection={<IconChevronDown/>}>{buttonName}</Button>
+            <PopoverTarget >
+                <Button onClick={toggleOpen} variant="white" rightSection={<IconChevronDown/>} size="xs">{buttonName}</Button>
             </PopoverTarget>
             <PopoverDropdown>
                 {children}
@@ -107,7 +107,7 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
 
     return(
         <FilterPopover id={id} buttonName={t('price')} applyActions={handleApply}>
-            <Group gap='lg'>
+            <Group gap='lg' >
                 <FilterNumberInput
                     label={t('from')}
                     prefix="$"

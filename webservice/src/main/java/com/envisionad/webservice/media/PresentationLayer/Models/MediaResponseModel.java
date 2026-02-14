@@ -27,6 +27,7 @@ public class MediaResponseModel {
     private Status status;
     private String imageUrl;
     private String businessId;
+    private String businessName;
     private String previewConfiguration;
 
 

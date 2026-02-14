@@ -1,10 +1,14 @@
 package com.envisionad.webservice.media.MapperLayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.UUID;
 
@@ -13,49 +17,46 @@ import static org.junit.jupiter.api.Assertions.*;
 class MediaResponseMapperTest {
 
     private MediaResponseMapper mapper;
+    private BusinessRepository businessRepository;
 
     @BeforeEach
     void setUp() {
-        mapper = new MediaResponseMapper();
+        businessRepository = Mockito.mock(BusinessRepository.class);
+        mapper = new MediaResponseMapper(businessRepository);
     }
 
     @Test
     void entityToResponseModel_WithBusinessId_ShouldMapBusinessId() {
-        // Arrange
         UUID businessId = UUID.randomUUID();
+
         Media media = new Media();
         media.setId(UUID.randomUUID());
         media.setBusinessId(businessId);
 
-        // Act
         MediaResponseModel response = mapper.entityToResponseModel(media);
 
-        // Assert
         assertNotNull(response);
         assertEquals(businessId.toString(), response.getBusinessId());
     }
 
     @Test
     void entityToResponseModel_WithImageUrl_ShouldMapImageUrl() {
-        // Arrange
         String imageUrl = "http://example.com/image.jpg";
+
         Media media = new Media();
         media.setImageUrl(imageUrl);
         media.setId(UUID.randomUUID());
 
-        // Act
         MediaResponseModel response = mapper.entityToResponseModel(media);
 
-        // Assert
         assertNotNull(response);
         assertEquals(imageUrl, response.getImageUrl());
     }
 
-
     @Test
     void entityToResponseModel_WithMediaLocation_ShouldMapLocation() {
-        // Arrange
         UUID locationId = UUID.randomUUID();
+
         MediaLocation location = new MediaLocation();
         location.setId(locationId);
         location.setName("Test Location");
@@ -64,10 +65,8 @@ class MediaResponseMapperTest {
         media.setId(UUID.randomUUID());
         media.setMediaLocation(location);
 
-        // Act
         MediaResponseModel response = mapper.entityToResponseModel(media);
 
-        // Assert
         assertNotNull(response);
         assertNotNull(response.getMediaLocation());
         assertEquals(locationId, response.getMediaLocation().getId());
@@ -76,30 +75,65 @@ class MediaResponseMapperTest {
 
     @Test
     void entityToResponseModel_WithPreviewConfiguration_ShouldMapPreviewConfiguration() {
-        // Arrange
         String previewConfig = "{\"corners\": []}";
+
         Media media = new Media();
         media.setPreviewConfiguration(previewConfig);
 
-        // Act
         MediaResponseModel response = mapper.entityToResponseModel(media);
 
-        // Assert
         assertNotNull(response);
         assertEquals(previewConfig, response.getPreviewConfiguration());
     }
 
     @Test
     void entityToResponseModel_WithNullPreviewConfiguration_ShouldMapNull() {
-        // Arrange
         Media media = new Media();
         media.setPreviewConfiguration(null);
 
-        // Act
         MediaResponseModel response = mapper.entityToResponseModel(media);
 
-        // Assert
         assertNotNull(response);
         assertNull(response.getPreviewConfiguration());
     }
+
+    @Test
+    void entityToResponseModel_WithBusinessId_ShouldMapBusinessName() {
+        UUID businessId = UUID.randomUUID();
+
+        Media media = new Media();
+        media.setId(UUID.randomUUID());
+        media.setBusinessId(businessId);
+
+        Business business = new Business();
+        business.setName("Test Business");
+
+        Mockito.when(
+                businessRepository.findByBusinessId_BusinessId(businessId.toString())
+        ).thenReturn(business);
+
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        assertNotNull(response);
+        assertEquals("Test Business", response.getBusinessName());
+    }
+
+    @Test
+    void entityToResponseModel_WithBusinessId_BusinessNotFound_ShouldSetEmptyBusinessName() {
+        UUID businessId = UUID.randomUUID();
+
+        Media media = new Media();
+        media.setId(UUID.randomUUID());
+        media.setBusinessId(businessId);
+
+        Mockito.when(
+                businessRepository.findByBusinessId_BusinessId(businessId.toString())
+        ).thenReturn(null);
+
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        assertNotNull(response);
+        assertEquals("", response.getBusinessName());
+    }
+
 }

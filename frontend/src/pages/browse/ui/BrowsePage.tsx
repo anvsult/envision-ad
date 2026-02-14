@@ -19,10 +19,10 @@ import MapView from '@/widgets/Map/MapView';
 import { useMediaQuery } from '@mantine/hooks';
 
 function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
-    const isMobile = useMediaQuery("(max-width: 575px)");
+    const isMobileVertical = useMediaQuery("(max-width: 575px)");
     return(
-            isMobile ? 
-            <Stack>{children}</Stack>:
+            isMobileVertical ? 
+            <Stack gap="xs">{children}</Stack>:
             <Group grow>{children}</Group>
     )
 }
@@ -30,6 +30,7 @@ function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
 function BrowsePage() {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobileVertical = useMediaQuery("(max-width: 575px)");
   const defaultPos = {lat: 45.516476848520064, lng: -73.52053208741675};
 
   const t = useTranslations('browse');
@@ -51,6 +52,8 @@ function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
+  
+
   const [sortBy, setSortBy] = useState<string>(SortOptions.priceAsc);
   
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
@@ -63,6 +66,7 @@ function BrowsePage() {
   const [map, setMap] = useState<Map|null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
   const [draftBbox, setDraftBbox] = useState<LatLngBounds | null>(null);
+  const isMobileMapVisible = useMemo(() => (mapVisible && isMobile), [isMobile, mapVisible]);
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -79,7 +83,26 @@ function BrowsePage() {
   const media = useMediaList({ 
     filteredMediaProps: filteredMediaProps, 
     loadingLocation: locationStatus === 'loading',
-    setMediaStatus});
+    setMediaStatus
+  });
+
+
+  function groupBy<T>(
+    array: T[],
+    key: (item: T) => string
+  ): Record<string, T[]> {
+    return array.reduce<Record<string, T[]>>((acc, item) => {
+      const k = key(item);
+      if (!acc[k]) acc[k] = [];
+      acc[k].push(item);
+      return acc;
+    }, {});
+  }
+
+  const groupedMedia = useMemo(() => {
+    const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");
+    return Object.values(groups);
+  }, [media]);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +150,8 @@ function BrowsePage() {
     resolveLocation();
     return () => { cancelled = true };
   }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
+
+
 
   useEffect(() => {
     if (addressSearch) {
@@ -190,7 +215,7 @@ function BrowsePage() {
   function filters(){
     return(
       <>
-        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
       </>
     )
@@ -198,11 +223,12 @@ function BrowsePage() {
 
 
   return (
-      <Container size={map ? 1600 : "xl"} w="100%" py={20} >
+      <Container size={map ? 1600 : "xl"} w="100%" pt={isMobile ? 0 : 20} pb={isMobileMapVisible ? 0 : 20} px={isMobileMapVisible ? 0: "xs"}>
         <Group grow h="100%" top="0" justify='flex-start'>
-          <Stack gap="sm" mih="95vh" top="0" justify='flex-start'>
+          <Stack gap="xs" mih={isMobile ? "85vh": "95vh"} top="0" justify='flex-start' align={isMobileMapVisible ? 'end': 'center'}>
+            <Stack pt={isMobile ? 10 : 0} gap={0} align='flex-end' px={isMobileMapVisible ? "xs" : "0"} w={"100%"} pl={isMobileMapVisible ? "55px" : 0}>
               <SearchMobileViewer>
-                <Autocomplete
+                <Autocomplete 
                   placeholder={t('searchAddress')}
                   id='AddressSearch'
                   data={locationOptions.map((o) => o)}
@@ -219,6 +245,7 @@ function BrowsePage() {
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
+                  style={{zIndex: 1}}
                 />
                 <TextInput
                   placeholder={t('searchTitle')}
@@ -235,53 +262,57 @@ function BrowsePage() {
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
+                  style={{zIndex: 1}}
                 />
                 
               </SearchMobileViewer>
-              <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
-              
-              {(isMobile && mapVisible) && 
-                <Container style={{position: "relative",  width: "100%"}} p="0">
-                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
-                </Container>
-              }
+            </Stack>
+              <Group grow w="100%" px={(isMobileMapVisible && !isMobileVertical)?10: 0}>
 
-            {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
-              <Stack h="20em" justify="center" align="center">
-                <Loader />
-              </Stack>
-            ) : locationStatus === 'denied' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text>{t('nomedia.locationDenied')}</Text>
-              </Stack>
-            ) : mediaStatus === 'error' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text>{t('nomedia.failedToLoad')}</Text>
-              </Stack>
-            ) : mediaStatus === 'empty' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text size="32px">{t('nomedia.notfound')}</Text>
-                <Text>{t('nomedia.changefilters')}</Text>
-              </Stack>
-            ) : (
-              <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
-            )}
-            {totalPages > 1 && (
-              <Group justify="center" mt="md">
-                <Pagination
-                  total={totalPages}
-                  value={activePage}
-                  onChange={setActivePage}
-                  size="md"
-                />
+                <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy} isMobileVertical={isMobileVertical} isMobile={isMobile} mapVisible={mapVisible}/>
               </Group>
-            )}
-          </Stack>
-
-        {(!isMobile && mapVisible) && 
-          <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
-          </Container>
+              {isMobileMapVisible ? 
+                <Container style={{position: "absolute",  width: "100%", height: "85vh"}} p="0">
+                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile} isMobileVertical={isMobileVertical}/>
+                </Container> 
+                :
+                (locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest)) ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Loader />
+                  </Stack>
+                ) : locationStatus === 'denied' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text>{t('nomedia.locationDenied')}</Text>
+                  </Stack>
+                ) : mediaStatus === 'error' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text>{t('nomedia.failedToLoad')}</Text>
+                  </Stack>
+                ) : mediaStatus === 'empty' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text size="32px">{t('nomedia.notfound')}</Text>
+                    <Text>{t('nomedia.changefilters')}</Text>
+                  </Stack>
+                ) : (
+                  <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
+                )}
+                {totalPages > 1 && (
+                  <Group justify="center" mt="md">
+                    <Pagination
+                      total={totalPages}
+                      value={activePage}
+                      onChange={setActivePage}
+                      size="md"
+                    />
+                  </Group>
+                )
+                }
+              </Stack>
+                
+            {(!isMobile && mapVisible) && 
+              <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+                <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap}/>
+              </Container>
         }
         
         </Group>
