@@ -72,7 +72,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardOrganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
                                 {organizationName}
                             </Text>
-                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1}>
+                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>
                                 {t('perWeek', { price: formatCurrency(price, { locale }) })}
                             </Text>
                             
