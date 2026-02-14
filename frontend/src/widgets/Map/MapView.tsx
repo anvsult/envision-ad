@@ -46,56 +46,57 @@ function MediaMarker({media, isMobileVertical, open, setMediaList, setAddressNam
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
     html: `<a id='MediaMarker${location?.businessId}'><span>${iconHtml}${mediaCount}</span></a>`,
+    iconSize: [60, 24]
   });
 
   useEffect(() => {
-  const marker = markerRef.current;
-  if (!marker) return;
+    const marker = markerRef.current;
+    if (!marker) return;
 
-  const handleClick = () => {
-    if (isMobileVertical) {
-      setMediaList(media);
-      setAddressName(address);
-      open();
-    }
-  };
-
-  const handlePopupOpen = () => {
-    if (!isMobileVertical) {
-      const popup = popupRef.current;
-      if (!popup) return;
-
-      requestAnimationFrame(() => {
-        const popupEl = popup.getElement();
-        const markerEl = marker.getElement();
-        if (!popupEl || !markerEl) return;
-
-        const markerRect = markerEl.getBoundingClientRect();
-        const popupRect = popupEl.getBoundingClientRect();
-        const mapRect = map.getContainer().getBoundingClientRect();
-
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (markerRect.top < mapRect.top + mapRect.height / 2) {
-          offsetY = popupRect.height + markerRect.height + 10;
-        }
-
-        if (popupRect.right > mapRect.right) {
-          offsetX = mapRect.right - popupRect.right - 10;
-        }
-        if (popupRect.left < mapRect.left) {
-          offsetX = mapRect.left - popupRect.left + 10;
-        }
-        if (popupRect.top + offsetY < mapRect.top) {
-          offsetY = mapRect.top - popupRect.top + 10;
-        }
-
-        popup.options.offset = L.point(offsetX, offsetY);
-        popup.update();
-        });
+    const handleClick = () => {
+      if (isMobileVertical) {
+        setMediaList(media);
+        setAddressName(address);
+        open();
       }
     };
+
+    const handlePopupOpen = () => {
+      if (!isMobileVertical) {
+        const popup = popupRef.current;
+        if (!popup) return;
+
+        requestAnimationFrame(() => {
+          const popupEl = popup.getElement();
+          const markerEl = marker.getElement();
+          if (!popupEl || !markerEl) return;
+
+          const markerRect = markerEl.getBoundingClientRect();
+          const popupRect = popupEl.getBoundingClientRect();
+          const mapRect = map.getContainer().getBoundingClientRect();
+
+          let offsetX = 0;
+          let offsetY = 0;
+
+          if (markerRect.top < mapRect.top + mapRect.height / 2) {
+            offsetY = popupRect.height + markerRect.height * 2 ;
+          }
+
+          if (popupRect.right > mapRect.right) {
+            offsetX = mapRect.right - popupRect.right - 10;
+          }
+          if (popupRect.left < mapRect.left) {
+            offsetX = mapRect.left - popupRect.left + 10;
+          }
+          if (popupRect.top + offsetY < mapRect.top) {
+            offsetY = mapRect.top - popupRect.top + 10;
+          }
+
+          popup.options.offset = L.point(offsetX, offsetY);
+          popup.update();
+          });
+        }
+      };
 
     marker.on("click", handleClick);
     marker.on("popupopen", handlePopupOpen);
@@ -115,7 +116,7 @@ function MediaMarker({media, isMobileVertical, open, setMediaList, setAddressNam
       {
         !isMobileVertical &&
         <Popup ref={popupRef} minWidth={250} maxWidth={250} autoPan={false}>
-          <MediaCardCarousel medias={media} slideSize={"100%"} imageRatio={4/3}/>
+          <MediaCardCarousel medias={media} slideSize={"100%"}/>
         </Popup>
       }
     </Marker> 
@@ -166,7 +167,6 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
                         index={m.index}
                         href={m.href}
                         imageUrl={m.imageUrl}
-                        imageRatio={1}
                         title={m.title}
                         organizationId={m.organizationId}
                         organizationName={m.organizationName}
