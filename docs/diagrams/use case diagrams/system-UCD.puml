@@ -1,0 +1,119 @@
+@startuml
+
+title <u>Use Case Diagram -- System</u>
+
+left to right direction
+
+skinparam rectangle {
+    Padding 40
+    Margin 40
+}
+
+actor Advertiser as ADV
+actor "Media Owner" as MO
+actor "Organization Owner" as OW
+actor Admin as ADM
+actor "Guest User" as GU
+
+
+
+' --- Hourglass actor for temporal use cases ---
+'hide stereotypes
+'rectangle "<img:https://cdn-icons-png.flaticon.com/512/3889/3889548.png{scale=0.12}>" as HG <<Temporal>>
+'skinparam rectangle<<Temporal>> {
+'    BorderColor white
+'    BackgroundColor white
+'}
+
+
+rectangle "Envision Ad" {
+'    --------- Guest User Use Cases ---------
+    usecase "UC- Browse Media Inventory" as Browse
+    usecase "UC- View Media Listing Details" as ViewMediaDetails
+
+'    --------- Advertiser Use Cases ---------
+    usecase "UC- Create Reservation" as CreateReservation
+    usecase "UC- Pay for Reservation" as Pay
+    usecase "UC- Manage Ad Campaigns" as ManageAdCampaigns
+    'Not sure about this one
+    usecase "UC- Create Ad Campaign" as CreateAdCampaign
+
+'    --------- Media Owner Use Cases ---------
+    usecase "UC- Manage Media Listing" as ManageListing
+    usecase "UC- Submit Proof of Display" as SubmitProof
+    usecase "UC- Review Reservation" as ReviewReservation
+    usecase "UC- Approve Reservation" as ApproveReservation
+    usecase "UC- Deny Reservation" as DenyReservation
+
+'    --------- Organization Owner Use Cases ---------
+    usecase "UC- Request Organization Verification" as RequestOrgVerification
+    usecase "UC- Manage Employees" as ManageEmployees
+    usecase "UC- Edit Organization Details" as EditOrgDetails
+
+'    --------- Admin Use Cases ---------
+    usecase "UC- Review Organization" as ReviewOrg
+    usecase "UC- Approve Organization" as ApproveOrg
+    usecase "UC- Deny Organization" as DenyOrg
+    usecase "UC- Ban User" as BanUser
+
+'   ---------- Temporal Use Cases ---------
+'    usecase "UC_ Send Email Reminder" as SendEmailReminder
+
+' ==============================================================================
+
+'    --------- Guest User Relationships ---------
+    GU -- Browse
+    GU --- ViewMediaDetails
+
+    note bottom of GU
+        All Guest User Use Cases are
+        inherited to all other users.
+        Detailed in the Actor Inheritance diagram.
+    end note
+
+'    --------- Advertiser Relationships ---------
+'    ADV -- Browse
+'    ADV -- ViewMediaDetails
+    ADV -- CreateReservation
+    ADV -- ManageAdCampaigns
+    ADV -- Pay
+    ADV -- CreateAdCampaign
+
+'    --------- Media Owner Relationships ---------
+'    MO -- Browse
+'    MO -- ViewMediaDetails
+    MO -- ManageListing
+    MO -- SubmitProof
+    MO -- ReviewReservation
+
+'    --------- Organization Owner Relationships
+    OW - RequestOrgVerification
+    OW -- ManageEmployees
+    OW -- EditOrgDetails
+
+'    --------- Admin Relationships ---------
+    ADM - ReviewOrg
+    ADM -- BanUser
+
+''    --------- Temporal Use Case Relationships ---------
+''    HG -- SendEmailReminder
+
+' ==============================================================================
+    Pay ..> CreateReservation : <<includes>>
+    CreateAdCampaign <-- CreateReservation : <<includes>>
+    ViewMediaDetails <-- CreateReservation : <<extends>>
+
+    Browse <-- ViewMediaDetails : <<extends>>
+    ReviewOrg ..> RequestOrgVerification : <<includes>>
+
+'    ReviewReservation <- ApproveReservation : <<extends>>
+'    DenyReservation -> ReviewReservation : <<extends>>
+    ReviewReservation <-- ApproveReservation : <<extends>>
+    ReviewReservation <-- DenyReservation : <<extends>>
+
+    ReviewOrg <-- ApproveOrg : <<extends>>
+    ReviewOrg <-- DenyOrg : <<extends>>
+
+}
+
+@enduml
