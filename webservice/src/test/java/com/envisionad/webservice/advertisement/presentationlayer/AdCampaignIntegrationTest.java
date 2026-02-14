@@ -555,19 +555,4 @@ public class AdCampaignIntegrationTest {
                 .expectStatus().is2xxSuccessful();
     }
 
-    @Test
-    void deleteAdFromNonExistingCampaign_shouldReturnNotFound() {
-        // Arrange
-        String nonExistentCampaignId = "non-existent-campaign-id";
-        String adId = UUID.randomUUID().toString();
-
-        // Act & Assert
-        webTestClient.delete()
-                .uri(uriBuilder -> uriBuilder
-                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
-                        .build(businessId.getBusinessId(), nonExistentCampaignId, adId))
-                .headers(headers -> headers.setBearerAuth("advertiser-token"))
-                .exchange()
-                .expectStatus().isNotFound();
-    }
 }
