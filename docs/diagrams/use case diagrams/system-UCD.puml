@@ -9,6 +9,11 @@ skinparam rectangle {
     Margin 40
 }
 
+rectangle "<img:https://cdn-icons-png.flaticon.com/512/3889/3889548.png{scale=0.12}>" as HG <<Temporal>>
+skinparam rectangle<<Temporal>> {
+    BorderColor white
+    BackgroundColor white
+}
 actor Advertiser as ADV
 actor "Media Owner" as MO
 actor "Organization Owner" as OW
@@ -16,14 +21,7 @@ actor Admin as ADM
 actor "Guest User" as GU
 
 
-
 ' --- Hourglass actor for temporal use cases ---
-'hide stereotypes
-'rectangle "<img:https://cdn-icons-png.flaticon.com/512/3889/3889548.png{scale=0.12}>" as HG <<Temporal>>
-'skinparam rectangle<<Temporal>> {
-'    BorderColor white
-'    BackgroundColor white
-'}
 
 
 rectangle "Envision Ad" {
@@ -34,7 +32,9 @@ rectangle "Envision Ad" {
 '    --------- Advertiser Use Cases ---------
     usecase "UC- Create Reservation" as CreateReservation
     usecase "UC- Pay for Reservation" as Pay
+    usecase "UC- View Reservations" as ViewReservations
     usecase "UC- Manage Ad Campaigns" as ManageAdCampaigns
+    usecase "UC- View Payment History" as ViewPaymentHistory
     'Not sure about this one
     usecase "UC- Create Ad Campaign" as CreateAdCampaign
 
@@ -57,7 +57,13 @@ rectangle "Envision Ad" {
     usecase "UC- Ban User" as BanUser
 
 '   ---------- Temporal Use Cases ---------
-'    usecase "UC_ Send Email Reminder" as SendEmailReminder
+    usecase "UC_ Send Proof Reminder" as SendEmailReminder
+
+    note right of SendEmailReminder
+        This use case is triggered by a scheduled job that runs daily.
+        It checks for reservations with upcoming proof of display deadlines
+        and sends reminder emails to the respective media owners.
+    end note
 
 ' ==============================================================================
 
@@ -72,16 +78,22 @@ rectangle "Envision Ad" {
     end note
 
 '    --------- Advertiser Relationships ---------
-'    ADV -- Browse
-'    ADV -- ViewMediaDetails
+    note right of ViewReservations
+        Advertisers can view their
+        PENDING, APPROVED,
+        CONFIRMED, and DENIED
+        reservations
+    end note
+
     ADV -- CreateReservation
     ADV -- ManageAdCampaigns
     ADV -- Pay
     ADV -- CreateAdCampaign
+    ADV -- ViewReservations
+    ADV -- ViewPaymentHistory
+
 
 '    --------- Media Owner Relationships ---------
-'    MO -- Browse
-'    MO -- ViewMediaDetails
     MO -- ManageListing
     MO -- SubmitProof
     MO -- ReviewReservation
@@ -95,16 +107,19 @@ rectangle "Envision Ad" {
     ADM - ReviewOrg
     ADM -- BanUser
 
-''    --------- Temporal Use Case Relationships ---------
-''    HG -- SendEmailReminder
+'    --------- Temporal Use Case Relationships ---------
+    HG -- SendEmailReminder
 
 ' ==============================================================================
     Pay ..> CreateReservation : <<includes>>
+    ViewReservations <-- Pay : <<extends>>
     CreateAdCampaign <-- CreateReservation : <<includes>>
     ViewMediaDetails <-- CreateReservation : <<extends>>
 
     Browse <-- ViewMediaDetails : <<extends>>
     ReviewOrg ..> RequestOrgVerification : <<includes>>
+
+    ManageAdCampaigns <-- CreateAdCampaign : <<extends>>
 
 '    ReviewReservation <- ApproveReservation : <<extends>>
 '    DenyReservation -> ReviewReservation : <<extends>>
@@ -112,8 +127,9 @@ rectangle "Envision Ad" {
     ReviewReservation <-- DenyReservation : <<extends>>
 
     ReviewOrg <-- ApproveOrg : <<extends>>
+hide stereotypes
     ReviewOrg <-- DenyOrg : <<extends>>
-
 }
+
 
 @enduml

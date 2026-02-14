@@ -20,8 +20,8 @@ participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
 participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
 participant "<<repository>>\nstripeAccountRepository\n:StripeAccountRepository" as StripeAccountRepo
 participant "<<repository>>\npaymentIntentRepository\n:PaymentIntentRepository" as PaymentIntentRepo
-participant "<<external>>\nStripe API" as StripeAPI
 database "<<database>>\n:Database" as DB
+participant "<<external>>\nStripe API" as StripeAPI
 
 
 Advertiser -> AdvertisementsPage: Initiate Payment
