@@ -9,7 +9,6 @@ import {
     IconDiscountCheck,
     IconChartDots,
     IconFileDescription,
-    IconInbox,
     IconSpeakerphone,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -43,12 +42,12 @@ export default function SideBar() {
         ),
         (permissions.includes("update:reservation")) && (
             <NavLink
-                key="requests"
+                key="advertisements"
                 component={Link}
-                href="/dashboard/media-owner/ad-requests"
+                href="/dashboard/media-owner/advertisements"
                 label={t("media-owner.adRequests")}
-                leftSection={<IconInbox size={20} stroke={1.5} />}
-                active={pathname?.includes("/dashboard/media-owner/ad-requests")}
+                leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/media-owner/advertisements")}
             />
         )
     ].filter(Boolean);

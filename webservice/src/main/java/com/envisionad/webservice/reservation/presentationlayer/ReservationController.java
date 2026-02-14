@@ -1,7 +1,7 @@
 package com.envisionad.webservice.reservation.presentationlayer;
 
 import com.envisionad.webservice.reservation.businesslogiclayer.ReservationService;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.reservation.presentationlayer.models.DenialDetailsRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import org.springframework.http.HttpStatus;
@@ -41,10 +41,16 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(jwt, mediaId, requestModel));
     }
 
-    @PatchMapping("/{mediaId}/reservations/{reservationId}")
+    @PatchMapping("/{mediaId}/reservations/{reservationId}/approve")
     @PreAuthorize("hasAuthority('update:reservation')")
-    public ResponseEntity<ReservationResponseModel> updateReservationStatus(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @PathVariable String reservationId, @RequestParam ReservationStatus status){
-        return ResponseEntity.ok(reservationService.updateReservationStatus(jwt, mediaId, reservationId, status));
+    public ResponseEntity<ReservationResponseModel> approveReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @PathVariable String reservationId){
+        return ResponseEntity.ok(reservationService.approveReservation(jwt, mediaId, reservationId));
+    }
+
+    @PatchMapping("/{mediaId}/reservations/{reservationId}/deny")
+    @PreAuthorize("hasAuthority('update:reservation')")
+    public ResponseEntity<ReservationResponseModel> denyReservation(@AuthenticationPrincipal Jwt jwt, @PathVariable String mediaId, @PathVariable String reservationId, @RequestBody DenialDetailsRequestModel denialDetailsRequestModel){
+        return ResponseEntity.ok(reservationService.denyReservation(jwt, mediaId, reservationId, denialDetailsRequestModel));
     }
 
     @GetMapping("/reservations/media-owner")

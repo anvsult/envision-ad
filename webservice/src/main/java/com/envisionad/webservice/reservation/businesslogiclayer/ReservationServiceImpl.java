@@ -9,12 +9,11 @@ import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
 import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
-import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
+import com.envisionad.webservice.reservation.dataaccesslayer.*;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
 import com.envisionad.webservice.reservation.exceptions.*;
+import com.envisionad.webservice.reservation.presentationlayer.models.DenialDetailsRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
@@ -153,7 +152,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponseModel updateReservationStatus(Jwt jwt, String mediaId, String reservationId, ReservationStatus reservationStatus) {
+    public ReservationResponseModel approveReservation(Jwt jwt, String mediaId, String reservationId) {
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
 
         Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
@@ -162,11 +161,37 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationAlreadyProcessedException();
         }
 
-        if (!reservationStatus.equals(ReservationStatus.APPROVED) && !reservationStatus.equals(ReservationStatus.DENIED)){
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservationRepository.save(reservation);
+
+        return reservationResponseMapper.entityToResponseModel(reservation);
+    }
+
+    @Override
+    public ReservationResponseModel denyReservation(Jwt jwt, String mediaId, String reservationId, DenialDetailsRequestModel denialDetailsRequestModel) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
+
+        Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
+
+        if (!reservation.getStatus().equals(ReservationStatus.PENDING)){
+            throw new ReservationAlreadyProcessedException();
+        }
+
+        if (denialDetailsRequestModel == null || denialDetailsRequestModel.getReason() == null) {
             throw new BadReservationRequestException();
         }
 
-        reservation.setStatus(reservationStatus);
+        if (denialDetailsRequestModel.getReason().equals(DenialReason.OTHER) && (denialDetailsRequestModel.getDescription() == null || denialDetailsRequestModel.getDescription().isBlank())){
+            throw new BadReservationRequestException();
+        }
+
+        DenialDetails details = new DenialDetails();
+        details.setReason(denialDetailsRequestModel.getReason());
+        details.setDescription(denialDetailsRequestModel.getDescription());
+
+
+        reservation.setStatus(ReservationStatus.DENIED);
+        reservation.setDenialDetails(details);
         reservationRepository.save(reservation);
 
         return reservationResponseMapper.entityToResponseModel(reservation);
