@@ -35,10 +35,8 @@
       "overview": "Overview",
       "metrics": "Metrics",
       "media": "Media",
-      "displayedAds": "Displayed ads",
-      "adRequests": "Ad requests",
-      "proof": "Submit Proof",
-      "locations": "My Locations"
+      "adRequests": "Advertisements",
+      "proof": "Submit Proof"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -49,7 +47,6 @@
     "advertiser": {
       "overview": "Overview",
       "metricOverview": "Metrics",
-      "adRequests": "Ad requests",
       "advertisements": "Advertisements",
       "myAds": "My Campaigns",
       "graphs": {
@@ -699,14 +696,45 @@
   },
   "adRequests": {
     "page": {
-      "title": "Ad Requests",
+      "title": "Advertisements",
       "requestCount": {
         "singular": "pending request",
         "plural": "pending requests"
       },
+      "tabs": {
+        "pending": "Pending",
+        "confirmed": "Confirmed"
+      },
+      "status": {
+        "pending": "Pending",
+        "confirmed": "Confirmed"
+      },
       "noRequests": "You have no pending ad requests.",
       "pending": "Pending",
       "unknownCampaign": "Unknown Campaign name"
+    },
+    "modal": {
+      "title": "Deny Ad Request",
+      "description": "Please select a reason for denying this ad request:",
+      "reasonLabel": "Reason for Denial",
+      "reasonPlaceholder": "Select a reason",
+      "detailsLabel": "Additional Details",
+      "detailsPlaceholder": "Please provide details...",
+      "characterCount": "{count}/512 characters",
+      "cancelButton": "Cancel",
+      "denyButton": "Deny Request",
+      "reasons": {
+        "contentPolicy": "Content & Policy Issues",
+        "creativeTechnical": "Creative / Technical Problems",
+        "legalCompliance": "Legal & Compliance Risk",
+        "mediaOwnerRules": "Media Owner's Own Rules",
+        "localVenue": "Local Venue Restrictions",
+        "other": "Other"
+      },
+      "errors": {
+        "selectReason": "Please select a reason for denial",
+        "provideDetails": "Please provide details when selecting 'Other'"
+      }
     },
     "notifications": {
       "loadFailed": {
@@ -728,13 +756,24 @@
       "updateFailed": {
         "title": "Error",
         "message": "Failed to update ad request status"
+      },
+      "download": {
+        "success": {
+          "title": "Download Complete",
+          "message": "All ads files have been downloaded"
+        },
+        "error": {
+          "title": "Download Failed",
+          "message": "Failed to download ads files"
+        }
       }
     },
     "detail": {
       "errorTitle": "Error",
       "errorNotFound": "Ad request not found",
-      "reviewUnavailable": "Review Unavailable",
-      "alreadyActioned": "This request has already been {status}",
+      "mediaFiles": "Ads Files",
+      "downloadAllMedia": "Download All Ads",
+      "name": "Media Name",
       "startDate": "Start Date",
       "endDate": "End Date",
       "duration": "Duration",
@@ -771,6 +810,20 @@
       "approved": "Approved",
       "confirmed": "Confirmed",
       "denied": "Denied"
+    },
+    "viewReason": "View Reason",
+    "denialReasonLabel": "Reason for Denial",
+    "denialDetailsLabel": "Additional Details",
+    "showOriginal": "Show Original",
+    "showTranslation": "Show Translation",
+    "translating": "Translating...",
+    "denialReasons": {
+      "contentPolicy": "Content & Policy Issues",
+      "creativeTechnical": "Creative / Technical Problems",
+      "legalCompliance": "Legal & Compliance Risk",
+      "mediaOwnerRules": "Media Owner's Own Rules",
+      "localVenue": "Local Venue Restrictions",
+      "other": "Other"
     },
     "noReservations": "No reservations found for this status.",
     "payButton": "Pay",

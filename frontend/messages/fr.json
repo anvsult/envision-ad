@@ -35,6 +35,8 @@
       "overview": "Aperçu",
       "metrics": "Métriques",
       "media": "Médias",
+      "adRequests": "Publicités",
+      "proof": "Soumettre Une Preuve",
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce",
       "proof": "Soumettre Une Preuve",
@@ -49,7 +51,6 @@
     "advertiser": {
       "overview": "Aperçu",
       "metricOverview": "Métriques",
-      "adRequests": "demandes publicitaires",
       "advertisements": "Publicités",
       "myAds": "Mes Campagnes",
       "graphs": {
@@ -740,14 +741,45 @@
   },
   "adRequests": {
     "page": {
-      "title": "Demandes de publicité",
+      "title": "Publicités",
       "requestCount": {
         "singular": "demande en attente",
         "plural": "demandes en attente"
       },
+      "tabs": {
+        "pending": "En Attente",
+        "confirmed": "Confirmé"
+      },
+      "status": {
+        "pending": "En Attente",
+        "confirmed": "Confirmé"
+      },
       "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
       "pending": "En attente",
       "unknownCampaign": "Nom de campagne inconnue"
+    },
+    "modal": {
+      "title": "Refuser la Demande Publicitaire",
+      "description": "Veuillez sélectionner une raison pour refuser cette demande publicitaire :",
+      "reasonLabel": "Raison du Refus",
+      "reasonPlaceholder": "Sélectionnez une raison",
+      "detailsLabel": "Détails Supplémentaires",
+      "detailsPlaceholder": "Veuillez fournir des détails...",
+      "characterCount": "{count}/512 caractères",
+      "cancelButton": "Annuler",
+      "denyButton": "Refuser la Demande",
+      "reasons": {
+        "contentPolicy": "Problèmes de Contenu et de Politique",
+        "creativeTechnical": "Problèmes Créatifs / Techniques",
+        "legalCompliance": "Risque Juridique et de Conformité",
+        "mediaOwnerRules": "Règles du Propriétaire de Média",
+        "localVenue": "Restrictions du Lieu Local",
+        "other": "Autre"
+      },
+      "errors": {
+        "selectReason": "Veuillez sélectionner une raison pour le refus",
+        "provideDetails": "Veuillez fournir des détails lors de la sélection de 'Autre'"
+      }
     },
     "notifications": {
       "loadFailed": {
@@ -769,13 +801,24 @@
       "updateFailed": {
         "title": "Erreur",
         "message": "Impossible de mettre à jour le statut de la demande"
+      },
+      "download": {
+        "success": {
+          "title": "Téléchargement Terminé",
+          "message": "Tous les fichiers publicitaires ont été téléchargés"
+        },
+        "error": {
+          "title": "Échec du Téléchargement",
+          "message": "Échec du téléchargement des fichiers publicitaires"
+        }
       }
     },
     "detail": {
       "errorTitle": "Erreur",
       "errorNotFound": "Demande de publicité introuvable",
-      "reviewUnavailable": "Révision non disponible",
-      "alreadyActioned": "Cette demande a déjà été {status}",
+      "mediaFiles": "Fichiers Publicitaires",
+      "downloadAllMedia": "Télécharger Toutes les Publicités",
+      "name": "Nom du Média",
       "startDate": "Date de début",
       "endDate": "Date de fin",
       "duration": "Durée",
@@ -812,6 +855,20 @@
       "approved": "Approuvée",
       "confirmed": "Confirmée",
       "denied": "Refusée"
+    },
+    "viewReason": "Voir la raison",
+    "denialReasonLabel": "Raison du refus",
+    "denialDetailsLabel": "Détails supplémentaires",
+    "showOriginal": "Afficher l'original",
+    "showTranslation": "Afficher la traduction",
+    "translating": "Traduction en cours...",
+    "denialReasons": {
+      "contentPolicy": "Problèmes de contenu et politique",
+      "creativeTechnical": "Problèmes créatifs / techniques",
+      "legalCompliance": "Risques juridiques et de conformité",
+      "mediaOwnerRules": "Règles propres au propriétaire média",
+      "localVenue": "Restrictions du lieu local",
+      "other": "Autre"
     },
     "noReservations": "Aucune réservation trouvée pour ce statut.",
     "payButton": "Payer",

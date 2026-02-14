@@ -39,7 +39,8 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-leaflet": "^5.0.0-rc.2",
-    "recharts": "^3.5.0"
+    "recharts": "^3.5.0",
+    "translate": "^3.0.1"
   },
   "devDependencies": {
     "@feature-sliced/steiger-plugin": "^0.5.7",

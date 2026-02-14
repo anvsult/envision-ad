@@ -10,7 +10,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface ReservationResponseMapper {
-    @Mapping(target = "campaignId", source = "campaignId")
     ReservationResponseModel entityToResponseModel(Reservation reservation);
 
     List<ReservationResponseModel> entitiesToResponseModelList(List<Reservation> reservations);

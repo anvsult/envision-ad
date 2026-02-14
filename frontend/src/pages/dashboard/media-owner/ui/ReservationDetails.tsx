@@ -12,13 +12,14 @@ import {
     Loader,
     Center,
     Button,
-    Modal, Image,
+    Image,
 } from "@mantine/core";
 import {
     IconCalendar,
     IconCurrencyDollar,
     IconChevronLeft,
     IconChevronRight,
+    IconDownload,
 } from "@tabler/icons-react";
 import { useParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
@@ -26,11 +27,15 @@ import { notifications } from "@mantine/notifications";
 
 import { useRouter } from "next/navigation";
 import { BackButton } from "@/widgets/BackButton";
-import { ReservationResponseDTO, ReservationStatus } from "@/entities/reservation";
+import { ReservationResponseDTO, ReservationStatus, DenialReason } from "@/entities/reservation";
 import { AdCampaign } from "@/entities/ad-campaign";
 import { Ad } from "@/entities/ad";
-import { getReservationById, updateReservationStatus } from "@/features/reservation-management/api";
+import { Media } from "@/entities/media";
+import { getReservationById, approveReservation, denyReservation } from "@/features/reservation-management/api";
 import { getAdCampaignById } from "@/features/ad-campaign-management/api";
+import { getMediaById } from "@/features/media-management/api";
+import {ConfirmationModal} from "@/shared/ui";
+import {DenyReservationModal} from "@/pages/dashboard/media-owner/ui/modals/DenyReservationModal";
 
 const formatDate = (isoDate: string, locale: string): string => {
     return new Date(isoDate).toLocaleDateString(locale, {
@@ -184,17 +189,13 @@ export default function AdRequestDetailPage() {
 
     const [reservation, setReservation] = useState<ReservationResponseDTO | null>(null);
     const [campaign, setCampaign] = useState<AdCampaign | null>(null);
+    const [media, setMedia] = useState<Media | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const [confirmAction, setConfirmAction] = useState<"approve" | "deny" | null>(null);
+    const [showApproveModal, setShowApproveModal] = useState(false);
+    const [showDenyModal, setShowDenyModal] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-
-    const confirmOpen = confirmAction !== null;
-    const openConfirm = (action: "approve" | "deny") => setConfirmAction(action);
-    const closeConfirm = () => {
-        if (!submitting) setConfirmAction(null);
-    };
 
     useEffect(() => {
         if (!reservationId) return;
@@ -231,27 +232,39 @@ export default function AdRequestDetailPage() {
         void loadCampaign();
     }, [reservation?.campaignId]);
 
-    const handleConfirm = async () => {
-        if (!confirmAction || !reservation) return;
+    useEffect(() => {
+        if (!reservation?.mediaId) return;
+
+        const loadMedia = async () => {
+            try {
+                const data = await getMediaById(reservation.mediaId);
+                setMedia(data);
+            } catch (err: unknown) {
+                console.error("Failed to load media details", err);
+            }
+        };
+
+        void loadMedia();
+    }, [reservation?.mediaId]);
+
+    const handleApprove = async () => {
+        if (!reservation) return;
 
         try {
             setSubmitting(true);
-            await updateReservationStatus(reservation.mediaId, reservation.reservationId,
-                confirmAction === "approve" ? ReservationStatus.APPROVED : ReservationStatus.DENIED
+            await approveReservation(
+                reservation.mediaId,
+                reservation.reservationId
             );
 
-            closeConfirm();
+            setShowApproveModal(false);
             notifications.show({
-                title: confirmAction === "approve"
-                    ? t("notifications.approve.success.title")
-                    : t("notifications.deny.success.title"),
-                message: confirmAction === "approve"
-                    ? t("notifications.approve.success.message")
-                    : t("notifications.deny.success.message"),
+                title: t("notifications.approve.success.title"),
+                message: t("notifications.approve.success.message"),
                 color: "green",
             });
 
-            router.push(`/${locale}/dashboard/media-owner/ad-requests`);
+            router.push(`/${locale}/dashboard/media-owner/advertisements`);
         } catch (e) {
             console.error(e);
             notifications.show({
@@ -261,6 +274,77 @@ export default function AdRequestDetailPage() {
             });
         } finally {
             setSubmitting(false);
+        }
+    };
+
+    const handleDeny = async (reason: DenialReason, description: string | null) => {
+        if (!reservation) return;
+
+        try {
+            setSubmitting(true);
+
+            await denyReservation(
+                reservation.mediaId,
+                reservation.reservationId,
+                {
+                    reason,
+                    description
+                }
+            );
+
+            setShowDenyModal(false);
+            notifications.show({
+                title: t("notifications.deny.success.title"),
+                message: t("notifications.deny.success.message"),
+                color: "green",
+            });
+
+            router.push(`/${locale}/dashboard/media-owner/advertisements`);
+        } catch (e) {
+            console.error(e);
+            notifications.show({
+                title: t("notifications.updateFailed.title"),
+                message: t("notifications.updateFailed.message"),
+                color: "red",
+            });
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleDownloadAll = async () => {
+        if (!campaign || !campaign.ads.length) return;
+
+        try {
+            for (const ad of campaign.ads) {
+                const response = await fetch(ad.adUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const extension = ad.adType === "IMAGE" ? "jpg" : "mp4";
+                a.download = `${ad.name}.${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                // Add delay between downloads to avoid browser blocking
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            notifications.show({
+                title: t("notifications.download.success.title"),
+                message: t("notifications.download.success.message"),
+                color: "green",
+            });
+        } catch (error) {
+            console.error("Download failed:", error);
+            notifications.show({
+                title: t("notifications.download.error.title"),
+                message: t("notifications.download.error.message"),
+                color: "red",
+            });
         }
     };
 
@@ -289,21 +373,6 @@ export default function AdRequestDetailPage() {
     }
 
     const isPending = reservation.status === ReservationStatus.PENDING;
-
-    if (!isPending) {
-        return (
-            <Container size="lg" py="xl">
-                <Stack align="center" gap="sm">
-                    <Title order={3}>{t("detail.reviewUnavailable")}</Title>
-                    <Text c="dimmed" ta="center">
-                        {t("detail.alreadyActioned", { status: reservation.status })}
-                    </Text>
-                    <BackButton />
-                </Stack>
-            </Container>
-        );
-    }
-
     const duration = formatDuration(reservation.startDate, reservation.endDate, t);
 
     return (
@@ -325,8 +394,32 @@ export default function AdRequestDetailPage() {
                     </Stack>
 
                     <Stack gap="md" style={{ flex: 1, minWidth: 280 }}>
+                        {!isPending && campaign && campaign.ads.length > 0 && (
+                            <Card withBorder radius="lg" p="lg">
+                                <Stack gap="sm" align="center">
+                                    <Text size="sm" fw={500}>{t("detail.mediaFiles")}</Text>
+                                    <Button
+                                        radius="xl"
+                                        fullWidth
+                                        leftSection={<IconDownload size={16} />}
+                                        variant="light"
+                                        onClick={handleDownloadAll}
+                                    >
+                                        {t("detail.downloadAllMedia")}
+                                    </Button>
+                                </Stack>
+                            </Card>
+                        )}
+
                         <Card withBorder radius="lg" p="lg">
                             <Stack gap="sm">
+                                <Group justify="space-between" align="center">
+                                    <Text size="sm" c="dimmed">{t("detail.name")}</Text>
+                                    <Text size="sm" fw={500}>{media?.title}</Text>
+                                </Group>
+
+                                <Divider />
+
                                 <Group justify="space-between" align="center">
                                     <Group gap="sm" align="center">
                                         <IconCalendar size={16} color="var(--mantine-color-dimmed)" />
@@ -362,78 +455,55 @@ export default function AdRequestDetailPage() {
                                     </Text>
                                 </Group>
                                 <Text size="xs" c="dimmed">{t("detail.totalPrice")}</Text>
+                                {isPending && (
+                                    <>
+                                        <Divider w="100%" />
 
-                                <Divider w="100%" />
+                                        <Button
+                                            radius="xl"
+                                            fullWidth
+                                            type="button"
+                                            onClick={() => setShowApproveModal(true)}
+                                            disabled={submitting}
+                                        >
+                                            {t("detail.approve")}
+                                        </Button>
 
-                                <Button
-                                    radius="xl"
-                                    fullWidth
-                                    type="button"
-                                    onClick={() => openConfirm("approve")}
-                                >
-                                    {t("detail.approve")}
-                                </Button>
-
-                                <Button
-                                    radius="xl"
-                                    fullWidth
-                                    color="red"
-                                    variant="outline"
-                                    type="button"
-                                    onClick={() => openConfirm("deny")}
-                                >
-                                    {t("detail.deny")}
-                                </Button>
+                                        <Button
+                                            radius="xl"
+                                            fullWidth
+                                            color="red"
+                                            variant="outline"
+                                            type="button"
+                                            onClick={() => setShowDenyModal(true)}
+                                            disabled={submitting}
+                                        >
+                                            {t("detail.deny")}
+                                        </Button>
+                                    </>
+                                )}
                             </Stack>
                         </Card>
                     </Stack>
                 </Group>
             </Container>
 
-            <Modal
-                key={confirmAction ?? "closed"}
-                opened={confirmOpen}
-                onClose={closeConfirm}
-                centered
-                keepMounted={false}
-                title={
-                    confirmAction === "approve"
-                        ? t("detail.confirmApproveTitle")
-                        : t("detail.confirmDenyTitle")
-                }
-            >
-                {!confirmAction ? null : (
-                    <>
-                        <Text mb="md">
-                            {confirmAction === "approve"
-                                ? t("detail.confirmApproveText")
-                                : t("detail.confirmDenyText")}
-                        </Text>
+            <ConfirmationModal
+                opened={showApproveModal}
+                title={t("detail.confirmApproveTitle")}
+                message={t("detail.confirmApproveText")}
+                confirmLabel={t("detail.confirmApprove")}
+                cancelLabel={t("detail.cancel")}
+                confirmColor="blue"
+                onConfirm={handleApprove}
+                onCancel={() => setShowApproveModal(false)}
+            />
 
-                        <Group justify="flex-end">
-                            <Button
-                                variant="default"
-                                type="button"
-                                disabled={submitting}
-                                onClick={closeConfirm}
-                            >
-                                {t("detail.cancel")}
-                            </Button>
-
-                            <Button
-                                type="button"
-                                loading={submitting}
-                                color={confirmAction === "approve" ? "blue" : "red"}
-                                onClick={handleConfirm}
-                            >
-                                {confirmAction === "approve"
-                                    ? t("detail.confirmApprove")
-                                    : t("detail.confirmDeny")}
-                            </Button>
-                        </Group>
-                    </>
-                )}
-            </Modal>
+            <DenyReservationModal
+                opened={showDenyModal}
+                onDeny={handleDeny}
+                onCancel={() => setShowDenyModal(false)}
+            />
         </>
     );
 }
