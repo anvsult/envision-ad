@@ -490,6 +490,40 @@ class ReservationControllerIntegrationTest {
     }
 
     @Test
+    void createReservation_ConflictingWithCancelledReservation_ShouldAllowCreation() {
+        // Arrange - Create an existing cancelled reservation
+        Reservation existingReservation = new Reservation();
+        existingReservation.setReservationId(UUID.randomUUID().toString());
+        existingReservation.setMediaId(UUID.fromString(this.mediaId));
+        existingReservation.setCampaignId(this.campaignId);
+        existingReservation.setAdvertiserId(USER_ID);
+        existingReservation.setStatus(ReservationStatus.CANCELLED);
+        existingReservation.setStartDate(LocalDateTime.now().plusDays(1));
+        existingReservation.setEndDate(LocalDateTime.now().plusDays(8));
+        existingReservation.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(existingReservation);
+
+        // Attempt to create a conflicting reservation
+        ReservationRequestModel requestModel = new ReservationRequestModel();
+        requestModel.setCampaignId(this.campaignId);
+        requestModel.setStartDate(LocalDateTime.now().plusDays(2)); // Overlaps with existing
+        requestModel.setEndDate(LocalDateTime.now().plusDays(9));
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_RESERVATIONS, this.mediaId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isCreated();
+
+        // Verify both reservations exist
+        assertEquals(2, reservationRepository.count());
+    }
+
+    @Test
     void createReservation_WithOverlappingDatesForDifferentCampaigns_ShouldAllowCreation() {
         // Arrange - Create an existing reservation for the first campaign
         Reservation existingReservation = new Reservation();
