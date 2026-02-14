@@ -527,4 +527,47 @@ public class AdCampaignIntegrationTest {
                 .exchange()
                 .expectStatus().is2xxSuccessful();
     }
+
+    @Test
+    void deleteAdFromNonExistingCampaign_shouldReturnNotFound() {
+        // Arrange
+        String nonExistentCampaignId = "non-existent-campaign-id";
+        String adId = UUID.randomUUID().toString();
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads/{adId}")
+                        .build(businessId.getBusinessId(), nonExistentCampaignId, adId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().isNotFound();
+    }
+
+    @Test
+    void deleteCampaign_tiedToApprovedReservation_shouldSucceed() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Flash Promo");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().is2xxSuccessful();
+    }
 }
