@@ -386,6 +386,44 @@ class AdCampaignServiceUnitTest {
     }
 
     @Test
+    void deleteAdCampaign_whenNotTiedToReservationsAndHasCloudinaryAds_deletesAssetsAndCampaign() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-cloudinary-1";
+        String cloudinaryUrl = "https://res.cloudinary.com/demo/image/upload/v1234567/sample-public-id.jpg";
+
+        CampaignAndAdId campaignAndAdId = campaignWithSingleAd(campaignId, cloudinaryUrl);
+        AdCampaign campaignWithAd = campaignAndAdId.campaign();
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaignWithAd);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaignWithAd));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(adCampaignResponseMapper.entityToResponseModel(campaignWithAd)).thenReturn(null);
+
+        // Act
+        service.deleteAdCampaign(advertiserToken, businessId, campaignId);
+
+        // Assert
+        verify(adCampaignRepository).delete(campaignWithAd);
+        verify(adCampaignResponseMapper).entityToResponseModel(campaignWithAd);
+        // Verify that the Cloudinary asset tied to the ad was scheduled for deletion
+        verify(uploader, atLeastOnce()).destroy(anyString(), anyMap());
+    }
+
+    @Test
     void deleteAdCampaign_whenTiedToConfirmedReservation_throwsException() {
         // Arrange
         String businessId = "biz-1";
@@ -411,7 +449,7 @@ class AdCampaignServiceUnitTest {
     }
 
     @Test
-    void deleteAdCampaign_whenTiedToPendingReservation_deletesSuccessfully() {
+    void deleteAdCampaign_whenTiedToPendingReservation_throwsException() {
         // Arrange
         String businessId = "biz-1";
         String campaignId = "camp-3";

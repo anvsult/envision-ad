@@ -501,4 +501,30 @@ public class AdCampaignIntegrationTest {
                 .expectStatus().isEqualTo(409); // Conflict status code
     }
 
+    @Test
+    void deleteCampaign_tiedToExpiredReservation_shouldSucceed() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Summer Clearance");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().minusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().is2xxSuccessful();
+    }
 }
