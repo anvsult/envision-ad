@@ -796,7 +796,8 @@
         "image": "Image"
       },
       "noCampaigns": "No campaigns found. Add your first campaign to get started!",
-      "noAds": "No ads found in this campaign. Add your first ad to get started!"
+      "noAds": "No ads found in this campaign. Add your first ad to get started!",
+      "deleteCampaign": "Delete Campaign"
     },
     "notifications": {
       "loadFailed": {

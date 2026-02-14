@@ -27,7 +27,7 @@ export default function AdCampaigns() {
 
     // Data State
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
-    const [businessId, setBusinessId] = useState<string>("");
+    const [businessId, setBusinessId] = useState<string | undefined>();
     const {user} = useUser();
 
     // Modal State
@@ -38,7 +38,7 @@ export default function AdCampaigns() {
     const [isCreateCampaignOpen, setIsCreateCampaignOpen] = useState(false);
 
     // Confirmation Modal State
-    const [confirmDeleteAdOpen, setconfirmDeleteAdOpen] = useState(false);
+    const [confirmDeleteAdOpen, setConfirmDeleteAdOpen] = useState(false);
     const [confirmDeleteCampaignOpen, setConfirmDeleteCampaignOpen] = useState(false);
     const [adToDelete, setAdToDelete] = useState<{ campaignId: string; adId: string } | null>(null);
     const [campaignIdToDelete, setCampaignIdToDelete] = useState<string | null>(null);
@@ -120,7 +120,7 @@ export default function AdCampaigns() {
 
     const handleDeleteAd = (campaignId: string, adId: string) => {
         setAdToDelete({campaignId, adId});
-        setconfirmDeleteAdOpen(true);
+        setConfirmDeleteAdOpen(true);
     };
 
     const handleDeleteAdCampaign = (campaignId: string) => {
@@ -147,13 +147,14 @@ export default function AdCampaigns() {
                 color: 'red'
             });
         } finally {
-            setconfirmDeleteAdOpen(false);
+            setConfirmDeleteAdOpen(false);
             setAdToDelete(null);
         }
     };
 
     const confirmDeleteCampaign = async () => {
         if (!campaignIdToDelete) return;
+        if (!businessId) return;
 
         try {
             await deleteAdCampaign(businessId, campaignIdToDelete);
@@ -237,7 +238,7 @@ export default function AdCampaigns() {
                 cancelLabel={t('confirmations.delete.cancel')}
                 confirmColor="red"
                 onConfirm={confirmDeleteAd}
-                onCancel={() => setconfirmDeleteAdOpen(false)}
+                onCancel={() => setConfirmDeleteAdOpen(false)}
             />
             <ConfirmationModal
                 opened={confirmDeleteCampaignOpen}

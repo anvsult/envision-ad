@@ -836,7 +836,8 @@
         "image": "Image"
       },
       "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
-      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer."
+      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
+      "deleteCampaign": "Supprimer la campagne"
     },
     "notifications": {
       "loadFailed": {

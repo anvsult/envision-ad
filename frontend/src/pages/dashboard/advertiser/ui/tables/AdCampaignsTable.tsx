@@ -56,6 +56,8 @@ export function AdCampaignsTable({
                             <ActionIcon
                                 variant="subtle"
                                 color="red"
+                                aria-label={t('deleteCampaign')}
+                                title={t('deleteCampaign')}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     onDeleteAdCampaign(campaign.campaignId);
