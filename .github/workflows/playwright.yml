@@ -39,7 +39,7 @@ jobs:
 
       - name: Run Playwright tests
         run: |
-          doppler run --project envision-ad-backend --config dev -- \
+          doppler run --project envision-ad-backend --config prd -- \
           npx playwright test --reporter=github,html
 
       - name: Upload Playwright report
