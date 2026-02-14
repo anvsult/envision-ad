@@ -52,13 +52,16 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                         @Param("startDate") LocalDateTime startDate,
                         @Param("endDate") LocalDateTime endDate);
 
-        @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM Reservation r " +
-                "WHERE r.mediaId = :mediaId AND r.campaignId = :campaignId " +
-                "AND r.status IN ('CONFIRMED') " +
-                "AND r.startDate < :endDate AND r.endDate > :startDate")
-        boolean existsByMediaIdAndCampaignIdAndDateRange(
-                @Param("mediaId") UUID mediaId,
-                @Param("campaignId") String campaignId,
-                @Param("startDate") LocalDateTime startDate,
-                @Param("endDate") LocalDateTime endDate);
+        @Query("""
+            SELECT (COUNT(r) > 0)
+            FROM Reservation r
+            WHERE r.mediaId = :mediaId AND r.campaignId = :campaignId
+              AND r.status IN ('CONFIRMED')
+              AND r.startDate < :endDate AND r.endDate > :startDate
+        """)
+    boolean existsByMediaIdAndCampaignIdAndDateRange(
+            @Param("mediaId") UUID mediaId,
+            @Param("campaignId") String campaignId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
