@@ -27,9 +27,9 @@ export interface MediaCardProps {
 function MobileViewer({children, mobileWidth}: Readonly<{children: React.ReactNode; mobileWidth?: string}>){
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
     return(
-            isMobile ? 
-            <Group gap={0} wrap="nowrap">{children}</Group>:
-            <Stack gap={0}>{children}</Stack>    
+        isMobile ? 
+        <Group gap={0} wrap="nowrap">{children}</Group>:
+        <Stack gap={0}>{children}</Stack>    
     )
 
 }
@@ -48,7 +48,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
     };
 
     return (
-        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never"
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" 
             style={{scrollMarginTop: "25vh"}}
         >
             <Paper
@@ -56,6 +56,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                 radius="md"
                 className={styles.paper}
                 h="100%"
+                
             >   
                 <MobileViewer mobileWidth={mobileWidth}>
                     <AspectRatio ratio={imageRatio ?? 1} w={isMobile?"35%": "100%"} >
@@ -66,9 +67,9 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             </AspectRatio>
                         </Paper>
                     </AspectRatio>
-                    <Stack gap="3px" p="10px" >
+                    <Stack gap="3px" p={isMobile? 0 :"10px"} px={isMobile ? "4px": "10px"}>
                         <Stack gap="2px">
-                            <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} className={styles.mediaTitle} m={0}>
+                            <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} className={styles.mediaTitle} m={0} truncate>
                                 {title}
                             </Text>
                             <Text id={"MediaCardorganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
@@ -88,6 +89,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardImpressions" + index} size="xs" lineClamp={1} m={0}>
                                 {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
                             </Text>
+                            
                             <Group justify="space-between">
                                 <Text id={"MediaCardAspectRatio" + index} size="xs" m={0}>
                                     {aspectRatio}
@@ -99,6 +101,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                                     {typeOfDisplay}
                                 </Text>
                             </Group>
+                            
                         </Stack>
                     </Stack>
                 </MobileViewer>

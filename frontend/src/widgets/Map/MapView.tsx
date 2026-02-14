@@ -1,30 +1,38 @@
 import { MapContainer, Marker, Popup, TileLayer, useMap} from 'react-leaflet';
-import {  Paper } from '@mantine/core';
+import {  Drawer, Paper, Stack, Title } from '@mantine/core';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngLiteral, Map } from 'leaflet';
-import { useEffect, useMemo, useRef } from 'react';
-import { MediaCardProps } from '../Cards/MediaCard';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import MediaCard, { MediaCardProps } from '../Cards/MediaCard';
 import './MapView.css';
 import { MediaCardCarousel } from '../Carousel/CardCarousel';
 import { IconDeviceDesktop } from '@tabler/icons-react';
 import { renderToString } from 'react-dom/server';
+import { useDisclosure } from '@mantine/hooks';
+import { useTranslations } from 'next-intl';
+import { getJoinedAddress } from '@/entities/media';
 
 interface MapViewProps {
   center: LatLngLiteral;
   zoom: number;
   medias?: MediaCardProps[][];
   setMap: React.Dispatch<React.SetStateAction<Map|null>>;
-  isMobile: boolean;
+  isMobile?: boolean;
+  isMobileVertical?: boolean;
   
 }
 
 interface MediaMarkerProps{
   media: MediaCardProps[];
+  isMobileVertical: boolean;
+  open: () => void;
+  setMediaList: React.Dispatch<React.SetStateAction<MediaCardProps[]>>;
+  setAddressName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 
 
-function MediaMarker({media}: MediaMarkerProps){
+function MediaMarker({media, isMobileVertical, open, setMediaList, setAddressName}: MediaMarkerProps){
   media = media.sort((a, b) => a.price - b.price);
 
   const mediaCount = media.length;
@@ -32,10 +40,13 @@ function MediaMarker({media}: MediaMarkerProps){
   const markerRef = useRef<L.Marker>(null);
   const popupRef = useRef<L.Popup>(null);
   const iconHtml = renderToString(<IconDeviceDesktop/>);
+  const location = media[0].mediaLocation;
+  const address = getJoinedAddress([location?.street, location?.city, location?.province] )
+
 
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
-    html: `<a id='MediaMarker${media[0].mediaLocation?.businessId}'><span>${iconHtml}${mediaCount}</span></a>`,
+    html: `<a id='MediaMarker${location?.businessId}'><span>${iconHtml}${mediaCount}</span></a>`,
   });
 
   useEffect(() => {
@@ -66,57 +77,78 @@ function MediaMarker({media}: MediaMarkerProps){
 
   
   useEffect(() => {
-  const marker = markerRef.current;
-  if (!marker) return;
+    const marker = markerRef.current;
+    if (!marker) return;
 
-  marker.on("popupopen", (e) => {
-    const popup = popupRef.current;
-    if (!popup) return;
-
-    requestAnimationFrame(() => {
-      const popupEl = popup.getElement();
-      const markerEl = marker.getElement();
-      if (!popupEl || !markerEl) return;
-
-      const markerRect = markerEl.getBoundingClientRect();
-      const popupRect = popupEl.getBoundingClientRect();
-      const mapRect = map.getContainer().getBoundingClientRect();
-
-      let offsetX = 0;
-      let offsetY = 0;
-
-      if (markerRect.top < mapRect.top + mapRect.height / 2) {
-        offsetY = popupRect.height + markerRect.height + 10;
+    marker.on("click", () => {
+      if (isMobileVertical) {
+        setMediaList(media);
+        setAddressName(address)
+        open()
       }
+    })
 
-      if (popupRect.right > mapRect.right) {
-        offsetX = mapRect.right - popupRect.right - 10;
-      }
-      if (popupRect.left < mapRect.left) {
-        offsetX = mapRect.left - popupRect.left + 10;
-      }
-      if (popupRect.top + offsetY < mapRect.top) {
-        offsetY = mapRect.top - popupRect.top + 10;
-      }
+    marker.on("popupopen", () => {
+      if (!isMobileVertical) {
 
-      popup.options.offset = L.point(offsetX, offsetY);
-      popup.update();
+        const popup = popupRef.current;
+        if (!popup) return;
+    
+        requestAnimationFrame(() => {
+          const popupEl = popup.getElement();
+          const markerEl = marker.getElement();
+          if (!popupEl || !markerEl) return;
+    
+          const markerRect = markerEl.getBoundingClientRect();
+          const popupRect = popupEl.getBoundingClientRect();
+          const mapRect = map.getContainer().getBoundingClientRect();
+    
+          let offsetX = 0;
+          let offsetY = 0;
+    
+          if (markerRect.top < mapRect.top + mapRect.height / 2) {
+            offsetY = popupRect.height + markerRect.height + 10;
+          }
+    
+          if (popupRect.right > mapRect.right) {
+            offsetX = mapRect.right - popupRect.right - 10;
+          }
+          if (popupRect.left < mapRect.left) {
+            offsetX = mapRect.left - popupRect.left + 10;
+          }
+          if (popupRect.top + offsetY < mapRect.top) {
+            offsetY = mapRect.top - popupRect.top + 10;
+          }
+    
+          popup.options.offset = L.point(offsetX, offsetY);
+          popup.update();
+        });
+      }
     });
-  });
-  }, [map, markerRef, popupRef]);
+  }, [address, isMobileVertical, map, markerRef, media, open, popupRef, setAddressName, setMediaList]);
 
 
   return (
 
     <Marker ref={markerRef} position={{lat: media[0].mediaLocation?.latitude ?? 0 , lng: media[0].mediaLocation?.longitude ?? 0}} icon={mediaMarkerIcon}>
-      <Popup ref={popupRef} minWidth={250} maxWidth={250} autoPan={false}>
-        <MediaCardCarousel medias={media} slideSize={"100%"} imageRatio={4/3}/>
-      </Popup>
+      {
+        !isMobileVertical &&
+        <Popup ref={popupRef} minWidth={250} maxWidth={250} autoPan={false}>
+          <MediaCardCarousel medias={media} slideSize={"100%"} imageRatio={4/3}/>
+        </Popup>
+      }
+      
     </Marker>
   )
 }
 
-export default function MapView({center, zoom, setMap, medias, isMobile}: MapViewProps){
+export default function MapView({center, zoom, setMap, medias, isMobile, isMobileVertical}: MapViewProps){
+  const t = useTranslations('browse');
+  
+  const [opened, { open, close }] = useDisclosure(false);
+  const [mediaList, setMediaList] = useState<MediaCardProps[]>([]);
+  const [addressName, setAddressName] = useState<string>("");
+
 
   const displayMap = useMemo(
     () => (
@@ -125,23 +157,50 @@ export default function MapView({center, zoom, setMap, medias, isMobile}: MapVie
           zoom={zoom}
           scrollWheelZoom={true}
           ref={setMap}
+          
           style={{height: "100%", width: "100%"}}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {medias?.map((media: MediaCardProps[]) => (
-            <MediaMarker key={media[0].index} media={media}/>
+            <MediaMarker key={media[0].index} media={media} isMobileVertical={isMobileVertical ?? false} setMediaList={setMediaList} open={open} setAddressName={setAddressName}/>
           ))}
         </MapContainer>
       ) ,
-    [center, medias, setMap, zoom],
+    [center, isMobileVertical, medias, open, setMap, zoom],
   )
 
     return(
-        <Paper radius="lg" style={{position:"sticky", overflow: "hidden", height:(isMobile ? "35vh" : "90vh")}}>
-           
+        <Paper radius={isMobile ? "": "lg"} style={{position:"sticky", overflow: "hidden", height:(isMobile ? "100%" : "90vh")}}>
            {displayMap}
+           {(isMobileVertical) &&
+            <Drawer opened={opened} onClose={close} position="bottom" size={(mediaList.length > 1) ? "sm" : "xs"} withCloseButton={false} title={addressName}>
+              {
+                mediaList.length > 0 ?
+                <Stack mt="sm">
+                  {mediaList.map((m) => (
+                    <MediaCard
+                        key={m.index}
+                        index={"MediaCard" + m.index }
+                        href={m.href}
+                        imageUrl={m.imageUrl}
+                        imageRatio={1}
+                        title={m.title}
+                        organizationId={m.organizationId}
+                        organizationName={m.organizationName}
+                        aspectRatio={m.aspectRatio}
+                        typeOfDisplay={m.typeOfDisplay}
+                        price={m.price} 
+                        dailyImpressions={m.dailyImpressions}
+                        resolution={m.resolution} 
+                    />
+                  ))}
+                  </Stack> :
+                  <Title>{t('nomedia.notfound')}</Title>
+                }
+            </Drawer>
+          }
             
         </Paper>
     )

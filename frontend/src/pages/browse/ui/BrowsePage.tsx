@@ -19,10 +19,10 @@ import MapView from '@/widgets/Map/MapView';
 import { useMediaQuery } from '@mantine/hooks';
 
 function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
-    const isMobile = useMediaQuery("(max-width: 575px)");
+    const isMobileVertical = useMediaQuery("(max-width: 575px)");
     return(
-            isMobile ? 
-            <Stack>{children}</Stack>:
+            isMobileVertical ? 
+            <Stack gap="xs">{children}</Stack>:
             <Group grow>{children}</Group>
     )
 }
@@ -30,6 +30,7 @@ function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
 function BrowsePage() {
 
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobileVertical = useMediaQuery("(max-width: 575px)");
   const defaultPos = {lat: 45.516476848520064, lng: -73.52053208741675};
 
   const t = useTranslations('browse');
@@ -65,6 +66,7 @@ function BrowsePage() {
   const [map, setMap] = useState<Map|null>(null);
   const [bbox, setBbox] = useState<LatLngBounds | null>(null);
   const [draftBbox, setDraftBbox] = useState<LatLngBounds | null>(null);
+  const isMobileMapVisible = useMemo(() => (mapVisible && isMobile), [isMobile, mapVisible]);
 
   const filteredMediaProps = useMemo(() => ({
     title: titleFilter,
@@ -213,7 +215,7 @@ function BrowsePage() {
   function filters(){
     return(
       <>
-        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice}/>
+        <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')}/>
       </>
     )
@@ -221,11 +223,12 @@ function BrowsePage() {
 
 
   return (
-      <Container size={map ? 1600 : "xl"} w="100%" py={20} >
+      <Container size={map ? 1600 : "xl"} w="100%" pt={isMobile ? 0 : 20} pb={isMobileMapVisible ? 0 : 20} px={isMobileMapVisible ? 0: "xs"}>
         <Group grow h="100%" top="0" justify='flex-start'>
-          <Stack gap="sm" mih="95vh" top="0" justify='flex-start'>
+          <Stack gap="xs" mih={isMobile ? "85vh": "95vh"} top="0" justify='flex-start' align={isMobileMapVisible ? 'end': 'center'}>
+            <Stack pt={isMobile ? 10 : 0} gap={0} align='right' px={isMobileMapVisible ? "xs" : "0"} w={"100%"} pl={isMobileMapVisible ? "55px" : 0}>
               <SearchMobileViewer>
-                <Autocomplete
+                <Autocomplete 
                   placeholder={t('searchAddress')}
                   id='AddressSearch'
                   data={locationOptions.map((o) => o)}
@@ -242,6 +245,7 @@ function BrowsePage() {
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
+                  style={{zIndex: 1}}
                 />
                 <TextInput
                   placeholder={t('searchTitle')}
@@ -258,14 +262,18 @@ function BrowsePage() {
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
+                  style={{zIndex: 1}}
                 />
                 
               </SearchMobileViewer>
-              <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
-              
-              {(isMobile && mapVisible) ? 
-                <Container style={{position: "relative",  width: "100%"}} p="0">
-                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
+            </Stack>
+              <Group grow w="100%" px={(isMobileMapVisible && !isMobileVertical)?10: 0}>
+
+                <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy} isMobileVertical={isMobileVertical} isMobile={isMobile} mapVisible={mapVisible}/>
+              </Group>
+              {isMobileMapVisible ? 
+                <Container style={{position: "absolute",  width: "100%", height: "85vh"}} p="0">
+                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile} isMobileVertical={isMobileVertical}/>
                 </Container> 
                 :
                 (locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest)) ? (
@@ -303,7 +311,7 @@ function BrowsePage() {
                 
             {(!isMobile && mapVisible) && 
               <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-                <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
+                <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap}/>
               </Container>
         }
         

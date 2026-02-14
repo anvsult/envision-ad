@@ -76,7 +76,7 @@ export interface WeeklyScheduleModel {
     endTime: string | null;
 }
 
-export function getJoinedAddress(items: string[]) {
+export function getJoinedAddress(items: (string | undefined)[]) {
     return items.join(", ");
 }
 
