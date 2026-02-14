@@ -354,7 +354,7 @@ class ReservationControllerIntegrationTest {
     }
 
     @Test
-    void createReservation_WithConflictingDates_ShouldReturn409() {
+    void createReservation_WithConflictingConfirmedReservation_ShouldReturn409() {
         // Arrange - Create an existing reservation
         Reservation existingReservation = new Reservation();
         existingReservation.setReservationId(UUID.randomUUID().toString());
@@ -385,6 +385,108 @@ class ReservationControllerIntegrationTest {
 
         // Verify only the existing reservation exists
         assertEquals(1, reservationRepository.count());
+    }
+
+    @Test
+    void createReservation_WithConflictingPendingReservation_ShouldReturn409() {
+        // Arrange - Create an existing pending reservation
+        Reservation existingReservation = new Reservation();
+        existingReservation.setReservationId(UUID.randomUUID().toString());
+        existingReservation.setMediaId(UUID.fromString(this.mediaId));
+        existingReservation.setCampaignId(this.campaignId);
+        existingReservation.setAdvertiserId(USER_ID);
+        existingReservation.setStatus(ReservationStatus.PENDING);
+        existingReservation.setStartDate(LocalDateTime.now().plusDays(1));
+        existingReservation.setEndDate(LocalDateTime.now().plusDays(8));
+        existingReservation.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(existingReservation);
+
+        // Attempt to create a conflicting reservation
+        ReservationRequestModel requestModel = new ReservationRequestModel();
+        requestModel.setCampaignId(this.campaignId);
+        requestModel.setStartDate(LocalDateTime.now().plusDays(2)); // Overlaps with existing
+        requestModel.setEndDate(LocalDateTime.now().plusDays(9));
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_RESERVATIONS, this.mediaId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isEqualTo(409);
+
+        // Verify only the existing reservation exists
+        assertEquals(1, reservationRepository.count());
+    }
+
+    @Test
+    void createReservation_WithConflictingActiveReservation_ShouldReturn409() {
+        // Arrange - Create an existing active reservation
+        Reservation existingReservation = new Reservation();
+        existingReservation.setReservationId(UUID.randomUUID().toString());
+        existingReservation.setMediaId(UUID.fromString(this.mediaId));
+        existingReservation.setCampaignId(this.campaignId);
+        existingReservation.setAdvertiserId(USER_ID);
+        existingReservation.setStatus(ReservationStatus.APPROVED);
+        existingReservation.setStartDate(LocalDateTime.now().plusDays(1));
+        existingReservation.setEndDate(LocalDateTime.now().plusDays(8));
+        existingReservation.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(existingReservation);
+
+        // Attempt to create a conflicting reservation
+        ReservationRequestModel requestModel = new ReservationRequestModel();
+        requestModel.setCampaignId(this.campaignId);
+        requestModel.setStartDate(LocalDateTime.now().plusDays(2)); // Overlaps with existing
+        requestModel.setEndDate(LocalDateTime.now().plusDays(9));
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_RESERVATIONS, this.mediaId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isEqualTo(409);
+
+        // Verify only the existing reservation exists
+        assertEquals(1, reservationRepository.count());
+    }
+
+    @Test
+    void createReservation_ConflictingWithDeniedReservation_ShouldAllowCreation() {
+        // Arrange - Create an existing denied reservation
+        Reservation existingReservation = new Reservation();
+        existingReservation.setReservationId(UUID.randomUUID().toString());
+        existingReservation.setMediaId(UUID.fromString(this.mediaId));
+        existingReservation.setCampaignId(this.campaignId);
+        existingReservation.setAdvertiserId(USER_ID);
+        existingReservation.setStatus(ReservationStatus.DENIED);
+        existingReservation.setStartDate(LocalDateTime.now().plusDays(1));
+        existingReservation.setEndDate(LocalDateTime.now().plusDays(8));
+        existingReservation.setTotalPrice(new BigDecimal("150.00"));
+        reservationRepository.save(existingReservation);
+
+        // Attempt to create a conflicting reservation
+        ReservationRequestModel requestModel = new ReservationRequestModel();
+        requestModel.setCampaignId(this.campaignId);
+        requestModel.setStartDate(LocalDateTime.now().plusDays(2)); // Overlaps with existing
+        requestModel.setEndDate(LocalDateTime.now().plusDays(9));
+
+        // Act & Assert
+        webTestClient.post()
+                .uri(BASE_URI_RESERVATIONS, this.mediaId)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .headers(headers -> headers.setBearerAuth("mock-token"))
+                .body(BodyInserters.fromValue(requestModel))
+                .exchange()
+                .expectStatus().isCreated();
+
+        // Verify both reservations exist
+        assertEquals(2, reservationRepository.count());
     }
 
     @Test
