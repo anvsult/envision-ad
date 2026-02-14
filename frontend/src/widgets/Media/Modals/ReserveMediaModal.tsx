@@ -195,6 +195,13 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                             }),
                             color: 'red'
                         });
+                    } else {
+                        // Generic notification for non-409 HTTP errors
+                        notifications.show({
+                            title: t('errorTitle'),
+                            message: t('errors.reservationFailed'),
+                            color: 'red'
+                        });
                     }
                 } else {
                     notifications.show({
