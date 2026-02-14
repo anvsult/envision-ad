@@ -24,6 +24,26 @@ async function mergeAuthHeaders(response: NextResponse, request: NextRequest): P
 }
 
 export default async function proxy(request: NextRequest) {
+  if (request.nextUrl.pathname === "/auth/callback") {
+    const error = request.nextUrl.searchParams.get('error');
+
+    if (error) {
+      const cookieLocale = request.cookies.get('NEXT_LOCALE')?.value;
+      const locale = (cookieLocale && isValidLocale(cookieLocale))
+              ? cookieLocale
+              : routing.defaultLocale;
+
+      const errorUrl = new URL(`/${locale}/auth/error`, request.url);
+      errorUrl.searchParams.set('error', error);
+      const errorDescription = request.nextUrl.searchParams.get('error_description');
+      if (errorDescription) {
+        errorUrl.searchParams.set('error_description', errorDescription);
+      }
+
+      return NextResponse.redirect(errorUrl);
+    }
+  }
+
   if (request.nextUrl.pathname.startsWith("/auth")) {
     return await auth0.middleware(request);
   }

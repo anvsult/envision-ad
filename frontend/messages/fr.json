@@ -13,6 +13,21 @@
     "description": "Vous n'avez pas l'autorisation d'accéder à cette page.",
     "back": "Retour à l'accueil"
   },
+  "auth": {
+    "errors": {
+      "title": "Erreur d'authentification",
+      "unauthorized": "Votre compte a été bloqué. Veuillez contacter le support pour obtenir de l'aide.",
+      "userBlocked": "Votre compte a été bloqué. Veuillez contacter le support pour obtenir de l'aide.",
+      "accessDenied": "L'accès a été refusé. Vous n'avez peut-être pas la permission d'accéder à cette ressource.",
+      "serverError": "Une erreur du serveur d'authentification s'est produite. Veuillez réessayer plus tard.",
+      "temporarilyUnavailable": "Le service d'authentification est temporairement indisponible. Veuillez réessayer plus tard.",
+      "invalidRequest": "La demande d'authentification était invalide. Veuillez réessayer.",
+      "invalidScope": "Les permissions demandées sont invalides ou non autorisées.",
+      "unsupportedResponseType": "Le type de réponse d'authentification n'est pas pris en charge.",
+      "generic": "Une erreur d'authentification s'est produite. Veuillez réessayer ou contacter le support.",
+      "back": "Retour à l'accueil"
+    }
+  },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
