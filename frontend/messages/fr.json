@@ -93,6 +93,7 @@
     },
     "sections": {
       "earningsTrendWeekly": "Tendance des gains (hebdomadaire)",
+      "earningsTrendAllTime": "Tendance des gains (toute période)",
       "revenueByLocation": "Revenus par emplacement",
       "revenueByMedia": "Revenus par média",
       "activeCampaignDetails": "Détails des campagnes actives",

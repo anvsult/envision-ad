@@ -64,6 +64,12 @@ export const formatTrendDate = (date: Date) =>
         day: "numeric",
     });
 
+export const formatTrendMonth = (date: Date) =>
+    date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "2-digit",
+    });
+
 export const sumAmountInRange = (
     points: PayoutAmountPoint[],
     startUnix: number,

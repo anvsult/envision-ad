@@ -17,9 +17,10 @@ import type {
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/types";
 import {
     applyActiveCampaignCountToKpis,
+    buildEarningsTrend,
     buildEarningsDashboardData,
     buildEarningsKpis,
-    buildWeeklyEarningsTrend,
+    mapPayoutsToAmountPoints,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/earnings-utils";
 import { buildOverviewMetricsData } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/overview-utils";
 import { buildPaginationInfo } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/pagination-utils";
@@ -40,9 +41,7 @@ export function useMediaOwnerMetricsData() {
     const [earningsKpis, setEarningsKpis] = useState<MetricsKpi[]>(() =>
         buildEarningsKpis([], 0)
     );
-    const [earningsTrend, setEarningsTrend] = useState<EarningsTrendPoint[]>(() =>
-        buildWeeklyEarningsTrend([])
-    );
+    const [payoutAmountPoints, setPayoutAmountPoints] = useState(() => mapPayoutsToAmountPoints([]));
     const [payoutHistoryRows, setPayoutHistoryRows] = useState<PayoutHistoryRow[]>(
         mediaOwnerMetricsMock.payoutHistory
     );
@@ -60,6 +59,11 @@ export function useMediaOwnerMetricsData() {
                 overviewMetricsData.activeCampaignCount
             ),
         [earningsKpis, overviewMetricsData.activeCampaignCount]
+    );
+
+    const earningsTrend = useMemo<EarningsTrendPoint[]>(
+        () => buildEarningsTrend(payoutAmountPoints, overviewPeriod),
+        [payoutAmountPoints, overviewPeriod]
     );
 
     const payoutPagination = useMemo(
@@ -116,7 +120,7 @@ export function useMediaOwnerMetricsData() {
                         : [];
                     const earningsDashboardData = buildEarningsDashboardData(payouts, 0);
                     setEarningsKpis(earningsDashboardData.kpis);
-                    setEarningsTrend(earningsDashboardData.earningsTrend);
+                    setPayoutAmountPoints(mapPayoutsToAmountPoints(payouts));
                     setPayoutHistoryRows(mapPayoutsToRows(payouts));
                     setPayoutPage(1);
                 } else {
@@ -125,7 +129,7 @@ export function useMediaOwnerMetricsData() {
                         dashboardDataResult.reason
                     );
                     setEarningsKpis(buildEarningsKpis([], 0));
-                    setEarningsTrend(buildWeeklyEarningsTrend([]));
+                    setPayoutAmountPoints(mapPayoutsToAmountPoints([]));
                     setPayoutHistoryRows(mediaOwnerMetricsMock.payoutHistory);
                     setPayoutPage(1);
                 }
@@ -151,7 +155,7 @@ export function useMediaOwnerMetricsData() {
                 if (!isCancelled) {
                     console.error("Failed to load media owner metrics", error);
                     setEarningsKpis(buildEarningsKpis([], 0));
-                    setEarningsTrend(buildWeeklyEarningsTrend([]));
+                    setPayoutAmountPoints(mapPayoutsToAmountPoints([]));
                     setPayoutHistoryRows(mediaOwnerMetricsMock.payoutHistory);
                     setMediaOwnerReservations([]);
                     setRevenueByMediaPage(1);

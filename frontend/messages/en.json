@@ -89,6 +89,7 @@
     },
     "sections": {
       "earningsTrendWeekly": "Earnings Trend (Weekly)",
+      "earningsTrendAllTime": "Earnings Trend (All-time)",
       "revenueByLocation": "Revenue by Location",
       "revenueByMedia": "Revenue by Media",
       "activeCampaignDetails": "Active Campaigns Details",

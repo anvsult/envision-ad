@@ -3,10 +3,12 @@ import type {
     EarningsDashboardData,
     EarningsTrendPoint,
     MetricsKpi,
+    OverviewPeriod,
     PayoutAmountPoint,
     StripeDashboardPayout,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/types";
 import {
+    formatTrendMonth,
     formatTrendDate,
     parseNumericValue,
     startOfDay,
@@ -35,7 +37,7 @@ const toKpiTrend = (
     };
 };
 
-const mapPayoutsToAmountPoints = (
+export const mapPayoutsToAmountPoints = (
     payouts: StripeDashboardPayout[]
 ): PayoutAmountPoint[] => {
     const nowUnix = Math.floor(Date.now() / 1000);
@@ -144,6 +146,58 @@ export const buildWeeklyEarningsTrend = (
         };
     });
 };
+
+export const buildAllTimeEarningsTrend = (
+    points: PayoutAmountPoint[]
+): EarningsTrendPoint[] => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const earliestPointUnix = points.reduce(
+        (min, point) => Math.min(min, point.createdAtUnix),
+        Number.POSITIVE_INFINITY
+    );
+
+    if (Number.isFinite(earliestPointUnix)) {
+        const earliestPointDate = new Date(earliestPointUnix * 1000);
+        start.setFullYear(earliestPointDate.getFullYear(), earliestPointDate.getMonth(), 1);
+    } else {
+        start.setMonth(start.getMonth() - 11);
+    }
+
+    const monthBuckets: EarningsTrendPoint[] = [];
+    const cursor = new Date(start);
+
+    while (
+        cursor.getFullYear() < now.getFullYear() ||
+        (cursor.getFullYear() === now.getFullYear() &&
+            cursor.getMonth() <= now.getMonth())
+    ) {
+        const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+        const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+
+        monthBuckets.push({
+            date: formatTrendMonth(monthStart),
+            earnings: sumAmountInRange(
+                points,
+                Math.floor(monthStart.getTime() / 1000),
+                Math.floor(monthEnd.getTime() / 1000)
+            ),
+        });
+
+        cursor.setMonth(cursor.getMonth() + 1);
+    }
+
+    return monthBuckets;
+};
+
+export const buildEarningsTrend = (
+    points: PayoutAmountPoint[],
+    period: OverviewPeriod
+): EarningsTrendPoint[] =>
+    period === "weekly"
+        ? buildWeeklyEarningsTrend(points)
+        : buildAllTimeEarningsTrend(points);
 
 export const buildEarningsDashboardData = (
     payouts: StripeDashboardPayout[],

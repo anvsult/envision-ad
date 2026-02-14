@@ -46,6 +46,10 @@ export default function MediaOwnerMetricsDashboard() {
         ...item,
         cityLabel: `${item.city} (City)`,
     }));
+    const earningsTrendSectionTitle =
+        overviewPeriod === "allTime"
+            ? t("sections.earningsTrendAllTime")
+            : t("sections.earningsTrendWeekly");
 
     const renderTooltip = (
         payload: ChartTooltipPayload[] | undefined,
@@ -97,7 +101,7 @@ export default function MediaOwnerMetricsDashboard() {
                 <Grid.Col span={{ base: 12, lg: 6 }}>
                     <Paper withBorder p="md" radius="md">
                         <Text fw={600} mb="sm">
-                            {t("sections.earningsTrendWeekly")}
+                            {earningsTrendSectionTitle}
                         </Text>
                         <Box w="100%" h={280} style={{ minWidth: 0 }}>
                             {mounted ? (
@@ -116,7 +120,7 @@ export default function MediaOwnerMetricsDashboard() {
                                             renderTooltip(
                                                 payload as ChartTooltipPayload[] | undefined,
                                                 label,
-                                                t("sections.earningsTrendWeekly")
+                                                earningsTrendSectionTitle
                                             ),
                                     }}
                                 />
