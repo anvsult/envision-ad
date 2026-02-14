@@ -42,9 +42,9 @@ export const routing = defineRouting({
       'en': '/dashboard/media-owner/proof',
       'fr': '/tableau-de-bord/media-owner/preuve'
     },
-    '/dashboard/media-owner/ad-requests': {
-      'en': '/dashboard/media-owner/ad-requests',
-      'fr': '/tableau-de-bord/media-owner/demandes-publicitaires'
+    '/dashboard/media-owner/advertisements': {
+      'en': '/dashboard/media-owner/advertisements',
+      'fr': '/tableau-de-bord/media-owner/publicites'
     },
     '/dashboard/media-owner/locations': {
       'en': '/dashboard/media-owner/locations',
