@@ -23,4 +23,6 @@ public interface AdCampaignService {
     List<String> getAllCampaignImageLinks(String campaignId);
 
     Integer getActiveCampaignCount(String businessId);
+
+    AdCampaignResponseModel deleteAdCampaign(Jwt jwt, String businessId, String campaignId);
 }

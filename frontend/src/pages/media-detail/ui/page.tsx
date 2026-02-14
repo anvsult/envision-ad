@@ -36,6 +36,7 @@ import { LatLngLiteral } from "leaflet";
 import { ReservationStatus } from "@/entities/reservation";
 import { usePermissions } from "@/app/providers";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -107,13 +108,6 @@ export default function MediaDetailsPage() {
   }, [id, t]);
 
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'CAD',
-    }).format(amount);
-  };
-
   const latlng: LatLngLiteral = useMemo(() => ({
     lat: media?.mediaLocation.latitude ?? 0,
     lng: media?.mediaLocation.longitude ?? 0,
@@ -178,7 +172,7 @@ export default function MediaDetailsPage() {
 
   const priceLabel =
     media.price != null
-      ? t("pricePerWeek", { price: formatCurrency(media.price) })
+      ? t("pricePerWeek", { price: formatCurrency(media.price, { locale }) })
       : t("priceUnavailable");
 
   const imageSrc = media.imageUrl || "/sample-screen.jpg";

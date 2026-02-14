@@ -4,6 +4,7 @@ import { Table, Badge, Avatar, Text } from "@mantine/core";
 import { useState } from "react";
 import {useLocale, useTranslations} from "next-intl";
 import { MediaActions } from "./MediaActions";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 export interface MediaRowData {
   id: string | number;
@@ -40,13 +41,6 @@ export function MediaRow({
   }
   const locale = useLocale();
 
-  const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'CAD',
-    }).format(amount);
-  };
-
   return (
     <Table.Tr
       onMouseEnter={() => setHovered(true)}
@@ -57,21 +51,21 @@ export function MediaRow({
         <Avatar src={row.image} alt={row.name} size="md" radius="md" />
       </Table.Td>
       <Table.Td>
-        <Text fw={500} size="sm">
+        <Text miw={120} fw={500} size="sm">
           {row.name}
         </Text>
       </Table.Td>
-      <Table.Td>
-        <Text size="lg" fw={700} c="blue" ta="center">
+      <Table.Td ta="right">
+        <Text size="lg" fw={700} c="blue">
           {row.adsDisplayed}
         </Text>
       </Table.Td>
-      <Table.Td>
-        <Text size="lg" fw={700} c="orange" ta="center">
+      <Table.Td ta="right">
+        <Text size="lg" fw={700} c="orange">
           {row.pending}
         </Text>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Badge
           color={getStatusColor(row.status)}
           variant="light"
@@ -81,14 +75,14 @@ export function MediaRow({
           {t("status." + row.status.toLowerCase())}
         </Badge>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Text size="sm" c="dimmed">
           {row.timeUntil}
         </Text>
       </Table.Td>
-      <Table.Td>
+      <Table.Td ta="right">
         <Text size="sm" fw={600} c="teal">
-          {formatCurrency(parseFloat(row.price))}
+          {formatCurrency(parseFloat(row.price), { locale })}
         </Text>
       </Table.Td>
       {/* ACTIONS COLUMN */}

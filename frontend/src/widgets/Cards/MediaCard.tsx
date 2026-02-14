@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress } from "@/entities/media";
 import { useMediaQuery } from "@mantine/hooks";
 import {MediaLocation} from "@/entities/media-location";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 export interface MediaCardProps {
     index: string;
@@ -40,13 +41,6 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
     const t = useTranslations("mediacard");
     const locale = useLocale();
 
-    const formatCurrency = (amount: number): string => {
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: 'CAD',
-        }).format(amount);
-    };
-
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" 
             style={{scrollMarginTop: "25vh"}}
@@ -75,8 +69,8 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardOrganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
                                 {organizationName}
                             </Text>
-                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>
-                                {t('perWeek', {price: formatCurrency(price)})}
+                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1}>
+                                {t('perWeek', { price: formatCurrency(price, { locale }) })}
                             </Text>
                             
                             

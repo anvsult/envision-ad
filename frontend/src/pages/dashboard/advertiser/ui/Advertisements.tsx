@@ -11,8 +11,8 @@ import {
 } from "@/entities/reservation";
 import { getAllReservationByAdvertiserBusinessId } from "@/features/reservation-management/api";
 import { getEmployeeOrganization } from "@/features/organization-management/api";
-import { AdvertiserReservationCards } from "@/pages/dashboard/advertiser/ui/cards/AdvertiserReservationCards";
 import { PaymentModal } from "@/pages/dashboard/advertiser/ui/modals/PaymentModal";
+import {ReservationCards} from "@/shared/ui";
 
 export default function Advertisements() {
     const t = useTranslations("advertiserReservations");
@@ -154,10 +154,10 @@ export default function Advertisements() {
                 ]}
             />
 
-            <AdvertiserReservationCards
+            <ReservationCards
                 reservations={filteredReservations}
+                viewType="advertiser"
                 onPayClick={handlePayClick}
-                showPayButton={showPayButton}
             />
 
             <PaymentModal

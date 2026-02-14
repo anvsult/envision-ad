@@ -6,10 +6,7 @@ import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignRequest
 import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdRequestMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdResponseMapper;
-import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.InvalidAdTypeException;
-import com.envisionad.webservice.advertisement.exceptions.InvalidAdDurationException;
+import com.envisionad.webservice.advertisement.exceptions.*;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignResponseModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
@@ -18,6 +15,7 @@ import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.CloudinaryConfig;
 import com.envisionad.webservice.utils.JwtUtils;
 
@@ -154,6 +152,55 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         adCampaignRepository.save(adCampaign);
 
         return adResponseMapper.entityToResponseModel(adToDelete);
+    }
+
+    @Override
+    public AdCampaignResponseModel deleteAdCampaign(Jwt jwt, String businessId, String campaignId) {
+        // Validate the user is an employee of the business
+
+        if (businessId == null || businessId.isBlank()) {
+            throw new BusinessNotFoundException(businessId);
+        }
+
+        if (campaignId == null || campaignId.isBlank()) {
+            throw new AdCampaignNotFoundException(campaignId);
+        }
+
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
+
+        AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
+        if (adCampaign == null) {
+            throw new AdCampaignNotFoundException(campaignId);
+        }
+        // Validate the campaign belongs to the business
+        jwtUtils.validateBusinessOwnsCampaign(businessId, adCampaign);
+
+        // Validate the campaign is not associated with a confirmed reservation
+        LocalDateTime now = LocalDateTime.now();
+
+        boolean hasConfirmedReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now);
+        if (hasConfirmedReservations) {
+            throw new CampaignHasConfirmedReservationException(campaignId);
+        }
+
+        boolean hasConfirmedReservation = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.APPROVED, now);
+        if (hasConfirmedReservation) {
+            throw new CampaignHasApprovedReservationException(campaignId);
+        }
+
+        // Validate the campaign is not associated with a pending reservation
+        boolean hasPendingReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING, now);
+        if (hasPendingReservations) {
+            throw new CampaignHasPendingReservationException(campaignId);
+        }
+
+        // Delete all associated ads and their Cloudinary assets
+        for (Ad ad : adCampaign.getAds()) {
+            deleteCloudinaryAssetIfPresent(ad.getAdUrl());
+        }
+
+        adCampaignRepository.delete(adCampaign);
+        return adCampaignResponseMapper.entityToResponseModel(adCampaign);
     }
 
     private void deleteCloudinaryAssetIfPresent(String url) {
