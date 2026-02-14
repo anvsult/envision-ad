@@ -871,7 +871,8 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer."
+          "tiedReservationMessage": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer.",
+          "genericMessage": "Échec de la suppression de la campagne"
         }
       },
       "createCampaign": {

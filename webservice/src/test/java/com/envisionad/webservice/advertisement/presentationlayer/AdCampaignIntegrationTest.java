@@ -461,6 +461,7 @@ public class AdCampaignIntegrationTest {
         reservation.setReservationId(UUID.randomUUID().toString());
         reservation.setStatus(ReservationStatus.CONFIRMED);
         reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
         reservationRepository.save(reservation);
 
         // Act & Assert
@@ -487,6 +488,7 @@ public class AdCampaignIntegrationTest {
         reservation.setReservationId(UUID.randomUUID().toString());
         reservation.setStatus(ReservationStatus.PENDING);
         reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
         reservationRepository.save(reservation);
 
         // Act & Assert

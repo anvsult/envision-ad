@@ -167,13 +167,15 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         jwtUtils.validateBusinessOwnsCampaign(businessId, adCampaign);
 
         // Validate the campaign is not associated with a confirmed reservation
-        boolean hasConfirmedReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED);
+        LocalDateTime now = LocalDateTime.now();
+
+        boolean hasConfirmedReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now);
         if (hasConfirmedReservations) {
             throw new CampaignHasConfirmedReservationException(campaignId);
         }
 
         // Validate the campaign is not associated with a pending reservation
-        boolean hasPendingReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING);
+        boolean hasPendingReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING, now);
         if (hasPendingReservations) {
             throw new CampaignHasPendingReservationException(campaignId);
         }

@@ -164,16 +164,30 @@ export default function AdCampaigns() {
                 color: 'green'
             });
             await loadCampaigns(); // Refresh list
-        } catch (error) {
-            console.error('Failed to delete campaign', error);
-            notifications.show({
-                title: t('notifications.deleteCampaign.error.title'),
-                message: t('notifications.deleteCampaign.error.message'),
-                color: 'red'
-            });
-        } finally {
             setConfirmDeleteCampaignOpen(false);
             setCampaignIdToDelete(null);
+        } catch (error) {
+            console.error('Failed to delete campaign', error);
+
+            // Simple type narrowing
+            const err = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = err.response?.status;
+            const serverMessage = err.response?.data?.message;
+
+            let messageToShow: string;
+            if (status === 409) {
+                messageToShow = t('notifications.deleteCampaign.error.tiedReservationMessage');
+            } else if (serverMessage) {
+                messageToShow = serverMessage;
+            } else {
+                messageToShow = t('notifications.deleteCampaign.error.genericMessage');
+            }
+
+            notifications.show({
+                title: t('notifications.deleteCampaign.error.title'),
+                message: messageToShow,
+                color: 'red'
+            });
         }
     }
 

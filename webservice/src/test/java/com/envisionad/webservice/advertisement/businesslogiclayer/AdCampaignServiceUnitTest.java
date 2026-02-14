@@ -19,6 +19,7 @@ import org.mockito.*;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -361,8 +362,19 @@ class AdCampaignServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED)).thenReturn(false);
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING)).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
         when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
 
         // Act
@@ -385,7 +397,12 @@ class AdCampaignServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED)).thenReturn(true);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
 
         // Act & Assert
         assertThrows(CampaignHasConfirmedReservationException.class,
@@ -405,8 +422,18 @@ class AdCampaignServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED)).thenReturn(false);
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING)).thenReturn(true);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
 
         // Act & Assert
         assertThrows(CampaignHasPendingReservationException.class,
@@ -426,8 +453,18 @@ class AdCampaignServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED)).thenReturn(false);
-        when(reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING)).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
         when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
 
         // Act
