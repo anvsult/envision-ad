@@ -6,7 +6,7 @@ import { getAllFilteredActiveMedia, SpecialSort } from ".";
 
 export function useMediaList({
   filteredMediaProps, loadingLocation, setMediaStatus
-}: UseMediaListProps, p0: never[]) {
+}: UseMediaListProps) {
     const [medias, setMedias] = useState<MediaCardProps[]>([]);
     
     useEffect(() => {

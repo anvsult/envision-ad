@@ -33,14 +33,14 @@ interface MediaMarkerProps{
 
 
 function MediaMarker({media, isMobileVertical, open, setMediaList, setAddressName}: MediaMarkerProps){
-  media = media.sort((a, b) => a.price - b.price);
+  const sortedMedia = [...media].sort((a, b) => a.price - b.price);
 
-  const mediaCount = media.length;
+  const mediaCount = sortedMedia.length;
   const map = useMap();
   const markerRef = useRef<L.Marker>(null);
   const popupRef = useRef<L.Popup>(null);
   const iconHtml = renderToString(<IconDeviceDesktop/>);
-  const location = media[0].mediaLocation;
+  const location = sortedMedia[0].mediaLocation;
   const address = getJoinedAddress([location?.street, location?.city, location?.province] )
 
 
@@ -172,7 +172,7 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
   )
 
     return(
-        <Paper radius={isMobile ? "": "lg"} style={{position:"sticky", overflow: "hidden", height:(isMobile ? "100%" : "90vh")}}>
+        <Paper radius={isMobile ? undefined : "lg"} style={{position:"sticky", overflow: "hidden", height:(isMobile ? "100%" : "90vh")}}>
            {displayMap}
            {(isMobileVertical) &&
             <Drawer opened={opened} onClose={close} position="bottom" size={(mediaList.length > 1) ? "sm" : "xs"} withCloseButton={false} title={addressName}>
@@ -182,7 +182,7 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
                   {mediaList.map((m) => (
                     <MediaCard
                         key={m.index}
-                        index={"MediaCard" + m.index }
+                        index={m.index}
                         href={m.href}
                         imageUrl={m.imageUrl}
                         imageRatio={1}

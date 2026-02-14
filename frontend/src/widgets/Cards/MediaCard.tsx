@@ -72,7 +72,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} className={styles.mediaTitle} m={0} truncate>
                                 {title}
                             </Text>
-                            <Text id={"MediaCardorganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
+                            <Text id={"MediaCardOrganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
                                 {organizationName}
                             </Text>
                             <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>

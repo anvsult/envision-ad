@@ -226,7 +226,7 @@ function BrowsePage() {
       <Container size={map ? 1600 : "xl"} w="100%" pt={isMobile ? 0 : 20} pb={isMobileMapVisible ? 0 : 20} px={isMobileMapVisible ? 0: "xs"}>
         <Group grow h="100%" top="0" justify='flex-start'>
           <Stack gap="xs" mih={isMobile ? "85vh": "95vh"} top="0" justify='flex-start' align={isMobileMapVisible ? 'end': 'center'}>
-            <Stack pt={isMobile ? 10 : 0} gap={0} align='right' px={isMobileMapVisible ? "xs" : "0"} w={"100%"} pl={isMobileMapVisible ? "55px" : 0}>
+            <Stack pt={isMobile ? 10 : 0} gap={0} align='flex-end' px={isMobileMapVisible ? "xs" : "0"} w={"100%"} pl={isMobileMapVisible ? "55px" : 0}>
               <SearchMobileViewer>
                 <Autocomplete 
                   placeholder={t('searchAddress')}

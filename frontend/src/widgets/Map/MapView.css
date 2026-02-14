@@ -34,13 +34,13 @@
 }
 
 .leaflet-popup-content{
-    margin: -1;
+    margin: -1px;
 }
 
 .leaflet-container a.leaflet-popup-close-button {
     background-color: white;
-    border-radius: 24;
-    margin: 5;
+    border-radius: 24px;
+    margin: 5px;
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 }
 
