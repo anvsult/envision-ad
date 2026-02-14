@@ -25,26 +25,24 @@ skinparam rectangle<<Temporal>> {
 
 rectangle "Envision Ad" {
   ' --- Advertiser use cases ---
-  usecase "UC_02 Publish Ad Campaign" as PublishAd
+  usecase "UC-03 Make Ad Payment" as Pay
   usecase " View Media Details" as ViewMediaDetails
   usecase "UC_01 Browse Media Inventory" as Browse
   usecase "UC_06 Provide Proof of Display" as ProvideProof
+  usecase "UC_13 Create Pending Reservation" as CreatePendingReservation
 
   ' --- Media Owner use cases ---
   usecase "UC_09 Manage Media Listing" as ManageListing
   usecase "UC_12 View Ad Requests/History" as ViewAd
   usecase "UC_15 Notify Advertiser of Approval Decision" as NotifyApproval
   usecase "UC_16 Remind Media Owner to Update Media Content" as StartAd
-  usecase "UC_17        Remind Media Owner to Send Proof of Display" as SendProofReminder
+  usecase "UC_17 Remind Media Owner to Send Proof of Display" as SendProofReminder
+  usecase "Manage Reservation" as ManageReservation
 
   ' --- Admin use cases ---
   usecase "UC_08 Approve/Deny Media Listing" as ApproveListing
   usecase "UC_10 Issue Content Warning" as ContentWarning
 
-note top of PublishAd
-  Detailed in separate diagram:
-  "use-case-publish-ad.puml"
-end note
 
 '  ' --- Note ---
 '  note right of ConfirmProof
@@ -55,8 +53,8 @@ end note
 '
   ' --- Actor connections (solid lines) ---
 '  ADV -- Browse
-  ADV -- PublishAd
   ADV -- Browse
+  ADV -- CreatePendingReservation
 '  ADV -- ConfirmProof
 
   ' keep media owner lines inside rectangle
@@ -76,10 +74,10 @@ end note
   HG -- NotifyApproval
 
   GU -- Browse
-  GU -[hidden]- PublishAd
   ' --- Relationships (dotted, no arrows, all contained) ---
-  PublishAd -> ViewMediaDetails     : <<extends>>
   ViewMediaDetails -> Browse : <<extends>>
+  Pay ..> ManageReservation : <<includes>>
+  ManageReservation ..> CreatePendingReservation : <<includes>>
 '  Request <-- ApproveAd     : <<extends>>
 '  ConfirmProof <-- Proof   : <<includes>>
 '  ApproveAd <-- Proof      : <<includes>>
