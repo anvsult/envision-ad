@@ -9,6 +9,7 @@ import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
 import { IconCheck } from "@tabler/icons-react";
 import { WeeklyScheduleModel } from "@/entities/media";
+import axiosInstance from "@/shared/api/axios/axios";
 
 import { MediaLocation, MediaLocationRequestDTO } from "@/entities/media-location/model/mediaLocation";
 import {
@@ -328,18 +329,24 @@ export default function MediaLocations() {
         }
     };
 
-    const handleToggleMediaStatus = async (id: string | number) => {
+    const handleToggleMediaStatus = async (id: string | number, nextStatus: "ACTIVE" | "INACTIVE") => {
         try {
-            await toggleMediaStatus(id);
+            await axiosInstance.patch(`/media/${id}/status`, { status: nextStatus });
+
             notifications.show({
                 title: t("notifications.statusMedia.success.title"),
                 message: t("notifications.statusMedia.success.message"),
                 color: "green",
             });
+
             loadLocations();
         } catch (error) {
             console.error("Failed to toggle status", error);
-            notifications.show({ title: "Error", message: t("notifications.statusMedia.error.message"), color: "red" });
+            notifications.show({
+                title: "Error",
+                message: t("notifications.statusMedia.error.message"),
+                color: "red",
+            });
         }
     };
 

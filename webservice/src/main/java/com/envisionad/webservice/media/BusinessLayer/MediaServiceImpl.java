@@ -319,24 +319,24 @@ public class MediaServiceImpl implements MediaService {
             throw new AccessDeniedException("Access Denied");
         }
 
-        boolean hasUpdateMedia = jwt.getClaimAsStringList("permissions") != null
-                && jwt.getClaimAsStringList("permissions").contains("update:media");
-
-        if (!hasUpdateMedia) {
-            throw new AccessDeniedException("Access Denied");
-        }
-
         Media media = mediaRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new MediaNotFoundException(id));
 
         Status current = media.getStatus();
         Status target = request.getStatus();
 
+        if (target == null) {
+            throw new IllegalArgumentException("Status is required.");
+        }
+
         if (current == target) {
             return mediaResponseMapper.entityToResponseModel(media);
         }
 
-        // Approve/deny only from PENDING
+        if (current == Status.REJECTED) {
+            throw new IllegalStateException("Rejected media cannot be re-activated.");
+        }
+
         boolean allowed =
                 (current == Status.PENDING && (target == Status.ACTIVE || target == Status.REJECTED))
                         || (current == Status.ACTIVE && target == Status.INACTIVE)
