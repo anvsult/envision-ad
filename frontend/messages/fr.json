@@ -35,8 +35,6 @@
       "overview": "Aperçu",
       "metrics": "Métriques",
       "media": "Médias",
-      "adRequests": "Publicités",
-      "proof": "Soumettre Une Preuve",
       "displayedAds": "Annonces affichées",
       "adRequests": "Demandes d'annonce",
       "proof": "Soumettre Une Preuve",
@@ -200,7 +198,7 @@
       "width": "Largeur",
       "height": "Hauteur",
       "loopDuration": "Durée de la boucle",
-      "dailyImpressions": "Impressions quotidiennes"
+      "weeklyImpressions": "Impressions par semaine"
     },
     "scheduleTitle": "Horaire",
     "monthsTitle": "Mois",
@@ -210,8 +208,7 @@
     "pricePerWeek": "{price} par semaine",
     "priceUnavailable": "Prix non disponible",
     "loopDurationSeconds": "{seconds} secondes",
-    "estimatedViewsValue": "300 par jour",
-    "dailyImpressionPerDay": "~{count} impressions par jour",
+    "weeklyImpressions": "~{count} impressions",
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -250,7 +247,7 @@
   },
   "mediacard": {
     "perWeek": "{price} par semaine",
-    "dailyImpressions": "~{dailyImpressions} impressions par jour"
+    "weeklyImpressions": "~{weeklyImpressions} impressions par semaine"
   },
   "browse": {
     "searchTitle": "Titre",

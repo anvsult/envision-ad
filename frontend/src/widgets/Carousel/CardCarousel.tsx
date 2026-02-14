@@ -1,6 +1,6 @@
 import { Carousel } from "@mantine/carousel";
 import classes from "./CardCarousel.module.css";
-import { StyleProp, Title } from "@mantine/core";
+import { Stack, StyleProp, Title } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 import { useMediaList } from "@/features/media-management/api/useMediaList";
@@ -19,8 +19,8 @@ function CardCarousel({title, children, slideSize}: CardCarouselProps) {
             <Carousel 
                 classNames={classes}
                 mih={310}
-                slideSize={slideSize ?? { base: '100%', sm: '50%', md: '25%' }}
-                slideGap={{ base: 0, sm: 'md' }}
+                slideSize={slideSize ?? { base: '100%', xs:'33%', sm: '25%', md: '25%' }}
+                slideGap={{ base: 0, xs: 'xs', sm: 'md' }}
                 emblaOptions={{ loop: true, align: 'start', dragFree: true}}
             >
                 {children}
@@ -43,7 +43,7 @@ export function MediaCardCarousel({id, title, medias, slideSize, imageRatio}: Me
         (medias.length > 0 &&
             <CardCarousel title={title} slideSize={slideSize}>
                 {medias.map((media) => (
-                    <Carousel.Slide key={id ? id + media.index : media.index}>
+                    <Carousel.Slide key={id ? id + media.index : media.index} w={"sm"}>
                         <MediaCard
                             index={id ? id + media.index : media.index}
                             href={media.href}
@@ -57,6 +57,7 @@ export function MediaCardCarousel({id, title, medias, slideSize, imageRatio}: Me
                             typeOfDisplay={media.typeOfDisplay}
                             price={media.price} 
                             dailyImpressions={media.dailyImpressions}
+                            schedule={media.schedule}
                             resolution={media.resolution} 
                         />
                     </Carousel.Slide>
@@ -80,6 +81,36 @@ export function MediaCardCarouselLoader({id, title, filteredMediaProps}: MediaCa
             title={title}
             medias={medias}
         />
+    );
+}
+
+export function MediaCardStackLoader({id, title, filteredMediaProps}: MediaCardCarouselLoaderProps){
+    const medias = useMediaList({filteredMediaProps});
+    return (
+        
+        <Stack>
+            <Title size="xl">{title}</Title>
+            {medias.map((media) => (
+                <MediaCard
+                    key={id ? id + media.index : media.index}
+                    index={id ? id + media.index : media.index}
+                    href={media.href}
+                    imageUrl={media.imageUrl}
+                    imageRatio={1}
+                    title={media.title}
+                    organizationId={media.organizationId}
+                    organizationName={media.organizationName}
+                    mediaLocation={media.mediaLocation}
+                    aspectRatio={media.aspectRatio}
+                    typeOfDisplay={media.typeOfDisplay}
+                    price={media.price} 
+                    dailyImpressions={media.dailyImpressions}
+                    schedule={media.schedule}
+                    resolution={media.resolution} 
+                />
+            ))}
+                
+        </Stack>
     );
 }
 

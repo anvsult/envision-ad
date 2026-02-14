@@ -67,7 +67,7 @@ public class MediaServiceImpl implements MediaService {
             String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            Integer minDailyImpressions,
+            Integer minWeeklyImpressions,
             String specialSort,
             Double userLat,
             Double userLng,
@@ -90,8 +90,8 @@ public class MediaServiceImpl implements MediaService {
             spec = spec.and(MediaSpecifications.priceBetween(minPrice, maxPrice));
         }
 
-        if (minDailyImpressions != null) {
-            spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
+        if (minWeeklyImpressions != null) {
+            spec = spec.and(MediaSpecifications.weeklyImpressionsGreaterThan(minWeeklyImpressions));
         }
 
         if (excludedId != null) {
@@ -127,6 +127,28 @@ public class MediaServiceImpl implements MediaService {
             List<Media> paged = list.subList(pageStart, pageEnd);
 
             return new PageImpl<>(paged, pageable, list.size());
+        }
+
+        if ("weeklyImpressions,asc".equals(specialSort)) {
+            List<Media> list = mediaRepository.findAll(spec);
+
+            list.sort(Comparator.comparingInt(
+                    m -> (m.getDailyImpressions() == null ? 0 : m.getDailyImpressions())
+                            * (m.getActiveDays() == null ? 0 : m.getActiveDays())
+            ));
+
+            return paginate(list, pageable);
+        }
+
+        if ("weeklyImpressions,desc".equals(specialSort)) {
+            List<Media> list = mediaRepository.findAll(spec);
+
+            list.sort(Comparator.comparingInt(
+                    (Media m) -> (m.getDailyImpressions() == null ? 0 : m.getDailyImpressions())
+                            * (m.getActiveDays() == null ? 0 : m.getActiveDays())
+            ).reversed());
+
+            return paginate(list, pageable);
         }
 
         return mediaRepository.findAll(spec, pageable);
@@ -271,5 +293,16 @@ public class MediaServiceImpl implements MediaService {
             }
         }
         mediaRepository.delete(media);
+    }
+
+    private Page<Media> paginate(List<Media> list, Pageable pageable) {
+        int pageStart = (int) pageable.getOffset();
+        int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
+
+        if (pageStart >= list.size()) {
+            return Page.empty(pageable);
+        }
+
+        return new PageImpl<>(list.subList(pageStart, pageEnd), pageable, list.size());
     }
 }

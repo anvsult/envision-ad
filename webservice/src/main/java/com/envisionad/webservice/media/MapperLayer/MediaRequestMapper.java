@@ -3,6 +3,8 @@ package com.envisionad.webservice.media.MapperLayer;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -34,6 +36,7 @@ public class MediaRequestMapper {
         media.setDailyImpressions(request.getDailyImpressions());
         media.setImageUrl(request.getImageUrl());
         media.setPreviewConfiguration(request.getPreviewConfiguration());
+        media.setActiveDays(calculateActiveDays(media.getSchedule()));
 
         if (request.getBusinessId() != null) {
             media.setBusinessId(UUID.fromString(request.getBusinessId()));
@@ -47,4 +50,16 @@ public class MediaRequestMapper {
 
         return media;
     }
+
+    private int calculateActiveDays(ScheduleModel schedule) {
+        if (schedule == null || schedule.getWeeklySchedule() == null) {
+            return 0;
+        }
+
+        return (int) schedule.getWeeklySchedule()
+                .stream()
+                .filter(WeeklyScheduleEntry::isActive)
+                .count();
+    }
 }
+

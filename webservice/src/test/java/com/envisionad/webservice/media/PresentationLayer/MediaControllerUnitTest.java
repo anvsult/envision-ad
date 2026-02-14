@@ -474,24 +474,24 @@ class MediaControllerUnitTest {
         }
 
         @Test
-        void getAllFilteredActiveMedia_MinDailyImpressionsNegative_ShouldThrowException() {
-                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.getAllFilteredActiveMedia(
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        -10,
-                                        null,
-                                        null,
-                                        null,
-                                        null,
-                                        null);
-                });
+        void getAllFilteredActiveMedia_MinWeeklyImpressionsNegative_ShouldThrowException() {
+            IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+                mediaController.getAllFilteredActiveMedia(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        -10,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null);
+            });
 
-                assertEquals("minDailyImpressions must be non-negative.", exception.getMessage());
-                verifyNoInteractions(mediaService);
+            assertEquals("minWeeklyImpressions must be non-negative.", exception.getMessage());
+            verifyNoInteractions(mediaService);
         }
 
         @Test

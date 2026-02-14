@@ -117,6 +117,7 @@ CREATE TABLE media (
     height DOUBLE PRECISION,
     price DECIMAL(10, 2),
     daily_impressions INTEGER,
+    active_days INTEGER,
     schedule JSONB,
     status VARCHAR(50) NOT NULL,
     image_url VARCHAR(2048),

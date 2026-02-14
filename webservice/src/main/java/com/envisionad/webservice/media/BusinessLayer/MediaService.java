@@ -23,7 +23,7 @@ public interface MediaService {
             String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            Integer minDailyImpressions,
+            Integer minWeeklyImpressions,
             String specialSort,
             Double userLat,
             Double userLng,

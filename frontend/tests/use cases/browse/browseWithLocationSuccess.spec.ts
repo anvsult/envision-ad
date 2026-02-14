@@ -28,11 +28,11 @@ test('Browse Filter Price Min 5 Max 10', async ({ browsePage }) => {
 });
 
 
-test('Browse Filter Impressions Min 1500', async ({ browsePage }) => {
+test('Browse Filter Impressions Min 8000', async ({ browsePage }) => {
     await browsePage.goto();
-    await browsePage.addMinimumImpressionsFilter(1500);
-    await browsePage.assertMediaCardElementToContainText('Impressions0', '~1875 daily impressions');
-    await browsePage.assertMediaCardElementToContainText('Impressions1', '~1875 daily impressions');
+    await browsePage.addMinimumImpressionsFilter(8000);
+    await browsePage.assertMediaCardElementToContainText('Impressions0', '~11250 weekly impressions');
+    await browsePage.assertMediaCardElementToContainText('Impressions1', '~9375 weekly impressions');
 });
 
 test('Browse Search Title No Media', async ({ browsePage }) => {

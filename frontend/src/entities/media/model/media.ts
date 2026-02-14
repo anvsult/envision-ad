@@ -55,7 +55,7 @@ export interface FilteredActiveMediaProps {
     businessId?: string | null,
     minPrice?: number | null,
     maxPrice?: number | null,
-    minDailyImpressions?: number | null,
+    minWeeklyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
     bounds?: LatLngBounds | null,

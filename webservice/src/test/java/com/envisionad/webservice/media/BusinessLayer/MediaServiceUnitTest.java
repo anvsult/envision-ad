@@ -209,7 +209,7 @@ class MediaServiceUnitTest {
         }
 
         @Test
-        void getAllFilteredActiveMedia_WithMinDailyImpressions_ShouldFilterByImpressions() {
+        void getAllFilteredActiveMedia_WithMinWeeklyImpressions_ShouldFilterByImpressions() {
                 // Arrange
                 Pageable pageable = PageRequest.of(0, 10);
                 Integer minImpressions = 25000;
@@ -796,6 +796,8 @@ class MediaServiceUnitTest {
                 entry.setEndTime("17:00");
                 schedule.setWeeklySchedule(List.of(entry));
                 media.setSchedule(schedule);
+
+                media.setActiveDays(1);
 
                 return media;
         }
