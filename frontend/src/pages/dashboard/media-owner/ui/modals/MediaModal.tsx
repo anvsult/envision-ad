@@ -214,6 +214,10 @@ export function MediaModal({
                         newErrors["mediaTitle"] = t("errors.mediaTitleRequired");
                     }
 
+                    if (!formState.displayType) {
+                        newErrors["displayType"] = t("errors.required");
+                    }
+
                     if (!formState.imageUrl) {
                         notifications.show({message: t("errors.mediaImageRequired"), color: "red"});
                         return;
