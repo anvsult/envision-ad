@@ -1226,25 +1226,28 @@ class StripeServiceUnitTest {
                 account.setBusinessId(businessId);
                 account.setStripeAccountId(stripeAccountId);
 
+                // Use a single base timestamp to build deterministic reservation date ranges
+                LocalDateTime base = LocalDateTime.now().withHour(12).withMinute(0).withSecond(0).withNano(0);
+
                 // Reservation: 3 days overlap, dailyImpressions = 1000, CONFIRMED
                 Reservation reservation1 = new Reservation();
                 reservation1.setMediaId(UUID.randomUUID());
-                reservation1.setStartDate(LocalDateTime.now().minusDays(5));
-                reservation1.setEndDate(LocalDateTime.now().minusDays(2));
+                reservation1.setStartDate(base.minusDays(5));
+                reservation1.setEndDate(base.minusDays(2));
                 reservation1.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.CONFIRMED);
 
                 // Reservation: 2 days overlap, dailyImpressions = 500, PENDING
                 Reservation reservation2 = new Reservation();
                 reservation2.setMediaId(UUID.randomUUID());
-                reservation2.setStartDate(LocalDateTime.now().minusDays(3));
-                reservation2.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation2.setStartDate(base.minusDays(3));
+                reservation2.setEndDate(base.minusDays(1));
                 reservation2.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.PENDING);
 
                 // Reservation: 2 days overlap, dailyImpressions = 200, DENIED
                 Reservation reservation3 = new Reservation();
                 reservation3.setMediaId(UUID.randomUUID());
-                reservation3.setStartDate(LocalDateTime.now().minusDays(3));
-                reservation3.setEndDate(LocalDateTime.now().minusDays(1));
+                reservation3.setStartDate(base.minusDays(3));
+                reservation3.setEndDate(base.minusDays(1));
                 reservation3.setStatus(com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus.DENIED);
 
                 // Reservation: 2 days overlap, dailyImpressions = 300, CANCELLED
