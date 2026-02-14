@@ -33,9 +33,14 @@
     "mediaOwnerTitle": "Propriétaire de médias",
     "media-owner": {
       "overview": "Aperçu",
+      "metrics": "Métriques",
       "media": "Médias",
       "adRequests": "Publicités",
-      "proof": "Soumettre Une Preuve"
+      "proof": "Soumettre Une Preuve",
+      "displayedAds": "Annonces affichées",
+      "adRequests": "Demandes d'annonce",
+      "proof": "Soumettre Une Preuve",
+      "locations": "Mes emplacements"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -74,6 +79,45 @@
     "admin": {
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification"
+    }
+  },
+  "mediaOwnerMetrics": {
+    "title": "Métriques du tableau de bord",
+    "cards": {
+      "weeklyEarnings": "Gains hebdomadaires totaux",
+      "monthlyEarnings": "Gains mensuels totaux",
+      "yearlyEarnings": "Gains annuels totaux",
+      "activeCampaigns": "Campagnes actives",
+      "increaseComparedToLastPeriod": "Augmentation par rapport à la période précédente",
+      "decreaseComparedToLastPeriod": "Diminution par rapport à la période précédente"
+    },
+    "sections": {
+      "earningsTrendWeekly": "Tendance des gains (hebdomadaire)",
+      "earningsTrendAllTime": "Tendance des gains (toute période)",
+      "revenueByLocation": "Revenus par emplacement",
+      "revenueByMedia": "Revenus par média",
+      "activeCampaignDetails": "Détails des campagnes actives",
+      "payoutHistory": "Historique des paiements"
+    },
+    "table": {
+      "transactionId": "ID de transaction",
+      "date": "Date",
+      "amount": "Montant",
+      "status": "Statut"
+    },
+    "campaignStatus": {
+      "active": "ACTIVE"
+    },
+    "period": {
+      "allTime": "Tout le temps",
+      "weekly": "Hebdomadaire"
+    },
+    "emptyState": {
+      "noData": "Aucune donnée disponible"
+    },
+    "payoutStatus": {
+      "paid": "PAYÉ",
+      "processing": "EN COURS"
     }
   },
   "homepage": {

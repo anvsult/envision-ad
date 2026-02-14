@@ -33,6 +33,7 @@
     "mediaOwnerTitle": "Media Owner",
     "media-owner": {
       "overview": "Overview",
+      "metrics": "Metrics",
       "media": "Media",
       "adRequests": "Advertisements",
       "proof": "Submit Proof"
@@ -74,6 +75,45 @@
     "admin": {
       "pendingMedia": "Pending Media",
       "pendingOrganizations": "Verification Requests"
+    }
+  },
+  "mediaOwnerMetrics": {
+    "title": "Dashboard Metrics",
+    "cards": {
+      "weeklyEarnings": "Total Weekly Earnings",
+      "monthlyEarnings": "Total Monthly Earnings",
+      "yearlyEarnings": "Total Yearly Earnings",
+      "activeCampaigns": "Active Campaigns",
+      "increaseComparedToLastPeriod": "Increase compared to last period",
+      "decreaseComparedToLastPeriod": "Decrease compared to last period"
+    },
+    "sections": {
+      "earningsTrendWeekly": "Earnings Trend (Weekly)",
+      "earningsTrendAllTime": "Earnings Trend (All-time)",
+      "revenueByLocation": "Revenue by Location",
+      "revenueByMedia": "Revenue by Media",
+      "activeCampaignDetails": "Active Campaigns Details",
+      "payoutHistory": "Payout History"
+    },
+    "table": {
+      "transactionId": "Transaction ID",
+      "date": "Date",
+      "amount": "Amount",
+      "status": "Status"
+    },
+    "campaignStatus": {
+      "active": "ACTIVE"
+    },
+    "period": {
+      "allTime": "All-time",
+      "weekly": "Weekly"
+    },
+    "emptyState": {
+      "noData": "No data available"
+    },
+    "payoutStatus": {
+      "paid": "PAID",
+      "processing": "PROCESSING"
     }
   },
   "homepage": {
