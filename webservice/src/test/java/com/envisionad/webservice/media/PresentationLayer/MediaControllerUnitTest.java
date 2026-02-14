@@ -518,7 +518,74 @@ class MediaControllerUnitTest {
                 assertEquals(HttpStatus.OK, response.getStatusCode());
         }
 
-        @Test
+    @Test
+    void getAllFilteredActiveMedia_WeeklyImpressionsAsc_ShouldPassThrough() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null,
+                null,
+                "weeklyImpressions,asc",
+                null, null,
+                null, null
+        )).thenReturn(mediaPage);
+
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
+
+        ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null,
+                null,
+                "weeklyImpressions,asc",
+                null, null,
+                null, null
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        verify(mediaService).getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null,
+                null,
+                "weeklyImpressions,asc",
+                null, null,
+                null, null
+        );
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_WeeklyImpressionsDesc_ShouldPassThrough() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Media> mediaPage = new PageImpl<>(List.of(media));
+
+        when(mediaService.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null,
+                null,
+                "weeklyImpressions,desc",
+                null, null,
+                null, null
+        )).thenReturn(mediaPage);
+
+        when(responseMapper.entityToResponseModel(media))
+                .thenReturn(responseModel);
+
+        ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(
+                pageable,
+                null, null, null, null,
+                null,
+                "weeklyImpressions,desc",
+                null, null,
+                null, null
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+    @Test
         void getAllFilteredActiveMedia_BoundsNotFour_ShouldThrowException() {
                 IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
                         mediaController.getAllFilteredActiveMedia(
