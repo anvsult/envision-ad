@@ -139,6 +139,8 @@ export default function AdCampaigns() {
                 color: 'green'
             });
             await loadCampaigns(); // Refresh list
+            setConfirmDeleteAdOpen(false);
+            setAdToDelete(null);
         } catch (error) {
             console.error('Failed to delete ad', error);
             notifications.show({
@@ -146,9 +148,6 @@ export default function AdCampaigns() {
                 message: t('notifications.deleteAd.error.message'),
                 color: 'red'
             });
-        } finally {
-            setConfirmDeleteAdOpen(false);
-            setAdToDelete(null);
         }
     };
 
