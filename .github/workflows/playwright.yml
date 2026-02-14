@@ -11,6 +11,9 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
+
     defaults:
       run:
         working-directory: frontend
@@ -21,8 +24,6 @@ jobs:
       - name: Install Doppler CLI
         uses: dopplerhq/cli-action@v3
 
-        env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
 
       - uses: actions/setup-node@v5
         with:
