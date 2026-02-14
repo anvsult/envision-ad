@@ -2,8 +2,6 @@ import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/
 import styles from "./MediaCard.module.css";
 import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress } from "@/entities/media";
-import { useEffect, useState } from "react";
-import { getOrganizationById } from "@/features/organization-management/api";
 import { useMediaQuery } from "@mantine/hooks";
 import {MediaLocation} from "@/entities/media-location";
 
@@ -12,6 +10,7 @@ export interface MediaCardProps {
     href?: string;
     title: string;
     organizationId: string;
+    organizationName: string;
     mediaLocation?: MediaLocation;
     resolution: string;
     aspectRatio: string;
@@ -35,11 +34,10 @@ function MobileViewer({children, mobileWidth}: Readonly<{children: React.ReactNo
 
 }
 
-function MediaCard({index, href, imageUrl, imageRatio, title, organizationId, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions, mobileWidth}: MediaCardProps) {
+function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions, mobileWidth}: MediaCardProps) {
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
     
     const t = useTranslations("mediacard");
-    const [organizationName, setOrganizationName] = useState<string>("");
     const locale = useLocale();
 
     const formatCurrency = (amount: number): string => {
@@ -48,25 +46,6 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationId, me
             currency: 'CAD',
         }).format(amount);
     };
-
-    useEffect(() => {
-        if (!organizationId) {
-            return
-        }
-        const fetchOrganizationDetails = async (organizationId: string) => {
-            try {
-
-                const response = await getOrganizationById(organizationId);
-                setOrganizationName(response.name);
-            } catch (e) {
-                console.log(e)
-            }
-        };
-
-        fetchOrganizationDetails(organizationId)
-    }, [organizationId]);
-
-
 
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never"
@@ -92,7 +71,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationId, me
                             <Text id={"MediaCardTitle" + index} size="md" lineClamp={3} className={styles.mediaTitle} m={0}>
                                 {title}
                             </Text>
-                            <Text id={"MediaCardOwnerName" + index} size="sm" color="gray" lineClamp={1} m={0}>
+                            <Text id={"MediaCardorganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
                                 {organizationName}
                             </Text>
                             <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>

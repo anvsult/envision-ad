@@ -9,7 +9,7 @@ import './MapView.css';
 interface MapViewProps {
   center: LatLngLiteral;
   zoom: number;
-  medias?: MediaCardProps[];
+  medias?: MediaCardProps[][];
   setMap: React.Dispatch<React.SetStateAction<Map|null>>;
   isMobile: boolean;
   
@@ -18,7 +18,6 @@ interface MapViewProps {
 interface MediaMarkerProps{
   media: MediaCardProps;
 }
-
 
 function MediaMarker({media}: MediaMarkerProps){
   const priceNum = Number(media.price);
@@ -31,10 +30,6 @@ function MediaMarker({media}: MediaMarkerProps){
     className: 'media-marker',
     html: `<span id='MediaMarker${media.index}'><a>$${safePrice}</a><span>`,
   });
-
-  
-  const mediaCard = useRef<MediaCardProps>(null);
-  
 
   useEffect(() => {
     const marker = markerRef.current;
@@ -84,7 +79,6 @@ function MediaMarker({media}: MediaMarkerProps){
       let offsetY = 0;
 
       if (markerRect.top < mapRect.top + mapRect.height / 2) {
-        console.log("Height:" + markerRect.height);
         offsetY = popupRect.height + markerRect.height + 10;
       }
 
@@ -116,6 +110,7 @@ function MediaMarker({media}: MediaMarkerProps){
           imageUrl={media.imageUrl}
           imageRatio={4/3}
           organizationId={media.organizationId}
+          organizationName={media.organizationName}
           resolution={media.resolution}
           aspectRatio={media.aspectRatio}
           price={media.price}
@@ -142,10 +137,9 @@ export default function MapView({center, zoom, setMap, medias, isMobile}: MapVie
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {medias?.map((media: MediaCardProps) => (
-            <MediaMarker key={media.index} media={media}/>
-          ))
-          }
+          {medias?.map((media: MediaCardProps[]) => (
+            <MediaMarker key={media} media={media}/>
+          ))}
         </MapContainer>
       ) ,
     [center, medias, setMap, zoom],

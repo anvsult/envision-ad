@@ -17,6 +17,8 @@ import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 import MapView from '@/widgets/Map/MapView';
 import { useMediaQuery } from '@mantine/hooks';
+import { MediaCardProps } from '@/widgets/Cards/MediaCard';
+import { MediaLocation } from '@/entities/media-location';
 
 function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
     const isMobile = useMediaQuery("(max-width: 575px)");
@@ -51,6 +53,8 @@ function BrowsePage() {
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
+  
+
   const [sortBy, setSortBy] = useState<string>(SortOptions.priceAsc);
   
   const [mediaStatus, setMediaStatus] = useState<MediaStatus>('idle');
@@ -79,7 +83,26 @@ function BrowsePage() {
   const media = useMediaList({ 
     filteredMediaProps: filteredMediaProps, 
     loadingLocation: locationStatus === 'loading',
-    setMediaStatus});
+    setMediaStatus
+  }, []);
+
+
+  function groupBy<T>(
+    array: T[],
+    key: (item: T) => string
+  ): Record<string, T[]> {
+    return array.reduce<Record<string, T[]>>((acc, item) => {
+      const k = key(item);
+      if (!acc[k]) acc[k] = [];
+      acc[k].push(item);
+      return acc;
+    }, {});
+  }
+
+  const groupedMedia = useMemo(() => {
+    const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");
+    return Object.values(groups);
+  }, [media]);
 
   useEffect(() => {
     let cancelled = false;
@@ -127,6 +150,8 @@ function BrowsePage() {
     resolveLocation();
     return () => { cancelled = true };
   }, [addressSearch, map, searchLanguage, sortBy, sortNearest]);
+
+
 
   useEffect(() => {
     if (addressSearch) {
@@ -242,7 +267,7 @@ function BrowsePage() {
               
               {(isMobile && mapVisible) && 
                 <Container style={{position: "relative",  width: "100%"}} p="0">
-                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
+                  <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
                 </Container>
               }
 
@@ -280,7 +305,7 @@ function BrowsePage() {
 
         {(!isMobile && mapVisible) && 
           <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={media} setMap={setMap} isMobile={isMobile}/>
+            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
           </Container>
         }
         

@@ -19,6 +19,7 @@ export interface Media {
     imageUrl: string;
     previewConfiguration: string;
     businessId: string;
+    businessName: string;
 }
 
 export interface MediaRequestDTO {

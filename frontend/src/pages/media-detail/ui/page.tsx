@@ -61,7 +61,6 @@ export default function MediaDetailsPage() {
   const id = params?.id as string | undefined;
 
   const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
-  const [organizationName, setOrganizationName] = useState<string | null>(null) //
   const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
   const [error, setError] = useState<string | null>(null); //The error message
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
@@ -107,22 +106,6 @@ export default function MediaDetailsPage() {
     void loadMedia();
   }, [id, t]);
 
-  useEffect(() => {
-    if (!media?.businessId) {
-      return
-    }
-    const fetchOrganizationDetails = async (businessId: string) => {
-      try {
-
-        const response = await getOrganizationById(businessId);
-        setOrganizationName(response.name);
-      } catch (e) {
-        console.log(e)
-      }
-    };
-
-    fetchOrganizationDetails(media?.businessId)
-  }, [media?.businessId]);
 
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat(locale, {
@@ -267,7 +250,7 @@ export default function MediaDetailsPage() {
                 <Text fw={600} size="lg">
                   {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
                 </Text>
-                <Text size="sm">{media.mediaOwnerName}</Text>
+                <Text size="sm">{media.businessName}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: activeAdsCount })}
                 </Text>
@@ -404,7 +387,7 @@ export default function MediaDetailsPage() {
                 </Stack>
               </Card>
             </Stack>
-            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={t("otherMediaBy") + organizationName} filteredMediaProps={filteredOrgMediaProps} />
+            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps} />
           </Group>
         </Stack>
         <Modal

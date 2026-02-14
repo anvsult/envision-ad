@@ -47,6 +47,7 @@ export function MediaCardCarousel({id, title, medias}: MediaCardCarouselProps) {
                             imageUrl={media.imageUrl}
                             title={media.title}
                             organizationId={media.organizationId}
+                            organizationName={media.organizationName}
                             mediaLocation={media.mediaLocation}
                             aspectRatio={media.aspectRatio}
                             typeOfDisplay={media.typeOfDisplay}
@@ -68,7 +69,7 @@ interface MediaCardCarouselLoaderProps {
 }
 
 export function MediaCardCarouselLoader({id, title, filteredMediaProps}: MediaCardCarouselLoaderProps){
-    const medias = useMediaList({filteredMediaProps});
+    const medias = useMediaList({filteredMediaProps}, []);
     return (
         <MediaCardCarousel
             id={id}
