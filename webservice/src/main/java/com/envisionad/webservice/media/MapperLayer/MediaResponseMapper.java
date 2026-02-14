@@ -44,6 +44,8 @@ public class MediaResponseMapper {
 
             if (business != null) {
                 response.setBusinessName(business.getName());
+            } else {
+                response.setBusinessName("");
             }
         }
 

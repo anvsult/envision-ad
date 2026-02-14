@@ -73,7 +73,7 @@ interface MediaCardCarouselLoaderProps {
 }
 
 export function MediaCardCarouselLoader({id, title, filteredMediaProps}: MediaCardCarouselLoaderProps){
-    const medias = useMediaList({filteredMediaProps}, []);
+    const medias = useMediaList({filteredMediaProps});
     return (
         <MediaCardCarousel
             id={id}

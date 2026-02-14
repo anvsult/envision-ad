@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.MapperLayer;
 
+import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
@@ -95,4 +96,44 @@ class MediaResponseMapperTest {
         assertNotNull(response);
         assertNull(response.getPreviewConfiguration());
     }
+
+    @Test
+    void entityToResponseModel_WithBusinessId_ShouldMapBusinessName() {
+        UUID businessId = UUID.randomUUID();
+
+        Media media = new Media();
+        media.setId(UUID.randomUUID());
+        media.setBusinessId(businessId);
+
+        Business business = new Business();
+        business.setName("Test Business");
+
+        Mockito.when(
+                businessRepository.findByBusinessId_BusinessId(businessId.toString())
+        ).thenReturn(business);
+
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        assertNotNull(response);
+        assertEquals("Test Business", response.getBusinessName());
+    }
+
+    @Test
+    void entityToResponseModel_WithBusinessId_BusinessNotFound_ShouldSetEmptyBusinessName() {
+        UUID businessId = UUID.randomUUID();
+
+        Media media = new Media();
+        media.setId(UUID.randomUUID());
+        media.setBusinessId(businessId);
+
+        Mockito.when(
+                businessRepository.findByBusinessId_BusinessId(businessId.toString())
+        ).thenReturn(null);
+
+        MediaResponseModel response = mapper.entityToResponseModel(media);
+
+        assertNotNull(response);
+        assertEquals("", response.getBusinessName());
+    }
+
 }

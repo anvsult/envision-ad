@@ -84,7 +84,7 @@ function BrowsePage() {
     filteredMediaProps: filteredMediaProps, 
     loadingLocation: locationStatus === 'loading',
     setMediaStatus
-  }, []);
+  });
 
 
   function groupBy<T>(
