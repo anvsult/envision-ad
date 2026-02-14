@@ -31,7 +31,7 @@ export function PayoutHistorySection({
                     <Table.Tr>
                         <Table.Th>{t("table.transactionId")}</Table.Th>
                         <Table.Th>{t("table.date")}</Table.Th>
-                        <Table.Th>{t("table.amount")}</Table.Th>
+                        <Table.Th ta="right">{t("table.amount")}</Table.Th>
                         <Table.Th>{t("table.status")}</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
@@ -40,7 +40,7 @@ export function PayoutHistorySection({
                         <Table.Tr key={row.transactionId}>
                             <Table.Td>{row.transactionId}</Table.Td>
                             <Table.Td>{row.date}</Table.Td>
-                            <Table.Td>{formatCurrency(row.amount)}</Table.Td>
+                            <Table.Td ta="right">{formatCurrency(row.amount)}</Table.Td>
                             <Table.Td>
                                 <Badge
                                     size="sm"

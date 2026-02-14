@@ -22,6 +22,7 @@ import { loadStripe } from "@stripe/stripe-js";
 
 import { ReservationResponseDTO } from "@/entities/reservation";
 import { createPaymentIntent } from "@/features/payment";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
     ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
@@ -64,13 +65,6 @@ export function PaymentModal({
             setLoading(false);
         }
     }, [opened]);
-
-    const formatCurrency = (amount: number): string => {
-        return new Intl.NumberFormat(locale, {
-            style: "currency",
-            currency: "CAD",
-        }).format(amount);
-    };
 
     const handleProceedToPayment = async () => {
         if (!reservation) return;
@@ -163,9 +157,9 @@ export function PaymentModal({
                                 <Group justify="space-between">
                                     <Text size="lg" fw={700}>{t("payment.totalCost")}:</Text>
                                     <Group gap="xs">
-                                        <Text size="lg" fw={700} c="blue">
-                                            {formatCurrency(reservation.totalPrice)}
-                                        </Text>
+                                    <Text size="lg" fw={700} c="blue">
+                                            {formatCurrency(reservation.totalPrice, { locale })}
+                                    </Text>
                                     </Group>
                                 </Group>
                             </Paper>
