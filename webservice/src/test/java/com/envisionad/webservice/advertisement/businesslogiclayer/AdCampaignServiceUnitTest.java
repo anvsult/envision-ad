@@ -386,14 +386,14 @@ class AdCampaignServiceUnitTest {
     }
 
     @Test
-    void deleteAdCampaign_whenNotTiedToReservationsAndHasCloudinaryAds_deletesAssetsAndCampaign() {
+    void deleteAdCampaign_whenNotTiedToReservationsAndHasCloudinaryAds_deletesAssetsAndCampaign() throws IOException {
         // Arrange
         String businessId = "biz-1";
         String campaignId = "camp-cloudinary-1";
         String cloudinaryUrl = "https://res.cloudinary.com/demo/image/upload/v1234567/sample-public-id.jpg";
 
         CampaignAndAdId campaignAndAdId = campaignWithSingleAd(campaignId, cloudinaryUrl);
-        AdCampaign campaignWithAd = campaignAndAdId.campaign();
+        AdCampaign campaignWithAd = campaignAndAdId.campaign;
 
         when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaignWithAd);
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
