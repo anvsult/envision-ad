@@ -184,7 +184,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                     const errorWithResponse = error as { response?: { status?: number } };
                     if (errorWithResponse.response?.status === 409) {
                         const selectedCampaign = campaigns?.find(c => c.campaignId === selectedCampaignId);
-                        const campaignName = selectedCampaign?.name || t('Unknown Campaign');
+                        const campaignName = selectedCampaign?.name || t('errors.unknownCampaign');
 
                         notifications.show({
                             title: t('errorTitle'),
