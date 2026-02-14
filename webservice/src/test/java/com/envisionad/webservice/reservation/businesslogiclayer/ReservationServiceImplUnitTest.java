@@ -299,12 +299,19 @@ class ReservationServiceImplUnitTest {
 
         // Mock mapping and Campaign lookup
         ReservationResponseModel model = new ReservationResponseModel();
+        model.setMediaId(mediaId.toString());
         model.setCampaignId("camp-1");
-        when(reservationResponseMapper.entityToResponseModel(r1)).thenReturn(model);
+        when(reservationResponseMapper.entitiesToResponseModelList(anyList()))
+                .thenReturn(List.of(model));
 
         AdCampaign campaign = mock(AdCampaign.class);
         AdCampaignIdentifier capId = new AdCampaignIdentifier("camp-1");
         when(campaign.getCampaignId()).thenReturn(capId);
+        com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier campaignBusinessId = mock(
+                com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier.class
+        );
+        when(campaignBusinessId.getBusinessId()).thenReturn("");
+        when(campaign.getBusinessId()).thenReturn(campaignBusinessId);
         when(campaign.getName()).thenReturn("Verified Campaign");
         when(adCampaignRepository.findAllByCampaignId_CampaignIdIn(anyList())).thenReturn(List.of(campaign));
 

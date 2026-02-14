@@ -42,6 +42,11 @@ export default function MediaOwnerMetricsDashboard() {
         setActiveCampaignDetailsPage,
     } = useMediaOwnerMetricsData();
 
+    const revenueByLocationChartData = overviewMetricsData.revenueByLocation.map((item) => ({
+        ...item,
+        cityLabel: `${item.city} (City)`,
+    }));
+
     const renderTooltip = (
         payload: ChartTooltipPayload[] | undefined,
         label: string | number | undefined,
@@ -127,7 +132,7 @@ export default function MediaOwnerMetricsDashboard() {
                         <Text fw={600} mb="sm">
                             {t("sections.revenueByLocation")}
                         </Text>
-                        {overviewMetricsData.revenueByLocation.length === 0 ? (
+                        {revenueByLocationChartData.length === 0 ? (
                             <Text size="sm" c="dimmed">
                                 {t("emptyState.noData")}
                             </Text>
@@ -136,8 +141,8 @@ export default function MediaOwnerMetricsDashboard() {
                                 {mounted ? (
                                     <BarChart
                                         h={260}
-                                        data={overviewMetricsData.revenueByLocation}
-                                        dataKey="city"
+                                        data={revenueByLocationChartData}
+                                        dataKey="cityLabel"
                                         series={[{ name: "revenue", color: "blue.6" }]}
                                         withLegend={false}
                                         tickLine="xy"
