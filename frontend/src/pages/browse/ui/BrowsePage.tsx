@@ -17,8 +17,6 @@ import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 import MapView from '@/widgets/Map/MapView';
 import { useMediaQuery } from '@mantine/hooks';
-import { MediaCardProps } from '@/widgets/Cards/MediaCard';
-import { MediaLocation } from '@/entities/media-location';
 
 function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
     const isMobile = useMediaQuery("(max-width: 575px)");
@@ -265,48 +263,48 @@ function BrowsePage() {
               </SearchMobileViewer>
               <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy}/>
               
-              {(isMobile && mapVisible) && 
+              {(isMobile && mapVisible) ? 
                 <Container style={{position: "relative",  width: "100%"}} p="0">
                   <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
-                </Container>
-              }
-
-            {locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest) ? (
-              <Stack h="20em" justify="center" align="center">
-                <Loader />
+                </Container> 
+                :
+                (locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest)) ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Loader />
+                  </Stack>
+                ) : locationStatus === 'denied' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text>{t('nomedia.locationDenied')}</Text>
+                  </Stack>
+                ) : mediaStatus === 'error' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text>{t('nomedia.failedToLoad')}</Text>
+                  </Stack>
+                ) : mediaStatus === 'empty' ? (
+                  <Stack h="20em" justify="center" align="center">
+                    <Text size="32px">{t('nomedia.notfound')}</Text>
+                    <Text>{t('nomedia.changefilters')}</Text>
+                  </Stack>
+                ) : (
+                  <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
+                )}
+                {totalPages > 1 && (
+                  <Group justify="center" mt="md">
+                    <Pagination
+                      total={totalPages}
+                      value={activePage}
+                      onChange={setActivePage}
+                      size="md"
+                    />
+                  </Group>
+                )
+                }
               </Stack>
-            ) : locationStatus === 'denied' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text>{t('nomedia.locationDenied')}</Text>
-              </Stack>
-            ) : mediaStatus === 'error' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text>{t('nomedia.failedToLoad')}</Text>
-              </Stack>
-            ) : mediaStatus === 'empty' ? (
-              <Stack h="20em" justify="center" align="center">
-                <Text size="32px">{t('nomedia.notfound')}</Text>
-                <Text>{t('nomedia.changefilters')}</Text>
-              </Stack>
-            ) : (
-              <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
-            )}
-            {totalPages > 1 && (
-              <Group justify="center" mt="md">
-                <Pagination
-                  total={totalPages}
-                  value={activePage}
-                  onChange={setActivePage}
-                  size="md"
-                />
-              </Group>
-            )}
-          </Stack>
-
-        {(!isMobile && mapVisible) && 
-          <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
-            <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
-          </Container>
+                
+            {(!isMobile && mapVisible) && 
+              <Container p={0} style={{position: "sticky", top: "5vh", bottom: "5vh"}}>
+                <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile}/>
+              </Container>
         }
         
         </Group>

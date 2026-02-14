@@ -1,12 +1,13 @@
 
-.media-marker > span {
+.media-marker > a {
     display: flex;
     align-items: center;
     justify-content: center;
     width: fit-content;
+    text-decoration: none;
 }
 
-.media-marker > span > a {
+.media-marker > a > span {
     background: var(--mantine-color-blue-6); /* Blue background */
     color: white;
     border: 1px solid white; 
@@ -21,7 +22,12 @@
     padding-bottom: 2px;
     padding-left: 10px;
     padding-right: 10px;
-    text-decoration: none;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    
     &:hover{
         transform: scale(1.08);
     }

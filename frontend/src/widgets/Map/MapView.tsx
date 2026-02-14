@@ -3,8 +3,11 @@ import {  Paper } from '@mantine/core';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngLiteral, Map } from 'leaflet';
 import { useEffect, useMemo, useRef } from 'react';
-import MediaCard, { MediaCardProps } from '../Cards/MediaCard';
+import { MediaCardProps } from '../Cards/MediaCard';
 import './MapView.css';
+import { MediaCardCarousel } from '../Carousel/CardCarousel';
+import { IconDeviceDesktop } from '@tabler/icons-react';
+import { renderToString } from 'react-dom/server';
 
 interface MapViewProps {
   center: LatLngLiteral;
@@ -16,19 +19,23 @@ interface MapViewProps {
 }
 
 interface MediaMarkerProps{
-  media: MediaCardProps;
+  media: MediaCardProps[];
 }
 
+
+
 function MediaMarker({media}: MediaMarkerProps){
-  const priceNum = Number(media.price);
-  const safePrice = Number.isFinite(priceNum) ? priceNum.toString() : '0';
+  media = media.sort((a, b) => a.price - b.price);
+
+  const mediaCount = media.length;
   const map = useMap();
   const markerRef = useRef<L.Marker>(null);
   const popupRef = useRef<L.Popup>(null);
+  const iconHtml = renderToString(<IconDeviceDesktop/>);
 
   const mediaMarkerIcon = L.divIcon({
     className: 'media-marker',
-    html: `<span id='MediaMarker${media.index}'><a>$${safePrice}</a><span>`,
+    html: `<a id='MediaMarker${media[0].mediaLocation?.businessId}'><span>${iconHtml}${mediaCount}</span></a>`,
   });
 
   useEffect(() => {
@@ -101,23 +108,9 @@ function MediaMarker({media}: MediaMarkerProps){
 
   return (
 
-    <Marker ref={markerRef} position={{lat: media.mediaLocation?.latitude ?? 0 , lng: media.mediaLocation?.longitude ?? 0}} icon={mediaMarkerIcon}>
+    <Marker ref={markerRef} position={{lat: media[0].mediaLocation?.latitude ?? 0 , lng: media[0].mediaLocation?.longitude ?? 0}} icon={mediaMarkerIcon}>
       <Popup ref={popupRef} minWidth={250} maxWidth={250} autoPan={false}>
-        <MediaCard 
-          index={media.index}
-          href={media.href}
-          title={media.title}
-          imageUrl={media.imageUrl}
-          imageRatio={4/3}
-          organizationId={media.organizationId}
-          organizationName={media.organizationName}
-          resolution={media.resolution}
-          aspectRatio={media.aspectRatio}
-          price={media.price}
-          typeOfDisplay={media.typeOfDisplay}
-          dailyImpressions={media.dailyImpressions}
-          mobileWidth={"768px"}
-        />
+        <MediaCardCarousel medias={media} slideSize={"100%"} imageRatio={4/3}/>
       </Popup>
     </Marker>
   )
@@ -138,7 +131,7 @@ export default function MapView({center, zoom, setMap, medias, isMobile}: MapVie
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {medias?.map((media: MediaCardProps[]) => (
-            <MediaMarker key={media} media={media}/>
+            <MediaMarker key={media[0].index} media={media}/>
           ))}
         </MapContainer>
       ) ,
