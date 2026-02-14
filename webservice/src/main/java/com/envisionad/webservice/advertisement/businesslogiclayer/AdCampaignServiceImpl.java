@@ -157,6 +157,15 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     @Override
     public AdCampaignResponseModel deleteAdCampaign(Jwt jwt, String businessId, String campaignId) {
         // Validate the user is an employee of the business
+
+        if (businessId == null || businessId.isBlank()) {
+            throw new BusinessNotFoundException(businessId);
+        }
+
+        if (campaignId == null || campaignId.isBlank()) {
+            throw new AdCampaignNotFoundException(campaignId);
+        }
+
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
 
         AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
@@ -172,6 +181,11 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         boolean hasConfirmedReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now);
         if (hasConfirmedReservations) {
             throw new CampaignHasConfirmedReservationException(campaignId);
+        }
+
+        boolean hasConfirmedReservation = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.APPROVED, now);
+        if (hasConfirmedReservation) {
+            throw new CampaignHasApprovedReservationException(campaignId);
         }
 
         // Validate the campaign is not associated with a pending reservation

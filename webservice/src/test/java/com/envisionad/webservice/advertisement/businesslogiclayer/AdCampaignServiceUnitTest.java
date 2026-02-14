@@ -5,10 +5,8 @@ import com.cloudinary.Uploader;
 import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdResponseMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
-import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.CampaignHasConfirmedReservationException;
-import com.envisionad.webservice.advertisement.exceptions.CampaignHasPendingReservationException;
+import com.envisionad.webservice.advertisement.exceptions.*;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.JwtUtils;
@@ -375,6 +373,12 @@ class AdCampaignServiceUnitTest {
                 any(LocalDateTime.class)
         )).thenReturn(false);
 
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
         when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
 
         // Act
@@ -410,6 +414,14 @@ class AdCampaignServiceUnitTest {
                 eq(ReservationStatus.PENDING),
                 any(LocalDateTime.class)
         )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(uploader.destroy(anyString(), anyMap())).thenReturn(Map.of("result", "ok"));
 
         when(adCampaignResponseMapper.entityToResponseModel(campaignWithAd)).thenReturn(null);
 
@@ -473,8 +485,45 @@ class AdCampaignServiceUnitTest {
                 any(LocalDateTime.class)
         )).thenReturn(true);
 
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
         // Act & Assert
         assertThrows(CampaignHasPendingReservationException.class,
+            () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
+        verify(adCampaignRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteAdCampaign_whenTiedToApprovedReservation_throwsException() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-5";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(CampaignHasApprovedReservationException.class,
             () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
         verify(adCampaignRepository, never()).delete(any());
     }
@@ -503,6 +552,13 @@ class AdCampaignServiceUnitTest {
                 eq(ReservationStatus.PENDING),
                 any(LocalDateTime.class)
         )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
         when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
 
         // Act

@@ -174,6 +174,12 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(CONFLICT, ex);
     }
 
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(CampaignHasApprovedReservationException.class)
+    public HttpErrorInfo handleCampaignHasApprovedReservationException(CampaignHasApprovedReservationException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
+
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();
