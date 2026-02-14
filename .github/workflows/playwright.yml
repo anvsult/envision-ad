@@ -11,9 +11,6 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
-    env:
-      DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
-
     defaults:
       run:
         working-directory: frontend
@@ -38,6 +35,8 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
         run: |
           doppler run --project envision-ad-backend --config prd -- \
           npx playwright test --reporter=github,html
