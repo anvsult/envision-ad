@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Group, Paper, Text, ThemeIcon } from "@mantine/core";
+import { useLocale } from "next-intl";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
 import type { ChartTooltipPayload } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/types";
 
@@ -16,6 +17,8 @@ export function ChartTooltipContent({
     seriesLabel,
     item,
 }: ChartTooltipContentProps) {
+    const locale = useLocale();
+
     return (
         <Paper px="md" py="xs" withBorder shadow="md" radius="md">
             <Text fw={500} mb={5}>
@@ -29,7 +32,7 @@ export function ChartTooltipContent({
                     </Text>
                 </Group>
                 <Text size="sm" fw={500}>
-                    {formatCurrency(item.value)}
+                    {formatCurrency(item.value, { locale })}
                 </Text>
             </Group>
         </Paper>

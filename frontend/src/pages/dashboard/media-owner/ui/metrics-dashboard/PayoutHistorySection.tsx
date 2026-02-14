@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Badge, Group, Pagination, Paper, Table, Text } from "@mantine/core";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { PayoutHistoryRow } from "@/pages/dashboard/media-owner/model/mockMetrics";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
 
@@ -20,6 +20,7 @@ export function PayoutHistorySection({
     onPageChange,
 }: PayoutHistorySectionProps) {
     const t = useTranslations("mediaOwnerMetrics");
+    const locale = useLocale();
 
     return (
         <Paper withBorder p="md" radius="md">
@@ -40,7 +41,7 @@ export function PayoutHistorySection({
                         <Table.Tr key={row.transactionId}>
                             <Table.Td>{row.transactionId}</Table.Td>
                             <Table.Td>{row.date}</Table.Td>
-                            <Table.Td ta="right">{formatCurrency(row.amount)}</Table.Td>
+                            <Table.Td ta="right">{formatCurrency(row.amount, { locale })}</Table.Td>
                             <Table.Td>
                                 <Badge
                                     size="sm"

@@ -19,8 +19,7 @@ export default function SideBar() {
     const { permissions } = usePermissions();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
-    const hasMediaOwnerAccess =
-        permissions.includes("create:media") || permissions.includes("update:reservation");
+    const hasMediaOwnerAccess = permissions.includes("read:media");
 
     const mediaOwnerNavItems = [
         hasMediaOwnerAccess && (

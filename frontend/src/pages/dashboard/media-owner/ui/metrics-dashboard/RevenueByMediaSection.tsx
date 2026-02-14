@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Group, Pagination, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
 import type { RevenueByMediaItem } from "@/pages/dashboard/media-owner/model/mockMetrics";
 
@@ -24,6 +24,7 @@ export function RevenueByMediaSection({
     onPageChange,
 }: RevenueByMediaSectionProps) {
     const t = useTranslations("mediaOwnerMetrics");
+    const locale = useLocale();
 
     return (
         <Paper withBorder p="md" radius="md">
@@ -43,7 +44,7 @@ export function RevenueByMediaSection({
                                 <Text size="sm">{item.mediaName}</Text>
                             </Group>
                             <Text fw={600} size="sm">
-                                {formatCurrency(item.revenue)}
+                                {formatCurrency(item.revenue, { locale })}
                             </Text>
                         </Group>
                     ))}

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Badge, Group, Pagination, Paper, Stack, Text } from "@mantine/core";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { ActiveCampaignItem } from "@/pages/dashboard/media-owner/model/mockMetrics";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
 
@@ -24,6 +24,7 @@ export function ActiveCampaignDetailsSection({
     onPageChange,
 }: ActiveCampaignDetailsSectionProps) {
     const t = useTranslations("mediaOwnerMetrics");
+    const locale = useLocale();
 
     return (
         <Paper withBorder p="md" radius="md">
@@ -52,7 +53,7 @@ export function ActiveCampaignDetailsSection({
                             </Stack>
                             <Stack gap={4} align="flex-end">
                                 <Text fw={600} size="sm">
-                                    {formatCurrency(campaign.amount)}
+                                    {formatCurrency(campaign.amount, { locale })}
                                 </Text>
                                 <Badge color="teal" variant="light" radius="sm" size="xs">
                                     {t(`campaignStatus.${campaign.status.toLowerCase()}`)}

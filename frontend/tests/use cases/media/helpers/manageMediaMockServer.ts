@@ -62,6 +62,7 @@ interface MediaCrudMockOptions {
 export const BUSINESS_ID = "biz-visual-impact";
 export const DEFAULT_MEDIA_OWNER = "Visual Impact";
 const E2E_MOCK_PERMISSIONS = [
+    "read:media",
     "create:media",
     "update:reservation",
     "read:campaign",

@@ -3,7 +3,11 @@ package com.envisionad.webservice.reservation.businesslogiclayer;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.reservation.dataaccesslayer.*;
@@ -39,6 +43,7 @@ class ReservationServiceImplUnitTest {
     @Mock private AdCampaignRepository adCampaignRepository;
     @Mock private ReservationResponseMapper reservationResponseMapper;
     @Mock private MediaRepository mediaRepository;
+    @Mock private BusinessRepository businessRepository;
     @Mock private JwtUtils jwtUtils;
 
     private Jwt mediaToken;
@@ -263,6 +268,7 @@ class ReservationServiceImplUnitTest {
     void getAllReservationByMediaOwnerBusinessId_shouldFilterAndPopulateNames() {
         // Arrange
         String myBusinessId = UUID.randomUUID().toString();
+        String advertiserBusinessId = UUID.randomUUID().toString();
         UUID mediaId = UUID.randomUUID();
 
         // Reservation 1: Belongs to my business
@@ -279,7 +285,16 @@ class ReservationServiceImplUnitTest {
         // Mock Media lookup for the filter
         Media myMedia = new Media();
         myMedia.setBusinessId(UUID.fromString(myBusinessId));
+        when(mediaRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
         when(mediaRepository.findById(mediaId)).thenReturn(Optional.of(myMedia));
+
+        Media enrichedMedia = new Media();
+        enrichedMedia.setId(mediaId);
+        enrichedMedia.setTitle("Campus Board");
+        MediaLocation location = new MediaLocation();
+        location.setCity("Montreal");
+        enrichedMedia.setMediaLocation(location);
+        when(mediaRepository.findAllByIdWithLocation(anyList())).thenReturn(List.of(enrichedMedia));
 
         // Mock mapping and Campaign lookup
         ReservationResponseModel model = new ReservationResponseModel();
@@ -291,13 +306,17 @@ class ReservationServiceImplUnitTest {
         AdCampaign campaign = mock(AdCampaign.class);
         AdCampaignIdentifier capId = new AdCampaignIdentifier("camp-1");
         when(campaign.getCampaignId()).thenReturn(capId);
-        com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier campaignBusinessId = mock(
-                com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier.class
-        );
-        when(campaignBusinessId.getBusinessId()).thenReturn("");
+        BusinessIdentifier campaignBusinessId = mock(BusinessIdentifier.class);
+        when(campaignBusinessId.getBusinessId()).thenReturn(advertiserBusinessId);
         when(campaign.getBusinessId()).thenReturn(campaignBusinessId);
         when(campaign.getName()).thenReturn("Verified Campaign");
         when(adCampaignRepository.findAllByCampaignId_CampaignIdIn(anyList())).thenReturn(List.of(campaign));
+
+        Business advertiserBusiness = new Business();
+        advertiserBusiness.setBusinessId(new BusinessIdentifier(advertiserBusinessId));
+        advertiserBusiness.setName("Champlain College");
+        when(businessRepository.findAllByBusinessId_BusinessIdIn(anyList()))
+                .thenReturn(List.of(advertiserBusiness));
 
         // Act
         List<ReservationResponseModel> result = reservationService.getAllReservationByMediaOwnerBusinessId(mediaToken, myBusinessId);
@@ -305,7 +324,12 @@ class ReservationServiceImplUnitTest {
         // Assert
         assertEquals(1, result.size());
         assertEquals("Verified Campaign", result.get(0).getCampaignName());
+        assertEquals("Campus Board", result.get(0).getMediaTitle());
+        assertEquals("Montreal", result.get(0).getMediaCity());
+        assertEquals("Champlain College", result.get(0).getAdvertiserBusinessName());
         verify(jwtUtils).validateUserIsEmployeeOfBusiness(mediaToken, myBusinessId);
+        verify(mediaRepository).findAllByIdWithLocation(anyList());
+        verify(businessRepository).findAllByBusinessId_BusinessIdIn(anyList());
     }
 
     @Test
@@ -338,6 +362,7 @@ class ReservationServiceImplUnitTest {
         when(reservationRepository.findAll()).thenReturn(List.of(r1));
         // Simulate media record being missing from DB
         when(mediaRepository.findById(any(UUID.class))).thenReturn(Optional.empty());
+        when(reservationResponseMapper.entitiesToResponseModelList(anyList())).thenReturn(List.of());
 
         List<ReservationResponseModel> result = reservationService.getAllReservationByMediaOwnerBusinessId(mediaToken, myBusinessId);
 

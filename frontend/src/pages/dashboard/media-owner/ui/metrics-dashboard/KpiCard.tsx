@@ -10,7 +10,7 @@ import {
     IconSpeakerphone,
     IconTrendingUp,
 } from "@tabler/icons-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { MetricsKpi } from "@/pages/dashboard/media-owner/model/mockMetrics";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
 
@@ -23,6 +23,7 @@ const kpiIconMap: Record<string, React.ElementType> = {
 
 export function KpiCard({ item }: { item: MetricsKpi }) {
     const t = useTranslations("mediaOwnerMetrics");
+    const locale = useLocale();
     const Icon = kpiIconMap[item.id] ?? IconChartBar;
     const isUp = item.trend === "up";
     const diffColor = isUp ? "teal.6" : "red.6";
@@ -45,7 +46,7 @@ export function KpiCard({ item }: { item: MetricsKpi }) {
                 <Text fw={700} size="xl">
                     {item.id === "activeCampaigns"
                         ? item.value.toString()
-                        : formatCurrency(item.value)}
+                        : formatCurrency(item.value, { locale })}
                 </Text>
                 <Group gap={4}>
                     {isUp ? (
