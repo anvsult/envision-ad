@@ -57,7 +57,7 @@ export function MediaRow({
         <Avatar src={row.image} alt={row.name} size="md" radius="md" />
       </Table.Td>
       <Table.Td>
-        <Text fw={500} size="sm">
+        <Text miw={120} fw={500} size="sm">
           {row.name}
         </Text>
       </Table.Td>

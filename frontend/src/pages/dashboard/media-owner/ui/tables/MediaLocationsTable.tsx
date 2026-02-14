@@ -95,11 +95,11 @@ export function MediaLocationsTable({
                         <Text size="sm" mt="md" fw={500} mb="xs">{t('assignedMedia')}:</Text>
                         {location.mediaList && location.mediaList.length > 0 ? (
                             <Box mt="xs" style={{ overflowX: 'auto' }}>
-                                <Table striped highlightOnHover layout="fixed" style={{ minWidth: "700px" }}>
+                                <Table striped highlightOnHover layout="auto" style={{ minWidth: "700px" }}>
                                     <Table.Thead>
                                         <Table.Tr>
                                             <Table.Th w={60}>{tMedia("image")}</Table.Th>
-                                            <Table.Th>{tMedia("name")}</Table.Th>
+                                            <Table.Th miw={120}> {tMedia("name")}</Table.Th>
                                             <Table.Th w={120} ta="right">{tMedia("displayed")}</Table.Th>
                                             <Table.Th w={120} ta="right">{tMedia("pending")}</Table.Th>
                                             <Table.Th w={120} ta="right">{tMedia("status")}</Table.Th>
