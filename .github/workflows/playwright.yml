@@ -18,6 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
+
       - uses: actions/setup-node@v5
         with:
           node-version: lts/*
@@ -30,8 +36,6 @@ jobs:
       - name: Install Playwright Browsers & system deps
         run: npx playwright install --with-deps
 
-        env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACKEND_TOKEN }}
       - name: Run Playwright tests
         run: |
           doppler run --project envision-ad-backend --config dev -- \
