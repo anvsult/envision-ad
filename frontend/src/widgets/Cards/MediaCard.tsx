@@ -5,7 +5,7 @@ import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
 import { useMediaQuery } from "@mantine/hooks";
 import {MediaLocation} from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
-import calculateWeeklyImpressions from "@/features/media-management/api/getWeeklyImpressions";
+import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
 
 export interface MediaCardProps {
     index: string;

@@ -11,6 +11,4 @@ import java.util.List;
 public class ScheduleModel {
     private List<String> selectedMonths;
     private List<WeeklyScheduleEntry> weeklySchedule;
-    @Column(name = "active_days")
-    private Integer activeDays;
 }

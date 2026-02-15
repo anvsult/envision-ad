@@ -63,7 +63,7 @@ class MediaSpecificationsRepositoryTest {
         m1.setBusinessId(businessIdA);
         mediaRepository.save(m1);
 
-// Media 2: Inactive, "Poster Wall", Price 50, Imp 500, activeDays = 2
+        // Media 2: Inactive, "Poster Wall", Price 50, Imp 500, activeDays = 2
         Media m2 = new Media();
         m2.setMediaLocation(location);
         m2.setTitle("Poster Wall");
@@ -76,7 +76,7 @@ class MediaSpecificationsRepositoryTest {
         m2.setBusinessId(businessIdB);
         mediaRepository.save(m2);
 
-// Media 3: Active, "Big Digital Screen", Price 200, Imp 2000, activeDays = 7
+        // Media 3: Active, "Big Digital Screen", Price 200, Imp 2000, activeDays = 7
         Media m3 = new Media();
         m3.setMediaLocation(location);
         m3.setTitle("Big Digital Screen");

@@ -36,7 +36,7 @@ import { ReservationStatus } from "@/entities/reservation";
 import { usePermissions } from "@/app/providers";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
-import calculateWeeklyImpressions from "@/features/media-management/api/getWeeklyImpressions";
+import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
 import { useMediaQuery } from "@mantine/hooks";
 
 const monthDefs = [
