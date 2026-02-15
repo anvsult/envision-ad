@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import { MediaStatusEnum } from "@/entities/media/model/media";
+
 import {
     addMedia,
     getMediaByBusinessId,
@@ -11,6 +13,7 @@ import { getEmployeeOrganization } from "@/features/organization-management/api"
 import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequestDTO } from "@/entities/media";
+import {patchMediaStatus} from "@/features/media-management/api/patchMediaStatus";
 
 export function useMediaList() {
     const [media, setMedia] = useState<MediaRowData[]>([]);
@@ -49,7 +52,7 @@ export function useMediaList() {
                     image: m.imageUrl ?? null,
                     adsDisplayed: 0,
                     pending: 0,
-                    status: m.status ?? "PENDING",
+                    status: m.status ?? MediaStatusEnum.PENDING,
                     timeUntil: "-",
                     price: `${Number(m.price)}`
                 }));
@@ -117,7 +120,7 @@ export function useMediaList() {
                 image: created.imageUrl ?? null,
                 adsDisplayed: 0,
                 pending: 0,
-                status: created.status ?? "PENDING",
+                status: created.status ?? MediaStatusEnum.PENDING,
                 timeUntil: "-",
                 price: formState.weeklyPrice ? `$${Number(formState.weeklyPrice).toFixed(2)}` : "$0.00",
             };
@@ -186,72 +189,53 @@ export function useMediaList() {
     };
 
     // Toggle status
-    const toggleMediaStatus = async (id: string | number) => {
+    const toggleMediaStatus = async (
+        id: string | number,
+        nextStatus?: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => {
         const targetId = String(id);
 
-        // find current row in UI
         const currentRow = media.find((m) => String(m.id) === targetId);
         if (!currentRow) return;
 
-        if (currentRow.status === "PENDING" || currentRow.status === "REJECTED") {
-            console.warn("Cannot toggle status while media is pending approval or has been rejected");
+        if (
+            currentRow.status === MediaStatusEnum.PENDING ||
+            currentRow.status === MediaStatusEnum.REJECTED
+        ) {
+            console.warn("Cannot toggle status while media is pending approval or rejected");
             return;
         }
 
         const currentStatus = currentRow.status;
-        const nextStatus = currentStatus === "ACTIVE" ? "INACTIVE" : "ACTIVE";
 
+        const computedNextStatus =
+            currentStatus === MediaStatusEnum.ACTIVE
+                ? MediaStatusEnum.INACTIVE
+                : MediaStatusEnum.ACTIVE;
+
+        const finalNextStatus = nextStatus ?? computedNextStatus;
+
+        // optimistic UI update
         setMedia((prev) =>
             prev.map((m) =>
-                String(m.id) === targetId ? { ...m, status: nextStatus } : m
+                String(m.id) === targetId ? { ...m, status: finalNextStatus } : m
             )
         );
 
         try {
-            // Get full backend DTO so updateMedia gets what it expects
-            const backend = await getMediaById(targetId);
+            const updated = await patchMediaStatus(targetId, { status: finalNextStatus });
 
-            const payload: MediaRequestDTO = {
-                title: backend.title,
-                mediaOwnerName: backend.mediaOwnerName,
-                mediaLocationId: backend.mediaLocation?.id ?? null,
-                typeOfDisplay: backend.typeOfDisplay,
-                loopDuration: backend.loopDuration ?? 0,
-                resolution: backend.resolution,
-                aspectRatio: backend.aspectRatio,
-                width: backend.width ?? 0,
-                height: backend.height ?? 0,
-                price: backend.price ?? 0,
-                dailyImpressions: backend.dailyImpressions ?? 0,
-                schedule: backend.schedule,
-                imageUrl: backend.imageUrl ?? null,
-                previewConfiguration: backend.previewConfiguration ?? JSON.stringify({
-                    tl: { x: 0, y: 0 },
-                    tr: { x: 100, y: 0 },
-                    br: { x: 100, y: 100 },
-                    bl: { x: 0, y: 100 },
-                }),
-            };
-
-            const updated = await updateMedia(targetId, payload);
-
-            // Ensure local list matches whatever backend finally saved
+            // sync with backend response
             setMedia((prev) =>
                 prev.map((m) =>
                     String(m.id) === targetId
-                        ? {
-                            ...m,
-                            status: updated.status ?? nextStatus,
-                        }
+                        ? { ...m, status: updated.status ?? finalNextStatus }
                         : m
                 )
             );
 
-            return updated.status ?? nextStatus;
+            return finalNextStatus;
         } catch (err) {
-            console.error("Failed to toggle media status:", err);
-
-            // Revert optimistic change on error
             setMedia((prev) =>
                 prev.map((m) =>
                     String(m.id) === targetId ? { ...m, status: currentStatus } : m
@@ -260,7 +244,6 @@ export function useMediaList() {
             throw err;
         }
     };
-
 
     return {
         media,

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getAllMedia } from "@/features/media-management/api";
 import type { Media } from "@/entities/media";
+import { MediaStatusEnum } from "@/entities/media/model/media";
 
 export function useAdminPendingMedia() {
     const [media, setMedia] = useState<Media[]>([]);
@@ -16,5 +17,10 @@ export function useAdminPendingMedia() {
             .finally(() => setLoading(false));
     }, []);
 
-    return { media, loading, error };
+    const pendingMedia = useMemo(
+        () => media.filter((m) => m.status === MediaStatusEnum.PENDING),
+        [media]
+    );
+
+    return { media: pendingMedia, loading, error };
 }

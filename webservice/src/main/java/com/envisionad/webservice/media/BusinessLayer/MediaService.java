@@ -1,11 +1,13 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.oauth2.jwt.Jwt;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaStatusPatchRequestModel;
 
 import java.util.List;
 import java.math.BigDecimal;
@@ -39,4 +41,8 @@ public interface MediaService {
     MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);
     void deleteMedia(UUID id);
 
+
+    MediaResponseModel patchMediaStatusById(Jwt jwt, String id, MediaStatusPatchRequestModel request);
+
+    List<Media> getMediaByStatus(Status status);
 }

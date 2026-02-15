@@ -2,10 +2,13 @@ package com.envisionad.webservice.media.PresentationLayer;
 
 import com.envisionad.webservice.media.BusinessLayer.MediaService;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.MapperLayer.MediaRequestMapper;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaStatusPatchRequestModel;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.envisionad.webservice.media.BusinessLayer.MediaRequestValidator;
@@ -143,4 +146,24 @@ public class MediaController {
         mediaService.deleteMedia(UUID.fromString(id));
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('update:media') || hasAuthority('patch:media_status')")
+    public ResponseEntity<MediaResponseModel> patchMediaStatus(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
+            @Valid @RequestBody MediaStatusPatchRequestModel request
+    ) {
+        return ResponseEntity.ok(mediaService.patchMediaStatusById(jwt, id, request));
+    }
+
+    @GetMapping("/pending")
+    @PreAuthorize("hasAuthority('get:media')")
+    public List<MediaResponseModel> getPendingMedia() {
+        return responseMapper.entityListToResponseModelList(
+                mediaService.getMediaByStatus(Status.PENDING)
+        );
+    }
+
+
 }

@@ -23,6 +23,7 @@ import { MediaLocationsTable } from "@/pages/dashboard/media-owner/ui/tables/Med
 import { CreateMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/CreateMediaLocationModal";
 import { EditMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/EditMediaLocationModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
+import {MediaStatusEnum} from "@/entities/media/model/media";
 
 const getApiErrorMessage = (error: unknown): string | null => {
     if (!error || typeof error !== "object") {
@@ -328,20 +329,30 @@ export default function MediaLocations() {
         }
     };
 
-    const handleToggleMediaStatus = async (id: string | number) => {
+    const handleToggleMediaStatus = async (
+        id: string | number,
+        nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => {
         try {
-            await toggleMediaStatus(id);
+            await toggleMediaStatus(id, nextStatus);
+
             notifications.show({
                 title: t("notifications.statusMedia.success.title"),
                 message: t("notifications.statusMedia.success.message"),
                 color: "green",
             });
-            loadLocations();
+
+            await loadLocations();
         } catch (error) {
             console.error("Failed to toggle status", error);
-            notifications.show({ title: "Error", message: t("notifications.statusMedia.error.message"), color: "red" });
+            notifications.show({
+                title: "Error",
+                message: t("notifications.statusMedia.error.message"),
+                color: "red",
+            });
         }
     };
+
 
     const handleEditLocation = (location: MediaLocation) => {
         setLocationToEdit(location);

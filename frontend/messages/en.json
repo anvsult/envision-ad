@@ -222,6 +222,7 @@
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
     "weeklyImpressions": "~{count} impressions",
+    "weeklyImpressionsPerWeek": "~{count} impressions per week",
     "months": {
       "january": "January",
       "february": "February",
@@ -1011,6 +1012,7 @@
   },
   "admin": {
     "adminActions": {
+      "businessName": "Business Name",
       "noMediaPending": "No pending media to approve.",
       "approveMedia": "Approve Media",
       "denyMedia": "Deny Media",

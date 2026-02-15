@@ -3,28 +3,18 @@ import { Page, expect } from "@playwright/test";
 export default class AdminMediaReviewPage {
   constructor(private page: Page) {}
 
-  approveButton = () => this.page.getByRole("button", { name: /^Approve$/i });
+  approveBtn = () => this.page.getByRole("button", { name: "Approve" });
+  approveMediaBtn = () =>
+    this.page.getByRole("button", { name: "Approve Media" });
+  successToast = () => this.page.getByText("Media has been approved");
 
-  confirmApproveButton = () =>
-    this.page.getByRole("button", { name: /Yes,\s*approve/i });
+  async approveWithConfirm() {
+    await expect(this.approveBtn()).toBeVisible();
+    await this.approveBtn().click();
 
-  async approve() {
-    await expect(this.approveButton()).toBeVisible();
-    await this.approveButton().click();
+    await expect(this.approveMediaBtn()).toBeVisible();
+    await this.approveMediaBtn().click();
 
-    await expect(this.confirmApproveButton()).toBeVisible();
-    await this.confirmApproveButton().click();
-  }
-
-  denyButton = () => this.page.getByRole("button", { name: /^Deny$/i });
-  confirmDenyButton = () =>
-    this.page.getByRole("button", { name: /Yes,\s*deny/i });
-
-  public async deny() {
-    await expect(this.denyButton()).toBeVisible();
-    await this.denyButton().click();
-
-    await expect(this.confirmDenyButton()).toBeVisible();
-    await this.confirmDenyButton().click();
+    await expect(this.successToast()).toBeVisible();
   }
 }
