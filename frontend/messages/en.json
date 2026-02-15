@@ -13,6 +13,21 @@
     "description": "You do not have permission to access this page.",
     "back": "Back to home"
   },
+  "auth": {
+    "errors": {
+      "title": "Authentication Error",
+      "unauthorized": "Your account has been blocked. Please contact support for assistance.",
+      "userBlocked": "Your account has been blocked. Please contact support for assistance.",
+      "accessDenied": "Access was denied. You may not have permission to access this resource.",
+      "serverError": "An authentication server error occurred. Please try again later.",
+      "temporarilyUnavailable": "The authentication service is temporarily unavailable. Please try again later.",
+      "invalidRequest": "The authentication request was invalid. Please try again.",
+      "invalidScope": "The requested permissions are invalid or not allowed.",
+      "unsupportedResponseType": "The authentication response type is not supported.",
+      "generic": "An authentication error occurred. Please try again or contact support.",
+      "back": "Return to Home"
+    }
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
