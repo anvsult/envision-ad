@@ -1,95 +1,84 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import {
-    Center,
-    Group,
-    Loader,
-    Pagination,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core";
-import { useTranslations } from "next-intl";
-import {
-    ApproveMediaRowData,
-    ApproveMediaTable,
-} from "@/pages/dashboard/admin/ui/tables/ApproveMediaTable";
-import { useAdminPendingMedia } from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
-import { MediaStatusEnum } from "@/entities/media/model/media";
+import React, {useMemo, useState} from "react";
+import {Center, Group, Loader, Pagination, Stack, Text, Title,} from "@mantine/core";
+import {useTranslations} from "next-intl";
+import {ApproveMediaRowData, ApproveMediaTable} from "@/pages/dashboard/admin/ui/tables/ApproveMediaTable";
+import {useAdminPendingMedia} from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
 
 const ITEMS_PER_PAGE = 20;
 
 export default function ApprovingMediaDashboard() {
-    const t = useTranslations("admin.adminActions");
-    const [activePage, setActivePage] = useState(1);
+  const t = useTranslations("admin.adminActions");
 
-    const { media, loading, error } = useAdminPendingMedia();
+  const [activePage, setActivePage] = useState(1);
 
-    const pendingRows: ApproveMediaRowData[] = useMemo(() => {
-        return (media ?? [])
-            .filter((m) => m.status === MediaStatusEnum.PENDING)
-            .map((m) => {
-                const city = m.mediaLocation?.city ?? "";
-                const province = m.mediaLocation?.province ?? "";
-                const location = [city, province].filter(Boolean).join(", ") || "—";
+  const {media, loading, error} = useAdminPendingMedia();
 
-                return {
-                    id: String(m.id),
-                    name: m.title || "—",
-                    image: m.imageUrl || null,
-                    mediaOwnerName: m.mediaOwnerName || "—",
-                    location,
-                    dailyImpressions: Number(m.dailyImpressions ?? 0),
-                    price: m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
-                    status: m.status,
-                };
-            });
-    }, [media]);
+  const pendingRows: ApproveMediaRowData[] = useMemo(() => {
+    return (media ?? [])
+        .filter((m) => (m.status ?? "PENDING") === "PENDING")
+        .map((m) => {
+          const city = m.mediaLocation?.city ?? "";
+          const province = m.mediaLocation?.province ?? "";
+          const location = [city, province].filter(Boolean).join(", ") || "—";
 
-    const totalPages = Math.max(1, Math.ceil(pendingRows.length / ITEMS_PER_PAGE));
+          return {
+            id: String(m.id),
+            name: m.title ?? "—",
+            image: m.imageUrl ?? null,
+            mediaOwnerName: m.mediaOwnerName ?? "—",
+            location,
+            dailyImpressions: Number(m.dailyImpressions ?? 0),
+            price:
+                m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
+            status: m.status ?? "PENDING",
+          };
+        });
+  }, [media]);
 
-    const paginatedRows = useMemo(() => {
-        const start = (activePage - 1) * ITEMS_PER_PAGE;
-        const end = start + ITEMS_PER_PAGE;
-        return pendingRows.slice(start, end);
-    }, [pendingRows, activePage]);
+  const totalPages = Math.max(1, Math.ceil(pendingRows.length / ITEMS_PER_PAGE));
 
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        if (activePage > totalPages) setActivePage(1);
-    }, [activePage, totalPages]);
+  const paginatedRows = useMemo(() => {
+    const start = (activePage - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    return pendingRows.slice(start, end);
+  }, [pendingRows, activePage]);
 
-    return (
-        <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
-            <Group justify="space-between" align="center">
-                <Title order={3}>{t("pendingMedia")}</Title>
-            </Group>
+  React.useEffect(() => {
+    if (activePage > totalPages) setActivePage(1);
+  }, [activePage, totalPages]);
 
-            {loading ? (
-                <Center py="xl">
-                    <Loader />
-                </Center>
-            ) : error ? (
-                <Text c="red" fw={500}>
-                    {error}
-                </Text>
-            ) : (
-                <>
-                    <ApproveMediaTable rows={paginatedRows} />
+  return (
+      <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
+        <Group justify="space-between" align="center">
+          <Title order={3}>{t("pendingMedia")}</Title>
+        </Group>
 
-                    {pendingRows.length > ITEMS_PER_PAGE && (
-                        <Group justify="center" mt="md">
-                            <Pagination
-                                total={totalPages}
-                                value={activePage}
-                                onChange={setActivePage}
-                                size="md"
-                            />
-                        </Group>
-                    )}
-                </>
-            )}
-        </Stack>
-    );
+        {loading ? (
+            <Center py="xl">
+              <Loader/>
+            </Center>
+        ) : error ? (
+            <Text c="red" fw={500}>
+              {error}
+            </Text>
+        ) : (
+            <>
+              <ApproveMediaTable rows={paginatedRows}/>
+
+              {pendingRows.length > ITEMS_PER_PAGE && (
+                  <Group justify="center" mt="md">
+                    <Pagination
+                        total={totalPages}
+                        value={activePage}
+                        onChange={setActivePage}
+                        size="md"
+                    />
+                  </Group>
+              )}
+            </>
+        )}
+      </Stack>
+  );
 }
