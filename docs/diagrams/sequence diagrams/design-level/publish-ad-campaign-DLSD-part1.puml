@@ -2,10 +2,12 @@
 
 title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 1)
 
+
+skinparam participantPadding 90
+
 actor Advertiser
-actor "Media Owner" as MediaOwner
 participant "<<UI>>\nMedia Details Page" as MediaDetailsPage
-participant "<<UI>>\nReservationMediaModal" as ReservationModal
+participant "<<UI>>\nReserveMediaModal" as ReservationModal
 participant "<<control>>\nreservationController\n:ReservationController" as Controller
 participant "<<control>>\nreservationService\n:ReservationService" as Service
 participant "<<entity>>\nreservation\n:Reservation" as Reservation
@@ -18,15 +20,17 @@ participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
 participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
 participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
 database "<<database>>\n:Database" as DB
+actor "Media Owner" as MediaOwner
+participant "<<external>>\nCloudinary API" as Cloudinary
 
 ref over Advertiser
-    <i>Advertiser creates an ad</i>
-    <i>campaign in his dashboard</i>
-    <i>(Create Ad Campaign Use Case)</i>
+    <i>UC- Create Ad Campaign Use Case</i>
 end ref
 ref over Advertiser
-    <i>Advertiser browses media details</i>
-    <i>(Browse Media Use Case)</i>
+    <i>UC- Browse Media Use Case</i>
+end ref
+ref over Advertiser
+    <i>UC- View Media Listing Details Use Case</i>
 end ref
 
 Advertiser -> MediaDetailsPage: Initiate Reservation
@@ -55,9 +59,9 @@ deactivate JwtUtils
 Service -> Service: loadAndValidateMedia(mediaId)
 Service -> MediaRepo: findById(mediaId)
 activate MediaRepo
-MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaIdactivate DB
+MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaId
 activate DB
-DB --> MediaRepo
+DB --> MediaRepo: media data
 deactivate DB
 deactivate DB
 MediaRepo --> Service: media
@@ -68,7 +72,7 @@ Service -> CampaignRepo: findById(campaignId)
 activate CampaignRepo
 CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
 activate DB
-DB --> CampaignRepo
+DB --> CampaignRepo: campaign data
 deactivate DB
 CampaignRepo --> Service: campaign
 deactivate CampaignRepo

@@ -22,7 +22,7 @@ participant "<<control>>\nadCampaignService\n:AdCampaignService" as CampaignServ
 participant "<<control>>\nemailService\n:EmailService" as EmailService
 
 database "<<database>>\n:Database" as DB
-actor "<<external>>\nGmail SMTP" as GmailAPI
+participant "<<external>>\nGmail SMTP" as GmailAPI
 
 
 StripeAPI -> Controller: POST /api/v1/stripe/webhook\n(Event: checkout.session.completed)
@@ -139,7 +139,7 @@ alt Event is checkout.session.completed
             details and image links.
         end note
         activate EmailService
-        EmailService -> GmailAPI: Send Email
+        EmailService -> GmailAPI: SendSimpleEmail(to, subject, body)
         activate GmailAPI
         GmailAPI --> EmailService
         deactivate GmailAPI

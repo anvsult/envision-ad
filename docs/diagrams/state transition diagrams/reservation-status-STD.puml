@@ -2,17 +2,19 @@
 title <u>State Transition Diagram</u>\nReservation Status
 left to right direction
 
-[*] --> PENDING
+[*] --> PENDING : created()
 PENDING : Reservation is created and awaiting media owner approval
 APPROVED : Reservation has been approved by the media owner
 DENIED : Reservation has been denied by the media owner
 CONFIRMED : Reservation has been paid and is confirmed
 
-PENDING -> APPROVED : Manage Reservation Use Case /\nupdateReservationStatus("APPROVED")
+PENDING -> APPROVED : UC- Approve Reservation /\nupdateReservationStatus("APPROVED")
+PENDING --> DENIED : UC- Deny Reservation /\nupdateReservationStatus("DENIED")
 APPROVED -> CONFIRMED : Payment Completed (via Webhook) /\nupdateReservationStatus("CONFIRMED")
-PENDING -> DENIED : Manage Reservation Use Case /\nupdateReservationStatus("DENIED")
 
+PENDING --> [*] : Reservation never approved or \ndenied and reservation end\n date is passed
+APPROVED --> [*] : Reservation never paid for\n and reservation end\n date is passed
+DENIED -> [*]
 CONFIRMED --> [*]
-DENIED --> [*]
 
 @enduml

@@ -106,12 +106,6 @@ public class ReservationServiceImpl implements ReservationService {
         String businessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
-//        // Prevent a business from reserving their own media
-//        String mediaOwnerBusinessId = media.getBusinessId().toString();
-//        if (businessId.equals(mediaOwnerBusinessId)) {
-//            throw new IllegalStateException("A business cannot reserve its own media");
-//        }
-
         // 4. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
 

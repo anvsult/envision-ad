@@ -5,52 +5,66 @@ title <u>System Sequence Diagram</u>\nAdvertiser Publish Ad Campaign
 actor Advertiser
 participant System
 actor "Media Owner" as MediaOwner
+participant "<<external>>\nGmail SMTP" as GmailAPI
 
 ref over System, Advertiser
-    <i>Browse Media Use Case</i>
+    <i>UC- Create Ad Campaign Use Case</i>
+end ref
+ref over System, Advertiser
+    <i>UC- Browse Media Use Case</i>
+end ref
+ref over System, Advertiser
+    <i>UC- View Media Listing Details Use Case</i>
 end ref
 
 Advertiser -> System: reserveMedia(mediaId, adCampaignId, startDate, endDate)
 
-ref over System
-    <i>Validate Date Availability</i>
-end ref
-
-ref over System
-    <i>Validate Advertiser</i>
-    <i>Authorization</i>
-end ref
 
 alt Validation succeeds
     System --> Advertiser: reservationDetails
 else Validation fails
     System --> Advertiser: validationError
 end
-
-note right of System
+note left of System
   reservationDetails contains:
-  - adPreview
-  - totalPrice
-  - mediaDetails
+  - mediaId
+  - campaignId
+  - startDate
+  - endDate
 end note
+
 
 Advertiser -> System: confirmReservation()
 
-System --> Advertiser: reservationPending
+alt Reservation Succeeds
+    System --> Advertiser: reservationCreated
+else Reservation Fails
+    System --> Advertiser: reservationError
+end
 
-note right of System
+
+note left of System
   Reservation created with PENDING status.
   Media Owner approval required.
 end note
 
 ref over System, MediaOwner
-    <i>Manage Reservation Use Case</i>
+    <i>UC- Approve Reservation Use Case</i>
     (Media Owner approves request)
 end ref
 
-System --> Advertiser: approvalNotification
+ref over System, Advertiser
+    <i>Advertiser views his reservations</i>
+    <i>(UC- View Reservations Use Case)</i>
+end ref
+
 
 Advertiser -> System: submitPayment(paymentInfo)
+note right of Advertiser
+  paymentInfo contains:
+  - paymentMethodId
+  - billingDetails
+end note
 
 alt Payment succeeds
     System --> Advertiser: paymentConfirmation
@@ -58,7 +72,7 @@ else Payment fails
     System --> Advertiser: paymentError
 end
 
-note right of System
+note left of System
   paymentConfirmation contains:
   - reservationId
   - campaignStartDate
@@ -66,4 +80,6 @@ note right of System
   - activeStatus
 end note
 
+System -> GmailAPI: sendSimpleEmail(to, subject, body)
+GmailAPI -> MediaOwner: emailNotification
 @enduml

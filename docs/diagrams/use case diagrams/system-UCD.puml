@@ -41,9 +41,10 @@ rectangle "Envision Ad" {
 '    --------- Media Owner Use Cases ---------
     usecase "UC- Manage Media Listing" as ManageListing
     usecase "UC- Submit Proof of Display" as SubmitProof
-    usecase "UC- Review Reservation" as ReviewReservation
+    usecase "UC- Manage Reservation" as ManageReservation
     usecase "UC- Approve Reservation" as ApproveReservation
     usecase "UC- Deny Reservation" as DenyReservation
+    usecase "UC- Perform Stripe Onboarding" as StripeOnboarding
 
 '    --------- Organization Owner Use Cases ---------
     usecase "UC- Request Organization Verification" as RequestOrgVerification
@@ -96,8 +97,8 @@ rectangle "Envision Ad" {
 '    --------- Media Owner Relationships ---------
     MO -- ManageListing
     MO -- SubmitProof
-    MO -- ReviewReservation
-
+    MO -- ManageReservation
+    MO -- StripeOnboarding
 '    --------- Organization Owner Relationships
     OW - RequestOrgVerification
     OW -- ManageEmployees
@@ -111,20 +112,21 @@ rectangle "Envision Ad" {
     HG -- SendEmailReminder
 
 ' ==============================================================================
-    Pay ..> CreateReservation : <<includes>>
     ViewReservations <-- Pay : <<extends>>
     CreateAdCampaign <-- CreateReservation : <<includes>>
     ViewMediaDetails <-- CreateReservation : <<extends>>
+    ApproveReservation ..> CreateReservation : <<includes>>
+    Pay .> ApproveReservation: <<includes>>
 
     Browse <-- ViewMediaDetails : <<extends>>
     ReviewOrg ..> RequestOrgVerification : <<includes>>
 
     ManageAdCampaigns <-- CreateAdCampaign : <<extends>>
 
-'    ReviewReservation <- ApproveReservation : <<extends>>
-'    DenyReservation -> ReviewReservation : <<extends>>
-    ReviewReservation <-- ApproveReservation : <<extends>>
-    ReviewReservation <-- DenyReservation : <<extends>>
+'    ManageReservation <- ApproveReservation : <<extends>>
+'    DenyReservation -> ManageReservation : <<extends>>
+    ManageReservation <-- ApproveReservation : <<extends>>
+    ManageReservation <-- DenyReservation : <<extends>>
 
     ReviewOrg <-- ApproveOrg : <<extends>>
 hide stereotypes
