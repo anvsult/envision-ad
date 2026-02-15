@@ -154,7 +154,7 @@ EmbeddedCheckoutProvider -> EmbeddedCheckout: EmbeddedCheckout()
 activate EmbeddedCheckout
 note left
     The EmbeddedCheckout component is
-    responsible the payment form and
+    responsible for the payment form and
     handling user interactions.
     It uses the Stripe.js library
     to securely handle payment information
