@@ -9,7 +9,6 @@ import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { MediaModal } from "@/pages/dashboard/media-owner/ui/modals/MediaModal";
 import { IconCheck } from "@tabler/icons-react";
 import { WeeklyScheduleModel } from "@/entities/media";
-import axiosInstance from "@/shared/api/axios/axios";
 
 import { MediaLocation, MediaLocationRequestDTO } from "@/entities/media-location/model/mediaLocation";
 import {
@@ -330,9 +329,12 @@ export default function MediaLocations() {
         }
     };
 
-    const handleToggleMediaStatus = async (id: string | number, nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE) => {
+    const handleToggleMediaStatus = async (
+        id: string | number,
+        nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => {
         try {
-            await axiosInstance.patch(`/media/${id}/status`, { status: nextStatus });
+            await toggleMediaStatus(id, nextStatus);
 
             notifications.show({
                 title: t("notifications.statusMedia.success.title"),
@@ -340,7 +342,7 @@ export default function MediaLocations() {
                 color: "green",
             });
 
-            loadLocations();
+            await loadLocations();
         } catch (error) {
             console.error("Failed to toggle status", error);
             notifications.show({
@@ -350,6 +352,7 @@ export default function MediaLocations() {
             });
         }
     };
+
 
     const handleEditLocation = (location: MediaLocation) => {
         setLocationToEdit(location);

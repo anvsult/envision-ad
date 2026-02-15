@@ -189,7 +189,10 @@ export function useMediaList() {
     };
 
     // Toggle status
-    const toggleMediaStatus = async (id: string | number) => {
+    const toggleMediaStatus = async (
+        id: string | number,
+        nextStatus?: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => {
         const targetId = String(id);
 
         const currentRow = media.find((m) => String(m.id) === targetId);
@@ -204,33 +207,35 @@ export function useMediaList() {
         }
 
         const currentStatus = currentRow.status;
-        const nextStatus =
+
+        const computedNextStatus =
             currentStatus === MediaStatusEnum.ACTIVE
                 ? MediaStatusEnum.INACTIVE
                 : MediaStatusEnum.ACTIVE;
 
+        const finalNextStatus = nextStatus ?? computedNextStatus;
+
         // optimistic UI update
         setMedia((prev) =>
             prev.map((m) =>
-                String(m.id) === targetId ? { ...m, status: nextStatus } : m
+                String(m.id) === targetId ? { ...m, status: finalNextStatus } : m
             )
         );
 
         try {
-            const updated = await patchMediaStatus(targetId, { status: nextStatus });
+            const updated = await patchMediaStatus(targetId, { status: finalNextStatus });
 
             // sync with backend response
             setMedia((prev) =>
                 prev.map((m) =>
                     String(m.id) === targetId
-                        ? { ...m, status: updated.status ?? nextStatus }
+                        ? { ...m, status: updated.status ?? finalNextStatus }
                         : m
                 )
             );
 
-            return updated.status ?? nextStatus;
+            return updated.status ?? finalNextStatus;
         } catch (err) {
-            // revert on error
             setMedia((prev) =>
                 prev.map((m) =>
                     String(m.id) === targetId ? { ...m, status: currentStatus } : m
