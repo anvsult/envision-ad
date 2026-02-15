@@ -57,7 +57,7 @@ public class MediaController {
             @RequestParam(required = false) String businessId,
             @RequestParam(required = false) BigDecimal minPrice,
             @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) Integer minDailyImpressions,
+            @RequestParam(required = false) Integer minWeeklyImpressions,
             @RequestParam(required = false) String specialSort,
             @RequestParam(required = false) Double userLat,
             @RequestParam(required = false) Double userLng,
@@ -74,8 +74,8 @@ public class MediaController {
         if (minPrice != null && maxPrice != null && minPrice.compareTo(maxPrice) > 0) {
             throw new IllegalArgumentException("minPrice must not be greater than maxPrice.");
         }
-        if (minDailyImpressions != null && minDailyImpressions < 0) {
-            throw new IllegalArgumentException("minDailyImpressions must be non-negative.");
+        if (minWeeklyImpressions != null && minWeeklyImpressions < 0) {
+            throw new IllegalArgumentException("minWeeklyImpressions must be non-negative.");
         }
 
         if (bounds != null && bounds.size() != 4) {
@@ -88,7 +88,7 @@ public class MediaController {
                 businessId,
                 minPrice,
                 maxPrice,
-                minDailyImpressions,
+                minWeeklyImpressions,
                 specialSort,
                 userLat,
                 userLng,

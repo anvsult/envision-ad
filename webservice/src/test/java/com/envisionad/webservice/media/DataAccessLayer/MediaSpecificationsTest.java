@@ -183,22 +183,39 @@ class MediaSpecificationsTest {
     }
 
     @Test
-    void whenMinDailyImpressionsProvided_thenReturnPredicate() {
+    void whenMinWeeklyImpressionsProvided_thenReturnPredicate() {
         Integer min = 100;
 
-        when(root.<Integer>get("dailyImpressions")).thenReturn(impressionsPath);
-        when(cb.greaterThanOrEqualTo(impressionsPath, min)).thenReturn(predicate);
+        Path<Integer> dailyPath = mock(Path.class);
+        Path<Integer> activeDaysPath = mock(Path.class);
 
-        Specification<Media> spec = MediaSpecifications.dailyImpressionsGreaterThan(min);
+        Expression<Integer> coalesceDaily = mock(Expression.class);
+        Expression<Integer> coalesceActive = mock(Expression.class);
+        Expression<Integer> weeklyExpression = mock(Expression.class);
+
+        when(root.<Integer>get("dailyImpressions")).thenReturn(dailyPath);
+        when(root.<Integer>get("activeDays")).thenReturn(activeDaysPath);
+
+        when(cb.coalesce(dailyPath, 0)).thenReturn(coalesceDaily);
+        when(cb.coalesce(activeDaysPath, 0)).thenReturn(coalesceActive);
+
+        when(cb.prod(coalesceDaily, coalesceActive)).thenReturn(weeklyExpression);
+        when(cb.greaterThanOrEqualTo(weeklyExpression, min)).thenReturn(predicate);
+
+        Specification<Media> spec =
+                MediaSpecifications.weeklyImpressionsGreaterThan(min);
+
         Predicate result = spec.toPredicate(root, query, cb);
 
         assertNotNull(result);
         assertEquals(predicate, result);
     }
 
+
+
     @Test
-    void whenMinDailyImpressionsIsNull_thenReturnNull() {
-        Specification<Media> spec = MediaSpecifications.dailyImpressionsGreaterThan(null);
+    void whenMinWeeklyImpressionsIsNull_thenReturnNull() {
+        Specification<Media> spec = MediaSpecifications.weeklyImpressionsGreaterThan(null);
 
         Predicate result = spec.toPredicate(root, query, cb);
 

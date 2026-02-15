@@ -13,6 +13,21 @@
     "description": "You do not have permission to access this page.",
     "back": "Back to home"
   },
+  "auth": {
+    "errors": {
+      "title": "Authentication Error",
+      "unauthorized": "Your account has been blocked. Please contact support for assistance.",
+      "userBlocked": "Your account has been blocked. Please contact support for assistance.",
+      "accessDenied": "Access was denied. You may not have permission to access this resource.",
+      "serverError": "An authentication server error occurred. Please try again later.",
+      "temporarilyUnavailable": "The authentication service is temporarily unavailable. Please try again later.",
+      "invalidRequest": "The authentication request was invalid. Please try again.",
+      "invalidScope": "The requested permissions are invalid or not allowed.",
+      "unsupportedResponseType": "The authentication response type is not supported.",
+      "generic": "An authentication error occurred. Please try again or contact support.",
+      "back": "Return to Home"
+    }
+  },
   "nav": {
     "home": "Home",
     "dashboard": "Dashboard",
@@ -196,7 +211,7 @@
       "width": "Width",
       "height": "Height",
       "loopDuration": "Loop duration",
-      "dailyImpressions": "Daily Impressions"
+      "weeklyImpressions": "Weekly Impressions"
     },
     "scheduleTitle": "Schedule",
     "monthsTitle": "Months",
@@ -206,7 +221,7 @@
     "pricePerWeek": "{price} per week",
     "priceUnavailable": "Price not available",
     "loopDurationSeconds": "{seconds} seconds",
-    "dailyImpressionPerDay": "~{count} daily impressions",
+    "weeklyImpressions": "~{count} impressions",
     "months": {
       "january": "January",
       "february": "February",
@@ -245,7 +260,7 @@
   },
   "mediacard": {
     "perWeek": "{price} per week",
-    "dailyImpressions": "~{dailyImpressions} daily impressions"
+    "weeklyImpressions": "~{weeklyImpressions} weekly impressions"
   },
   "browse": {
     "searchTitle": "Title",
@@ -889,7 +904,8 @@
         "image": "Image"
       },
       "noCampaigns": "No campaigns found. Add your first campaign to get started!",
-      "noAds": "No ads found in this campaign. Add your first ad to get started!"
+      "noAds": "No ads found in this campaign. Add your first ad to get started!",
+      "deleteCampaign": "Delete Campaign"
     },
     "notifications": {
       "loadFailed": {
@@ -916,6 +932,17 @@
           "message": "Failed to delete ad"
         }
       },
+      "deleteCampaign": {
+        "success": {
+          "title": "Deleted",
+          "message": "Campaign deleted"
+        },
+        "error": {
+          "title": "Error",
+          "tiedReservationMessage": "Failed to delete campaign because it still has upcoming or ongoing reservations. Please wait until all reservations for this campaign have ended before deleting.",
+          "genericMessage": "Failed to delete campaign"
+        }
+      },
       "createCampaign": {
         "success": {
           "title": "Success",
@@ -930,9 +957,15 @@
     "confirmations": {
       "deleteAd": {
         "title": "Delete Ad",
-        "message": "Are you sure you want to delete this ad? This action cannot be undone.",
-        "confirm": "Delete",
-        "cancel": "Cancel"
+        "message": "Are you sure you want to delete this ad? This action cannot be undone."
+      },
+      "deleteCampaign": {
+        "title": "Delete Campaign",
+        "message": "Are you sure you want to delete this campaign? This action cannot be undone and all ads within this campaign will also be deleted."
+      },
+      "delete": {
+        "cancel": "Cancel",
+        "confirm": "Delete"
       }
     }
   },

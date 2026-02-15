@@ -19,6 +19,7 @@ export interface Media {
     imageUrl: string;
     previewConfiguration: string;
     businessId: string;
+    businessName: string;
 }
 
 export interface MediaRequestDTO {
@@ -54,7 +55,7 @@ export interface FilteredActiveMediaProps {
     businessId?: string | null,
     minPrice?: number | null,
     maxPrice?: number | null,
-    minDailyImpressions?: number | null,
+    minWeeklyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
     bounds?: LatLngBounds | null,
@@ -75,7 +76,7 @@ export interface WeeklyScheduleModel {
     endTime: string | null;
 }
 
-export function getJoinedAddress(items: string[]) {
+export function getJoinedAddress(items: (string | undefined)[]) {
     return items.join(", ");
 }
 

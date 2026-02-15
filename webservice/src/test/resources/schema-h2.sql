@@ -88,6 +88,7 @@ CREATE TABLE media
     height             DOUBLE PRECISION,
     price              DECIMAL(10, 2),
     daily_impressions  INTEGER,
+    active_days        INTEGER,
     schedule           CLOB,
     status             VARCHAR(50),
     image_file_name    VARCHAR(512),

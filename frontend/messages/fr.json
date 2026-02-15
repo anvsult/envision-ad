@@ -13,6 +13,21 @@
     "description": "Vous n'avez pas l'autorisation d'accéder à cette page.",
     "back": "Retour à l'accueil"
   },
+  "auth": {
+    "errors": {
+      "title": "Erreur d'authentification",
+      "unauthorized": "Votre compte a été bloqué. Veuillez contacter le support pour obtenir de l'aide.",
+      "userBlocked": "Votre compte a été bloqué. Veuillez contacter le support pour obtenir de l'aide.",
+      "accessDenied": "L'accès a été refusé. Vous n'avez peut-être pas la permission d'accéder à cette ressource.",
+      "serverError": "Une erreur du serveur d'authentification s'est produite. Veuillez réessayer plus tard.",
+      "temporarilyUnavailable": "Le service d'authentification est temporairement indisponible. Veuillez réessayer plus tard.",
+      "invalidRequest": "La demande d'authentification était invalide. Veuillez réessayer.",
+      "invalidScope": "Les permissions demandées sont invalides ou non autorisées.",
+      "unsupportedResponseType": "Le type de réponse d'authentification n'est pas pris en charge.",
+      "generic": "Une erreur d'authentification s'est produite. Veuillez réessayer ou contacter le support.",
+      "back": "Retour à l'accueil"
+    }
+  },
   "nav": {
     "home": "Accueil",
     "dashboard": "Tableau de bord",
@@ -198,7 +213,7 @@
       "width": "Largeur",
       "height": "Hauteur",
       "loopDuration": "Durée de la boucle",
-      "dailyImpressions": "Impressions quotidiennes"
+      "weeklyImpressions": "Impressions par semaine"
     },
     "scheduleTitle": "Horaire",
     "monthsTitle": "Mois",
@@ -208,8 +223,7 @@
     "pricePerWeek": "{price} par semaine",
     "priceUnavailable": "Prix non disponible",
     "loopDurationSeconds": "{seconds} secondes",
-    "estimatedViewsValue": "300 par jour",
-    "dailyImpressionPerDay": "~{count} impressions par jour",
+    "weeklyImpressions": "~{count} impressions",
     "months": {
       "january": "Janvier",
       "february": "Février",
@@ -248,7 +262,7 @@
   },
   "mediacard": {
     "perWeek": "{price} par semaine",
-    "dailyImpressions": "~{dailyImpressions} impressions par jour"
+    "weeklyImpressions": "~{weeklyImpressions} impressions par semaine"
   },
   "browse": {
     "searchTitle": "Titre",
@@ -932,7 +946,8 @@
         "image": "Image"
       },
       "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
-      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer."
+      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
+      "deleteCampaign": "Supprimer la campagne"
     },
     "notifications": {
       "loadFailed": {
@@ -959,6 +974,17 @@
           "message": "Échec de la suppression de l’annonce"
         }
       },
+      "deleteCampaign": {
+        "success": {
+          "title": "Supprimée",
+          "message": "Campagne supprimée"
+        },
+        "error": {
+          "title": "Erreur",
+          "tiedReservationMessage": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer.",
+          "genericMessage": "Échec de la suppression de la campagne"
+        }
+      },
       "createCampaign": {
         "success": {
           "title": "Succès",
@@ -973,9 +999,15 @@
     "confirmations": {
       "deleteAd": {
         "title": "Supprimer l’annonce",
-        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible.",
-        "confirm": "Supprimer",
-        "cancel": "Annuler"
+        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible."
+      },
+      "deleteCampaign": {
+        "title": "Supprimer la campagne",
+        "message": "Êtes-vous sûr de vouloir supprimer cette campagne ? Cette action est irréversible et supprimera toutes les annonces associées à cette campagne."
+      },
+      "delete": {
+        "cancel": "Annuler",
+        "confirm": "Supprimer"
       }
     }
   },

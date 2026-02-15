@@ -29,14 +29,15 @@ import { getMediaReservations } from "@/features/reservation-management/api";
 import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress, Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
-import { MediaCardCarouselLoader } from "@/widgets/Carousel/CardCarousel";
+import { MediaCardCarouselLoader, MediaCardStackLoader } from "@/widgets/Carousel/CardCarousel";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
-import { getOrganizationById } from "@/features/organization-management/api";
 import { LatLngLiteral } from "leaflet";
 import { ReservationStatus } from "@/entities/reservation";
 import { usePermissions } from "@/app/providers";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
+import { useMediaQuery } from "@mantine/hooks";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -56,13 +57,13 @@ const monthDefs = [
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
+  const isMobile = useMediaQuery("(max-width: 575px)");
   const locale = useLocale();
 
   const params = useParams();
   const id = params?.id as string | undefined;
 
   const [media, setMedia] = useState<Media | null>(null); //The media displayed on the page
-  const [organizationName, setOrganizationName] = useState<string | null>(null) //
   const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
   const [error, setError] = useState<string | null>(null); //The error message
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
@@ -108,22 +109,6 @@ export default function MediaDetailsPage() {
     void loadMedia();
   }, [id, t]);
 
-  useEffect(() => {
-    if (!media?.businessId) {
-      return
-    }
-    const fetchOrganizationDetails = async (businessId: string) => {
-      try {
-
-        const response = await getOrganizationById(businessId);
-        setOrganizationName(response.name);
-      } catch (e) {
-        console.log(e)
-      }
-    };
-
-    fetchOrganizationDetails(media?.businessId)
-  }, [media?.businessId]);
 
   const latlng: LatLngLiteral = useMemo(() => ({
     lat: media?.mediaLocation.latitude ?? 0,
@@ -170,6 +155,8 @@ export default function MediaDetailsPage() {
 
   const activeMonths = new Set(media.schedule?.selectedMonths ?? []);
 
+  const weeklyImpressions = calculateWeeklyImpressions(media.dailyImpressions ?? 0, media.schedule.weeklySchedule ?? []);
+
   const isPoster = media.typeOfDisplay === "POSTER";
   const isDigital = media.typeOfDisplay === "DIGITAL";
 
@@ -196,7 +183,7 @@ export default function MediaDetailsPage() {
 
   return (
     <>
-      <Container size="md" py={20} px={80}>
+      <Container size="md" py={20} px={isMobile? "sm" :80}>
         <Stack gap="sm">
           {/* Title Bar */}
           <Group gap="xs" justify="space-between">
@@ -261,7 +248,7 @@ export default function MediaDetailsPage() {
                 <Text fw={600} size="lg">
                   {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
                 </Text>
-                <Text size="sm">{media.mediaOwnerName}</Text>
+                <Text size="sm">{media.businessName}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: activeAdsCount })}
                 </Text>
@@ -287,9 +274,9 @@ export default function MediaDetailsPage() {
                   }
 
                   rows.push([
-                    t("details.dailyImpressions"),
-                    t("dailyImpressionPerDay", {
-                      count: media.dailyImpressions ?? 0,
+                    t("details.weeklyImpressions"),
+                    t("weeklyImpressions", {
+                      count: weeklyImpressions,
                     }),
                   ]);
 
@@ -398,7 +385,14 @@ export default function MediaDetailsPage() {
                 </Stack>
               </Card>
             </Stack>
-            <MediaCardCarouselLoader id="other-media-by-organization-carousel" title={t("otherMediaBy") + organizationName} filteredMediaProps={filteredOrgMediaProps} />
+            <Container w="100%" p="0">
+              {
+                isMobile ?
+                <MediaCardStackLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
+                :
+                <MediaCardCarouselLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
+              }
+            </Container>
           </Group>
         </Stack>
         <Modal

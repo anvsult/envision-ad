@@ -53,6 +53,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                         @Param("endDate") LocalDateTime endDate);
 
         @Query("""
+                        SELECT (COUNT(r) > 0)
+                        FROM Reservation r
+                        WHERE r.campaignId = :campaignId
+                          AND r.status = :status
+                          AND r.endDate >= :now
+                """)
+        boolean existsByCampaignIdAndStatus(
+                @Param("campaignId") String campaignId,
+                @Param("status") ReservationStatus status,
+                @Param("now") LocalDateTime now
+        );
+
+        @Query("""
             SELECT (COUNT(r) > 0)
             FROM Reservation r
             WHERE r.mediaId = :mediaId AND r.campaignId = :campaignId

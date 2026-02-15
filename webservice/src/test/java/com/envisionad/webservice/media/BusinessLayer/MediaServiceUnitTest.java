@@ -209,7 +209,7 @@ class MediaServiceUnitTest {
         }
 
         @Test
-        void getAllFilteredActiveMedia_WithMinDailyImpressions_ShouldFilterByImpressions() {
+        void getAllFilteredActiveMedia_WithMinWeeklyImpressions_ShouldFilterByImpressions() {
                 // Arrange
                 Pageable pageable = PageRequest.of(0, 10);
                 Integer minImpressions = 25000;
@@ -417,7 +417,123 @@ class MediaServiceUnitTest {
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
         }
 
-        // ==================== Distance Calculation Tests ====================
+    @Test
+    void getAllFilteredActiveMedia_WithWeeklyImpressionsAsc_ShouldSortCorrectly() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+
+        media1.setDailyImpressions(60);
+        media1.setActiveDays(7);
+
+        media2.setDailyImpressions(70);
+        media2.setActiveDays(2);
+
+        List<Media> mediaList = new ArrayList<>(List.of(media1, media2));
+
+        when(mediaRepository.findAll(any(Specification.class)))
+                .thenReturn(mediaList);
+
+        // Act
+        Page<Media> result = mediaService.getAllFilteredActiveMedia(
+                pageable, null, null, null, null,
+                null, "weeklyImpressions,asc",
+                null, null, null, null
+        );
+
+        // Assert
+        List<Media> content = result.getContent();
+        assertEquals(media2.getTitle(), content.get(0).getTitle()); // 140 first
+        assertEquals(media1.getTitle(), content.get(1).getTitle()); // 420 second
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_WithWeeklyImpressionsDesc_ShouldSortCorrectly() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+
+        media1.setDailyImpressions(60);
+        media1.setActiveDays(7);   // 420
+
+        media2.setDailyImpressions(70);
+        media2.setActiveDays(2);   // 140
+
+        List<Media> mediaList = new ArrayList<>(List.of(media2, media1));
+
+        when(mediaRepository.findAll(any(Specification.class)))
+                .thenReturn(mediaList);
+
+        // Act
+        Page<Media> result = mediaService.getAllFilteredActiveMedia(
+                pageable, null, null, null, null,
+                null, "weeklyImpressions,desc",
+                null, null, null, null
+        );
+
+        // Assert
+        List<Media> content = result.getContent();
+        assertEquals(media1.getTitle(), content.get(0).getTitle()); // 420 first
+        assertEquals(media2.getTitle(), content.get(1).getTitle()); // 140 second
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_WithWeeklyImpressionsDesc_AndPagination_ShouldReturnCorrectPage() {
+        // Arrange
+        Pageable pageable = PageRequest.of(1, 1); // second page, 1 per page
+
+        media1.setDailyImpressions(60);
+        media1.setActiveDays(7);   // 420
+
+        media2.setDailyImpressions(70);
+        media2.setActiveDays(2);   // 140
+
+        List<Media> mediaList = new ArrayList<>(List.of(media1, media2));
+
+        when(mediaRepository.findAll(any(Specification.class)))
+                .thenReturn(mediaList);
+
+        // Act
+        Page<Media> result = mediaService.getAllFilteredActiveMedia(
+                pageable, null, null, null, null,
+                null, "weeklyImpressions,desc",
+                null, null, null, null
+        );
+
+        // Assert
+        assertEquals(1, result.getContent().size());
+        assertEquals(2, result.getTotalElements());
+    }
+
+    @Test
+    void getAllFilteredActiveMedia_WithWeeklyImpressionsAndNullValues_ShouldHandleGracefully() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+
+        media1.setDailyImpressions(null);
+        media1.setActiveDays(7);
+
+        media2.setDailyImpressions(50);
+        media2.setActiveDays(null);
+
+        List<Media> mediaList = new ArrayList<>(List.of(media1, media2));
+
+        when(mediaRepository.findAll(any(Specification.class)))
+                .thenReturn(mediaList);
+
+        // Act
+        Page<Media> result = mediaService.getAllFilteredActiveMedia(
+                pageable, null, null, null, null,
+                null, "weeklyImpressions,asc",
+                null, null, null, null
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.getContent().size());
+    }
+
+
+
+    // ==================== Distance Calculation Tests ====================
 
         @Test
         void distance_SameLocation_ShouldReturnZero() {
@@ -796,6 +912,8 @@ class MediaServiceUnitTest {
                 entry.setEndTime("17:00");
                 schedule.setWeeklySchedule(List.of(entry));
                 media.setSchedule(schedule);
+
+                media.setActiveDays(1);
 
                 return media;
         }

@@ -69,7 +69,7 @@ INSERT INTO media (
     title, media_owner_name, type_of_display,
     loop_duration, resolution, aspect_ratio,
     width, height, price, daily_impressions,
-    schedule, status,
+    active_days, schedule, status,
     image_url, preview_configuration
 )
 VALUES (
@@ -77,7 +77,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Gym Hallway Digital Board', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '9:16',
-           2160, 3840, 26.45, 1200,
+           2160, 3840, 26.45, 1200, 5,
            '{
                "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -98,7 +98,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Main Entrance Digital Board ', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '9:16',
-           2160, 3840, 26.45, 1200,
+           2160, 3840, 26.45, 1200, 5,
            '{
            "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
               "weeklySchedule": [
@@ -119,7 +119,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Student Lounge 1', 'Champlain College', 'DIGITAL',
            30, '2160x3840', '9:16',
-           2160, 3840, 26.45, 1200,
+           2160, 3840, 26.45, 1200, 5,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -140,7 +140,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Entrepôt en Folie Main Entrance', 'Entrepôt en Folie', 'DIGITAL',
            60, '2160x3840', '9:16',
-           2160, 3840, 5.65, 1875,
+           2160, 3840, 5.65, 1875, 6,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -161,7 +161,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Ping Mo Store Entrance', 'Ping Mo', 'DIGITAL',
            60, '3840x2160', '16:9',
-           3840, 2160, 7.55, 1875,
+           3840, 2160, 7.55, 1875, 5,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -182,7 +182,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Student Lounge 2', 'Champlain College', 'DIGITAL',
            30, '3840x2160', '16:9',
-           3840, 2160, 26.45, 1200,
+           3840, 2160, 26.45, 1200, 5,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                 "weeklySchedule": [
@@ -203,7 +203,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Lola Salon Main Lobby', 'Lola Salon', 'DIGITAL',
            30, '1440x2560', '9:16',
-           1440, 2560, 2.55, 56,
+           1440, 2560, 2.55, 56, 5,
            '{
                 "selectedMonths": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
                "weeklySchedule": [
@@ -224,7 +224,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Cafeteria Entrance', 'Champlain College', 'DIGITAL',
            30, '3840x2160', '16:9',
-           3840, 2160, 26.45, 1200,
+           3840, 2160, 26.45, 1200, 5,
            '{
               "selectedMonths": ["January", "February", "March", "April", "May", "September", "October", "November", "December"],
                 "weeklySchedule": [
@@ -245,7 +245,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'ICE District Arena Board', 'ArenaMedia', 'DIGITAL',
            20, '1920x1080', '16:9',
-           1920, 1080, 250.00, 45000,
+           1920, 1080, 250.00, 45000, 6,
            '{
                "selectedMonths": ["January", "February"],
                "weeklySchedule": [
@@ -266,7 +266,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'ICE Plaza Outdoor Screen', 'NorthernAds', 'DIGITAL',
            45, '3840x2160', '16:9',
-           3840, 2160, 320.00, 47000,
+           3840, 2160, 320.00, 47000, 6,
            '{
                "selectedMonths": ["April", "May", "June"],
                "weeklySchedule": [
@@ -287,7 +287,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Harbour Front Pier Screen', 'AtlanticAds', 'DIGITAL',
            25, '1920x1080', '16:9',
-           1920, 1080, 140.00, 23000,
+           1920, 1080, 140.00, 23000, 6,
            '{
                "selectedMonths": ["September", "October"],
                "weeklySchedule": [
@@ -308,7 +308,7 @@ VALUES (
            'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10',
            'Harbour Front Market Screen', 'Seaside Media', 'DIGITAL',
            35, '2560x1440', '16:9',
-           2560, 1440, 165.00, 21000,
+           2560, 1440, 165.00, 21000, 6,
            '{
                "selectedMonths": ["November", "December"],
                "weeklySchedule": [

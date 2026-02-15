@@ -5,11 +5,8 @@ import { getAllFilteredActiveMedia, SpecialSort } from ".";
 
 
 export function useMediaList({
-    filteredMediaProps, 
-    loadingLocation,
-    setMediaStatus
-}: UseMediaListProps
-) {
+  filteredMediaProps, loadingLocation, setMediaStatus
+}: UseMediaListProps) {
     const [medias, setMedias] = useState<MediaCardProps[]>([]);
     
     useEffect(() => {
@@ -34,11 +31,13 @@ export function useMediaList({
                     href: String(m.id),
                     title: m.title,
                     organizationId: m.businessId,
+                    organizationName: m.businessName,
                     mediaLocation: m.mediaLocation,
                     resolution: m.resolution,
                     aspectRatio: m.aspectRatio,
                     price: m.price ?? 0,
                     dailyImpressions: m.dailyImpressions ?? 0,
+                    schedule: m.schedule,
                     typeOfDisplay: m.typeOfDisplay,
                     imageUrl: m.imageUrl
                     }));

@@ -3,6 +3,8 @@ package com.envisionad.webservice.media.MapperLayer;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -48,3 +50,4 @@ public class MediaRequestMapper {
         return media;
     }
 }
+

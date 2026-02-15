@@ -523,6 +523,7 @@ class ReservationControllerIntegrationTest {
         assertEquals(2, reservationRepository.count());
     }
 
+
     @Test
     void createReservation_WithOverlappingDatesForDifferentCampaigns_ShouldAllowCreation() {
         // Arrange - Create an existing reservation for the first campaign
@@ -537,14 +538,19 @@ class ReservationControllerIntegrationTest {
         existingReservation.setTotalPrice(new BigDecimal("150.00"));
         reservationRepository.save(existingReservation);
 
-        // Prepare a second, different campaign id
+        // Prepare a second, different campaign id and ensure it exists in the DB
         String differentCampaignId = UUID.randomUUID().toString();
+        AdCampaign differentCampaign = new AdCampaign();
+        differentCampaign.setCampaignId(new AdCampaignIdentifier(differentCampaignId));
+        differentCampaign.setBusinessId(new BusinessIdentifier(BUSINESS_ID));
+        differentCampaign.setName("Different Campaign");
+        adCampaignRepository.save(differentCampaign);
 
         // Attempt to create an overlapping reservation for the different campaign
         ReservationRequestModel requestModel = new ReservationRequestModel();
         requestModel.setCampaignId(differentCampaignId);
         requestModel.setStartDate(LocalDateTime.now().plusDays(5)); // Overlaps with existing
-        requestModel.setEndDate(LocalDateTime.now().plusDays(10));
+        requestModel.setEndDate(LocalDateTime.now().plusDays(12));
 
         // Act & Assert
         webTestClient.post()
@@ -694,3 +700,4 @@ class ReservationControllerIntegrationTest {
                 .jsonPath("$.totalPrice").isEqualTo(150.00);
     }
 }
+

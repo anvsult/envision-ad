@@ -74,4 +74,13 @@ public class AdCampaignController {
     public ResponseEntity<Integer> getActiveCampaignCount(@PathVariable String businessId) {
         return ResponseEntity.ok(adCampaignService.getActiveCampaignCount(businessId));
     }
+
+    @DeleteMapping("businesses/{businessId}/campaigns/{campaignId}")
+    @PreAuthorize("hasAuthority('delete:campaign')")
+    public ResponseEntity<AdCampaignResponseModel> deleteCampaign(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String businessId,
+            @PathVariable String campaignId) {
+        return ResponseEntity.ok(adCampaignService.deleteAdCampaign(jwt, businessId, campaignId));
+    }
 }

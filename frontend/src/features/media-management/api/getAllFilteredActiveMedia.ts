@@ -4,14 +4,14 @@ import { FilteredActiveMediaProps } from "@/entities/media/model/media";
 
 
 export enum SpecialSort {
-    nearest = "nearest"
+    nearest = "nearest",
+    weeklyImpressionsAsc ="weeklyImpressions,asc",
+    weeklyImpressionsDesc ="weeklyImpressions,desc"
 }
 
 export enum SortOptions{
     priceAsc ="price,asc",
     priceDesc ="price,desc",
-    dailyImpressionsAsc ="dailyImpressions,asc",
-    dailyImpressionsDesc ="dailyImpressions,desc",
     loopDurationAsc ="loopDuration,asc",
     loopDurationDesc ="loopDuration,desc"
 }
@@ -26,7 +26,7 @@ function escapeLike(input: string): string {
 
 
 export async function getAllFilteredActiveMedia(
-    {title, businessId, minPrice, maxPrice, minDailyImpressions, sort, latLng, bounds, excludedId, page, size}: FilteredActiveMediaProps
+    {title, businessId, minPrice, maxPrice, minWeeklyImpressions, sort, latLng, bounds, excludedId, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
@@ -47,8 +47,8 @@ export async function getAllFilteredActiveMedia(
         params.append("maxPrice", maxPrice.toString());
     }
 
-    if (minDailyImpressions) {
-        params.append("minDailyImpressions", minDailyImpressions.toString());
+    if (minWeeklyImpressions) {
+        params.append("minWeeklyImpressions", minWeeklyImpressions.toString());
     }
 
     if (sort){
