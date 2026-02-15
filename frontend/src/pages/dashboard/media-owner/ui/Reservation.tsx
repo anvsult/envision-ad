@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 
 import {
     ReservationResponseDTO,

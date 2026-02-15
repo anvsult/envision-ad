@@ -23,29 +23,29 @@ export interface MediaCardProps {
     dailyImpressions: number;
     schedule: MonthlyScheduleModel,
     mobileWidth?: string;
-    
+
     // TODO: Add `dateAdded: Date` property if/when date tracking is required.
 }
 
 function MobileViewer({children, mobileWidth}: Readonly<{children: React.ReactNode; mobileWidth?: string}>){
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
     return(
-        isMobile ? 
+        isMobile ?
         <Group gap={0} wrap="nowrap">{children}</Group>:
-        <Stack gap={0}>{children}</Stack>    
+        <Stack gap={0}>{children}</Stack>
     )
 
 }
 
 function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions, schedule, mobileWidth}: MediaCardProps) {
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
-    
+
     const t = useTranslations("mediacard");
     const locale = useLocale();
     const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule ?? []);
 
     return (
-        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" 
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never"
             style={{scrollMarginTop: "25vh"}}
         >
             <Paper
@@ -53,8 +53,8 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                 radius="md"
                 className={styles.paper}
                 h="100%"
-                
-            >   
+
+            >
                 <MobileViewer mobileWidth={mobileWidth}>
                     <AspectRatio ratio={imageRatio ?? 1} w={isMobile?"35%": "100%"} >
                         <Paper className={styles.imagecontainer} radius="md" shadow="xs" >
@@ -75,30 +75,30 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>
                                 {t('perWeek', { price: formatCurrency(price, { locale }) })}
                             </Text>
-                            
-                            
-                            {mediaLocation && 
+
+
+                            {mediaLocation &&
                             <Text id={"MediaCardAddress" + index} size="xs" lineClamp={1} m={0}>
                                 {getJoinedAddress([mediaLocation.city, mediaLocation.province])}
                             </Text>
                             }
-                            
+
                             <Text id={"MediaCardImpressions" + index} size="xs" lineClamp={1} m={0}>
                                 {t('weeklyImpressions', {weeklyImpressions: weeklyImpressions})}
                             </Text>
-                            
+
                             <Group justify="space-between">
                                 <Text id={"MediaCardAspectRatio" + index} size="xs" m={0}>
                                     {aspectRatio}
                                 </Text>
                                 <Text id={"MediaCardResolution" + index} size="xs" m={0}>
-                                    {resolution} 
+                                    {resolution}
                                 </Text>
                                 <Text id={"MediaCardType" + index} size="xs" m={0}>
                                     {typeOfDisplay}
                                 </Text>
                             </Group>
-                            
+
                         </Stack>
                     </Stack>
                 </MobileViewer>

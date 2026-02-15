@@ -117,8 +117,6 @@ export default function Advertisements() {
         }
     })();
 
-    const showPayButton = statusFilter === "approved";
-
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">

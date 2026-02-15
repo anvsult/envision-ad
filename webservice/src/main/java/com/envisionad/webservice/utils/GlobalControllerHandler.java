@@ -2,16 +2,13 @@ package com.envisionad.webservice.utils;
 
 import com.envisionad.webservice.advertisement.exceptions.*;
 import com.envisionad.webservice.business.exceptions.*;
-import com.envisionad.webservice.reservation.exceptions.ReservationAlreadyProcessedException;
+import com.envisionad.webservice.reservation.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
-import com.envisionad.webservice.reservation.exceptions.InsufficientLoopDurationException;
-import com.envisionad.webservice.reservation.exceptions.BadReservationRequestException; // New import
-import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import org.springframework.security.access.AccessDeniedException;
 import static org.springframework.http.HttpStatus.*;
 import org.slf4j.Logger;
@@ -180,6 +177,12 @@ public class GlobalControllerHandler {
         return createHttpErrorInfo(CONFLICT, ex);
     }
 
+
+    @ResponseStatus(CONFLICT)
+    @ExceptionHandler(ReservationConflictException.class)
+    public HttpErrorInfo handleReservationConflictException(ReservationConflictException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
 
     private HttpErrorInfo createHttpErrorInfo(HttpStatus httpStatus, Exception ex) {
         final String message = ex.getMessage();

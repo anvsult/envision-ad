@@ -234,7 +234,7 @@ export default function MediaDetailsPage() {
                 }}
 
               >
-                <AspectRatio ratio={1 / 1}>
+                <AspectRatio ratio={1}>
                   <Image
                     src={imageSrc}
                     alt={media.title}

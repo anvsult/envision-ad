@@ -148,9 +148,7 @@ class MediaLocationServiceImplTest {
         when(geocodingService.geocodeAddress(anyString())).thenReturn(Optional.empty());
         when(geocodingService.geocodeAddress(eq("123 Main St, City, Province, 12345"))).thenReturn(Optional.of(geocodingJson));
 
-        MediaLocationValidationException exception = assertThrows(MediaLocationValidationException.class, () -> {
-            mediaLocationService.createMediaLocation(mediaLocation, jwt);
-        });
+        MediaLocationValidationException exception = assertThrows(MediaLocationValidationException.class, () -> mediaLocationService.createMediaLocation(mediaLocation, jwt));
         assertEquals("Address could not be verified. Please verify the country.",
                 exception.getMessage());
         assertTrue(exception.getFieldErrors().containsKey("country"));

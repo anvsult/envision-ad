@@ -127,8 +127,13 @@ public class ReservationServiceImpl implements ReservationService {
 //            throw new IllegalStateException("A business cannot reserve its own media");
 //        }
 
-        // 4. Validate media availability
-        validateMediaHasLoopDurationLeft(media, requestModel);
+        // 4. Validate non-conflicting reservation with same ad campaign, media and date range
+        boolean hasConflict = reservationRepository.existsByMediaIdAndCampaignIdAndDateRange(
+                media.getId(), requestModel.getCampaignId(), requestModel.getStartDate(), requestModel.getEndDate());
+
+        if (hasConflict) {
+            throw new ReservationConflictException();
+        }
 
         // 5. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
@@ -495,22 +500,4 @@ public class ReservationServiceImpl implements ReservationService {
         return reservation;
     }
 
-    private void validateMediaHasLoopDurationLeft(Media media, ReservationRequestModel requestModel) {
-        List<AdCampaign> alreadyReservedCampaigns = reservationRepository.findAllActiveReservationsByMediaIdAndDateRange(
-                        media.getId(),
-                        requestModel.getStartDate(),
-                        requestModel.getEndDate()
-                ).stream()
-                .map(reservation -> adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId()))
-                .toList();
-
-        int totalReservedDuration = alreadyReservedCampaigns.stream()
-                .flatMap(campaign -> campaign.getAds().stream())
-                .mapToInt(ad -> ad.getAdDurationSeconds() != null ? ad.getAdDurationSeconds().getSeconds() : 0)
-                .sum();
-
-        if (media.getLoopDuration() <= totalReservedDuration) {
-            throw new InsufficientLoopDurationException();
-        }
-    }
 }

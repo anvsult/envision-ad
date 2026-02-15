@@ -180,12 +180,37 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 // Move to success screen
                 setActiveStep(2);
             } catch (error) {
-                console.error('Reservation error:', error);
-                notifications.show({
-                    title: t('errorTitle'),
-                    message: t('errors.reservationFailed'),
-                    color: 'red'
-                });
+                // Check for reservation conflict
+                if (error && typeof error === 'object' && 'response' in error) {
+                    const errorWithResponse = error as { response?: { status?: number } };
+                    if (errorWithResponse.response?.status === 409) {
+                        const selectedCampaign = campaigns?.find(c => c.campaignId === selectedCampaignId);
+                        const campaignName = selectedCampaign?.name || t('errors.unknownCampaign');
+
+                        notifications.show({
+                            title: t('errorTitle'),
+                            message: t('errors.reservationConflict', {
+                                campaignName,
+                                startDate: dayjs(dateRange[0]).format('MMM D, YYYY'),
+                                endDate: dayjs(dateRange[1]).format('MMM D, YYYY'),
+                            }),
+                            color: 'red'
+                        });
+                    } else {
+                        // Generic notification for non-409 HTTP errors
+                        notifications.show({
+                            title: t('errorTitle'),
+                            message: t('errors.reservationFailed'),
+                            color: 'red'
+                        });
+                    }
+                } else {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('errors.reservationFailed'),
+                        color: 'red'
+                    });
+                }
             } finally {
                 setLoading(false);
             }

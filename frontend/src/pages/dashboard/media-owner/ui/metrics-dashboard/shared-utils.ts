@@ -27,7 +27,7 @@ export const normalizeText = (value: string | undefined, fallback: string) => {
 };
 
 export const getReservationAmount = (reservation: ReservationResponseDTO) => {
-    if (typeof reservation.totalPrice === "number" && Number.isFinite(reservation.totalPrice)) {
+    if (Number.isFinite(reservation.totalPrice)) {
         return reservation.totalPrice;
     }
     const numericValue = Number(reservation.totalPrice);

@@ -9,7 +9,6 @@ import {
     IconDiscountCheck,
     IconChartDots,
     IconFileDescription,
-    IconInbox,
     IconSpeakerphone,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";

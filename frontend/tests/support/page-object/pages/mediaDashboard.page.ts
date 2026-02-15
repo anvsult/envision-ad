@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 
 import { isMobileView } from '../../utils/viewUtils';
 
@@ -90,13 +90,6 @@ export default class MediaDashboardPage {
 
     private escapeRegex(value: string) {
         return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
-
-    private locationAccordionItem(locationName: string): Locator {
-        return this.page
-            .locator('[data-accordion-item]')
-            .filter({ has: this.page.getByText(locationName, { exact: true }) })
-            .first();
     }
 
     async createLocation(input: CreateLocationInput) {

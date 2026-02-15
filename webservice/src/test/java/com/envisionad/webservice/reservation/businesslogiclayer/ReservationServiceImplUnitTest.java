@@ -323,10 +323,10 @@ class ReservationServiceImplUnitTest {
 
         // Assert
         assertEquals(1, result.size());
-        assertEquals("Verified Campaign", result.get(0).getCampaignName());
-        assertEquals("Campus Board", result.get(0).getMediaTitle());
-        assertEquals("Montreal", result.get(0).getMediaCity());
-        assertEquals("Champlain College", result.get(0).getAdvertiserBusinessName());
+        assertEquals("Verified Campaign", result.getFirst().getCampaignName());
+        assertEquals("Campus Board", result.getFirst().getMediaTitle());
+        assertEquals("Montreal", result.getFirst().getMediaCity());
+        assertEquals("Champlain College", result.getFirst().getAdvertiserBusinessName());
         verify(jwtUtils).validateUserIsEmployeeOfBusiness(mediaToken, myBusinessId);
         verify(mediaRepository).findAllByIdWithLocation(anyList());
         verify(businessRepository).findAllByBusinessId_BusinessIdIn(anyList());
