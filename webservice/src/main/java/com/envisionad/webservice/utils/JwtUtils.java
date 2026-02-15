@@ -5,6 +5,8 @@ import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Component
 public class JwtUtils {
@@ -43,5 +45,17 @@ public class JwtUtils {
         }
     }
 
+    public boolean hasAuthority(String authority) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null) return false;
+
+        return authentication.getAuthorities().stream()
+                .map(org.springframework.security.core.GrantedAuthority::getAuthority)
+                .anyMatch(a ->
+                        a.equals(authority) ||
+                                a.equals("SCOPE_" + authority)
+                );
+    }
 }
+
 

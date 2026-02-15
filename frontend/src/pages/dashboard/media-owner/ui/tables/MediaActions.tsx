@@ -6,12 +6,16 @@ import { IconClock, IconEdit, IconMenu2, IconPower, IconTrash } from "@tabler/ic
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { MediaRowData } from "./MediaRow";
+import { MediaStatusEnum } from "@/entities/media/model/media";
 
 interface MediaActionsProps {
     row: MediaRowData;
     onEdit?: (id: string | number) => void;
     onDelete?: (id: string | number) => void;
-    onToggleStatus?: (id: string | number) => void;
+    onToggleStatus?: (
+        id: string | number,
+        nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => void | Promise<void>;
 }
 
 export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaActionsProps) {
@@ -21,6 +25,9 @@ export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaAct
 
     const isActivating = pendingAction === "activate";
 
+    const isLocked =
+        row.status === MediaStatusEnum.PENDING || row.status === MediaStatusEnum.REJECTED;
+
     return (
         <>
             <Menu withinPortal position="bottom-end" shadow="md">
@@ -29,21 +36,20 @@ export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaAct
                         <IconMenu2 size={16} />
                     </ActionIcon>
                 </Menu.Target>
+
                 <Menu.Dropdown>
                     <Menu.Label>{t("actionsMenu.title")}</Menu.Label>
 
-                    {/* Edit */}
                     {onEdit && (
                         <Menu.Item leftSection={<IconEdit size={14} />} onClick={() => onEdit(row.id)}>
                             {t("actionsMenu.edit")}
                         </Menu.Item>
                     )}
 
-                    {/* Toggle Status Menu Item */}
-                    {row.status === "PENDING" || row.status === "REJECTED" ? (
+                    {isLocked ? (
                         <Tooltip
                             label={
-                                row.status === "PENDING"
+                                row.status === MediaStatusEnum.PENDING
                                     ? t("changeStatus.pendingToolTip")
                                     : t("changeStatus.rejectedToolTip")
                             }
@@ -51,20 +57,21 @@ export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaAct
                             position="left"
                         >
                             <Menu.Item leftSection={<IconClock size={14} />} disabled style={{ opacity: 0.6 }}>
-                                {row.status === "PENDING" ? t("changeStatus.waitApproval") : t("changeStatus.rejected")}
+                                {row.status === MediaStatusEnum.PENDING
+                                    ? t("changeStatus.waitApproval")
+                                    : t("changeStatus.rejected")}
                             </Menu.Item>
                         </Tooltip>
                     ) : (
-                        // Active/Inactive
                         <Menu.Item
                             leftSection={<IconPower size={14} />}
                             onClick={() => {
-                                const action = row.status === "ACTIVE" ? "deactivate" : "activate";
-                                setPendingAction(action as "activate" | "deactivate");
+                                const action = row.status === MediaStatusEnum.ACTIVE ? "deactivate" : "activate";
+                                setPendingAction(action);
                                 openModal();
                             }}
                         >
-                            {row.status === "ACTIVE"
+                            {row.status === MediaStatusEnum.ACTIVE
                                 ? t("changeStatus.deactivate")
                                 : t("changeStatus.activate")}
                         </Menu.Item>
@@ -73,7 +80,6 @@ export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaAct
                     <Menu.Divider />
                     <Menu.Label>{t("actionsMenu.dangerZone")}</Menu.Label>
 
-                    {/* Delete */}
                     {onDelete && (
                         <Menu.Item
                             color="red"
@@ -111,7 +117,11 @@ export function MediaActions({ row, onEdit, onDelete, onToggleStatus }: MediaAct
                         color={isActivating ? "blue" : "red"}
                         onClick={() => {
                             closeModal();
-                            onToggleStatus?.(row.id);
+                            const nextStatus =
+                                row.status === MediaStatusEnum.ACTIVE
+                                    ? MediaStatusEnum.INACTIVE
+                                    : MediaStatusEnum.ACTIVE;
+                            onToggleStatus?.(row.id, nextStatus);
                         }}
                     >
                         {isActivating ? t("changeStatus.activate") : t("changeStatus.deactivate")}

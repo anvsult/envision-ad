@@ -5,6 +5,7 @@ import { MediaLocation } from "@/entities/media-location/model/mediaLocation";
 import { useTranslations } from "next-intl";
 
 import { MediaRow } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
+import {MediaStatusEnum} from "@/entities/media/model/media";
 
 interface MediaLocationsTableProps {
     locations: MediaLocation[];
@@ -13,7 +14,10 @@ interface MediaLocationsTableProps {
     onEditLocation: (location: MediaLocation) => void;
     onEditMedia: (id: string | number) => void;
     onDeleteMedia: (id: string | number) => void;
-    onToggleMediaStatus: (id: string | number) => void;
+    onToggleMediaStatus: (
+        id: string | number,
+        nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => void | Promise<void>;
 }
 
 export function MediaLocationsTable({
@@ -118,7 +122,7 @@ export function MediaLocationsTable({
                                                     image: media.imageUrl,
                                                     adsDisplayed: 0, // Placeholder as backend data might be missing this
                                                     pending: 0,      // Placeholder
-                                                    status: media.status ?? "ACTIVE",
+                                                    status: media.status ?? MediaStatusEnum.ACTIVE,
                                                     timeUntil: "-",  // Placeholder
                                                     price: media.price?.toString() ?? "0.00"
                                                 }}

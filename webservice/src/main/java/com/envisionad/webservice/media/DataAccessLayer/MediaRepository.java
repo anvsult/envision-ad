@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -13,4 +14,7 @@ public interface MediaRepository extends JpaRepository<Media, UUID>, JpaSpecific
 
     @Query("SELECT DISTINCT m FROM Media m LEFT JOIN FETCH m.mediaLocation WHERE m.id IN :mediaIds")
     List<Media> findAllByIdWithLocation(@Param("mediaIds") List<UUID> mediaIds);
+
+    @EntityGraph(attributePaths = "mediaLocation")
+    List<Media> findByStatus(Status status);
 }

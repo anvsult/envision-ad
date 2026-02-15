@@ -3,15 +3,17 @@
 import { Avatar, Paper, ScrollArea, Table, Text } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
+import type { MediaStatusEnum } from "@/entities/media/model/media";
 
 export interface ApproveMediaRowData {
     id: string | number;
     name: string;
     image: string | null;
     location: string;
-    mediaOwnerName: string;
+    businessName: string;
     dailyImpressions: number;
     price: string;
+    status?: MediaStatusEnum;
 }
 
 interface ApproveMediaTableProps {
@@ -39,12 +41,16 @@ export function ApproveMediaTable({ rows }: ApproveMediaTableProps) {
                 >
                     <Table.Thead>
                         <Table.Tr>
-                            <Table.Th w={80} miw={60}>{t("image")}</Table.Th>
+                            <Table.Th w={80} miw={60}>
+                                {t("image")}
+                            </Table.Th>
                             <Table.Th miw={180}>{t("name")}</Table.Th>
-                            <Table.Th miw={160}>{t("mediaOwner")}</Table.Th>
+                            <Table.Th miw={160}>{t("businessName")}</Table.Th>
                             <Table.Th miw={180}>{t("location")}</Table.Th>
                             <Table.Th miw={160}>{t("dailyImpressions")}</Table.Th>
-                            <Table.Th w={110} miw={100}>{t("price")}</Table.Th>
+                            <Table.Th w={110} miw={100}>
+                                {t("price")}
+                            </Table.Th>
                         </Table.Tr>
                     </Table.Thead>
 
@@ -63,13 +69,15 @@ export function ApproveMediaTable({ rows }: ApproveMediaTableProps) {
                                         <Text fw={500}>{row.name}</Text>
                                     </Table.Td>
                                     <Table.Td>
-                                        <Text size="sm">{row.mediaOwnerName}</Text>
+                                        <Text size="sm">{row.businessName}</Text>
                                     </Table.Td>
                                     <Table.Td>
                                         <Text size="sm">{row.location}</Text>
                                     </Table.Td>
                                     <Table.Td>
-                                        <Text size="sm">{row.dailyImpressions.toLocaleString()}</Text>
+                                        <Text size="sm">
+                                            {row.dailyImpressions.toLocaleString()}
+                                        </Text>
                                     </Table.Td>
                                     <Table.Td>
                                         <Text fw={600} c="teal">

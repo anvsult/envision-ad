@@ -5,6 +5,7 @@ import { useState } from "react";
 import {useLocale, useTranslations} from "next-intl";
 import { MediaActions } from "./MediaActions";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import { MediaStatusEnum } from "@/entities/media/model/media";
 
 export interface MediaRowData {
   id: string | number;
@@ -12,7 +13,7 @@ export interface MediaRowData {
   image: string | null;
   adsDisplayed: number;
   pending: number;
-  status: string;
+  status: MediaStatusEnum;
   timeUntil: string;
   price: string;
 }
@@ -21,7 +22,7 @@ interface MediaRowProps {
   row: MediaRowData;
   onEdit?: (id: string | number) => void;
   onDelete?: (id: string | number) => void;
-  onToggleStatus?: (id: string | number) => void;
+  onToggleStatus?: (id: string | number, nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE) => void | Promise<void>;
 }
 export function MediaRow({
   row,
@@ -30,16 +31,19 @@ export function MediaRow({
   onToggleStatus,
 }: MediaRowProps) {
   const [hovered, setHovered] = useState(false);
-  const statusColorMap: Record<string, string> = {
-    ACTIVE: "green",
-    PENDING: "yellow",
-    REJECTED: "red",
+  const statusColorMap: Record<MediaStatusEnum, string> = {
+    [MediaStatusEnum.ACTIVE]: "green",
+    [MediaStatusEnum.INACTIVE]: "gray",
+    [MediaStatusEnum.PENDING]: "yellow",
+    [MediaStatusEnum.REJECTED]: "red",
   };
-  const t = useTranslations("media");
-  function getStatusColor(status: string) {
-    return statusColorMap[status] ?? "gray";
+
+  function getStatusColor(status: MediaStatusEnum) {
+    return statusColorMap[status];
   }
+
   const locale = useLocale();
+  const t = useTranslations("media");
 
   return (
     <Table.Tr
@@ -72,7 +76,7 @@ export function MediaRow({
           size="md"
           radius="sm"
         >
-          {t("status." + row.status.toLowerCase())}
+          {t("status." + String(row.status).toLowerCase())}
         </Badge>
       </Table.Td>
       <Table.Td ta="right">

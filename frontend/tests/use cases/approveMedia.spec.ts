@@ -1,28 +1,37 @@
 import { test } from "../fixtures/basePages";
-import DashboardPage from "../support/page-object/pages/dashboard.page";
-import AdminPendingMediaPage from "../support/page-object/pages/adminPendingMedia.page";
-import AdminMediaReviewPage from "../support/page-object/pages/adminMediaReview.page";
 
-test("Approve Pending Media", async ({ homePage, page }) => {
-  const dashboard = new DashboardPage(page);
-  const pending = new AdminPendingMediaPage(page);
-  const review = new AdminMediaReviewPage(page);
-
-  // Login
+test("Approve Pending Media", async ({
+  homePage,
+  adminPendingMediaPage,
+  adminMediaReviewPage,
+}) => {
+  // Step 1: Navigate to home page and authenticate as admin
   await homePage.goto();
-  await homePage.clickLoginLink();
-  await homePage.usernameTextbox().fill("megadoxs");
-  await homePage.passwordTextbox().fill("Password1!");
-  await homePage.loginButton().click();
-  await homePage.assertUserLoggedIn("megadoxs");
+  await homePage.login("admin", "Password1!");
 
-  // Go to pending media page
-  await dashboard.gotoAdminPendingMedia();
-  await dashboard.assertOnPendingMediaPage();
+  // Step 2: Navigate to the Admin Pending Media page
+  await adminPendingMediaPage.goto();
 
-  // Open first pending media
-  await pending.openFirstPendingMedia();
+  // Step 3: Determine whether there are pending items
+  // The page renders either:
+  // - a table of pending media
+  // - or an empty-state message
+  if (await adminPendingMediaPage.hasPendingRows()) {
 
-  // Approve
-  await review.approve();
+    // Step 4: Open the first pending media item
+    // Clicking the row navigates to the review details page
+    await adminPendingMediaPage.openFirstPending();
+
+    // Step 5: Approve the media item
+    // This includes:
+    // - Clicking the Approve button
+    // - Confirming in the modal
+    // - Verifying success toast appears
+    await adminMediaReviewPage.approveWithConfirm();
+  } else {
+
+    // Step 6: If no pending media exists,
+    // assert that the empty-state message is displayed
+    await adminPendingMediaPage.assertEmpty();
+  }
 });

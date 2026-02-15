@@ -1,7 +1,6 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.cloudinary.Cloudinary;
-import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -12,6 +11,7 @@ import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaRequestModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.MediaStatusPatchRequestModel;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
@@ -26,6 +26,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.AccessDeniedException;
+
 import java.math.BigDecimal;
 
 import java.util.*;
@@ -305,4 +307,58 @@ public class MediaServiceImpl implements MediaService {
 
         return new PageImpl<>(list.subList(pageStart, pageEnd), pageable, list.size());
     }
+
+    @Override
+    public MediaResponseModel patchMediaStatusById(Jwt jwt, String id, MediaStatusPatchRequestModel request) {
+
+        Media media = mediaRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new MediaNotFoundException(id));
+
+        Status current = media.getStatus();
+        Status target = request.getStatus();
+
+        if (current == target) return mediaResponseMapper.entityToResponseModel(media);
+        if (current == Status.REJECTED) throw new IllegalStateException("Rejected media cannot be re-activated. Please create a new media item instead.");
+
+        boolean allowed =
+                (current == Status.PENDING && (target == Status.ACTIVE || target == Status.REJECTED))
+                        || (current == Status.ACTIVE && target == Status.INACTIVE)
+                        || (current == Status.INACTIVE && target == Status.ACTIVE);
+
+        if (!allowed) throw new IllegalStateException("Invalid status transition: " + current + " -> " + target);
+
+        // Authorization rules
+        // - Admin can moderate (PENDING -> ACTIVE/REJECTED)
+        // - Business employees can (ACTIVE<->INACTIVE)
+        boolean isModerationAction = current == Status.PENDING;
+
+        boolean isAdmin = jwtUtils.hasAuthority("patch:media_status");
+
+        if (isModerationAction) {
+            // Only admins can approve/reject pending media
+            if (!isAdmin) {
+                throw new AccessDeniedException("Only admins can approve/reject pending media.");
+            }
+        } else {
+            // Only the owning business can toggle ACTIVE<->INACTIVE
+            UUID businessId = media.getBusinessId();
+            if (businessId == null) {
+                throw new IllegalStateException("Media has no associated business.");
+            }
+            jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId.toString());
+        }
+
+
+        media.setStatus(target);
+        Media saved = mediaRepository.save(media);
+        return mediaResponseMapper.entityToResponseModel(saved);
+    }
+
+
+    @Override
+    public List<Media> getMediaByStatus(Status status) {
+        return mediaRepository.findByStatus(status);
+    }
+
+
 }
