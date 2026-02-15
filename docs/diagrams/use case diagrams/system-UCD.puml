@@ -26,7 +26,7 @@ actor "Guest User" as GU
 
 rectangle "Envision Ad" {
 '    --------- Guest User Use Cases ---------
-    usecase "UC- Browse Media Inventory" as Browse
+    usecase "UC- Browse Media Listings" as Browse
     usecase "UC- View Media Listing Details" as ViewMediaDetails
 
 '    --------- Advertiser Use Cases ---------
