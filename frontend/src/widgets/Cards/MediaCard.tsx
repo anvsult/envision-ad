@@ -42,7 +42,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
     
     const t = useTranslations("mediacard");
     const locale = useLocale();
-    const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule);
+    const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule ?? []);
 
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" 
