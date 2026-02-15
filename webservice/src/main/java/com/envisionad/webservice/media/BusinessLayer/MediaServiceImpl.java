@@ -333,9 +333,7 @@ public class MediaServiceImpl implements MediaService {
         // - Business employees can (ACTIVE<->INACTIVE)
         boolean isModerationAction = current == Status.PENDING;
 
-        boolean isAdmin =
-                jwtUtils.hasAuthority("patch:media_status") ||
-                        jwtUtils.hasAuthority("SCOPE_patch:media_status");
+        boolean isAdmin = jwtUtils.hasAuthority("patch:media_status");
 
         if (isModerationAction) {
             // Only admins can approve/reject pending media
