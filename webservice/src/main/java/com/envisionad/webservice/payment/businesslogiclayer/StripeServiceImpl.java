@@ -160,10 +160,6 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId)
             throws StripeException {
-        // Validate amount
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidPricingException(amount);
-        }
 
         // Check for duplicate payment - only prevent if payment already SUCCEEDED
         // Allow retries for pending payments (incomplete Stripe sessions)

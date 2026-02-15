@@ -173,9 +173,7 @@ deactivate MediaDetailsPage
 deactivate ReservationModal
 
 ref over MediaOwner
-    <i>Media Owner reviews pending
-    <i>reservation and approves it</i>
-    <i>(Manage Reservation Use Case)</i>
+    <i>UC- Manage Reservation Use Case</i>
 end ref
 end alt
 end alt
