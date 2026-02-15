@@ -234,7 +234,7 @@ export function useMediaList() {
                 )
             );
 
-            return updated.status ?? finalNextStatus;
+            return finalNextStatus;
         } catch (err) {
             setMedia((prev) =>
                 prev.map((m) =>

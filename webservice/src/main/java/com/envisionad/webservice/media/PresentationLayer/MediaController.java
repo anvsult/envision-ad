@@ -158,7 +158,7 @@ public class MediaController {
     }
 
     @GetMapping("/pending")
-    @PreAuthorize("hasAuthority('patch:media_status')")
+    @PreAuthorize("hasAuthority('get:media')")
     public List<MediaResponseModel> getPendingMedia() {
         return responseMapper.entityListToResponseModelList(
                 mediaService.getMediaByStatus(Status.PENDING)
