@@ -3,15 +3,19 @@ package com.envisionad.webservice.reservation.businesslogiclayer;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
+import com.envisionad.webservice.business.dataaccesslayer.Business;
+import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
+import com.envisionad.webservice.reservation.dataaccesslayer.*;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
 import com.envisionad.webservice.reservation.exceptions.*;
+import com.envisionad.webservice.reservation.presentationlayer.models.DenialDetailsRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationRequestModel;
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
@@ -23,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -35,16 +41,19 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRequestMapper reservationRequestMapper;
     private final ReservationResponseMapper reservationResponseMapper;
     private final JwtUtils jwtUtils;
+    private final BusinessRepository businessRepository;
 
     public ReservationServiceImpl(ReservationRepository reservationRepository, MediaRepository mediaRepository,
                                   AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper,
-                                  ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils) {
+                                  ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils,
+                                  BusinessRepository businessRepository) {
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
         this.reservationRequestMapper = reservationRequestMapper;
         this.reservationResponseMapper = reservationResponseMapper;
         this.jwtUtils = jwtUtils;
+        this.businessRepository = businessRepository;
     }
 
     @Override
@@ -106,6 +115,14 @@ public class ReservationServiceImpl implements ReservationService {
         String businessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
+        // 4. Validate non-conflicting reservation with same ad campaign, media and date range
+        boolean hasConflict = reservationRepository.existsByMediaIdAndCampaignIdAndDateRange(
+                media.getId(), requestModel.getCampaignId(), requestModel.getStartDate(), requestModel.getEndDate());
+
+        if (hasConflict) {
+            throw new ReservationConflictException();
+        }
+
         // 4. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
 
@@ -120,7 +137,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationResponseModel updateReservationStatus(Jwt jwt, String mediaId, String reservationId, ReservationStatus reservationStatus) {
+    public ReservationResponseModel approveReservation(Jwt jwt, String mediaId, String reservationId) {
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
 
         Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
@@ -129,11 +146,37 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationAlreadyProcessedException();
         }
 
-        if (!reservationStatus.equals(ReservationStatus.APPROVED) && !reservationStatus.equals(ReservationStatus.DENIED)){
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservationRepository.save(reservation);
+
+        return reservationResponseMapper.entityToResponseModel(reservation);
+    }
+
+    @Override
+    public ReservationResponseModel denyReservation(Jwt jwt, String mediaId, String reservationId, DenialDetailsRequestModel denialDetailsRequestModel) {
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, mediaRepository.findById(UUID.fromString(mediaId)).orElseThrow(() -> new MediaNotFoundException(mediaId)).getBusinessId().toString());
+
+        Reservation reservation = reservationRepository.findByReservationId(reservationId).orElseThrow(() -> new ReservationNotFoundException(reservationId));
+
+        if (!reservation.getStatus().equals(ReservationStatus.PENDING)){
+            throw new ReservationAlreadyProcessedException();
+        }
+
+        if (denialDetailsRequestModel == null || denialDetailsRequestModel.getReason() == null) {
             throw new BadReservationRequestException();
         }
 
-        reservation.setStatus(reservationStatus);
+        if (denialDetailsRequestModel.getReason().equals(DenialReason.OTHER) && (denialDetailsRequestModel.getDescription() == null || denialDetailsRequestModel.getDescription().isBlank())){
+            throw new BadReservationRequestException();
+        }
+
+        DenialDetails details = new DenialDetails();
+        details.setReason(denialDetailsRequestModel.getReason());
+        details.setDescription(denialDetailsRequestModel.getDescription());
+
+
+        reservation.setStatus(ReservationStatus.DENIED);
+        reservation.setDenialDetails(details);
         reservationRepository.save(reservation);
 
         return reservationResponseMapper.entityToResponseModel(reservation);
@@ -142,25 +185,94 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationResponseModel> getAllReservationByMediaOwnerBusinessId(Jwt jwt, String businessId) {
         jwtUtils.validateUserIsEmployeeOfBusiness(jwt, businessId);
-        List<ReservationResponseModel> reservations = reservationRepository.findAll().stream().filter(reservation -> mediaRepository.findById(reservation.getMediaId()).stream().anyMatch(media -> media.getBusinessId().equals(UUID.fromString(businessId)))).map(reservationResponseMapper::entityToResponseModel).toList();
+        UUID businessUuid = UUID.fromString(businessId);
 
-        List<String> campaignIds = reservations.stream()
+        List<Reservation> mediaOwnerReservations = reservationRepository.findAll().stream()
+                .filter(reservation -> mediaRepository.findById(reservation.getMediaId())
+                        .stream()
+                        .anyMatch(media -> media.getBusinessId().equals(businessUuid)))
+                .toList();
+
+        List<ReservationResponseModel> responses =
+                reservationResponseMapper.entitiesToResponseModelList(mediaOwnerReservations);
+
+        List<UUID> mediaIds = mediaOwnerReservations.stream()
+                .map(Reservation::getMediaId)
+                .distinct()
+                .toList();
+
+        Map<UUID, Media> mediaById = mediaIds.isEmpty()
+                ? new HashMap<>()
+                : mediaRepository.findAllByIdWithLocation(mediaIds).stream()
+                        .collect(java.util.stream.Collectors.toMap(
+                                Media::getId,
+                                media -> media
+                        ));
+
+        List<String> campaignIds = responses.stream()
                 .map(ReservationResponseModel::getCampaignId)
                 .filter(id -> id != null && !id.isBlank())
                 .distinct()
                 .toList();
 
-        var campaigns = adCampaignRepository.findAllByCampaignId_CampaignIdIn(campaignIds);
+        Map<String, AdCampaign> campaignById = campaignIds.isEmpty()
+                ? new HashMap<>()
+                : adCampaignRepository.findAllByCampaignId_CampaignIdIn(campaignIds)
+                        .stream()
+                        .collect(java.util.stream.Collectors.toMap(
+                                campaign -> campaign.getCampaignId().getCampaignId(),
+                                campaign -> campaign
+                        ));
 
-        var campaignNameById = campaigns.stream()
-                .collect(java.util.stream.Collectors.toMap(
-                        c -> c.getCampaignId().getCampaignId(),
-                        AdCampaign::getName
-                ));
+        List<String> advertiserBusinessIds = campaignById.values().stream()
+                .map(campaign -> campaign.getBusinessId().getBusinessId())
+                .filter(id -> id != null && !id.isBlank())
+                .distinct()
+                .toList();
 
-        reservations.forEach(r -> r.setCampaignName(campaignNameById.get(r.getCampaignId())));
+        Map<String, Business> advertiserBusinessById = advertiserBusinessIds.isEmpty()
+                ? new HashMap<>()
+                : businessRepository.findAllByBusinessId_BusinessIdIn(advertiserBusinessIds)
+                        .stream()
+                        .collect(java.util.stream.Collectors.toMap(
+                                business -> business.getBusinessId().getBusinessId(),
+                                business -> business,
+                                (left, right) -> left,
+                                HashMap::new
+                        ));
 
-        return reservations;
+        responses.forEach(response -> {
+            if (response.getMediaId() != null && !response.getMediaId().isBlank()) {
+                try {
+                    UUID mediaId = UUID.fromString(response.getMediaId());
+                    Media media = mediaById.get(mediaId);
+                    if (media != null) {
+                        response.setMediaTitle(media.getTitle());
+                        if (media.getMediaLocation() != null) {
+                            response.setMediaCity(media.getMediaLocation().getCity());
+                        }
+                    }
+                } catch (IllegalArgumentException ignored) {
+                    // Keep optional media enrichment fields null when media id is invalid.
+                }
+            }
+
+            AdCampaign campaign = campaignById.get(response.getCampaignId());
+            if (campaign == null) {
+                return;
+            }
+
+            response.setCampaignName(campaign.getName());
+            String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
+            response.setAdvertiserBusinessId(advertiserBusinessId);
+
+            Business advertiserBusiness = advertiserBusinessById.get(advertiserBusinessId);
+            if (advertiserBusiness != null) {
+                response.setAdvertiserBusinessName(advertiserBusiness.getName());
+            }
+        });
+
+        return responses;
     }
 
     @Override
@@ -223,5 +335,5 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setStatus(ReservationStatus.PENDING); // Will be updated to APPROVED or DENIED by media owner, or CONFIRMED by payment webhook
         return reservation;
     }
-}
 
+}

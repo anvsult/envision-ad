@@ -26,7 +26,7 @@ export default function DashboardLayout({
                 <SideBar />
             </Drawer>
 
-            <Group align="flex-start" gap={0} wrap="nowrap">
+            <Group align="stretch" gap={0} wrap="nowrap">
                 {!isMobile && (
                     <Paper
                         w={250}

@@ -3,21 +3,21 @@ package com.envisionad.webservice.advertisement.businesslogiclayer;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
 import com.envisionad.webservice.advertisement.dataaccesslayer.*;
-import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignRequestMapper;
-import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
-import com.envisionad.webservice.advertisement.datamapperlayer.AdRequestMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdResponseMapper;
-import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
-import com.envisionad.webservice.advertisement.exceptions.AdNotFoundException;
-import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
+import com.envisionad.webservice.advertisement.exceptions.*;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,24 +27,36 @@ import static org.mockito.Mockito.*;
 @ExtendWith(org.mockito.junit.jupiter.MockitoExtension.class)
 class AdCampaignServiceUnitTest {
 
-    @Mock private BusinessRepository businessRepository;
     @Mock private AdCampaignRepository adCampaignRepository;
-    @Mock private AdCampaignRequestMapper adCampaignRequestMapper;
-    @Mock private AdCampaignResponseMapper adCampaignResponseMapper;
     @Mock private AdResponseMapper adResponseMapper;
-    @Mock private JwtUtils jwtUtils;
+    @Mock private AdCampaignResponseMapper adCampaignResponseMapper;
     @Mock private ReservationRepository reservationRepository;
 
     @Mock private Cloudinary cloudinary;
     @Mock private Uploader uploader;
+    @Mock private JwtUtils jwtUtils;
 
     @InjectMocks private AdCampaignServiceImpl service;
 
+    private Jwt advertiserToken;
     @BeforeEach
-    void setupCloudinary() {
+    void setUp() {
         lenient().when(cloudinary.uploader()).thenReturn(uploader);
+        advertiserToken = createJwtToken(
+                List.of("read:campaign", "create:campaign", "update:campaign", "update:business",
+                        "read:employee", "create:employee", "delete:employee", "read:verification", "create:verification",
+                        "delete:campaign"));
+
     }
 
+    private Jwt createJwtToken(List<String> permissions) {
+        return Jwt.withTokenValue("advertiser-token")
+                .header("alg", "none")
+                .claim("sub", "auth0|696a88eb347945897ef17093")
+                .claim("scope", "read write")
+                .claim("permissions", permissions)
+                .build();
+    }
 
     @Test
     void getActiveCampaignCount_shouldReturnCount() {
@@ -334,5 +346,226 @@ class AdCampaignServiceUnitTest {
         campaign.setAds(new ArrayList<>(List.of(ad)));
 
         return new CampaignAndAdId(campaign, id);
+    }
+
+    @Test
+    void deleteAdCampaign_whenNotTiedToAnyReservations_deletesSuccessfully() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-1";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
+
+        // Act
+        service.deleteAdCampaign(advertiserToken, businessId, campaignId);
+
+        // Assert
+        verify(adCampaignRepository).delete(campaign);
+        verify(adCampaignResponseMapper).entityToResponseModel(campaign);
+    }
+
+    @Test
+    void deleteAdCampaign_whenNotTiedToReservationsAndHasCloudinaryAds_deletesAssetsAndCampaign() throws IOException {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-cloudinary-1";
+        String cloudinaryUrl = "https://res.cloudinary.com/demo/image/upload/v1234567/sample-public-id.jpg";
+
+        CampaignAndAdId campaignAndAdId = campaignWithSingleAd(campaignId, cloudinaryUrl);
+        AdCampaign campaignWithAd = campaignAndAdId.campaign;
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaignWithAd);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaignWithAd));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(uploader.destroy(anyString(), anyMap())).thenReturn(Map.of("result", "ok"));
+
+        when(adCampaignResponseMapper.entityToResponseModel(campaignWithAd)).thenReturn(null);
+
+        // Act
+        service.deleteAdCampaign(advertiserToken, businessId, campaignId);
+
+        // Assert
+        verify(adCampaignRepository).delete(campaignWithAd);
+        verify(adCampaignResponseMapper).entityToResponseModel(campaignWithAd);
+        // Verify that the Cloudinary asset tied to the ad was scheduled for deletion
+        verify(uploader, atLeastOnce()).destroy(anyString(), anyMap());
+    }
+
+    @Test
+    void deleteAdCampaign_whenTiedToConfirmedReservation_throwsException() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-2";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(CampaignHasConfirmedReservationException.class,
+            () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
+        verify(adCampaignRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteAdCampaign_whenTiedToPendingReservation_throwsException() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-3";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        // Act & Assert
+        assertThrows(CampaignHasPendingReservationException.class,
+            () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
+        verify(adCampaignRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteAdCampaign_whenTiedToApprovedReservation_throwsException() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-5";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(true);
+
+        // Act & Assert
+        assertThrows(CampaignHasApprovedReservationException.class,
+            () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
+        verify(adCampaignRepository, never()).delete(any());
+    }
+
+    @Test
+    void deleteAdCampaign_whenTiedToDeniedReservation_deletesSuccessfully() {
+        // Arrange
+        String businessId = "biz-1";
+        String campaignId = "camp-4";
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
+        doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
+        doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.CONFIRMED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.PENDING),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(reservationRepository.existsByCampaignIdAndStatus(
+                eq(campaignId),
+                eq(ReservationStatus.APPROVED),
+                any(LocalDateTime.class)
+        )).thenReturn(false);
+
+        when(adCampaignResponseMapper.entityToResponseModel(campaign)).thenReturn(null);
+
+        // Act
+        service.deleteAdCampaign(advertiserToken, businessId, campaignId);
+
+        // Assert
+        verify(adCampaignRepository).delete(campaign);
+        verify(adCampaignResponseMapper).entityToResponseModel(campaign);
     }
 }

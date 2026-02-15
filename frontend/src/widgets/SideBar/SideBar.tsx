@@ -9,7 +9,6 @@ import {
     IconDiscountCheck,
     IconChartDots,
     IconFileDescription,
-    IconInbox,
     IconSpeakerphone,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
@@ -19,16 +18,27 @@ export default function SideBar() {
     const { permissions } = usePermissions();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
+    const hasMediaOwnerAccess = permissions.includes("read:media");
 
     const mediaOwnerNavItems = [
+        hasMediaOwnerAccess && (
+            <NavLink
+                key="metrics"
+                component={Link}
+                href="/dashboard/media-owner/metrics"
+                label={t("media-owner.metrics")}
+                leftSection={<IconChartDots size={20} stroke={1.5} />}
+                active={pathname?.includes("/media-owner/metrics")}
+            />
+        ),
         (permissions.includes('create:media')) && (
             <NavLink
                 key="media"
                 component={Link}
-                href="/dashboard/media-owner/media"
+                href="/dashboard/media-owner/locations"
                 label={t("media-owner.media")}
                 leftSection={<IconDeviceTv size={20} stroke={1.5} />}
-                active={pathname?.endsWith("/media-owner/media")}
+                active={pathname?.includes("/media-owner/locations")}
             />
         ),
         (permissions.includes("create:media")) && (
@@ -43,12 +53,12 @@ export default function SideBar() {
         ),
         (permissions.includes("update:reservation")) && (
             <NavLink
-                key="requests"
+                key="advertisements"
                 component={Link}
-                href="/dashboard/media-owner/ad-requests"
+                href="/dashboard/media-owner/advertisements"
                 label={t("media-owner.adRequests")}
-                leftSection={<IconInbox size={20} stroke={1.5} />}
-                active={pathname?.includes("/dashboard/media-owner/ad-requests")}
+                leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/media-owner/advertisements")}
             />
         )
     ].filter(Boolean);
@@ -65,14 +75,14 @@ export default function SideBar() {
             />
         ),
         (permissions.includes('read:campaign')) && (
-                <NavLink
-                    key="campaigns"
-                    component={Link}
-                    href="/dashboard/advertiser/campaigns"
-                    label={t("advertiser.myAds")}
-                    leftSection={<IconAd size={20} stroke={1.5} />}
-                    active={pathname?.endsWith("/advertiser/campaigns")}
-                />
+            <NavLink
+                key="campaigns"
+                component={Link}
+                href="/dashboard/advertiser/campaigns"
+                label={t("advertiser.myAds")}
+                leftSection={<IconAd size={20} stroke={1.5} />}
+                active={pathname?.endsWith("/advertiser/campaigns")}
+            />
         ),
         (permissions.includes('readAll:reservation')) && (
             <NavLink

@@ -1,4 +1,5 @@
 import { LatLngBounds, LatLngLiteral } from "leaflet";
+import {MediaLocation} from "@/entities/media-location";
 
 export interface Media {
     id?: string;
@@ -18,6 +19,7 @@ export interface Media {
     imageUrl: string;
     previewConfiguration: string;
     businessId: string;
+    businessName: string;
 }
 
 export interface MediaRequestDTO {
@@ -48,25 +50,12 @@ export interface MediaListResponseDTO {
     empty: boolean;
 }
 
-export interface MediaLocation {
-    id: string | null;
-    name: string;
-    description: string;
-    country: string;
-    province: string;
-    street: string;
-    city: string;
-    postalCode: string;
-    latitude: number;
-    longitude: number;
-}
-
-export interface FilteredActiveMediaProps{
+export interface FilteredActiveMediaProps {
     title?: string | null,
     businessId?: string | null,
     minPrice?: number | null,
     maxPrice?: number | null,
-    minDailyImpressions?: number | null,
+    minWeeklyImpressions?: number | null,
     sort?: string | null,
     latLng?: LatLngLiteral | null,
     bounds?: LatLngBounds | null,
@@ -87,7 +76,7 @@ export interface WeeklyScheduleModel {
     endTime: string | null;
 }
 
-export function getJoinedAddress(items: string[]) {
+export function getJoinedAddress(items: (string | undefined)[]) {
     return items.join(", ");
 }
 
@@ -109,7 +98,7 @@ export const MediaAdStatusMap = {
 
 export type MediaStatus = 'idle' | 'loading' | 'success' | 'empty' | 'error';
 
-export interface UseMediaListProps{
+export interface UseMediaListProps {
     filteredMediaProps: FilteredActiveMediaProps,
     loadingLocation?: boolean
     setMediaStatus?: React.Dispatch<React.SetStateAction<MediaStatus>>

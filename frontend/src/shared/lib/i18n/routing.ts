@@ -38,13 +38,21 @@ export const routing = defineRouting({
       'en': '/dashboard/media-owner/media',
       'fr': '/tableau-de-bord/media-owner/media'
     },
+    '/dashboard/media-owner/metrics': {
+      'en': '/dashboard/media-owner/metrics',
+      'fr': '/tableau-de-bord/media-owner/metriques'
+    },
     '/dashboard/media-owner/proof': {
       'en': '/dashboard/media-owner/proof',
       'fr': '/tableau-de-bord/media-owner/preuve'
     },
-    '/dashboard/media-owner/ad-requests': {
-      'en': '/dashboard/media-owner/ad-requests',
-      'fr': '/tableau-de-bord/media-owner/demandes-publicitaires'
+    '/dashboard/media-owner/advertisements': {
+      'en': '/dashboard/media-owner/advertisements',
+      'fr': '/tableau-de-bord/media-owner/publicites'
+    },
+    '/dashboard/media-owner/locations': {
+      'en': '/dashboard/media-owner/locations',
+      'fr': '/tableau-de-bord/media-owner/emplacements'
     },
 
     //advertiser dashboard

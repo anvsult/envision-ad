@@ -1,7 +1,6 @@
 package com.envisionad.webservice.media.BusinessLayer;
 
 import com.cloudinary.Cloudinary;
-import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
@@ -56,13 +55,18 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    public List<Media> getAllMediaByBusinessId(UUID businessId) {
+        return mediaRepository.findMediaByBusinessId(businessId);
+    }
+
+    @Override
     public Page<Media> getAllFilteredActiveMedia(
             Pageable pageable,
             String title,
             String businessId,
             BigDecimal minPrice,
             BigDecimal maxPrice,
-            Integer minDailyImpressions,
+            Integer minWeeklyImpressions,
             String specialSort,
             Double userLat,
             Double userLng,
@@ -85,8 +89,8 @@ public class MediaServiceImpl implements MediaService {
             spec = spec.and(MediaSpecifications.priceBetween(minPrice, maxPrice));
         }
 
-        if (minDailyImpressions != null) {
-            spec = spec.and(MediaSpecifications.dailyImpressionsGreaterThan(minDailyImpressions));
+        if (minWeeklyImpressions != null) {
+            spec = spec.and(MediaSpecifications.weeklyImpressionsGreaterThan(minWeeklyImpressions));
         }
 
         if (excludedId != null) {
@@ -110,10 +114,8 @@ public class MediaServiceImpl implements MediaService {
                                 userLat,
                                 userLng,
                                 m.getMediaLocation().getLatitude(),
-                                m.getMediaLocation().getLongitude()
-                        );
-                    }
-            ));
+                                m.getMediaLocation().getLongitude());
+                    }));
 
             int pageStart = (int) pageable.getOffset();
             int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
@@ -124,6 +126,28 @@ public class MediaServiceImpl implements MediaService {
             List<Media> paged = list.subList(pageStart, pageEnd);
 
             return new PageImpl<>(paged, pageable, list.size());
+        }
+
+        if ("weeklyImpressions,asc".equals(specialSort)) {
+            List<Media> list = mediaRepository.findAll(spec);
+
+            list.sort(Comparator.comparingInt(
+                    m -> (m.getDailyImpressions() == null ? 0 : m.getDailyImpressions())
+                            * (m.getActiveDays() == null ? 0 : m.getActiveDays())
+            ));
+
+            return paginate(list, pageable);
+        }
+
+        if ("weeklyImpressions,desc".equals(specialSort)) {
+            List<Media> list = mediaRepository.findAll(spec);
+
+            list.sort(Comparator.comparingInt(
+                    (Media m) -> (m.getDailyImpressions() == null ? 0 : m.getDailyImpressions())
+                            * (m.getActiveDays() == null ? 0 : m.getActiveDays())
+            ).reversed());
+
+            return paginate(list, pageable);
         }
 
         return mediaRepository.findAll(spec, pageable);
@@ -163,10 +187,15 @@ public class MediaServiceImpl implements MediaService {
             throw new IllegalArgumentException("Business ID is required to create media.");
         }
 
+        // New media always enters moderation flow first.
+        media.setStatus(Status.PENDING);
+
         Optional<StripeAccount> stripeAccountOpt = stripeAccountRepository.findByBusinessId(businessId.toString());
 
-        if (stripeAccountOpt.isEmpty() || !stripeAccountOpt.get().isOnboardingComplete() || !stripeAccountOpt.get().isChargesEnabled() || !stripeAccountOpt.get().isPayoutsEnabled()) {
-            throw new StripeAccountNotOnboardedException("Your business must have a fully configured Stripe account to create media. Please complete your Stripe onboarding.");
+        if (stripeAccountOpt.isEmpty() || !stripeAccountOpt.get().isOnboardingComplete()
+                || !stripeAccountOpt.get().isChargesEnabled() || !stripeAccountOpt.get().isPayoutsEnabled()) {
+            throw new StripeAccountNotOnboardedException(
+                    "Your business must have a fully configured Stripe account to create media. Please complete your Stripe onboarding.");
         }
 
         return mediaRepository.save(media);
@@ -263,5 +292,16 @@ public class MediaServiceImpl implements MediaService {
             }
         }
         mediaRepository.delete(media);
+    }
+
+    private Page<Media> paginate(List<Media> list, Pageable pageable) {
+        int pageStart = (int) pageable.getOffset();
+        int pageEnd = Math.min(pageStart + pageable.getPageSize(), list.size());
+
+        if (pageStart >= list.size()) {
+            return Page.empty(pageable);
+        }
+
+        return new PageImpl<>(list.subList(pageStart, pageEnd), pageable, list.size());
     }
 }

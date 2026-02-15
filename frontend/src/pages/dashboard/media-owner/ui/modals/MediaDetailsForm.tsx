@@ -71,6 +71,7 @@ export function MediaDetailsForm({
           { value: "POSTER", label: "Poster" },
         ]}
         placeholder={t("placeholders.selectType")}
+        allowDeselect={false}
         value={formState.displayType ?? undefined}
         onChange={(v) => {
           const val = typeof v === "string" ? v : (v as string | null);

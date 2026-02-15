@@ -99,6 +99,7 @@ class MediaControllerIntegrationTest {
 
                 com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
                 location.setName("Downtown Billboard A");
+                location.setBusinessId(UUID.fromString(BUSINESS_ID));
 
                 // Mock StripeAccountRepository to prevent StripeAccountNotOnboardedException
                 StripeAccount mockStripeAccount = mock(StripeAccount.class);
@@ -106,7 +107,6 @@ class MediaControllerIntegrationTest {
                 when(mockStripeAccount.isChargesEnabled()).thenReturn(true);
                 when(mockStripeAccount.isPayoutsEnabled()).thenReturn(true);
                 when(stripeAccountRepository.findByBusinessId(anyString())).thenReturn(Optional.of(mockStripeAccount));
-                location.setDescription("Large DIGITAL billboard");
                 location.setCountry("Canada");
                 location.setProvince("ON");
                 location.setCity("Toronto");

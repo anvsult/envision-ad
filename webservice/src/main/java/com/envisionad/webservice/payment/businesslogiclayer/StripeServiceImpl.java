@@ -361,7 +361,7 @@ public class StripeServiceImpl implements StripeService {
     }
 
     @Override
-    public Map<String, Object> getDashboardData(Jwt jwt, String businessId, String period) throws StripeException {
+    public Map<String, Object> getDashboardData(Jwt jwt, String businessId, String period) {
         String userId = jwtUtils.extractUserId(jwt);
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
 
@@ -425,7 +425,7 @@ public class StripeServiceImpl implements StripeService {
         // Filter reservations that "started" in this period (Booking Basis)
         List<Reservation> newReservations = reservations.stream()
                 // Inclusive check: startDate <= r.startDate <= endDate
-                .filter(r -> r.getStartDate().compareTo(startDate) >= 0 && r.getStartDate().compareTo(endDate) <= 0)
+                .filter(r -> !r.getStartDate().isBefore(startDate) && !r.getStartDate().isAfter(endDate))
                 .toList();
 
         BigDecimal totalSpend = newReservations.stream()

@@ -31,6 +31,7 @@ import 'dayjs/locale/fr';
 import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {useUser} from "@auth0/nextjs-auth0/client";
 import {AdPreviewCarousel} from "@/widgets/Media/Modals/preview-step/AdPreviewCarousel";
+import { formatCurrency } from "@/shared/lib/formatCurrency";
 
 interface ReserveMediaModalProps {
     opened: boolean;
@@ -179,12 +180,37 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                 // Move to success screen
                 setActiveStep(2);
             } catch (error) {
-                console.error('Reservation error:', error);
-                notifications.show({
-                    title: t('errorTitle'),
-                    message: t('errors.reservationFailed'),
-                    color: 'red'
-                });
+                // Check for reservation conflict
+                if (error && typeof error === 'object' && 'response' in error) {
+                    const errorWithResponse = error as { response?: { status?: number } };
+                    if (errorWithResponse.response?.status === 409) {
+                        const selectedCampaign = campaigns?.find(c => c.campaignId === selectedCampaignId);
+                        const campaignName = selectedCampaign?.name || t('errors.unknownCampaign');
+
+                        notifications.show({
+                            title: t('errorTitle'),
+                            message: t('errors.reservationConflict', {
+                                campaignName,
+                                startDate: dayjs(dateRange[0]).format('MMM D, YYYY'),
+                                endDate: dayjs(dateRange[1]).format('MMM D, YYYY'),
+                            }),
+                            color: 'red'
+                        });
+                    } else {
+                        // Generic notification for non-409 HTTP errors
+                        notifications.show({
+                            title: t('errorTitle'),
+                            message: t('errors.reservationFailed'),
+                            color: 'red'
+                        });
+                    }
+                } else {
+                    notifications.show({
+                        title: t('errorTitle'),
+                        message: t('errors.reservationFailed'),
+                        color: 'red'
+                    });
+                }
             } finally {
                 setLoading(false);
             }
@@ -216,18 +242,6 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
 
         const weeks = billingWeeks(dayjs(dateRange[0]), dayjs(dateRange[1]));
         return media.price * weeks;
-    };
-
-    /**
-     * Format currency for display
-     * @param amount - Amount in dollars
-     * @returns Formatted currency string (e.g., "123.45")
-     */
-    const formatCurrency = (amount: number): string => {
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: 'CAD',
-        }).format(amount);
     };
 
     /**
@@ -372,7 +386,7 @@ export function ReserveMediaModal({ opened, onClose, media }: ReserveMediaModalP
                                         <Group justify="space-between">
                                             <Text size="lg" fw={700}>{t('labels.totalCost')}:</Text>
                                             <Text size="lg" fw={700} c="blue">
-                                                {formatCurrency(calculateTotalCost())}
+                                                {formatCurrency(calculateTotalCost(), { locale })}
                                             </Text>
                                         </Group>
                                     </Paper>

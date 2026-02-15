@@ -2,5 +2,6 @@
   &[data-inactive] {
     opacity: 0;
     cursor: default;
+    display: none;
   }
 }

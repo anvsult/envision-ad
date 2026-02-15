@@ -15,19 +15,20 @@ public interface MediaService {
 
     List<Media> getAllMedia();
 
+    List<Media> getAllMediaByBusinessId(UUID businessId);
+
     Page<Media> getAllFilteredActiveMedia(
-        Pageable pageable,
-        String title,
-        String businessId,
-        BigDecimal minPrice,
-        BigDecimal maxPrice,
-        Integer minDailyImpressions,
-        String specialSort,
-        Double userLat,
-        Double userLng,
-        List<Double> bounds,
-        String excludedId
-    );
+            Pageable pageable,
+            String title,
+            String businessId,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Integer minWeeklyImpressions,
+            String specialSort,
+            Double userLat,
+            Double userLng,
+            List<Double> bounds,
+            String excludedId);
 
     Media getMediaById(UUID id);
 
@@ -37,4 +38,5 @@ public interface MediaService {
 
     MediaResponseModel updateMediaById(Jwt jwt, String id, MediaRequestModel requestModel);
     void deleteMedia(UUID id);
+
 }

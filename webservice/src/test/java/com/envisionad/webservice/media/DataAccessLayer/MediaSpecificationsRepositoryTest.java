@@ -1,5 +1,7 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,11 +36,9 @@ class MediaSpecificationsRepositoryTest {
         UUID businessIdA = UUID.randomUUID();
         UUID businessIdB = UUID.randomUUID();
 
-
         // Create a location (required relation)
         MediaLocation location = new MediaLocation();
         location.setName("Test Location");
-        location.setDescription("Test Desc");
         location.setCountry("Canada");
         location.setProvince("QC");
         location.setCity("Montreal");
@@ -46,9 +46,10 @@ class MediaSpecificationsRepositoryTest {
         location.setPostalCode("H1H 1H1");
         location.setLatitude(45.0);
         location.setLongitude(-73.0);
+        location.setBusinessId(businessIdA);
         mediaLocationRepository.save(location);
 
-        // Media 1: Active, "Digital Board", Price 100, Imp 1000
+        // Media 1: Active, "Digital Board", Price 100, Imp 1000, activeDays = 5
         Media m1 = new Media();
         m1.setMediaLocation(location);
         m1.setTitle("Digital Board");
@@ -57,11 +58,12 @@ class MediaSpecificationsRepositoryTest {
         m1.setStatus(Status.ACTIVE);
         m1.setPrice(new BigDecimal("100.00"));
         m1.setDailyImpressions(1000);
+        m1.setSchedule(createSchedule(5));
         m1.setResolution("1920x1080");
         m1.setBusinessId(businessIdA);
         mediaRepository.save(m1);
 
-        // Media 2: Inactive, "Poster Wall", Price 50, Imp 500
+        // Media 2: Inactive, "Poster Wall", Price 50, Imp 500, activeDays = 2
         Media m2 = new Media();
         m2.setMediaLocation(location);
         m2.setTitle("Poster Wall");
@@ -70,10 +72,11 @@ class MediaSpecificationsRepositoryTest {
         m2.setStatus(Status.INACTIVE);
         m2.setPrice(new BigDecimal("50.00"));
         m2.setDailyImpressions(500);
+        m2.setSchedule(createSchedule(2));
         m2.setBusinessId(businessIdB);
         mediaRepository.save(m2);
 
-        // Media 3: Active, "Big Digital Screen", Price 200, Imp 2000
+        // Media 3: Active, "Big Digital Screen", Price 200, Imp 2000, activeDays = 7
         Media m3 = new Media();
         m3.setMediaLocation(location);
         m3.setTitle("Big Digital Screen");
@@ -82,9 +85,29 @@ class MediaSpecificationsRepositoryTest {
         m3.setStatus(Status.ACTIVE);
         m3.setPrice(new BigDecimal("200.00"));
         m3.setDailyImpressions(2000);
+        m3.setSchedule(createSchedule(7));
         m3.setBusinessId(businessIdA);
         mediaRepository.save(m3);
+
     }
+
+    private ScheduleModel createSchedule(int activeDays) {
+        ScheduleModel schedule = new ScheduleModel();
+        List<WeeklyScheduleEntry> entries = new ArrayList<>();
+
+        for (int i = 0; i < activeDays; i++) {
+            WeeklyScheduleEntry e = new WeeklyScheduleEntry();
+            e.setDayOfWeek("Day" + i);
+            e.setActive(true);
+            e.setStartTime("09:00");
+            e.setEndTime("17:00");
+            entries.add(e);
+        }
+
+        schedule.setWeeklySchedule(entries);
+        return schedule;
+    }
+
 
     @Test
     void hasStatus_ShouldFilterByStatus() {
@@ -143,12 +166,21 @@ class MediaSpecificationsRepositoryTest {
     }
 
     @Test
-    void dailyImpressionsGreaterThan_ShouldFilter() {
-        // >= 1000 (should include 1000 and 2000)
-        Specification<Media> spec = MediaSpecifications.dailyImpressionsGreaterThan(1000);
+    void weeklyImpressionsGreaterThan_ShouldFilter() {
+
+        Specification<Media> spec =
+                MediaSpecifications.weeklyImpressionsGreaterThan(4000);
+
         List<Media> results = mediaRepository.findAll(spec);
 
+        // Should include m1 and m3
         assertEquals(2, results.size());
+    }
+
+    @Test
+    void activeDays_ShouldBeCalculatedAutomatically() {
+        Media m = mediaRepository.findAll().get(0);
+        assertEquals(5, m.getActiveDays());
     }
 
     @Test

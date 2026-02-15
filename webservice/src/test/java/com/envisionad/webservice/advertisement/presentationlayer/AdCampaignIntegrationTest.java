@@ -4,13 +4,15 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.business.dataaccesslayer.*;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -48,6 +50,8 @@ public class AdCampaignIntegrationTest {
 
     private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
     private static final String TEST_EMAIL = "test@email.com";
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     @BeforeEach
     void setUp() {
@@ -86,7 +90,8 @@ public class AdCampaignIntegrationTest {
                         "create:employee",
                         "delete:employee",
                         "read:verification",
-                        "create:verification"
+                        "create:verification",
+                        "delete:campaign"
                 ))
                 .build();
 
@@ -418,6 +423,136 @@ public class AdCampaignIntegrationTest {
                 .headers(headers -> headers.setBearerAuth("advertiser-token"))
                 .exchange()
                 .expectStatus().isNotFound();
+    }
+
+    @Test
+    void deleteCampaign_notTiedToReservation_shouldDeleteSuccessfully() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Winter Sale");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().isOk();
+
+        assertEquals(0, adCampaignRepository.count());
+    }
+
+    @Test
+    void deleteCampaign_tiedToConfirmedReservation_shouldReturnConflict() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Winter Sale");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().isEqualTo(409); // Conflict status code
+    }
+
+    @Test
+    void deleteCampaign_tiedToPendingReservation_shouldReturnConflict() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Winter Sale");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().isEqualTo(409); // Conflict status code
+    }
+
+    @Test
+    void deleteCampaign_tiedToApprovedReservation_shouldReturnConflict() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Winter Sale");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.APPROVED);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().plusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().isEqualTo(409); // Conflict status code
+    }
+
+    @Test
+    void deleteCampaign_tiedToExpiredReservation_shouldSucceed() {
+        // Arrange
+        AdCampaign adCampaign = new AdCampaign();
+        adCampaign.setName("Summer Clearance");
+        adCampaign.setCampaignId(new AdCampaignIdentifier());
+        adCampaign.setBusinessId(businessId);
+        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
+        String campaignId = savedCampaign.getCampaignId().getCampaignId();
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationId(UUID.randomUUID().toString());
+        reservation.setStatus(ReservationStatus.CONFIRMED);
+        reservation.setCampaignId(campaignId);
+        reservation.setEndDate(java.time.LocalDateTime.now().minusDays(1));
+        reservationRepository.save(reservation);
+
+        // Act & Assert
+        webTestClient.delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}")
+                        .build(businessId.getBusinessId(), campaignId))
+                .headers(headers -> headers.setBearerAuth("advertiser-token"))
+                .exchange()
+                .expectStatus().is2xxSuccessful();
     }
 
 }
