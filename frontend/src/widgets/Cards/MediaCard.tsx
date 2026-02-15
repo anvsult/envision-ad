@@ -1,10 +1,11 @@
 import { Paper, Text, Image, Anchor, AspectRatio, Stack, Group } from "@mantine/core";
 import styles from "./MediaCard.module.css";
 import { useLocale, useTranslations } from "next-intl";
-import { getJoinedAddress } from "@/entities/media";
+import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
 import { useMediaQuery } from "@mantine/hooks";
 import {MediaLocation} from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
 
 export interface MediaCardProps {
     index: string;
@@ -20,6 +21,7 @@ export interface MediaCardProps {
     imageUrl?: string | null;
     imageRatio?: number;
     dailyImpressions: number;
+    schedule: MonthlyScheduleModel,
     mobileWidth?: string;
     
     // TODO: Add `dateAdded: Date` property if/when date tracking is required.
@@ -35,11 +37,12 @@ function MobileViewer({children, mobileWidth}: Readonly<{children: React.ReactNo
 
 }
 
-function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions, mobileWidth}: MediaCardProps) {
+function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, mediaLocation, aspectRatio, resolution, typeOfDisplay, price, dailyImpressions, schedule, mobileWidth}: MediaCardProps) {
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
     
     const t = useTranslations("mediacard");
     const locale = useLocale();
+    const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule ?? []);
 
     return (
         <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" 
@@ -69,7 +72,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardOrganizationName" + index} size="sm" c="gray" lineClamp={1} m={0}>
                                 {organizationName}
                             </Text>
-                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1}>
+                            <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>
                                 {t('perWeek', { price: formatCurrency(price, { locale }) })}
                             </Text>
                             
@@ -81,7 +84,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             }
                             
                             <Text id={"MediaCardImpressions" + index} size="xs" lineClamp={1} m={0}>
-                                {t('dailyImpressions', {dailyImpressions: dailyImpressions})}
+                                {t('weeklyImpressions', {weeklyImpressions: weeklyImpressions})}
                             </Text>
                             
                             <Group justify="space-between">

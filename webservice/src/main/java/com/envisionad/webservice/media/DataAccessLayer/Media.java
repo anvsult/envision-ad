@@ -1,6 +1,7 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
+import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -63,6 +64,9 @@ public class Media {
     @JdbcTypeCode(SqlTypes.JSON)
     private ScheduleModel schedule;
 
+    @Column(name = "active_days")
+    private Integer activeDays;
+
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -84,4 +88,18 @@ public class Media {
     @Column(name = "preview_configuration")
     @JdbcTypeCode(SqlTypes.JSON)
     private String previewConfiguration;
+
+    @PrePersist
+    @PreUpdate
+    private void recalculateActiveDays() {
+        if (schedule == null || schedule.getWeeklySchedule() == null) {
+            this.activeDays = 0;
+            return;
+        }
+
+        this.activeDays = (int) schedule.getWeeklySchedule()
+                .stream()
+                .filter(WeeklyScheduleEntry::isActive)
+                .count();
+    }
 }

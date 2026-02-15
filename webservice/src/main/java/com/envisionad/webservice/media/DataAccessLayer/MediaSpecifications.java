@@ -2,6 +2,7 @@ package com.envisionad.webservice.media.DataAccessLayer;
 
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
+import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
@@ -45,10 +46,21 @@ public class MediaSpecifications {
         };
     }
 
-    public static Specification<Media> dailyImpressionsGreaterThan(Integer minDailyImpressions) {
-        return (root, query, cb) -> minDailyImpressions == null ? null
-                : cb.greaterThanOrEqualTo(root.get("dailyImpressions"), minDailyImpressions);
+    public static Specification<Media> weeklyImpressionsGreaterThan(Integer minWeeklyImpressions) {
+        return (root, query, cb) -> {
+            if (minWeeklyImpressions == null) {
+                return null;
+            }
+
+            Expression<Integer> weekly = cb.prod(cb.coalesce(
+                root.get("dailyImpressions"), 0),
+                cb.coalesce(root.get("activeDays"), 0)
+            );
+
+            return cb.greaterThanOrEqualTo(weekly, minWeeklyImpressions);
+        };
     }
+
 
     public static Specification<Media> businessIdEquals(UUID businessId) {
         return (root, query, cb) -> businessId == null ? null

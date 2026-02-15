@@ -17,13 +17,14 @@ import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
 import MapView from '@/widgets/Map/MapView';
 import { useMediaQuery } from '@mantine/hooks';
+import { groupBy } from '@/shared/lib/groupBy';
 
 function SearchMobileViewer({children}: Readonly<{children: React.ReactNode;}>){
     const isMobileVertical = useMediaQuery("(max-width: 575px)");
     return(
-            isMobileVertical ? 
-            <Stack gap="xs">{children}</Stack>:
-            <Group grow>{children}</Group>
+      isMobileVertical ? 
+      <Stack w="100%" gap="xs">{children}</Stack>:
+      <Group w="100%" grow>{children}</Group>
     )
 }
 
@@ -72,7 +73,7 @@ function BrowsePage() {
     title: titleFilter,
     minPrice,
     maxPrice,
-    minDailyImpressions: minImpressions,
+    minWeeklyImpressions: minImpressions,
     sort: sortBy,
     latLng: location,
     bounds: bbox,
@@ -85,19 +86,6 @@ function BrowsePage() {
     loadingLocation: locationStatus === 'loading',
     setMediaStatus
   });
-
-
-  function groupBy<T>(
-    array: T[],
-    key: (item: T) => string
-  ): Record<string, T[]> {
-    return array.reduce<Record<string, T[]>>((acc, item) => {
-      const k = key(item);
-      if (!acc[k]) acc[k] = [];
-      acc[k].push(item);
-      return acc;
-    }, {});
-  }
 
   const groupedMedia = useMemo(() => {
     const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");
@@ -267,8 +255,7 @@ function BrowsePage() {
                 
               </SearchMobileViewer>
             </Stack>
-              <Group grow w="100%" px={(isMobileMapVisible && !isMobileVertical)?10: 0}>
-
+              <Group grow w="100%" px={(isMobileMapVisible && !isMobileVertical) ? 10: 0}>
                 <BrowseActions filters={filters()} setSortBy={setSortBy} sortSelectValue={sortBy} isMobileVertical={isMobileVertical} isMobile={isMobile} mapVisible={mapVisible}/>
               </Group>
               {isMobileMapVisible ? 
@@ -294,7 +281,7 @@ function BrowsePage() {
                     <Text>{t('nomedia.changefilters')}</Text>
                   </Stack>
                 ) : (
-                  <MediaCardGrid medias={media} size={(mapVisible && !isMobile)? 2 : 1} />
+                  <MediaCardGrid medias={media} size={(!isMobile && mapVisible) ? 2 : 1} />
                 )}
                 {totalPages > 1 && (
                   <Group justify="center" mt="md">

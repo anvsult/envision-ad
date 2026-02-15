@@ -19,8 +19,8 @@ export default function BrowseActions({filters,  setSortBy, sortSelectValue, isM
         { value: SpecialSort.nearest, label: t('sort.nearest') },
         { value: SortOptions.priceAsc, label: (t('sort.price') + t('sort.asc')) },
         { value: SortOptions.priceDesc, label: (t('sort.price') + t('sort.desc')) },
-        { value: SortOptions.dailyImpressionsAsc, label: (t('sort.impressions') + t('sort.asc')) },
-        { value: SortOptions.dailyImpressionsDesc, label: (t('sort.impressions') + t('sort.desc')) },
+        { value: SpecialSort.weeklyImpressionsAsc, label: (t('sort.impressions') + t('sort.asc')) },
+        { value: SpecialSort.weeklyImpressionsDesc, label: (t('sort.impressions') + t('sort.desc')) },
         { value: SortOptions.loopDurationAsc, label: (t('sort.loop') + t('sort.asc')) },
         { value: SortOptions.loopDurationDesc, label: (t('sort.loop') + t('sort.desc')) },
     ];

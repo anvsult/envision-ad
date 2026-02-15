@@ -37,6 +37,7 @@ export function useMediaList({
                     aspectRatio: m.aspectRatio,
                     price: m.price ?? 0,
                     dailyImpressions: m.dailyImpressions ?? 0,
+                    schedule: m.schedule,
                     typeOfDisplay: m.typeOfDisplay,
                     imageUrl: m.imageUrl
                     }));

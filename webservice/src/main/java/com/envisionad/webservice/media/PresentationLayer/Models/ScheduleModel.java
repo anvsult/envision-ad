@@ -1,5 +1,6 @@
 package com.envisionad.webservice.media.PresentationLayer.Models;
 
+import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

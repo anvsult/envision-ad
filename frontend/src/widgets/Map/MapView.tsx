@@ -154,7 +154,7 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
   )
 
     return(
-        <Paper radius={isMobile ? undefined : "lg"} style={{position:"sticky", overflow: "hidden", height:(isMobile ? "100%" : "90vh")}}>
+        <Paper radius={isMobile ? 0 : "lg"} style={{position:"sticky", overflow: "hidden", height:(isMobile ? "100%" : "90vh")}}>
            {displayMap}
            {(isMobileVertical) &&
             <Drawer opened={opened} onClose={close} position="bottom" size={(mediaList.length > 1) ? "sm" : "xs"} withCloseButton={false} title={addressName}>
@@ -174,6 +174,7 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
                         typeOfDisplay={m.typeOfDisplay}
                         price={m.price} 
                         dailyImpressions={m.dailyImpressions}
+                        schedule={m.schedule}
                         resolution={m.resolution} 
                     />
                   ))}
