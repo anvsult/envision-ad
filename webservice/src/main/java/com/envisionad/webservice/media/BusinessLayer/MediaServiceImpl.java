@@ -317,7 +317,6 @@ public class MediaServiceImpl implements MediaService {
         Status current = media.getStatus();
         Status target = request.getStatus();
 
-        if (target == null) throw new IllegalArgumentException("Status is required.");
         if (current == target) return mediaResponseMapper.entityToResponseModel(media);
         if (current == Status.REJECTED) throw new IllegalStateException("Rejected media cannot be re-activated. Please create a new media item instead.");
 
