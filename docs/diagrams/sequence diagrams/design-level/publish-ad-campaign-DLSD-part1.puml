@@ -21,7 +21,6 @@ participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as Cam
 participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
 database "<<database>>\n:Database" as DB
 actor "Media Owner" as MediaOwner
-participant "<<external>>\nCloudinary API" as Cloudinary
 
 ref over Advertiser
     <i>UC- Create Ad Campaign Use Case</i>
@@ -48,7 +47,12 @@ activate Service
 
 Service -> Validator: validateReservation(requestModel, mediaId)
 activate Validator
-Validator --> Service: void (throws exception if validation fails)
+
+alt validation fails
+    Validator --> Controller: throws BadReservationRequestException
+    Controller --> ReservationModal: HTTP 400 Bad Request
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
 deactivate Validator
 
 Service -> JwtUtils: extractUserId(jwt)
@@ -57,6 +61,13 @@ JwtUtils --> Service: userId
 deactivate JwtUtils
 
 Service -> Service: loadAndValidateMedia(mediaId)
+alt validation fails
+    Service --> Controller: throws AdCampaignNotFoundException
+    Controller --> ReservationModal: HTTP 404 Not Found
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
+
 Service -> MediaRepo: findById(mediaId)
 activate MediaRepo
 MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaId
@@ -64,17 +75,23 @@ activate DB
 DB --> MediaRepo: media data
 deactivate DB
 deactivate DB
-MediaRepo --> Service: media
+MediaRepo --> Service: media: Media
 deactivate MediaRepo
 
 Service -> Service: loadAndValidateCampaign(requestModel.getCampaignId())
+alt validation fails
+    Service --> Controller: throws AdCampaignNotFoundException
+    Controller --> ReservationModal: HTTP 404 Not Found
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
 Service -> CampaignRepo: findById(campaignId)
 activate CampaignRepo
 CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
 activate DB
 DB --> CampaignRepo: campaign data
 deactivate DB
-CampaignRepo --> Service: campaign
+CampaignRepo --> Service: campaign: Campaign
 deactivate CampaignRepo
 
 Service -> Campaign: getBusinessId()
@@ -84,8 +101,29 @@ deactivate Campaign
 
 Service -> JwtUtils: validateUserIsEmployeeOfBusiness(userId, businessId)
 activate JwtUtils
-JwtUtils --> Service: void (throws exception if validation fails)
-deactivate JwtUtils
+alt validation fails
+    JwtUtils --> Controller: throws AccessDeniedException
+    deactivate JwtUtils
+    Controller --> ReservationModal: HTTP 403 Forbidden
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
+
+Service -> ReservationRepo: existsByMediaIdAndCampaignIdAndDateRange(mediaId, campaignId, startDate, endDate)
+activate ReservationRepo
+ReservationRepo -> DB: SELECT COUNT(*) FROM reservations \nWHERE media_id = mediaId AND \ncampaign_id = campaignId AND \n status IN('CONFIRMED', 'APPROVED', 'PENDING')\n(start_date < endDate AND end_date > startDate)
+activate DB
+DB --> ReservationRepo: exists (true/false)
+deactivate DB
+
+ReservationRepo --> Service: exists: boolean
+deactivate ReservationRepo
+alt reservation exists
+    Service --> Controller: throws ReservationConflictException
+    Controller --> ReservationModal: HTTP 409 Conflict
+    ReservationModal --> MediaDetailsPage: Error
+else reservation does not exist
+
 
 Service -> Service: calculateTotalPrice(media, requestModel)
 Service -> Service: totalPrice
@@ -97,7 +135,7 @@ activate RequestMapper
 RequestMapper -> Reservation: new Reservation()
 activate Reservation
 deactivate Reservation
-RequestMapper --> Service: reservation
+RequestMapper --> Service: reservation: Reservation
 deactivate RequestMapper
 
 Service -> Reservation: setReservationId(UUID.randomUUID().toString())
@@ -139,4 +177,9 @@ ref over MediaOwner
     <i>reservation and approves it</i>
     <i>(Manage Reservation Use Case)</i>
 end ref
+end alt
+end alt
+end alt
+end alt
+end alt
 @enduml
