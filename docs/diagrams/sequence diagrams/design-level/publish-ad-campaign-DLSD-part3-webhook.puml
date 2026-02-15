@@ -2,8 +2,8 @@
 
 title <u>Design Level Sequence Diagram</u>\nHandle Checkout Session Completed (Webhook)
 
-actor "<<external>>\nStripe API" as StripeAPI
 
+participant "<<utility>>\nlogger\n:Logger" as Logger
 participant "<<control>>\nwebhookController\n:WebhookController" as Controller
 participant "<<utility>>\nwebhook\n:com.stripe.net.Webhook" as StripeUtil
 participant "<<control>>\nstripeWebhookService\n:StripeWebhookService" as Service
@@ -22,6 +22,7 @@ participant "<<control>>\nadCampaignService\n:AdCampaignService" as CampaignServ
 participant "<<control>>\nemailService\n:EmailService" as EmailService
 
 database "<<database>>\n:Database" as DB
+actor "<<external>>\nStripe API" as StripeAPI
 participant "<<external>>\nGmail SMTP" as GmailAPI
 
 
@@ -36,14 +37,22 @@ alt Event is checkout.session.completed
     Controller -> Service: handleCheckoutSessionCompleted(event)
     activate Service
 
+    alt event data is invalid
+        Service --> Logger: log error()
+    else event data is valid
+
     Service -> PaymentRepo: findByStripeSessionId(sessionId)
     activate PaymentRepo
     PaymentRepo -> DB: SELECT paymentIntent where stripeSessionId = sessionId
     activate DB
-    DB --> PaymentRepo: paymentIntent
+    DB --> PaymentRepo: paymentIntent data
     deactivate DB
-    PaymentRepo --> Service: paymentIntent
+    PaymentRepo --> Service: paymentIntent: PaymentIntent
     deactivate PaymentRepo
+
+    alt paymentIntent not found
+        Service --> Logger: log error()
+    else paymentIntent found
 
     Service -> Payment: setStripePaymentIntentId(...)
     note left
@@ -58,9 +67,9 @@ alt Event is checkout.session.completed
     activate PaymentRepo
     PaymentRepo -> DB: UPDATE paymentIntent
     activate DB
-    DB --> PaymentRepo: updatedPaymentIntent
+    DB --> PaymentRepo: updatedPaymentIntent data
     deactivate DB
-    PaymentRepo --> Service: savedPaymentIntent
+    PaymentRepo --> Service: savedPaymentIntent: PaymentIntent
     deactivate PaymentRepo
 
 '    Service -> Service: updateReservationStatus(reservationId, ReservationStatus.CONFIRMED)
@@ -77,10 +86,14 @@ alt Event is checkout.session.completed
     activate ReservationRepo
     ReservationRepo -> DB: SELECT reservation where reservation_id = reservationId
     activate DB
-    DB --> ReservationRepo: reservation
+    DB --> ReservationRepo: reservation data
     deactivate DB
-    ReservationRepo --> Service: reservation
+    ReservationRepo --> Service: reservation: Reservation
     deactivate ReservationRepo
+
+    alt reservation not found
+        Service --> Logger: log error()
+    else reservation found
 
     Service -> Reservation: setStatus(CONFIRMED)
 
@@ -103,19 +116,27 @@ alt Event is checkout.session.completed
     activate MediaRepo
     MediaRepo -> DB: SELECT media where media_id = mediaId
     activate DB
-    DB --> MediaRepo
+    DB --> MediaRepo: media data
     deactivate DB
     MediaRepo --> Service: media
     deactivate MediaRepo
+
+    alt media not found
+        Service --> Logger: log error()
+    else media found
 
     Service -> CampaignRepo: findByCampaignId(campaignId)
     activate CampaignRepo
     CampaignRepo -> DB: SELECT adCampaign where campaign_id = campaignId
     activate DB
-    DB --> CampaignRepo
+    DB --> CampaignRepo: adCampaign data
     deactivate DB
     CampaignRepo --> Service: adCampaign
     deactivate CampaignRepo
+
+    alt ad campaign not found
+        Service --> Logger: log error()
+    else ad campaign found
 
     Service -> EmployeeRepo: findAllByBusinessId(businessId)
     activate EmployeeRepo
@@ -125,6 +146,10 @@ alt Event is checkout.session.completed
     deactivate DB
     EmployeeRepo --> Service: mediaOwnerEmails
     deactivate EmployeeRepo
+
+    alt no media owner emails found
+        Service --> Logger: log error()
+    else media owner emails found
 
     loop for each mediaOwnerEmail
 
@@ -146,15 +171,22 @@ alt Event is checkout.session.completed
         EmailService --> Service
         deactivate EmailService
 '        deactivate Service
-
-    end
-
+    end loop
     Service --> Controller: void
     deactivate Service
 
+    Controller --> StripeAPI: HTTP 200 OK
+
+    end alt
+    end alt
+    end alt
+    end alt
+    end alt
+    end alt
+
+
 end
 
-Controller --> StripeAPI: HTTP 200 OK
 deactivate Controller
 
 @enduml
