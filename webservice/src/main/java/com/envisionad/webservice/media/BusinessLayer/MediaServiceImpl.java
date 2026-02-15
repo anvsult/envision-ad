@@ -317,9 +317,8 @@ public class MediaServiceImpl implements MediaService {
         Status current = media.getStatus();
         Status target = request.getStatus();
 
-        if (target == null) throw new IllegalArgumentException("Status is required.");
         if (current == target) return mediaResponseMapper.entityToResponseModel(media);
-        if (current == Status.REJECTED) throw new IllegalStateException("Rejected media cannot be re-activated.");
+        if (current == Status.REJECTED) throw new IllegalStateException("Rejected media cannot be re-activated. Please create a new media item instead.");
 
         boolean allowed =
                 (current == Status.PENDING && (target == Status.ACTIVE || target == Status.REJECTED))
@@ -333,9 +332,7 @@ public class MediaServiceImpl implements MediaService {
         // - Business employees can (ACTIVE<->INACTIVE)
         boolean isModerationAction = current == Status.PENDING;
 
-        boolean isAdmin =
-                jwtUtils.hasAuthority("patch:media_status") ||
-                        jwtUtils.hasAuthority("SCOPE_patch:media_status");
+        boolean isAdmin = jwtUtils.hasAuthority("patch:media_status");
 
         if (isModerationAction) {
             // Only admins can approve/reject pending media
