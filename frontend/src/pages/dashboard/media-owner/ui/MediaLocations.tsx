@@ -24,6 +24,7 @@ import { MediaLocationsTable } from "@/pages/dashboard/media-owner/ui/tables/Med
 import { CreateMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/CreateMediaLocationModal";
 import { EditMediaLocationModal } from "@/pages/dashboard/media-owner/ui/modals/EditMediaLocationModal";
 import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
+import {MediaStatusEnum} from "@/entities/media/model/media";
 
 const getApiErrorMessage = (error: unknown): string | null => {
     if (!error || typeof error !== "object") {
@@ -329,7 +330,7 @@ export default function MediaLocations() {
         }
     };
 
-    const handleToggleMediaStatus = async (id: string | number, nextStatus: "ACTIVE" | "INACTIVE") => {
+    const handleToggleMediaStatus = async (id: string | number, nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE) => {
         try {
             await axiosInstance.patch(`/media/${id}/status`, { status: nextStatus });
 

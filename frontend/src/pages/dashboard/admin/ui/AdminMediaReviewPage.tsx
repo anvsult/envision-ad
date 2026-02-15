@@ -26,6 +26,7 @@ import { getJoinedAddress, Media } from "@/entities/media";
 import { useAdminMedia } from "@/pages/dashboard/admin/hooks/useAdminMedia";
 import { notifications } from "@mantine/notifications";
 import { MediaStatusEnum } from "@/entities/media/model/media";
+import { useMediaQuery } from "@mantine/hooks";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -52,8 +53,18 @@ const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
   { dayId: "Sunday", dayKey: "sunday", closed: true },
 ];
 
+function calculateWeeklyImpressions(
+    daily: number | null | undefined,
+    weeklySchedule: { isActive: boolean }[] | null | undefined
+) {
+  const d = daily ?? 0;
+  const activeDays = (weeklySchedule ?? []).filter((x) => x.isActive).length;
+  return d * activeDays;
+}
+
 export default function AdminMediaReviewPage() {
   const t = useTranslations("mediaPage");
+  const isMobile = useMediaQuery("(max-width: 768px)");
   const t1 = useTranslations("admin.adminActions");
   const t2 = useTranslations("mediaModal.buttons");
   const router = useRouter();
@@ -145,7 +156,7 @@ export default function AdminMediaReviewPage() {
 
   if (loading) {
     return (
-        <Container size="lg" py="xl">
+        <Container size="lg" py={isMobile ? "md" : "xl"} px={isMobile ? "xs" : "md"}>
           <Center>
             <Loader />
           </Center>
@@ -155,7 +166,7 @@ export default function AdminMediaReviewPage() {
 
   if (error || !media) {
     return (
-        <Container size="lg" py="xl">
+        <Container size="lg" py={isMobile ? "md" : "xl"} px={isMobile ? "xs" : "md"}>
           <Stack align="center" gap="sm">
             <Text fw={600}>{t("errorTitle")}</Text>
             <Text size="sm" c="dimmed">
@@ -171,7 +182,7 @@ export default function AdminMediaReviewPage() {
 
   if (!isPending) {
     return (
-        <Container size="lg" py="xl">
+        <Container size="lg" py={isMobile ? "md" : "xl"} px={isMobile ? "xs" : "md"}>
           <Stack align="center" gap="sm">
             <Title order={3}>{t1("reviewUnavailable")}</Title>
 
@@ -220,7 +231,12 @@ export default function AdminMediaReviewPage() {
         <Container size="lg" py="xl">
           <Group align="flex-start" justify="space-between" wrap="wrap">
             {/* Left Column */}
-            <Stack gap="md" style={{ flex: 2, minWidth: 320 }}>
+            <Stack
+                gap="md"
+                style={{
+                  flex: isMobile ? "1 1 100%" : 2,
+                  minWidth: 0,
+                }}>
               <Group gap="xs">
                 <BackButton />
                 <Title order={2}>{media.title}</Title>
@@ -266,7 +282,7 @@ export default function AdminMediaReviewPage() {
                     media.mediaLocation.province,
                   ])}
                 </Text>
-                <Text size="sm">{media.mediaOwnerName}</Text>
+                <Text size="sm">{media.businessName ?? "—"}</Text>
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: 0 })}
                 </Text>
@@ -289,12 +305,14 @@ export default function AdminMediaReviewPage() {
                   if (!isPoster) {
                     rows.push([t("details.loopDuration"), loopDurationLabel]);
                   }
+                  const weeklyImpressions = calculateWeeklyImpressions(
+                      media.dailyImpressions,
+                      media.schedule?.weeklySchedule
+                  );
 
                   rows.push([
-                    t("details.dailyImpressions"),
-                    t("dailyImpressionPerDay", {
-                      count: media.dailyImpressions ?? 0,
-                    }),
+                    t("details.weeklyImpressions"),
+                    t("weeklyImpressionsPerWeek", { count: weeklyImpressions }),
                   ]);
 
                   return rows.map(([label, val]) => (
@@ -312,7 +330,12 @@ export default function AdminMediaReviewPage() {
             </Stack>
 
             {/* Right Column */}
-            <Stack gap="lg" style={{ flex: 1, minWidth: 320 }}>
+            <Stack
+                gap="lg"
+                style={{
+                  flex: isMobile ? "1 1 100%" : 1,
+                  minWidth: 0,
+                }}>
               <Group justify="flex-end">
                 <Button
                     variant="outline"

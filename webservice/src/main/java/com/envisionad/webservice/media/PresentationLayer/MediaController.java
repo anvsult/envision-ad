@@ -148,7 +148,7 @@ public class MediaController {
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasAuthority('update:media')")
+    @PreAuthorize("hasAuthority('update:media') || hasAuthority('patch:media_status')")
     public ResponseEntity<MediaResponseModel> patchMediaStatus(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String id,
@@ -158,7 +158,7 @@ public class MediaController {
     }
 
     @GetMapping("/pending")
-    @PreAuthorize("hasAuthority('update:media')")
+    @PreAuthorize("hasAuthority('patch:media_status')")
     public List<MediaResponseModel> getPendingMedia() {
         return responseMapper.entityListToResponseModelList(
                 mediaService.getMediaByStatus(Status.PENDING)

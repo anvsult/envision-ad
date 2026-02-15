@@ -1,10 +1,12 @@
 "use client";
 
-import React, {useMemo, useState} from "react";
-import {Center, Group, Loader, Pagination, Stack, Text, Title,} from "@mantine/core";
-import {useTranslations} from "next-intl";
-import {ApproveMediaRowData, ApproveMediaTable} from "@/pages/dashboard/admin/ui/tables/ApproveMediaTable";
-import {useAdminPendingMedia} from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
+import React, { useMemo, useState } from "react";
+import { Center, Group, Loader, Pagination, Stack, Text, Title } from "@mantine/core";
+import { useTranslations } from "next-intl";
+import { ApproveMediaRowData, ApproveMediaTable } from "@/pages/dashboard/admin/ui/tables/ApproveMediaTable";
+import { useAdminPendingMedia } from "@/pages/dashboard/admin/hooks/useAdminPendingMedia";
+
+import { MediaStatusEnum } from "@/entities/media/model/media";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -15,27 +17,25 @@ export default function ApprovingMediaDashboard() {
 
   const {media, loading, error} = useAdminPendingMedia();
 
-  const pendingRows: ApproveMediaRowData[] = useMemo(() => {
-    return (media ?? [])
-        .filter((m) => (m.status ?? "PENDING") === "PENDING")
-        .map((m) => {
-          const city = m.mediaLocation?.city ?? "";
-          const province = m.mediaLocation?.province ?? "";
-          const location = [city, province].filter(Boolean).join(", ") || "—";
+    const pendingRows: ApproveMediaRowData[] = useMemo(() => {
+        return (media ?? []).map((m) => {
+            const city = m.mediaLocation?.city ?? "";
+            const province = m.mediaLocation?.province ?? "";
+            const location = [city, province].filter(Boolean).join(", ") || "—";
 
-          return {
-            id: String(m.id),
-            name: m.title ?? "—",
-            image: m.imageUrl ?? null,
-            mediaOwnerName: m.mediaOwnerName ?? "—",
-            location,
-            dailyImpressions: Number(m.dailyImpressions ?? 0),
-            price:
-                m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
-            status: m.status ?? "PENDING",
-          };
+            return {
+                id: String(m.id),
+                name: m.title ?? "—",
+                image: m.imageUrl ?? null,
+                businessName: m.businessName ?? "—",
+                location,
+                dailyImpressions: Number(m.dailyImpressions ?? 0),
+                price: m.price != null ? `$${Number(m.price).toFixed(2)}` : "$0.00",
+                status: m.status ?? MediaStatusEnum.PENDING,
+            };
         });
-  }, [media]);
+    }, [media]);
+
 
   const totalPages = Math.max(1, Math.ceil(pendingRows.length / ITEMS_PER_PAGE));
 

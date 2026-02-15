@@ -14,7 +14,10 @@ interface MediaLocationsTableProps {
     onEditLocation: (location: MediaLocation) => void;
     onEditMedia: (id: string | number) => void;
     onDeleteMedia: (id: string | number) => void;
-    onToggleMediaStatus: (id: string | number, nextStatus: "ACTIVE" | "INACTIVE") => void | Promise<void>;
+    onToggleMediaStatus: (
+        id: string | number,
+        nextStatus: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
+    ) => void | Promise<void>;
 }
 
 export function MediaLocationsTable({
