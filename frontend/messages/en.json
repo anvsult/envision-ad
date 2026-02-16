@@ -50,8 +50,10 @@
       "overview": "Overview",
       "metrics": "Metrics",
       "media": "Media",
+      "displayedAds": "Displayed Ads",
       "adRequests": "Advertisements",
-      "proof": "Submit Proof"
+      "proof": "Submit Proof",
+      "locations": "My Locations"
     },
     "organizationTitle": "Organization",
     "organization": {
@@ -88,6 +90,7 @@
     },
     "adminTitle": "Admin",
     "admin": {
+      "metrics": "Metrics",
       "pendingMedia": "Pending Media",
       "pendingOrganizations": "Verification Requests"
     }
@@ -1050,6 +1053,37 @@
         "title": "Error",
         "approveFailed": "Failed to approve organization verification status.",
         "denyFailed": "Failed to deny organization verification status."
+      }
+    },
+    "metricsPage": {
+      "title": "Admin Metrics",
+      "empty": "No data",
+      "errors": {
+        "loadFailed": "Failed to load metrics"
+      },
+      "cards": {
+        "totalRevenue": "Total platform revenue",
+        "totalRevenueDesc": "Aggregated across completed payments",
+        "totalOrganizations": "Total organizations",
+        "totalOrganizationsDesc": "Active + approved organizations",
+        "totalMediaListings": "Total active media listings",
+        "totalMediaListingsDesc": "All active media listings on platform",
+        "totalUsers": "Total users",
+        "totalUsersDesc": "Distinct known users",
+        "mediaOwners": "Media owners",
+        "mediaOwnersDesc": "Users with media-owner role",
+        "advertisers": "Advertisers",
+        "advertisersDesc": "Users with advertiser role"
+      },
+      "chart": {
+        "title": "User Role Distribution",
+        "subtitle": "Media Owners vs Advertisers",
+        "noData": "No data",
+        "noDataLabel": "No\ndata",
+        "users": "Users",
+        "mediaOwners": "Media Owners",
+        "advertisers": "Advertisers",
+        "basedOn": "Based on users with platform roles."
       }
     }
   },
