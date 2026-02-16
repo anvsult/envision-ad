@@ -185,7 +185,7 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         // Validate the campaign belongs to the business
         jwtUtils.validateBusinessOwnsCampaign(businessId, adCampaign);
 
-        // Validate the campaign is not associated with a confirmed reservation
+        // Validate the campaign is not associated with any active reservation (CONFIRMED, APPROVED, or PENDING with endDate >= now)
         if (campaignIsTiedToReservation(campaignId)) {
             throw new CampaignIsTiedToReservationException(campaignId);
         }
