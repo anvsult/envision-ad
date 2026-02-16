@@ -160,6 +160,12 @@ public class GlobalControllerHandler {
     }
 
     @ResponseStatus(CONFLICT)
+    @ExceptionHandler(CampaignIsTiedToReservationException.class)
+    public HttpErrorInfo handleCampaignIsTiedToReservationException(CampaignIsTiedToReservationException ex) {
+        return createHttpErrorInfo(CONFLICT, ex);
+    }
+
+    @ResponseStatus(CONFLICT)
     @ExceptionHandler(CampaignHasConfirmedReservationException.class)
     public HttpErrorInfo handleCampaignHasConfirmedReservationException(CampaignHasConfirmedReservationException ex) {
         return createHttpErrorInfo(CONFLICT, ex);

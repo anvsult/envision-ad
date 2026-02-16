@@ -920,7 +920,8 @@
         },
         "error": {
           "title": "Error",
-          "message": "Failed to save ad"
+          "genericMessage": "Failed to save ad",
+          "tiedReservationMessage": "Failed to save ad because it has a tied reservation. Please wait until the reservation for this ad has ended before making changes."
         }
       },
       "deleteAd": {
@@ -930,7 +931,8 @@
         },
         "error": {
           "title": "Error",
-          "message": "Failed to delete ad"
+          "genericMessage": "Failed to delete ad",
+          "tiedReservationMessage": "Failed to delete ad because it has a tied reservation. Please wait until the reservation for this ad has ended before deleting."
         }
       },
       "deleteCampaign": {

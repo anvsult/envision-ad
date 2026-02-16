@@ -6,7 +6,6 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdResponseMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
 import com.envisionad.webservice.advertisement.exceptions.*;
-import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.JwtUtils;
@@ -455,7 +454,7 @@ class AdCampaignServiceUnitTest {
         )).thenReturn(true);
 
         // Act & Assert
-        assertThrows(CampaignHasConfirmedReservationException.class,
+        assertThrows(CampaignIsTiedToReservationException.class,
             () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
         verify(adCampaignRepository, never()).delete(any());
     }
@@ -492,7 +491,7 @@ class AdCampaignServiceUnitTest {
         )).thenReturn(false);
 
         // Act & Assert
-        assertThrows(CampaignHasPendingReservationException.class,
+        assertThrows(CampaignIsTiedToReservationException.class,
             () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
         verify(adCampaignRepository, never()).delete(any());
     }
@@ -523,7 +522,7 @@ class AdCampaignServiceUnitTest {
         )).thenReturn(true);
 
         // Act & Assert
-        assertThrows(CampaignHasApprovedReservationException.class,
+        assertThrows(CampaignIsTiedToReservationException.class,
             () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
         verify(adCampaignRepository, never()).delete(any());
     }

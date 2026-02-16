@@ -110,6 +110,11 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         if (adCampaign == null)
             throw new AdCampaignNotFoundException(campaignId);
 
+        // validate that the campaign is not associated with a pending, approved or confirmed reservation
+        if (campaignIsTiedToReservation(campaignId)) {
+            throw new CampaignIsTiedToReservationException(campaignId);
+        }
+
         Ad newAd = adRequestMapper.requestModelToEntity(adRequestModel);
         newAd.setAdIdentifier(new AdIdentifier());
 
@@ -139,6 +144,11 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         AdCampaign adCampaign = adCampaignRepository.findByCampaignId_CampaignId(campaignId);
         if (adCampaign == null) {
             throw new AdCampaignNotFoundException(campaignId);
+        }
+
+        // validate that the campaign is not associated with a pending, approved or confirmed reservation
+        if (campaignIsTiedToReservation(campaignId)) {
+            throw new CampaignIsTiedToReservationException(campaignId);
         }
 
         Ad adToDelete = adCampaign.getAds().stream()
@@ -176,22 +186,8 @@ public class AdCampaignServiceImpl implements AdCampaignService {
         jwtUtils.validateBusinessOwnsCampaign(businessId, adCampaign);
 
         // Validate the campaign is not associated with a confirmed reservation
-        LocalDateTime now = LocalDateTime.now();
-
-        boolean hasConfirmedReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now);
-        if (hasConfirmedReservations) {
-            throw new CampaignHasConfirmedReservationException(campaignId);
-        }
-
-        boolean hasConfirmedReservation = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.APPROVED, now);
-        if (hasConfirmedReservation) {
-            throw new CampaignHasApprovedReservationException(campaignId);
-        }
-
-        // Validate the campaign is not associated with a pending reservation
-        boolean hasPendingReservations = reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING, now);
-        if (hasPendingReservations) {
-            throw new CampaignHasPendingReservationException(campaignId);
+        if (campaignIsTiedToReservation(campaignId)) {
+            throw new CampaignIsTiedToReservationException(campaignId);
         }
 
         // Delete all associated ads and their Cloudinary assets
@@ -230,5 +226,12 @@ public class AdCampaignServiceImpl implements AdCampaignService {
     @Override
     public Integer getActiveCampaignCount(String businessId) {
         return reservationRepository.countActiveCampaignsByAdvertiserId(businessId, LocalDateTime.now());
+    }
+
+    private boolean campaignIsTiedToReservation(String campaignId) {
+        LocalDateTime now = LocalDateTime.now();
+        return reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now) ||
+               reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.APPROVED, now) ||
+               reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING, now);
     }
 }
