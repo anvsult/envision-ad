@@ -58,6 +58,70 @@ class AdminDashboardRepositoryImplTest {
         assertEquals(7L, repo.countOrganizations());
     }
 
+    @Test
+    void countMediaListings_returnsLongValue() throws Exception {
+        EntityManager em = mock(EntityManager.class);
+        Query q = mock(Query.class);
+
+        when(em.createNativeQuery(anyString())).thenReturn(q);
+        when(q.getSingleResult()).thenReturn(12);
+
+        AdminDashboardRepositoryImpl repo = new AdminDashboardRepositoryImpl();
+        injectEntityManager(repo, em);
+
+        assertEquals(12L, repo.countMediaListings());
+        verify(em, times(1)).createNativeQuery(anyString());
+        verify(q, times(1)).getSingleResult();
+    }
+
+    @Test
+    void countDistinctKnownUsers_returnsLongValue() throws Exception {
+        EntityManager em = mock(EntityManager.class);
+        Query q = mock(Query.class);
+
+        when(em.createNativeQuery(anyString())).thenReturn(q);
+        when(q.getSingleResult()).thenReturn(50);
+
+        AdminDashboardRepositoryImpl repo = new AdminDashboardRepositoryImpl();
+        injectEntityManager(repo, em);
+
+        assertEquals(50L, repo.countDistinctKnownUsers());
+        verify(em, times(1)).createNativeQuery(anyString());
+        verify(q, times(1)).getSingleResult();
+    }
+
+    @Test
+    void countMediaOwners_returnsLongValue() throws Exception {
+        EntityManager em = mock(EntityManager.class);
+        Query q = mock(Query.class);
+
+        when(em.createNativeQuery(anyString())).thenReturn(q);
+        when(q.getSingleResult()).thenReturn(9);
+
+        AdminDashboardRepositoryImpl repo = new AdminDashboardRepositoryImpl();
+        injectEntityManager(repo, em);
+
+        assertEquals(9L, repo.countMediaOwners());
+        verify(em, times(1)).createNativeQuery(anyString());
+        verify(q, times(1)).getSingleResult();
+    }
+
+    @Test
+    void countAdvertisers_returnsLongValue() throws Exception {
+        EntityManager em = mock(EntityManager.class);
+        Query q = mock(Query.class);
+
+        when(em.createNativeQuery(anyString())).thenReturn(q);
+        when(q.getSingleResult()).thenReturn(4);
+
+        AdminDashboardRepositoryImpl repo = new AdminDashboardRepositoryImpl();
+        injectEntityManager(repo, em);
+
+        assertEquals(4L, repo.countAdvertisers());
+        verify(em, times(1)).createNativeQuery(anyString());
+        verify(q, times(1)).getSingleResult();
+    }
+
     private static void injectEntityManager(AdminDashboardRepositoryImpl repo, EntityManager em) throws Exception {
         Field f = AdminDashboardRepositoryImpl.class.getDeclaredField("em");
         f.setAccessible(true);

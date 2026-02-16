@@ -74,9 +74,9 @@ class AdminDashboardControllerTest {
     }
 
     @Test
-        void getOverview_withoutAuthority_returns403() throws Exception {
-            mockMvc.perform(get("/api/v1/admin/dashboard/overview"))
-                    .andExpect(status().isForbidden());
+    void getOverview_withoutAuthority_returns403() throws Exception {
+        mockMvc.perform(get("/api/v1/admin/dashboard/overview"))
+                .andExpect(status().isForbidden());
     }
 
 }
