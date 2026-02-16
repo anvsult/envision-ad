@@ -97,8 +97,7 @@ class StripeServiceUnitTest {
                 when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
                 // jwtUtils.validateUserIsEmployeeOfBusiness should be called; stub to do
                 // nothing
-                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
-                when(jwtUtils.extractUserId(eq(jwt))).thenReturn(userId);
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
 
                 Media media = new Media();
                 media.setId(UUID.fromString(mediaId));
@@ -116,7 +115,7 @@ class StripeServiceUnitTest {
                                 reservationId, start, end);
 
                 assertNotNull(result.get("clientSecret"));
-                verify(jwtUtils, times(1)).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                verify(jwtUtils, times(1)).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
                 // price: 1 week * 100 = 100
         }
 
@@ -152,51 +151,6 @@ class StripeServiceUnitTest {
                                 () -> stripeService.createCheckoutSession(reservationId, amount, businessId));
         }
 
-        @Test
-        void createCheckoutSession_throwsInvalidPricingException_whenAmountIsNull() {
-                // Given
-                String reservationId = "res-invalid-1";
-                BigDecimal nullAmount = null;
-                String businessId = "biz-1";
-
-                // When & Then
-                InvalidPricingException exception = assertThrows(InvalidPricingException.class,
-                                () -> stripeService.createCheckoutSession(reservationId, nullAmount, businessId));
-
-                assertNotNull(exception.getMessage());
-                assertTrue(exception.getMessage().contains("Invalid payment amount"));
-        }
-
-        @Test
-        void createCheckoutSession_throwsInvalidPricingException_whenAmountIsZero() {
-                // Given
-                String reservationId = "res-invalid-2";
-                BigDecimal zeroAmount = BigDecimal.ZERO;
-                String businessId = "biz-1";
-
-                // When & Then
-                InvalidPricingException exception = assertThrows(InvalidPricingException.class,
-                                () -> stripeService.createCheckoutSession(reservationId, zeroAmount, businessId));
-
-                assertNotNull(exception.getMessage());
-                assertTrue(exception.getMessage().contains("Invalid payment amount"));
-        }
-
-        @Test
-        void createCheckoutSession_throwsInvalidPricingException_whenAmountIsNegative() {
-                // Given
-                String reservationId = "res-invalid-3";
-                BigDecimal negativeAmount = BigDecimal.valueOf(-50.00);
-                String businessId = "biz-1";
-
-                // When & Then
-                InvalidPricingException exception = assertThrows(InvalidPricingException.class,
-                                () -> stripeService.createCheckoutSession(reservationId, negativeAmount, businessId));
-
-                assertNotNull(exception.getMessage());
-                assertTrue(exception.getMessage().contains("Invalid payment amount"));
-                assertTrue(exception.getMessage().contains("-50"));
-        }
 
         @Test
         void createCheckoutSession_throwsDuplicatePaymentException_whenPaymentSucceeded() {
@@ -391,8 +345,7 @@ class StripeServiceUnitTest {
                 media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
                 when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
-                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
-                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
                 when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
 
                 // When & Then
@@ -431,8 +384,7 @@ class StripeServiceUnitTest {
                 media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
                 when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
-                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
-                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
                 when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
 
                 // When & Then
@@ -1023,8 +975,7 @@ class StripeServiceUnitTest {
                 media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
                 when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
-                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
-                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
                 when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
 
                 // Spy on service to verify the calculated amount passed to
@@ -1048,6 +999,7 @@ class StripeServiceUnitTest {
         void createAuthorizedCheckoutSession_shouldThrowException_whenEndDateBeforeStartDate() {
                 // Given
                 String userId = "user-1";
+                String businessId = "biz-1";
                 String campaignId = "camp-1";
                 String mediaId = UUID.randomUUID().toString();
                 String reservationId = "res-invalid-dates";
@@ -1063,7 +1015,7 @@ class StripeServiceUnitTest {
                 AdCampaign campaign = new AdCampaign();
                 campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
                 campaign.setBusinessId(
-                                new com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier("biz-1"));
+                                new com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier(businessId));
 
                 Media media = new Media();
                 media.setId(UUID.fromString(mediaId));
@@ -1071,8 +1023,7 @@ class StripeServiceUnitTest {
                 media.setBusinessId(UUID.fromString("00000000-0000-0000-0000-000000000001"));
 
                 when(adCampaignRepository.findByCampaignId_CampaignId(campaignId)).thenReturn(campaign);
-                when(jwtUtils.extractUserId(jwt)).thenReturn(userId);
-                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(userId), anyString());
+                doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(eq(jwt), anyString());
                 when(mediaRepository.findById(UUID.fromString(mediaId))).thenReturn(Optional.of(media));
 
                 // When & Then

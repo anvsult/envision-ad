@@ -187,6 +187,10 @@ public class StripeServiceImpl implements StripeService {
             throw new StripeOnboardingIncompleteException(businessId);
         }
 
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.error("Invalid payment amount: ${} for reservation: {}", amount, reservationId);
+            throw new InvalidPricingException(amount);
+        }
         // Round to 2 decimals (HALF_UP) and convert to cents
         BigDecimal scaledAmount = amount.setScale(2, java.math.RoundingMode.HALF_UP);
         long amountInCents = scaledAmount.multiply(BigDecimal.valueOf(100)).longValueExact();
