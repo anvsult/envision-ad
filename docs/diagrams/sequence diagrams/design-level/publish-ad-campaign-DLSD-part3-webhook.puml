@@ -24,6 +24,7 @@ participant "<<control>>\nemailService\n:EmailService" as EmailService
 database "<<database>>\n:Database" as DB
 actor "<<external>>\nStripe API" as StripeAPI
 participant "<<external>>\nGmail SMTP" as GmailAPI
+actor "Media Owner" as MediaOwner
 
 
 StripeAPI -> Controller: POST /api/v1/stripe/webhook\n(Event: checkout.session.completed)
@@ -166,9 +167,8 @@ alt Event is checkout.session.completed
         activate EmailService
         EmailService -> GmailAPI: SendSimpleEmail(to, subject, body)
         activate GmailAPI
-        GmailAPI --> EmailService
+        GmailAPI -> MediaOwner: emailNotification
         deactivate GmailAPI
-        EmailService --> Service
         deactivate EmailService
 '        deactivate Service
     end loop

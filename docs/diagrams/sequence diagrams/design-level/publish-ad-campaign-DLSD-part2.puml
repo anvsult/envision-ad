@@ -19,7 +19,7 @@ database "<<database>>\n:Database" as DB
 participant "<<external>>\nStripe API" as StripeAPI
 actor "Media Owner" as MediaOwner
 ref over MediaOwner
-    <i>UC- Manage Reservation Use Case</i>
+    <i>UC- Approve Reservation Use Case</i>
 end ref
 
 

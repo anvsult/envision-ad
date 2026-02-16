@@ -50,36 +50,50 @@ end note
 
 ref over System, MediaOwner
     <i>UC- Approve Reservation Use Case</i>
-    (Media Owner approves request)
 end ref
 
 ref over System, Advertiser
-    <i>Advertiser views his reservations</i>
     <i>(UC- View Reservations Use Case)</i>
 end ref
 
-
+System -> StripeAPI: Session.create(SessionCreateParams)
+StripeAPI --> System: session: com.stripe.checkout.Session
 Advertiser -> System: submitPayment(paymentInfo)
 note right of Advertiser
   paymentInfo contains:
   - paymentMethodId
   - billingDetails
 end note
-
-alt Payment succeeds
-    System --> Advertiser: paymentConfirmation
-else Payment fails
+System -> StripeAPI: confirmPayment(clientSecret, paymentDetails)
+alt Payment fails
     System --> Advertiser: paymentError
-end
+else Payment succeeds
 
+StripeAPI --> System: PaymentIntent
+
+
+StripeAPI -> System: POST /api/v1/stripe/webhook\n(Event: checkout.session.completed)
 note left of System
-  paymentConfirmation contains:
-  - reservationId
-  - campaignStartDate
-  - campaignEndDate
-  - activeStatus
+    Webhook received indicating
+    successful payment. Updating
+    reservation status to CONFIRMED
+    and campaign status to ACTIVE.
 end note
 
 System -> GmailAPI: sendSimpleEmail(to, subject, body)
 GmailAPI -> MediaOwner: emailNotification
+System --> StripeAPI: HTTP 200 OK
+
+    System --> Advertiser: payment successful
+end
+'
+'note left of System
+'  paymentConfirmation contains:
+'  - reservationId
+'  - campaignStartDate
+'  - campaignEndDate
+'  - activeStatus
+'end note
+'
+
 @enduml

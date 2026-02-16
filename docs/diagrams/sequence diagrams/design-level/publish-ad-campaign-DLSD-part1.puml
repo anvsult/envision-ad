@@ -173,7 +173,7 @@ deactivate MediaDetailsPage
 deactivate ReservationModal
 
 ref over MediaOwner
-    <i>UC- Manage Reservation Use Case</i>
+    <i>UC- Approve Reservation Use Case</i>
 end ref
 end alt
 end alt
