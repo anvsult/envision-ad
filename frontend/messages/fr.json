@@ -90,6 +90,7 @@
     },
     "adminTitle": "Admin",
     "admin": {
+      "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification"
     }
@@ -1054,6 +1055,38 @@
         "title": "Erreur",
         "approveFailed": "Échec de l’approbation du statut de vérification de l’organisation.",
         "denyFailed": "Échec du refus du statut de vérification de l’organisation."
+      }
+    },
+
+    "metricsPage": {
+      "title": "Métriques admin",
+      "empty": "Aucune donnée",
+      "errors": {
+        "loadFailed": "Impossible de charger les métriques"
+      },
+      "cards": {
+        "totalRevenue": "Revenus totaux de la plateforme",
+        "totalRevenueDesc": "Agrégés à partir des paiements complétés",
+        "totalOrganizations": "Nombre total d’organisations",
+        "totalOrganizationsDesc": "Organisations actives + approuvées",
+        "totalMediaListings": "Nombre total de médias actifs",
+        "totalMediaListingsDesc": "Tous les médias actifs sur la plateforme",
+        "totalUsers": "Nombre total d’utilisateurs",
+        "totalUsersDesc": "Utilisateurs distincts connus",
+        "mediaOwners": "Propriétaires de médias",
+        "mediaOwnersDesc": "Utilisateurs avec le rôle propriétaire de médias",
+        "advertisers": "Annonceurs",
+        "advertisersDesc": "Utilisateurs avec le rôle annonceur"
+      },
+      "chart": {
+        "title": "Répartition des rôles des utilisateurs",
+        "subtitle": "Propriétaires de médias vs Annonceurs",
+        "noData": "Aucune donnée",
+        "noDataLabel": "Aucune\ndonnée",
+        "users": "Utilisateurs",
+        "mediaOwners": "Propriétaires de médias",
+        "advertisers": "Annonceurs",
+        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme."
       }
     }
   },

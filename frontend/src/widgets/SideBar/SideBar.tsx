@@ -97,7 +97,18 @@ export default function SideBar() {
     ].filter(Boolean);
 
     const adminNavItems = [
-        (permissions.includes('update:verification')) && ( //temporarily, this page is scheduled to be removed.
+        (permissions.includes("patch:media_status")) && (
+            <NavLink
+                key="adminMetrics"
+                component={Link}
+                href="/dashboard/admin/metrics"
+                label={t("admin.metrics")}
+                leftSection={<IconChartDots size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/admin/metrics")}
+            />
+        ),
+
+        (permissions.includes('update:verification')) && (
             <NavLink
                 key="pendingMedia"
                 component={Link}
