@@ -962,7 +962,8 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de l’enregistrement de l’annonce"
+          "tiedReservationMessage": "Échec de l’enregistrement de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant d’ajouter une nouvelle annonce.",
+          "genericMessage": "Échec de l’enregistrement de l’annonce"
         }
       },
       "deleteAd": {
@@ -972,7 +973,8 @@
         },
         "error": {
           "title": "Erreur",
-          "message": "Échec de la suppression de l’annonce"
+          "genericMessage": "Échec de la suppression de l’annonce",
+          "tiedReservationMessage": "Échec de la suppression de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer une annonce."
         }
       },
       "deleteCampaign": {

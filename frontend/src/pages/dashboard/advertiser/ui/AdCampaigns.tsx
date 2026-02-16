@@ -99,24 +99,42 @@ export default function AdCampaigns() {
 
     const handleSuccessAddAd = async (payload: AdRequestDTO) => {
         if (!targetCampaignId) return;
+
         try {
             await addAdToCampaign(targetCampaignId, payload);
+
             notifications.show({
                 title: t('notifications.addAd.success.title'),
                 message: t('notifications.addAd.success.message'),
                 color: 'green'
             });
+
             setIsAddAdModalOpen(false);
-            loadCampaigns(); // Refresh list
+            await loadCampaigns();
         } catch (error) {
-            console.error('Failed to save ad', error);
+            const err = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = err.response?.status;
+            const serverMessage = err.response?.data?.message;
+
+            let messageToShow: string;
+            if (status === 409) {
+                messageToShow = t('notifications.addAd.error.tiedReservationMessage');
+            } else if (serverMessage) {
+                messageToShow = serverMessage;
+            } else {
+                messageToShow = t('notifications.addAd.error.genericMessage');
+            }
+
             notifications.show({
                 title: t('notifications.addAd.error.title'),
-                message: t('notifications.addAd.error.message'),
+                message: messageToShow,
                 color: 'red'
             });
+
+            throw error;
         }
     };
+
 
     const handleDeleteAd = (campaignId: string, adId: string) => {
         setAdToDelete({campaignId, adId});
@@ -142,10 +160,22 @@ export default function AdCampaigns() {
             setConfirmDeleteAdOpen(false);
             setAdToDelete(null);
         } catch (error) {
-            console.error('Failed to delete ad', error);
+            const err = error as { response?: { status?: number; data?: { message?: string } } };
+            const status = err.response?.status;
+            const serverMessage = err.response?.data?.message;
+
+            let messageToShow: string;
+            if (status === 409) {
+                messageToShow = t('notifications.deleteAd.error.tiedReservationMessage');
+            } else if (serverMessage) {
+                messageToShow = serverMessage;
+            } else {
+                messageToShow = t('notifications.deleteAd.error.genericMessage');
+            }
+
             notifications.show({
                 title: t('notifications.deleteAd.error.title'),
-                message: t('notifications.deleteAd.error.message'),
+                message: messageToShow,
                 color: 'red'
             });
         }

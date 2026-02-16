@@ -82,7 +82,11 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
             let finalUrl = uploadedFileUrl;
             const durationInt = parseInt(values.adDurationSeconds);
 
-            if (values.adType === 'VIDEO' && originalVideoDuration && originalVideoDuration > durationInt) {
+            if (
+                values.adType === 'VIDEO' &&
+                originalVideoDuration &&
+                originalVideoDuration > durationInt
+            ) {
                 finalUrl = uploadedFileUrl.replace(
                     '/upload/',
                     `/upload/so_0,eo_${durationInt}/`
@@ -95,11 +99,18 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                 adDurationSeconds: durationInt,
                 adUrl: finalUrl
             });
+
+            // Only runs if no error was thrown
             handleReset();
+        } catch (e) {
+            // Do nothing.
+            // Parent already handled notifications.
+            // Form remains intact.
         } finally {
             setSubmitting(false);
         }
     };
+
 
 
 
