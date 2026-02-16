@@ -15,7 +15,6 @@ import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.exceptions.BusinessNotFoundException;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.CloudinaryConfig;
 import com.envisionad.webservice.utils.JwtUtils;
 
@@ -230,8 +229,6 @@ public class AdCampaignServiceImpl implements AdCampaignService {
 
     private boolean campaignIsTiedToReservation(String campaignId) {
         LocalDateTime now = LocalDateTime.now();
-        return reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.CONFIRMED, now) ||
-               reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.APPROVED, now) ||
-               reservationRepository.existsByCampaignIdAndStatus(campaignId, ReservationStatus.PENDING, now);
+        return reservationRepository.existsUpcomingByCampaignId(campaignId, now);
     }
 }

@@ -56,12 +56,11 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
                         SELECT (COUNT(r) > 0)
                         FROM Reservation r
                         WHERE r.campaignId = :campaignId
-                          AND r.status = :status
+                          AND r.status IN ('CONFIRMED', 'APPROVED', 'PENDING')
                           AND r.endDate >= :now
                 """)
-        boolean existsByCampaignIdAndStatus(
+        boolean existsUpcomingByCampaignId(
                 @Param("campaignId") String campaignId,
-                @Param("status") ReservationStatus status,
                 @Param("now") LocalDateTime now
         );
 

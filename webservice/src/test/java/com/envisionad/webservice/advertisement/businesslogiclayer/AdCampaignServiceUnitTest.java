@@ -6,8 +6,8 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdResponseMapper;
 import com.envisionad.webservice.advertisement.datamapperlayer.AdCampaignResponseMapper;
 import com.envisionad.webservice.advertisement.exceptions.*;
+import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
-import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -360,21 +360,8 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.PENDING),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.APPROVED),
                 any(LocalDateTime.class)
         )).thenReturn(false);
 
@@ -402,21 +389,8 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaignWithAd));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.PENDING),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.APPROVED),
                 any(LocalDateTime.class)
         )).thenReturn(false);
 
@@ -447,9 +421,8 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
                 any(LocalDateTime.class)
         )).thenReturn(true);
 
@@ -472,24 +445,10 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.PENDING),
                 any(LocalDateTime.class)
         )).thenReturn(true);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.APPROVED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
         // Act & Assert
         assertThrows(CampaignIsTiedToReservationException.class,
             () -> service.deleteAdCampaign(advertiserToken, businessId, campaignId));
@@ -509,15 +468,8 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.APPROVED),
                 any(LocalDateTime.class)
         )).thenReturn(true);
 
@@ -540,21 +492,8 @@ class AdCampaignServiceUnitTest {
         doNothing().when(jwtUtils).validateUserIsEmployeeOfBusiness(any(Jwt.class), eq(businessId));
         doNothing().when(jwtUtils).validateBusinessOwnsCampaign(eq(businessId), eq(campaign));
 
-        when(reservationRepository.existsByCampaignIdAndStatus(
+        when(reservationRepository.existsUpcomingByCampaignId(
                 eq(campaignId),
-                eq(ReservationStatus.CONFIRMED),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.PENDING),
-                any(LocalDateTime.class)
-        )).thenReturn(false);
-
-        when(reservationRepository.existsByCampaignIdAndStatus(
-                eq(campaignId),
-                eq(ReservationStatus.APPROVED),
                 any(LocalDateTime.class)
         )).thenReturn(false);
 
@@ -564,7 +503,59 @@ class AdCampaignServiceUnitTest {
         service.deleteAdCampaign(advertiserToken, businessId, campaignId);
 
         // Assert
+        verify(reservationRepository).existsUpcomingByCampaignId(eq(campaignId), any(LocalDateTime.class));
         verify(adCampaignRepository).delete(campaign);
         verify(adCampaignResponseMapper).entityToResponseModel(campaign);
+    }
+
+    @Test
+    void addAdToCampaign_whenCampaignHasUpcomingOrOngoingReservations_throwsExceptionAndDoesNotSave() {
+        // Arrange
+        String campaignId = "camp-reserved-1";
+
+        AdCampaign campaign = new AdCampaign();
+        campaign.setCampaignId(new AdCampaignIdentifier(campaignId));
+        campaign.setAds(new ArrayList<>());
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId))
+                .thenReturn(campaign);
+
+        // Blocked because there is at least one upcoming/ongoing reservation
+        when(reservationRepository.existsUpcomingByCampaignId(
+                eq(campaignId),
+                any(LocalDateTime.class)))
+                .thenReturn(true);
+
+        AdRequestModel adRequestModel = mock(AdRequestModel.class);
+
+        // Act \& Assert
+        assertThrows(CampaignIsTiedToReservationException.class,
+                () -> service.addAdToCampaign(campaignId, adRequestModel));
+
+        // No side effects
+        verify(adCampaignRepository, never()).save(any());
+    }
+
+    @Test
+    void deleteAdFromCampaign_whenCampaignHasUpcomingOrOngoingReservations_throwsExceptionAndDoesNotDelete() throws IOException {
+        // Arrange
+        String campaignId = "camp-reserved-2";
+        CampaignAndAdId data = campaignWithSingleAd(campaignId, null);
+
+        when(adCampaignRepository.findByCampaignId_CampaignId(campaignId))
+                .thenReturn(data.campaign);
+
+        when(reservationRepository.existsUpcomingByCampaignId(
+                eq(campaignId),
+                any(LocalDateTime.class)))
+                .thenReturn(true);
+
+        // Act \& Assert
+        assertThrows(CampaignIsTiedToReservationException.class,
+                () -> service.deleteAdFromCampaign(campaignId, data.adId));
+
+        // No persistence or Cloudinary side effects
+        verify(adCampaignRepository, never()).save(any());
+        verify(uploader, never()).destroy(anyString(), anyMap());
     }
 }

@@ -921,7 +921,7 @@
         "error": {
           "title": "Error",
           "genericMessage": "Failed to save ad",
-          "tiedReservationMessage": "Failed to save ad because it has a tied reservation. Please wait until the reservation for this ad has ended before making changes."
+          "tiedReservationMessage": "Failed to save ad because its campaign still has upcoming or ongoing reservation. Please wait until the reservation for this ad has ended before making changes."
         }
       },
       "deleteAd": {
