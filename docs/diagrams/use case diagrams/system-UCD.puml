@@ -26,12 +26,12 @@ actor "Guest User" as GU
 
 rectangle "Envision Ad" {
 '    --------- Guest User Use Cases ---------
-    usecase "UC- Browse Media Listings" as Browse
+    usecase "UC-01 Browse Media Listings" as Browse
     usecase "UC- View Media Listing Details" as ViewMediaDetails
 
 '    --------- Advertiser Use Cases ---------
     usecase "UC- Create Reservation" as CreateReservation
-    usecase "UC- Pay for Reservation" as Pay
+    usecase "UC-02 Pay for Reservation" as Pay
     usecase "UC- View Reservations" as ViewReservations
     usecase "UC- Manage Ad Campaigns" as ManageAdCampaigns
     usecase "UC- View Payment History" as ViewPaymentHistory
@@ -39,11 +39,11 @@ rectangle "Envision Ad" {
     usecase "UC- Create Ad Campaign" as CreateAdCampaign
 
 '    --------- Media Owner Use Cases ---------
-    usecase "UC- Manage Media Listing" as ManageListing
-    usecase "UC- Submit Proof of Display" as SubmitProof
-    usecase "UC- Manage Reservation" as ManageReservation
-    usecase "UC- Approve Reservation" as ApproveReservation
-    usecase "UC- Deny Reservation" as DenyReservation
+    usecase "UC-09 Manage Media Listing" as ManageListing
+    usecase "UC-06 Submit Proof of Display" as SubmitProof
+    usecase "UC-4 Manage Reservation" as ManageReservation
+    usecase "UC-04.1 Approve Reservation" as ApproveReservation
+    usecase "UC-04.2 Deny Reservation" as DenyReservation
     usecase "UC- Perform Stripe Onboarding" as StripeOnboarding
 
 '    --------- Organization Owner Use Cases ---------
