@@ -1,0 +1,197 @@
+@startuml
+skinparam shadowing false
+skinparam class {
+  BackgroundColor #f8fafc
+  BorderColor #334155
+  ArrowColor #334155
+}
+skinparam package {
+  BorderColor #334155
+  FontColor #0f172a
+  BackgroundColor #ffffff
+  BackgroundColor<<FrontendLayer>> #ede9fe
+  BorderColor<<FrontendLayer>> #a78bfa
+  BackgroundColor<<PresentationLayer>> #dbeafe
+  BorderColor<<PresentationLayer>> #60a5fa
+  BackgroundColor<<ApplicationLayer>> #dcfce7
+  BorderColor<<ApplicationLayer>> #4ade80
+  BackgroundColor<<DomainLayer>> #fef9c3
+  BorderColor<<DomainLayer>> #facc15
+  BackgroundColor<<InfrastructureLayer>> #e5e7eb
+  BorderColor<<InfrastructureLayer>> #9ca3af
+}
+
+title Publish Ad Campaign - Design Level Class Diagram (DLCD)
+
+'package "Frontend" <<FrontendLayer>> {
+'  class MediaLocations {
+'    +loadLocations(): Promise<void>
+'    +handleCreateLocation(payload): Promise<void>
+'    +handleAssignMedia(locationId): void
+'    +handleSaveMediaSubmit(): Promise<void>
+'    +handleDeleteLocation(id): Promise<void>
+'  }
+'
+'  class useMediaList {
+'    +addNewMedia(formState): Promise<Media>
+'    +editMedia(id, formState): Promise<Media>
+'    +deleteMediaById(id): Promise<void>
+'    +fetchMediaById(id): Promise<Media>
+'    +toggleMediaStatus(id): Promise<String>
+'    -buildScheduleFromForm(formState): Schedule
+'  }
+'
+'  class useMediaForm {
+'    +formState: MediaFormState
+'    +updateField(field, value): void
+'    +updateDayTime(day, part, value): void
+'    +resetForm(): void
+'  }
+'
+'  class MediaModal {
+'    +onSave(): void
+'    +validateFields(): Map<String,String>
+'  }
+'
+'  class MediaLocationApi {
+'    +getAllMediaLocations(businessId): Promise<List<MediaLocationDTO>>
+'    +createMediaLocation(payload): Promise<MediaLocationDTO>
+'    +updateMediaLocation(id,payload): Promise<MediaLocationDTO>
+'    +deleteMediaLocation(id): Promise<void>
+'  }
+'
+'  class MediaApi {
+'    +addMedia(payload): Promise<MediaDTO>
+'    +updateMedia(id,payload): Promise<MediaDTO>
+'    +getMediaById(id): Promise<MediaDTO>
+'    +deleteMedia(id): Promise<void>
+'  }
+'}
+
+package "Backend - Presentation" <<PresentationLayer>> {
+  class MediaLocationController {
+    +getAllMediaLocations(jwt,businessId)
+    +createMediaLocation(jwt,request)
+    +updateMediaLocation(jwt,id,request)
+    +deleteMediaLocation(jwt,id)
+  }
+
+  class MediaController {
+    +addMedia(jwt,request)
+    +getMediaById(id)
+    +updateMedia(jwt,id,request)
+    +deleteMedia(id)
+  }
+
+  class BusinessMediaController {
+    +getMediaByBusinessId(jwt,businessId)
+  }
+
+  class MediaLocationControllerAdvice {
+    +handleMediaLocationValidationException(ex)
+    +handleGeocodingServiceUnavailableException(ex)
+    +handleMediaLocationDeletionNotAllowedException(ex)
+  }
+}
+
+package "Backend - Business" <<ApplicationLayer>> {
+  class MediaLocationServiceImpl {
+    +getAllMediaLocations(jwt,businessId): List<MediaLocation>
+    +createMediaLocation(location,jwt): MediaLocation
+    +updateMediaLocation(id,location): MediaLocation
+    +deleteMediaLocation(id): void
+    -validateAndGeocode(location): void
+    -collectAddressMismatches(...): Map<String,String>
+  }
+
+  class MediaServiceImpl {
+    +addMedia(media): Media
+    +updateMediaById(jwt,id,request): MediaResponseModel
+    +getMediaByBusinessId(jwt,businessId): List<MediaResponseModel>
+    +deleteMedia(id): void
+  }
+
+  class MediaRequestValidator {
+    {static} +validateMediaRequest(request): void
+    {static} +validateMediaUpdateRequest(request): void
+  }
+
+  interface GeocodingService {
+    +geocodeAddress(address): Optional<String>
+  }
+}
+
+package "Backend - Data" <<InfrastructureLayer>> {
+  class MediaLocation {
+    +id: UUID
+    +name: String
+    +country: String
+    +province: String
+    +city: String
+    +street: String
+    +postalCode: String
+    +latitude: Double
+    +longitude: Double
+    +businessId: UUID
+    +geocodingResponse: String
+  }
+
+  class Media {
+    +id: UUID
+    +mediaLocation: MediaLocation
+    +businessId: UUID
+    +title: String
+    +typeOfDisplay: TypeOfDisplay
+    +price: BigDecimal
+    +dailyImpressions: Integer
+    +schedule: ScheduleModel
+    +status: Status
+    +imageUrl: String
+    +previewConfiguration: String
+  }
+
+  interface MediaLocationRepository {
+    +findAllByBusinessId(businessId): List<MediaLocation>
+    +findById(id): Optional<MediaLocation>
+    +save(location): MediaLocation
+    +delete(location): void
+  }
+
+  interface MediaRepository {
+    +findMediaByBusinessId(businessId): List<Media>
+    +findById(id): Optional<Media>
+    +save(media): Media
+    +delete(media): void
+  }
+
+  interface StripeAccountRepository {
+    +findByBusinessId(id): Optional<StripeAccount>
+  }
+}
+
+'MediaLocations --> useMediaForm
+'MediaLocations --> useMediaList
+'MediaLocations --> MediaLocationApi
+'useMediaList --> MediaApi
+'MediaModal --> useMediaForm
+
+MediaLocationApi --> MediaLocationController
+MediaApi --> MediaController
+MediaApi --> BusinessMediaController
+
+MediaLocationController --> MediaLocationServiceImpl
+MediaController --> MediaServiceImpl
+MediaController --> MediaRequestValidator
+MediaLocationControllerAdvice ..> MediaLocationController
+
+MediaLocationServiceImpl --> MediaLocationRepository
+MediaLocationServiceImpl --> GeocodingService
+MediaServiceImpl --> MediaRepository
+MediaServiceImpl --> StripeAccountRepository
+
+MediaLocationRepository --> MediaLocation
+MediaRepository --> Media
+Media "*" --> "1" MediaLocation
+
+
+@enduml

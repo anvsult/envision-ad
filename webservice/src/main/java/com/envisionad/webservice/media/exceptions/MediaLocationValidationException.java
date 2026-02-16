@@ -1,7 +1,10 @@
 package com.envisionad.webservice.media.exceptions;
 
+import lombok.Getter;
+
 import java.util.Map;
 
+@Getter
 public class MediaLocationValidationException extends RuntimeException {
 
     private final Map<String, String> fieldErrors;
@@ -16,7 +19,4 @@ public class MediaLocationValidationException extends RuntimeException {
         this.fieldErrors = fieldErrors;
     }
 
-    public Map<String, String> getFieldErrors() {
-        return fieldErrors;
-    }
 }

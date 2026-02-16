@@ -1,0 +1,99 @@
+@startuml
+
+title <u>System Sequence Diagram</u>\nAdvertiser Publish Ad Campaign
+
+actor Advertiser
+participant System
+actor "Media Owner" as MediaOwner
+participant "<<external>>\nGmail SMTP" as GmailAPI
+
+ref over System, Advertiser
+    <i>UC- Create Ad Campaign Use Case</i>
+end ref
+ref over System, Advertiser
+    <i>UC- Browse Media Use Case</i>
+end ref
+ref over System, Advertiser
+    <i>UC- View Media Listing Details Use Case</i>
+end ref
+
+Advertiser -> System: reserveMedia(mediaId, adCampaignId, startDate, endDate)
+
+
+alt Validation succeeds
+    System --> Advertiser: reservationDetails
+else Validation fails
+    System --> Advertiser: validationError
+end
+note left of System
+  reservationDetails contains:
+  - mediaId
+  - campaignId
+  - startDate
+  - endDate
+end note
+
+
+Advertiser -> System: confirmReservation()
+
+alt Reservation Succeeds
+    System --> Advertiser: reservationCreated
+else Reservation Fails
+    System --> Advertiser: reservationError
+end
+
+
+note left of System
+  Reservation created with PENDING status.
+  Media Owner approval required.
+end note
+
+ref over System, MediaOwner
+    <i>UC- Approve Reservation Use Case</i>
+end ref
+
+ref over System, Advertiser
+    <i>(UC- View Reservations Use Case)</i>
+end ref
+
+System -> StripeAPI: Session.create(SessionCreateParams)
+StripeAPI --> System: session: com.stripe.checkout.Session
+Advertiser -> System: submitPayment(paymentInfo)
+note right of Advertiser
+  paymentInfo contains:
+  - paymentMethodId
+  - billingDetails
+end note
+System -> StripeAPI: confirmPayment(clientSecret, paymentDetails)
+alt Payment fails
+    System --> Advertiser: paymentError
+else Payment succeeds
+
+StripeAPI --> System: PaymentIntent
+
+
+StripeAPI -> System: POST /api/v1/stripe/webhook\n(Event: checkout.session.completed)
+note left of System
+    Webhook received indicating
+    successful payment. Updating
+    reservation status to CONFIRMED
+    and campaign status to ACTIVE.
+end note
+
+System -> GmailAPI: sendSimpleEmail(to, subject, body)
+GmailAPI -> MediaOwner: emailNotification
+System --> StripeAPI: HTTP 200 OK
+
+    System --> Advertiser: payment successful
+end
+'
+'note left of System
+'  paymentConfirmation contains:
+'  - reservationId
+'  - campaignStartDate
+'  - campaignEndDate
+'  - activeStatus
+'end note
+'
+
+@enduml

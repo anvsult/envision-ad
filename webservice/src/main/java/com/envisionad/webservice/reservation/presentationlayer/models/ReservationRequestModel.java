@@ -16,6 +16,4 @@ public class ReservationRequestModel {
     @NotNull
     private LocalDateTime endDate;
 
-    // Optional: frontend may include a Stripe PaymentIntent id when payment completed
-    private String paymentIntentId;
 }
