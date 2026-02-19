@@ -59,6 +59,13 @@ interface MediaCrudMockOptions {
     seedMedia?: boolean;
 }
 
+interface MediaCrudRouteOptions {
+    tokenPermissions?: string[];
+    invalidAddressOnCreateLocation?: boolean;
+    denyReadMediaLocations?: boolean;
+    invalidPayloadOnUpdate?: boolean;
+}
+
 export const BUSINESS_ID = "biz-visual-impact";
 export const DEFAULT_MEDIA_OWNER = "Visual Impact";
 const E2E_MOCK_PERMISSIONS = [
@@ -258,7 +265,16 @@ const toMediaListResponse = (media: MockMedia) => ({
     imageUrl: media.imageUrl,
 });
 
-export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockState) => {
+export const attachMediaCrudRoutes = async (
+    page: Page,
+    state: MediaCrudMockState,
+    options: MediaCrudRouteOptions = {}
+) => {
+    const tokenPermissions = options.tokenPermissions ?? E2E_MOCK_PERMISSIONS;
+    const invalidAddressOnCreateLocation = options.invalidAddressOnCreateLocation ?? false;
+    const denyReadMediaLocations = options.denyReadMediaLocations ?? false;
+    const invalidPayloadOnUpdate = options.invalidPayloadOnUpdate ?? false;
+
     await page.route("**/api/auth0/token", async (route) => {
         try {
             const response = await route.fetch();
@@ -273,7 +289,7 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
         await route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify({ accessToken: createMockJwt(E2E_MOCK_PERMISSIONS) }),
+            body: JSON.stringify({ accessToken: createMockJwt(tokenPermissions) }),
         });
     });
 
@@ -367,6 +383,15 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
         }
 
         if (method === "GET" && apiPath === "/media-locations") {
+            if (denyReadMediaLocations) {
+                await route.fulfill({
+                    status: 403,
+                    contentType: "application/json",
+                    body: JSON.stringify({ message: "Forbidden" }),
+                });
+                return;
+            }
+
             const businessId = url.searchParams.get("businessId");
             const filteredLocations = businessId
                 ? state.locationStore.filter((location) => location.businessId === businessId)
@@ -387,6 +412,24 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
         if (method === "POST" && apiPath === "/media-locations") {
             const payload = request.postDataJSON() as Record<string, unknown>;
             state.capturedCreateLocationPayload = payload;
+
+            if (invalidAddressOnCreateLocation) {
+                await route.fulfill({
+                    status: 400,
+                    contentType: "application/json",
+                    body: JSON.stringify({
+                        message: "Address could not be verified.",
+                        fieldErrors: {
+                            street: "Verify the street name or number.",
+                            city: "Verify the city value.",
+                            province: "Verify the province/state value.",
+                            country: "Verify the country value.",
+                            postalCode: "Verify the postal code value.",
+                        },
+                    }),
+                });
+                return;
+            }
 
             const newLocation: MockLocation = {
                 id: `loc-created-${Date.now()}`,
@@ -488,6 +531,15 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
             const id = apiPath.split("/").at(-1) ?? "";
             const payload = request.postDataJSON() as Record<string, unknown>;
             state.capturedUpdatePayload = payload;
+
+            if (invalidPayloadOnUpdate) {
+                await route.fulfill({
+                    status: 400,
+                    contentType: "application/json",
+                    body: JSON.stringify({ message: "Invalid media payload." }),
+                });
+                return;
+            }
 
             const existingMedia = state.mediaStore.find((media) => media.id === id);
             if (!existingMedia) {

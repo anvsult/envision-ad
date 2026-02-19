@@ -6,7 +6,6 @@ import { getEmployeeOrganization } from "@/features/organization-management/api"
 import { getPaymentsDashboardData } from "@/features/payment";
 import { getAllReservationByMediaOwnerBusinessId } from "@/features/reservation-management/api";
 import {
-    mediaOwnerMetricsMock,
     type EarningsTrendPoint,
     type MetricsKpi,
     type PayoutHistoryRow,
@@ -42,9 +41,7 @@ export function useMediaOwnerMetricsData() {
         buildEarningsKpis([], 0)
     );
     const [payoutAmountPoints, setPayoutAmountPoints] = useState(() => mapPayoutsToAmountPoints([]));
-    const [payoutHistoryRows, setPayoutHistoryRows] = useState<PayoutHistoryRow[]>(
-        mediaOwnerMetricsMock.payoutHistory
-    );
+    const [payoutHistoryRows, setPayoutHistoryRows] = useState<PayoutHistoryRow[]>([]);
     const [payoutPage, setPayoutPage] = useState(1);
 
     const overviewMetricsData = useMemo(
@@ -130,7 +127,7 @@ export function useMediaOwnerMetricsData() {
                     );
                     setEarningsKpis(buildEarningsKpis([], 0));
                     setPayoutAmountPoints(mapPayoutsToAmountPoints([]));
-                    setPayoutHistoryRows(mediaOwnerMetricsMock.payoutHistory);
+                    setPayoutHistoryRows([]);
                     setPayoutPage(1);
                 }
 
@@ -156,7 +153,7 @@ export function useMediaOwnerMetricsData() {
                     console.error("Failed to load media owner metrics", error);
                     setEarningsKpis(buildEarningsKpis([], 0));
                     setPayoutAmountPoints(mapPayoutsToAmountPoints([]));
-                    setPayoutHistoryRows(mediaOwnerMetricsMock.payoutHistory);
+                    setPayoutHistoryRows([]);
                     setMediaOwnerReservations([]);
                     setRevenueByMediaPage(1);
                     setActiveCampaignDetailsPage(1);

@@ -157,6 +157,7 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                         <TextInput
                             label={t('labels.province')}
                             placeholder={t('placeholders.province')}
+                            required
                             {...form.getInputProps('province')}
                         />
                     </Group>
@@ -171,6 +172,7 @@ export function CreateMediaLocationModal({ opened, onClose, onSuccess }: CreateM
                         <TextInput
                             label={t('labels.postalCode')}
                             placeholder={t('placeholders.postalCode')}
+                            required
                             {...form.getInputProps('postalCode')}
                         />
                     </Group>

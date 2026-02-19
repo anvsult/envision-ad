@@ -37,23 +37,33 @@ export function PayoutHistorySection({
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                    {rows.map((row) => (
-                        <Table.Tr key={row.transactionId}>
-                            <Table.Td>{row.transactionId}</Table.Td>
-                            <Table.Td>{row.date}</Table.Td>
-                            <Table.Td ta="right">{formatCurrency(row.amount, { locale })}</Table.Td>
-                            <Table.Td>
-                                <Badge
-                                    size="sm"
-                                    radius="sm"
-                                    variant="light"
-                                    color={row.status === "PAID" ? "teal" : "yellow"}
-                                >
-                                    {t(`payoutStatus.${row.status.toLowerCase()}`)}
-                                </Badge>
+                    {rows.length === 0 ? (
+                        <Table.Tr>
+                            <Table.Td colSpan={4}>
+                                <Text c="dimmed" ta="center">
+                                    {t("emptyState.noData")}
+                                </Text>
                             </Table.Td>
                         </Table.Tr>
-                    ))}
+                    ) : (
+                        rows.map((row) => (
+                            <Table.Tr key={row.transactionId}>
+                                <Table.Td>{row.transactionId}</Table.Td>
+                                <Table.Td>{row.date}</Table.Td>
+                                <Table.Td ta="right">{formatCurrency(row.amount, { locale })}</Table.Td>
+                                <Table.Td>
+                                    <Badge
+                                        size="sm"
+                                        radius="sm"
+                                        variant="light"
+                                        color={row.status === "PAID" ? "teal" : "yellow"}
+                                    >
+                                        {t(`payoutStatus.${row.status.toLowerCase()}`)}
+                                    </Badge>
+                                </Table.Td>
+                            </Table.Tr>
+                        ))
+                    )}
                 </Table.Tbody>
             </Table>
             {totalPages > 1 && (
