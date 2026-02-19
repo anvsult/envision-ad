@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { Badge, Group, Pagination, Paper, Table, Text } from "@mantine/core";
+import { Badge, Group, Pagination, Paper, Table, Text, Tooltip } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
 import { useLocale, useTranslations } from "next-intl";
 import type { PayoutHistoryRow } from "@/pages/dashboard/media-owner/model/mockMetrics";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
@@ -21,19 +22,37 @@ export function PayoutHistorySection({
 }: PayoutHistorySectionProps) {
     const t = useTranslations("mediaOwnerMetrics");
     const locale = useLocale();
+    const isMobile = useMediaQuery("(max-width: 48em)");
+
+    const formatTransactionIdForViewport = (transactionId: string) => {
+        if (!isMobile || transactionId.length <= 16) {
+            return transactionId;
+        }
+
+        return `${transactionId.slice(0, 8)}...${transactionId.slice(-6)}`;
+    };
 
     return (
-        <Paper withBorder p="md" radius="md">
+        <Paper withBorder p="md" radius="md" style={isMobile ? { overflowX: "hidden" } : undefined}>
             <Text fw={600} mb="sm">
                 {t("sections.payoutHistory")}
             </Text>
-            <Table striped highlightOnHover horizontalSpacing="md" verticalSpacing="sm">
+            <Table
+                striped
+                highlightOnHover
+                horizontalSpacing={isMobile ? "xs" : "md"}
+                verticalSpacing="sm"
+                layout={isMobile ? "fixed" : "auto"}
+                style={{ width: "100%" }}
+            >
                 <Table.Thead>
                     <Table.Tr>
-                        <Table.Th>{t("table.transactionId")}</Table.Th>
-                        <Table.Th>{t("table.date")}</Table.Th>
-                        <Table.Th ta="right">{t("table.amount")}</Table.Th>
-                        <Table.Th>{t("table.status")}</Table.Th>
+                        <Table.Th w={isMobile ? "35%" : undefined}>{t("table.transactionId")}</Table.Th>
+                        <Table.Th w={isMobile ? "25%" : undefined}>{t("table.date")}</Table.Th>
+                        <Table.Th ta="right" w={isMobile ? "22%" : undefined}>
+                            {t("table.amount")}
+                        </Table.Th>
+                        <Table.Th w={isMobile ? "18%" : undefined}>{t("table.status")}</Table.Th>
                     </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
@@ -48,12 +67,30 @@ export function PayoutHistorySection({
                     ) : (
                         rows.map((row) => (
                             <Table.Tr key={row.transactionId}>
-                                <Table.Td>{row.transactionId}</Table.Td>
-                                <Table.Td>{row.date}</Table.Td>
-                                <Table.Td ta="right">{formatCurrency(row.amount, { locale })}</Table.Td>
+                                <Table.Td>
+                                    {isMobile ? (
+                                        <Tooltip label={row.transactionId} withArrow>
+                                            <Text size="sm" truncate>
+                                                {formatTransactionIdForViewport(row.transactionId)}
+                                            </Text>
+                                        </Tooltip>
+                                    ) : (
+                                        row.transactionId
+                                    )}
+                                </Table.Td>
+                                <Table.Td>
+                                    <Text size="sm" style={{ whiteSpace: "nowrap" }}>
+                                        {row.date}
+                                    </Text>
+                                </Table.Td>
+                                <Table.Td ta="right">
+                                    <Text size="sm" style={{ whiteSpace: "nowrap" }}>
+                                        {formatCurrency(row.amount, { locale })}
+                                    </Text>
+                                </Table.Td>
                                 <Table.Td>
                                     <Badge
-                                        size="sm"
+                                        size={isMobile ? "xs" : "sm"}
                                         radius="sm"
                                         variant="light"
                                         color={row.status === "PAID" ? "teal" : "yellow"}

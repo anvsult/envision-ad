@@ -11,6 +11,15 @@ interface CreateLocationInput {
     postalCode: string;
 }
 
+interface UpdateLocationInput {
+    name?: string;
+    street?: string;
+    city?: string;
+    province?: string;
+    country?: string;
+    postalCode?: string;
+}
+
 interface FillMediaFormInput {
     title: string;
     displayType: 'Digital' | 'Poster';
@@ -60,6 +69,11 @@ export default class MediaDashboardPage {
     locationPostalCodeInput = () => this.page.getByLabel('Postal Code');
     locationCreateButton = () => this.page.getByRole('button', { name: 'Create', exact: true });
     locationModalTitle = () => this.page.getByText('Create Media Location');
+    editLocationModalTitle = () => this.page.getByText('Edit Media Location');
+    editLocationDialog = () => this.page.getByRole('dialog').filter({ hasText: 'Edit Media Location' });
+    editLocationSaveButton = () => this.editLocationDialog().getByRole('button', { name: /^Save$/i });
+    deleteLocationDialog = () => this.page.getByRole('dialog').filter({ hasText: 'Delete Location' });
+    deleteLocationConfirmButton = () => this.deleteLocationDialog().getByRole('button', { name: /^Delete$/i });
 
     async clickMediaLink() {
         const mobile = await isMobileView(this.page);
@@ -114,6 +128,24 @@ export default class MediaDashboardPage {
         await expect(locationButton).toBeVisible({ timeout: 10000 });
     }
 
+    async assertLocationNotVisible(locationName: string) {
+        await expect(
+            this.page.getByRole('button', {
+                name: new RegExp(this.escapeRegex(locationName)),
+            })
+        ).toHaveCount(0);
+    }
+
+    private locationAccordionItem(locationName: string) {
+        return this.page
+            .getByRole('button', { name: new RegExp(this.escapeRegex(locationName)) })
+            .first()
+            .locator(
+                'xpath=ancestor::*[@data-accordion-item or contains(@class, "mantine-Accordion-item")]'
+            )
+            .first();
+    }
+
     async ensureLocationExpanded(locationName: string) {
         const locationButton = this.page.getByRole('button', {
             name: new RegExp(this.escapeRegex(locationName)),
@@ -128,20 +160,59 @@ export default class MediaDashboardPage {
 
     async openAddMediaModalForLocation(locationName: string) {
         await this.ensureLocationExpanded(locationName);
-        const locationToggle = this.page
-            .getByRole('button', { name: new RegExp(this.escapeRegex(locationName)) })
-            .first();
-        const locationItem = locationToggle
-            .locator(
-                'xpath=ancestor::*[@data-accordion-item or contains(@class, "mantine-Accordion-item")]'
-            )
-            .first();
+        const locationItem = this.locationAccordionItem(locationName);
 
         const addMediaButton = locationItem.getByRole('button', { name: /Add Media/i }).first();
         await expect(addMediaButton).toBeVisible({ timeout: 10000 });
         await addMediaButton.click();
 
         await expect(this.modalTitleInput()).toBeVisible({ timeout: 10000 });
+    }
+
+    async openEditLocationModal(locationName: string) {
+        const locationItem = this.locationAccordionItem(locationName);
+        const editButton = locationItem.getByRole('button', { name: /^Edit$/i }).first();
+        await expect(editButton).toBeVisible({ timeout: 10000 });
+        await editButton.click();
+        await expect(this.editLocationModalTitle()).toBeVisible({ timeout: 10000 });
+    }
+
+    async updateLocation(locationName: string, input: UpdateLocationInput) {
+        await this.openEditLocationModal(locationName);
+
+        const dialog = this.editLocationDialog();
+        if (input.name !== undefined) {
+            await dialog.getByLabel('Name').fill(input.name);
+        }
+        if (input.street !== undefined) {
+            await dialog.getByLabel('Street').fill(input.street);
+        }
+        if (input.city !== undefined) {
+            await dialog.getByLabel('City').fill(input.city);
+        }
+        if (input.province !== undefined) {
+            await dialog.getByLabel('Province/State').fill(input.province);
+        }
+        if (input.country !== undefined) {
+            await dialog.getByLabel('Country').fill(input.country);
+        }
+        if (input.postalCode !== undefined) {
+            await dialog.getByLabel('Postal Code').fill(input.postalCode);
+        }
+
+        await this.editLocationSaveButton().click();
+        await expect(this.editLocationModalTitle()).toBeHidden({ timeout: 10000 });
+    }
+
+    async deleteLocation(locationName: string) {
+        const locationItem = this.locationAccordionItem(locationName);
+        const deleteButton = locationItem.locator('button').last();
+        await expect(deleteButton).toBeVisible({ timeout: 10000 });
+        await deleteButton.click();
+
+        await expect(this.deleteLocationDialog()).toBeVisible({ timeout: 10000 });
+        await this.deleteLocationConfirmButton().click();
+        await expect(this.deleteLocationDialog()).toBeHidden({ timeout: 10000 });
     }
 
     // Separate locators for clearer debugging and less strict-mode collision
