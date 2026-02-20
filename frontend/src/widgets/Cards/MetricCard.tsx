@@ -29,6 +29,7 @@ export function MetricCard({ label, value, description, icon }: MetricCardProps)
 
                 {icon ? (
                     <Card
+                        aria-hidden="true"
                         radius="md"
                         p="xs"
                         style={{
