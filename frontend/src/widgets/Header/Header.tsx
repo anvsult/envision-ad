@@ -23,13 +23,7 @@ import { Link, usePathname } from "@/shared/lib/i18n/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { IconChevronDown } from "@tabler/icons-react";
 
-interface HeaderProps {
-    dashboardMode?: boolean;
-    sidebarOpened?: boolean;
-    onToggleSidebar?: () => void;
-}
-
-export function Header({ }: HeaderProps) {
+export function Header() {
     const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
@@ -46,8 +40,8 @@ export function Header({ }: HeaderProps) {
         ];
 
     const filteredLinks = links.filter((link) => {
-        if (link.authRequired && !user) return false;
-        return true;
+        return !(link.authRequired && !user);
+
     });
 
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
@@ -138,7 +132,7 @@ export function Header({ }: HeaderProps) {
                     radius="xl"
                     rightSection={<IconChevronDown size={16} />}
                 >
-                    {user.nickname || user.name || "User"}
+                    <Text component="span">{user.nickname || user.name || "User"}</Text>
                 </Button>
             </Menu.Target>
 
@@ -188,7 +182,7 @@ export function Header({ }: HeaderProps) {
                                     priority
                                 />
                             </Box>
-                            <Text size="lg" fw={700} c="blue.6">
+                            <Text component="span" size="lg" fw={700} c="blue.6">
                                 {t("platformName")}
                             </Text>
                         </Group>

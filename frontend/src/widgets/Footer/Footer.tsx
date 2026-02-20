@@ -10,7 +10,7 @@ export default function Footer() {
         <div className={styles.grid}>
           {/* Contact Information */}
           <div className={styles.section}>
-            <h3 className={styles.heading}>{t("contactUs")}</h3>
+            <h2 className={styles.heading}>{t("contactUs")}</h2>
             <ul className={styles.list}>
               <li>{t("email")}</li>
               <li>{t("phone")}</li>
@@ -19,7 +19,7 @@ export default function Footer() {
 
           {/* Social Media */}
           <div className={styles.section}>
-            <h3 className={styles.heading}>{t("followUs")}</h3>
+            <h2 className={styles.heading}>{t("followUs")}</h2>
             <ul className={styles.list}>
               <li>
                 <a
@@ -45,7 +45,7 @@ export default function Footer() {
           {/* Potentially to be implemented later */}
           {/* Legal Links */}
           {/* <div className={styles.section}>
-            <h3 className={styles.heading}>{t("legal")}</h3>
+            <h2 className={styles.heading}>{t("legal")}</h2>
             <ul className={styles.list}>
               <li>
                 <a href="/terms">{t("terms")}</a>

@@ -16,7 +16,7 @@ export function MetricCard({ label, value, description, icon }: MetricCardProps)
                         {label}
                     </Text>
 
-                    <Title order={3} style={{ lineHeight: 1.1 }}>
+                    <Title order={2} style={{ lineHeight: 1.1 }}>
                         {value}
                     </Title>
 
@@ -29,6 +29,7 @@ export function MetricCard({ label, value, description, icon }: MetricCardProps)
 
                 {icon ? (
                     <Card
+                        aria-hidden="true"
                         radius="md"
                         p="xs"
                         style={{

@@ -90,8 +90,8 @@ export default function AdminMetricsPage() {
 
   if (loading) {
     return (
-        <Center py="xl">
-          <Loader />
+        <Center py="xl" role="status" aria-live="polite" aria-label={t("loadingPendingMedia")}>
+          <Loader role="img"/>
         </Center>
     );
   }
@@ -105,7 +105,7 @@ export default function AdminMetricsPage() {
             </Stack>
           </Group>
 
-          <Text c="red" fw={500}>
+          <Text c="red" fw={500} role="alert">
             {error}
           </Text>
         </Stack>
@@ -115,10 +115,10 @@ export default function AdminMetricsPage() {
   if (!data) return <Text p="md">{t("empty")}</Text>;
 
   return (
-      <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
+      <Stack component="main" gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
         <Group justify="space-between" align="flex-start">
           <Stack gap={2}>
-            <Title order={3}>{t("title")}</Title>
+            <Title order={1}>{t("title")}</Title>
           </Stack>
         </Group>
 
@@ -164,7 +164,7 @@ export default function AdminMetricsPage() {
         </SimpleGrid>
 
         <Card withBorder radius="md" p="md">
-          <Title order={4} mb="xs">
+          <Title order={2} mb="xs">
             {t("chart.title")}
           </Title>
           <Text c="dimmed" size="sm" mb="md">
@@ -178,23 +178,32 @@ export default function AdminMetricsPage() {
               wrap="nowrap"
               style={{ width: "100%" }}
           >
-            <DonutChart
-                h={260}
-                data={
-                  donutData.length
-                      ? donutData
-                      : [{ name: t("chart.noData"), value: 1, color: "gray.4" }]
-                }
-                withTooltip={donutData.length > 0}
-                tooltipDataSource="segment"
-                strokeWidth={2}
-                thickness={22}
-                chartLabel={
-                  donutData.length
-                      ? `${totalRoles}\n${t("chart.users")}`
-                      : t("chart.noDataLabel")
-                }
-            />
+            <div
+              role="img"
+              aria-label={t("chart.ariaLabel", {
+                total: totalRoles,
+                mediaOwners: data.totalMediaOwners ?? 0,
+                advertisers: data.totalAdvertisers ?? 0,
+              })}
+            >
+                <DonutChart
+                    h={260}
+                    data={
+                      donutData.length
+                          ? donutData
+                          : [{ name: t("chart.noData"), value: 1, color: "gray.4" }]
+                    }
+                    withTooltip={donutData.length > 0}
+                    tooltipDataSource="segment"
+                    strokeWidth={2}
+                    thickness={22}
+                    chartLabel={
+                      donutData.length
+                          ? `${totalRoles}\n${t("chart.users")}`
+                          : t("chart.noDataLabel")
+                    }
+                />
+            </div>
 
             <Stack gap="xs" style={{ minWidth: 220 }}>
               <Group justify="space-between">

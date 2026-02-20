@@ -50,22 +50,24 @@ export default function ApprovingMediaDashboard() {
   }, [activePage, totalPages]);
 
   return (
-      <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
+      <Stack component="main" gap="md" p="md" style={{flex: 1, minWidth: 0}}>
         <Group justify="space-between" align="center">
-          <Title order={3}>{t("pendingMedia")}</Title>
+          <Title order={1}>{t("pendingMedia")}</Title>
         </Group>
 
         {loading ? (
-            <Center py="xl">
+            <Center role="status" aria-live="polite" py="xl" aria-label={t("loadingPendingMedia")}>
               <Loader/>
             </Center>
         ) : error ? (
-            <Text c="red" fw={500}>
+            <Text c="red" fw={500} role="alert">
               {error}
             </Text>
         ) : (
             <>
-              <ApproveMediaTable rows={paginatedRows}/>
+              <section aria-label={t("pendingMedia")}>
+                <ApproveMediaTable rows={paginatedRows} />
+              </section>
 
               {pendingRows.length > ITEMS_PER_PAGE && (
                   <Group justify="center" mt="md">
@@ -74,6 +76,11 @@ export default function ApprovingMediaDashboard() {
                         value={activePage}
                         onChange={setActivePage}
                         size="md"
+                        aria-label={t("pendingMediaPagination", {
+                          start: (activePage - 1) * ITEMS_PER_PAGE + 1,
+                          end: Math.min(activePage * ITEMS_PER_PAGE, pendingRows.length),
+                          total: pendingRows.length,
+                        })}
                     />
                   </Group>
               )}
