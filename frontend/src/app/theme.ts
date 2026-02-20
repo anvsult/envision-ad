@@ -22,7 +22,31 @@ export const theme = createTheme({
     ],
     blue: [
       '#e7f5ff', '#d0ebff', '#a5d8ff', '#74c0fc', '#4dabf7',
-      '#339af0', '#0795ED', '#1c7ed6', '#1971c2', '#1864ab',
+      '#339af0', '#046ead', '#1c7ed6', '#1971c2', '#1864ab',
+    ],
+    gray: [
+      '#f6f8fb',
+      '#e7ebf3',
+      '#cfd6e4',
+      '#e9eaee',
+      '#9aa9c0',
+      '#7f92ad',
+      '#56677d',
+      '#4f6175',
+      '#374357',
+      '#1f2638',
+    ],
+    teal: [
+        '#e6fcf5',
+        '#c3fae8',
+        '#96f2d7',
+        '#63e6be',
+        '#38d9a9',
+        '#20c997',
+        '#0b6c4f',
+        '#0ca678',
+        '#099268',
+        '#087f5b',
     ]
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text

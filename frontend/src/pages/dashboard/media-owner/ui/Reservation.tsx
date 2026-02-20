@@ -74,11 +74,11 @@ export default function Reservation() {
         : confirmedRequests;
 
     return (
-        <Stack gap="md" p="md">
+        <Stack component="main" gap="md" p="md">
             <Group justify="space-between">
-                <Title order={2}>{t("page.title")}</Title>
+                <Title order={1}>{t("page.title")}</Title>
                 {!loading && (
-                    <Text size="sm" c="dimmed">
+                    <Text size="sm" c="dimmed" aria-live="polite">
                         {pendingRequests.length}{" "}
                         {pendingRequests.length === 1
                             ? t("page.requestCount.singular")
@@ -86,9 +86,9 @@ export default function Reservation() {
                     </Text>
                 )}
             </Group>
-
             {!loading && (
                 <SegmentedControl
+                    aria-label={t("page.tabs.filterLabel")}
                     value={statusFilter}
                     onChange={setStatusFilter}
                     data={[
@@ -105,8 +105,8 @@ export default function Reservation() {
             )}
 
             {loading ? (
-                <Center py="xl">
-                    <Loader />
+                <Center py="xl" role="status" aria-live="polite" aria-label={t("page.loading")}>
+                    <Loader/>
                 </Center>
             ) : (
                 <ReservationCards

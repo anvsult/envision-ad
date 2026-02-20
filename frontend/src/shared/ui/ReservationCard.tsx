@@ -178,7 +178,7 @@ function ReservationCard({
                                 : media?.title || t("unknownMedia")}
                         </Text>
                     )}
-                    <Badge color={getStatusColor(reservation.status)} variant="light" size="sm">
+                    <Badge color={getStatusColor(reservation.status)} variant="light" size="md">
                         {getStatusLabel(reservation.status, t)}
                     </Badge>
                 </Group>

@@ -132,9 +132,9 @@ export default function VerifyingOrganizationDashboard() {
     };
 
     return (
-        <Stack gap="md" p="md" style={{flex: 1, minWidth: 0}}>
+        <Stack component="main" gap="md" p="md" style={{flex: 1, minWidth: 0}}>
             <Group justify="space-between" align="center">
-                <Title order={3}>{t("pendingOrganization")}</Title>
+                <Title order={1}>{t("pendingOrganization")}</Title>
             </Group>
 
             <OrganizationVerificationTable
