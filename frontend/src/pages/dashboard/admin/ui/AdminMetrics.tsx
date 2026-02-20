@@ -91,7 +91,7 @@ export default function AdminMetricsPage() {
   if (loading) {
     return (
         <Center py="xl" role="status" aria-live="polite">
-          <Loader role="img" aria-label={t("loading")}/>
+          <Loader role="img"/>
         </Center>
     );
   }
