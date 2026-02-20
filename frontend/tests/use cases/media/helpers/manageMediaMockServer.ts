@@ -49,6 +49,8 @@ export interface MediaCrudMockState {
     locationStore: MockLocation[];
     mediaStore: MockMedia[];
     capturedCreateLocationPayload: Record<string, unknown> | null;
+    capturedUpdateLocationPayload: Record<string, unknown> | null;
+    capturedDeletedLocationIds: string[];
     capturedCreatePayload: Record<string, unknown> | null;
     capturedUpdatePayload: Record<string, unknown> | null;
     capturedDeletedIds: string[];
@@ -57,6 +59,13 @@ export interface MediaCrudMockState {
 interface MediaCrudMockOptions {
     seedLocations?: boolean;
     seedMedia?: boolean;
+}
+
+interface MediaCrudRouteOptions {
+    tokenPermissions?: string[];
+    invalidAddressOnCreateLocation?: boolean;
+    denyReadMediaLocations?: boolean;
+    invalidPayloadOnUpdate?: boolean;
 }
 
 export const BUSINESS_ID = "biz-visual-impact";
@@ -192,13 +201,15 @@ export const createMediaCrudMockState = (
     const mediaStore = seedMedia ? createSeedMedia() : [];
 
     return {
-    locationStore,
-    mediaStore,
-    capturedCreateLocationPayload: null,
-    capturedCreatePayload: null,
-    capturedUpdatePayload: null,
-    capturedDeletedIds: [],
-};
+        locationStore,
+        mediaStore,
+        capturedCreateLocationPayload: null,
+        capturedUpdateLocationPayload: null,
+        capturedDeletedLocationIds: [],
+        capturedCreatePayload: null,
+        capturedUpdatePayload: null,
+        capturedDeletedIds: [],
+    };
 };
 
 const toLocationWithMediaResponse = (location: MockLocation, mediaStore: MockMedia[]) => ({
@@ -230,24 +241,24 @@ const toMediaResponse = (media: MockMedia, locationStore: MockLocation[]) => {
         };
 
     return {
-    id: media.id,
-    title: media.title,
-    mediaOwnerName: media.mediaOwnerName,
-    mediaLocation: location,
-    resolution: media.resolution,
-    aspectRatio: media.aspectRatio,
-    loopDuration: media.loopDuration,
-    width: media.width,
-    height: media.height,
-    price: media.price,
-    dailyImpressions: media.dailyImpressions,
-    schedule: media.schedule,
-    status: media.status,
-    typeOfDisplay: media.typeOfDisplay,
-    imageUrl: media.imageUrl,
-    previewConfiguration: media.previewConfiguration,
-    businessId: BUSINESS_ID,
-};
+        id: media.id,
+        title: media.title,
+        mediaOwnerName: media.mediaOwnerName,
+        mediaLocation: location,
+        resolution: media.resolution,
+        aspectRatio: media.aspectRatio,
+        loopDuration: media.loopDuration,
+        width: media.width,
+        height: media.height,
+        price: media.price,
+        dailyImpressions: media.dailyImpressions,
+        schedule: media.schedule,
+        status: media.status,
+        typeOfDisplay: media.typeOfDisplay,
+        imageUrl: media.imageUrl,
+        previewConfiguration: media.previewConfiguration,
+        businessId: BUSINESS_ID,
+    };
 };
 
 const toMediaListResponse = (media: MockMedia) => ({
@@ -258,7 +269,16 @@ const toMediaListResponse = (media: MockMedia) => ({
     imageUrl: media.imageUrl,
 });
 
-export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockState) => {
+export const attachMediaCrudRoutes = async (
+    page: Page,
+    state: MediaCrudMockState,
+    options: MediaCrudRouteOptions = {}
+) => {
+    const tokenPermissions = options.tokenPermissions ?? E2E_MOCK_PERMISSIONS;
+    const invalidAddressOnCreateLocation = options.invalidAddressOnCreateLocation ?? false;
+    const denyReadMediaLocations = options.denyReadMediaLocations ?? false;
+    const invalidPayloadOnUpdate = options.invalidPayloadOnUpdate ?? false;
+
     await page.route("**/api/auth0/token", async (route) => {
         try {
             const response = await route.fetch();
@@ -273,7 +293,7 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
         await route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify({ accessToken: createMockJwt(E2E_MOCK_PERMISSIONS) }),
+            body: JSON.stringify({ accessToken: createMockJwt(tokenPermissions) }),
         });
     });
 
@@ -367,6 +387,15 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
         }
 
         if (method === "GET" && apiPath === "/media-locations") {
+            if (denyReadMediaLocations) {
+                await route.fulfill({
+                    status: 403,
+                    contentType: "application/json",
+                    body: JSON.stringify({ message: "Forbidden" }),
+                });
+                return;
+            }
+
             const businessId = url.searchParams.get("businessId");
             const filteredLocations = businessId
                 ? state.locationStore.filter((location) => location.businessId === businessId)
@@ -388,6 +417,24 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
             const payload = request.postDataJSON() as Record<string, unknown>;
             state.capturedCreateLocationPayload = payload;
 
+            if (invalidAddressOnCreateLocation) {
+                await route.fulfill({
+                    status: 400,
+                    contentType: "application/json",
+                    body: JSON.stringify({
+                        message: "Address could not be verified.",
+                        fieldErrors: {
+                            street: "Verify the street name or number.",
+                            city: "Verify the city value.",
+                            province: "Verify the province/state value.",
+                            country: "Verify the country value.",
+                            postalCode: "Verify the postal code value.",
+                        },
+                    }),
+                });
+                return;
+            }
+
             const newLocation: MockLocation = {
                 id: `loc-created-${Date.now()}`,
                 businessId: String(payload.businessId ?? BUSINESS_ID),
@@ -407,6 +454,83 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
                 status: 201,
                 contentType: "application/json",
                 body: JSON.stringify(toLocationWithMediaResponse(newLocation, state.mediaStore)),
+            });
+            return;
+        }
+
+        if (method === "PUT" && apiPath.startsWith("/media-locations/")) {
+            const id = apiPath.split("/").at(-1) ?? "";
+            const payload = request.postDataJSON() as Record<string, unknown>;
+            state.capturedUpdateLocationPayload = payload;
+
+            const existingLocation = state.locationStore.find((location) => location.id === id);
+            if (!existingLocation) {
+                await route.fulfill({
+                    status: 404,
+                    contentType: "application/json",
+                    body: JSON.stringify({ message: "Media location not found" }),
+                });
+                return;
+            }
+
+            const updatedLocation: MockLocation = {
+                ...existingLocation,
+                businessId: String(payload.businessId ?? existingLocation.businessId),
+                name: String(payload.name ?? existingLocation.name),
+                country: String(payload.country ?? existingLocation.country),
+                province: String(payload.province ?? existingLocation.province),
+                city: String(payload.city ?? existingLocation.city),
+                street: String(payload.street ?? existingLocation.street),
+                postalCode: String(payload.postalCode ?? existingLocation.postalCode),
+                latitude: Number(payload.latitude ?? existingLocation.latitude),
+                longitude: Number(payload.longitude ?? existingLocation.longitude),
+            };
+
+            state.locationStore = state.locationStore.map((location) =>
+                location.id === id ? updatedLocation : location
+            );
+
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify(
+                    toLocationWithMediaResponse(updatedLocation, state.mediaStore)
+                ),
+            });
+            return;
+        }
+
+        if (method === "DELETE" && apiPath.startsWith("/media-locations/")) {
+            const id = apiPath.split("/").at(-1) ?? "";
+            const hasAssignedBlockingMedia = state.mediaStore.some(
+                (media) =>
+                    media.mediaLocationId === id &&
+                    (media.status === "ACTIVE" ||
+                        media.status === "PENDING" ||
+                        media.status === "REJECTED")
+            );
+
+            if (hasAssignedBlockingMedia) {
+                await route.fulfill({
+                    status: 409,
+                    contentType: "application/json",
+                    body: JSON.stringify({
+                        message:
+                            "Cannot delete this location because it has active, pending, or rejected media assigned. Please delete the media first.",
+                    }),
+                });
+                return;
+            }
+
+            state.capturedDeletedLocationIds.push(id);
+            state.locationStore = state.locationStore.filter(
+                (location) => location.id !== id
+            );
+
+            await route.fulfill({
+                status: 200,
+                contentType: "application/json",
+                body: JSON.stringify({}),
             });
             return;
         }
@@ -488,6 +612,15 @@ export const attachMediaCrudRoutes = async (page: Page, state: MediaCrudMockStat
             const id = apiPath.split("/").at(-1) ?? "";
             const payload = request.postDataJSON() as Record<string, unknown>;
             state.capturedUpdatePayload = payload;
+
+            if (invalidPayloadOnUpdate) {
+                await route.fulfill({
+                    status: 400,
+                    contentType: "application/json",
+                    body: JSON.stringify({ message: "Invalid media payload." }),
+                });
+                return;
+            }
 
             const existingMedia = state.mediaStore.find((media) => media.id === id);
             if (!existingMedia) {

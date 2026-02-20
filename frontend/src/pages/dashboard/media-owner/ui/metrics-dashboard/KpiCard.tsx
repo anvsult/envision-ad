@@ -25,6 +25,11 @@ export function KpiCard({ item }: { item: MetricsKpi }) {
     const t = useTranslations("mediaOwnerMetrics");
     const locale = useLocale();
     const Icon = kpiIconMap[item.id] ?? IconChartBar;
+    const isHighlightedTitle =
+        item.id === "weeklyEarnings" ||
+        item.id === "monthlyEarnings" ||
+        item.id === "yearlyEarnings" ||
+        item.id === "activeCampaigns";
     const isUp = item.trend === "up";
     const diffColor = isUp ? "teal.6" : "red.6";
     const comparisonTextKey = isUp
@@ -34,10 +39,10 @@ export function KpiCard({ item }: { item: MetricsKpi }) {
     return (
         <Paper withBorder p="md" radius="md">
             <Group justify="space-between" mb="xs">
-                <Text c="dimmed" size="xs" fw={700} tt="uppercase">
+                <Text c={isHighlightedTitle ? "blue" : "dimmed"} size="xs" fw={700} tt="uppercase">
                     {t(`cards.${item.id}`)}
                 </Text>
-                <ThemeIcon variant="light" color="gray" radius="xl" size="md">
+                <ThemeIcon variant="light" color="blue" radius="xl" size="md">
                     <Icon size={14} />
                 </ThemeIcon>
             </Group>
