@@ -138,7 +138,7 @@ export function Header({ }: HeaderProps) {
                     radius="xl"
                     rightSection={<IconChevronDown size={16} />}
                 >
-                    {user.nickname || user.name || "User"}
+                    <Text component="span">{user.nickname || user.name || "User"}</Text>
                 </Button>
             </Menu.Target>
 
@@ -169,7 +169,7 @@ export function Header({ }: HeaderProps) {
                 <Group justify="space-between" h="100%">
                     {/* Logo */}
                     <Link href="/" style={{ textDecoration: "none" }}>
-                        <Group gap="xl">
+                        <Group component="span" gap="xl">
                             <Box
                                 style={{
                                     width: 50,
@@ -188,7 +188,7 @@ export function Header({ }: HeaderProps) {
                                     priority
                                 />
                             </Box>
-                            <Text size="lg" fw={700} c="blue.6">
+                            <Text component="h1" size="lg" fw={700} c="blue.6">
                                 {t("platformName")}
                             </Text>
                         </Group>

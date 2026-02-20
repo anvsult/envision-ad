@@ -763,7 +763,8 @@
       },
       "tabs": {
         "pending": "En Attente",
-        "confirmed": "Confirmé"
+        "confirmed": "Confirmé",
+        "filterLabel": "Filtrer par statut"
       },
       "status": {
         "pending": "En Attente",
@@ -771,7 +772,8 @@
       },
       "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
       "pending": "En attente",
-      "unknownCampaign": "Nom de campagne inconnue"
+      "unknownCampaign": "Nom de campagne inconnue",
+      "loading": "Chargement des demandes publicitaires..."
     },
     "modal": {
       "title": "Refuser la Demande Publicitaire",
@@ -1030,6 +1032,8 @@
       "reviewUnavailable": "Révision indisponible",
       "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
       "pendingMedia": "Médias en attente d’approbation",
+      "pendingMediaPagination": "{start}-{end} sur {total} médias en attente",
+      "loadingPendingMedia": "Chargement des médias en attente...",
       "image": "Image",
       "name": "Nom",
       "status": "Statut",
@@ -1061,6 +1065,7 @@
     "metricsPage": {
       "title": "Métriques admin",
       "empty": "Aucune donnée",
+      "loading": "Chargement des métriques...",
       "errors": {
         "loadFailed": "Impossible de charger les métriques"
       },

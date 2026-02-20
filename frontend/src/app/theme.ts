@@ -36,6 +36,18 @@ export const theme = createTheme({
       '#374357',
       '#1f2638',
     ],
+    teal: [
+        '#e6fcf5',
+        '#c3fae8',
+        '#96f2d7',
+        '#63e6be',
+        '#38d9a9',
+        '#20c997',
+        '#0b6c4f',
+        '#0ca678',
+        '#099268',
+        '#087f5b',
+    ]
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text
   headings: {

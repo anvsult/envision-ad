@@ -723,7 +723,8 @@
       },
       "tabs": {
         "pending": "Pending",
-        "confirmed": "Confirmed"
+        "confirmed": "Confirmed",
+        "filterLabel": "Filter reservations by status"
       },
       "status": {
         "pending": "Pending",
@@ -731,7 +732,8 @@
       },
       "noRequests": "You have no pending ad requests.",
       "pending": "Pending",
-      "unknownCampaign": "Unknown Campaign name"
+      "unknownCampaign": "Unknown Campaign name",
+      "loading": "Loading ad requests..."
     },
     "modal": {
       "title": "Deny Ad Request",
@@ -1030,6 +1032,8 @@
       "reviewUnavailable": "Review not available",
       "reviewDone": "This media has already been reviewed ({status}). You can’t approve/deny it again.",
       "pendingMedia": "Pending Media Approval",
+      "pendingMediaPagination": "Showing {start}-{end} of {total} pending media",
+      "loadingPendingMedia": "Loading pending media...",
       "image": "Image",
       "name": "Name",
       "status": "Status",
@@ -1060,6 +1064,7 @@
     "metricsPage": {
       "title": "Admin Metrics",
       "empty": "No data",
+      "loading": "Loading metrics...",
       "errors": {
         "loadFailed": "Failed to load metrics"
       },
@@ -1085,7 +1090,8 @@
         "users": "Users",
         "mediaOwners": "Media Owners",
         "advertisers": "Advertisers",
-        "basedOn": "Based on users with platform roles."
+        "basedOn": "Based on users with platform roles.",
+        "ariaLabel": "User Role Distribution Chart showing {total} total users, with {mediaOwners} media owners and {advertisers} advertisers."
       }
     }
   },
