@@ -182,7 +182,7 @@ export function Header() {
                                     priority
                                 />
                             </Box>
-                            <Text size="lg" fw={700} c="blue.6">
+                            <Text component="h1" size="lg" fw={700} c="blue.6">
                                 {t("platformName")}
                             </Text>
                         </Group>
