@@ -126,7 +126,7 @@ function ReservationCard({
             setIsTranslating(true);
 
             // Client-side translation
-            translate(reservation.denialDetails.description, { to: locale })
+            translate(reservation.denialDetails.description, { from: locale === 'fr' ? 'en' : 'fr', to: locale })
                 .then(translated => {
                     setTranslatedDescription(translated);
                 })
