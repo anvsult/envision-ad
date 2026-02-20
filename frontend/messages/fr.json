@@ -1091,7 +1091,8 @@
         "users": "Utilisateurs",
         "mediaOwners": "Propriétaires de médias",
         "advertisers": "Annonceurs",
-        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme."
+        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme.",
+        "ariaLabel": "Graphique de répartition des rôles des utilisateurs montrant {total} utilisateurs au total, avec {mediaOwners} propriétaires de médias et {advertisers} annonceurs."
       }
     }
   },

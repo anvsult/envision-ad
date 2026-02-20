@@ -57,7 +57,7 @@ export default function ApprovingMediaDashboard() {
 
         {loading ? (
             <Center role="status" aria-live="polite" py="xl">
-              <Loader aria-label={t("loadingPendingMedia")}/>
+              <Loader/>
             </Center>
         ) : error ? (
             <Text c="red" fw={500} role="alert">

@@ -19,8 +19,8 @@ import {PermissionsProvider} from "@/app/providers";
 export const viewport: Viewport = {
     width: "device-width",
     initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
+    // maximumScale: 1, // Removed this to allow users to zoom if needed for accessibility
+    // userScalable: false,
 }
 
 export async function generateMetadata({
@@ -57,6 +57,7 @@ export default async function RootLayout({
                 className={`${lato.variable} ${josefinSans.variable}`}
             >
             <head>
+                {/* The title is handled by Next.js*/}
                 <ColorSchemeScript defaultColorScheme="light"/>
             </head>
             <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>

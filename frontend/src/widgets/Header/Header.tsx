@@ -23,13 +23,7 @@ import { Link, usePathname } from "@/shared/lib/i18n/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { IconChevronDown } from "@tabler/icons-react";
 
-interface HeaderProps {
-    dashboardMode?: boolean;
-    sidebarOpened?: boolean;
-    onToggleSidebar?: () => void;
-}
-
-export function Header({ }: HeaderProps) {
+export function Header() {
     const locale = useLocale();
     const t = useTranslations("nav");
     const pathname = usePathname();
@@ -46,8 +40,8 @@ export function Header({ }: HeaderProps) {
         ];
 
     const filteredLinks = links.filter((link) => {
-        if (link.authRequired && !user) return false;
-        return true;
+        return !(link.authRequired && !user);
+
     });
 
     const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
@@ -169,7 +163,7 @@ export function Header({ }: HeaderProps) {
                 <Group justify="space-between" h="100%">
                     {/* Logo */}
                     <Link href="/" style={{ textDecoration: "none" }}>
-                        <Group component="span" gap="xl">
+                        <Group gap="xl">
                             <Box
                                 style={{
                                     width: 50,
@@ -188,7 +182,7 @@ export function Header({ }: HeaderProps) {
                                     priority
                                 />
                             </Box>
-                            <Text component="h1" size="lg" fw={700} c="blue.6">
+                            <Text size="lg" fw={700} c="blue.6">
                                 {t("platformName")}
                             </Text>
                         </Group>
