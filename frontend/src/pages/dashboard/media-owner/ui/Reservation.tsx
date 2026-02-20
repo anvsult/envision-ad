@@ -106,7 +106,7 @@ export default function Reservation() {
 
             {loading ? (
                 <Center py="xl" role="status" aria-live="polite">
-                    <Loader aria-label={t("page.loading")} />
+                    <Loader/>
                 </Center>
             ) : (
                 <ReservationCards
