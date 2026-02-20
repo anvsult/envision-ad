@@ -65,7 +65,9 @@ export default function ApprovingMediaDashboard() {
             </Text>
         ) : (
             <>
-              <ApproveMediaTable rows={paginatedRows} aria-label={t("pendingMedia")}/>
+              <section aria-label={t("pendingMedia")}>
+                <ApproveMediaTable rows={paginatedRows} />
+              </section>
 
               {pendingRows.length > ITEMS_PER_PAGE && (
                   <Group justify="center" mt="md">
