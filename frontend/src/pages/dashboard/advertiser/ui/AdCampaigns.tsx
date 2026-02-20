@@ -20,7 +20,7 @@ import {AdCampaignsTable} from "@/pages/dashboard/advertiser/ui/tables/AdCampaig
 import {AddAdModal} from "@/pages/dashboard/advertiser/ui/modals/AddAdModal";
 import {CreateCampaignModal} from "@/pages/dashboard/advertiser/ui/modals/CreateCampaignModal";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
-import {getEmployeeOrganization} from "@/features/organization-management/api";
+import {useOrganization} from "@/app/providers";
 
 export default function AdCampaigns() {
     const t = useTranslations('adCampaigns');
@@ -29,6 +29,7 @@ export default function AdCampaigns() {
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
     const [businessId, setBusinessId] = useState<string | undefined>();
     const {user} = useUser();
+    const { organization } = useOrganization();
 
     // Modal State
     const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
@@ -45,10 +46,9 @@ export default function AdCampaigns() {
 
     // 1. Fetch Data - Single method to load campaigns
     const loadCampaigns = useCallback(async () => {
-        if (!businessId) return;
-
+        if (!organization) return;
         try {
-            const data = await getAllAdCampaigns(businessId);
+            const data = await getAllAdCampaigns(organization.businessId);
             setCampaigns(data);
         } catch (error) {
             console.error('Failed to load campaigns', error);
@@ -58,38 +58,33 @@ export default function AdCampaigns() {
                 color: 'red'
             });
         }
-    }, [businessId, t]);
+    }, [organization, t]);
 
-    // Get businessId on mount
     useEffect(() => {
-        if (!user) return;
+        if (!organization) return;
 
-        const fetchBusinessId = async () => {
+        let ignored = false;
+
+        const fetchCampaigns = async () => {
             try {
-                const business = await getEmployeeOrganization(user.sub);
-                if (!business) {
-                    throw new Error('Business not found');
-                }
-                setBusinessId(business.businessId);
+                const data = await getAllAdCampaigns(organization.businessId);
+                if (!ignored) setCampaigns(data);
             } catch (error) {
-                console.error('Failed to load business info', error);
-                notifications.show({
-                    title: t('notifications.loadFailed.title'),
-                    message: t('notifications.loadFailed.message'),
-                    color: 'red'
-                });
+                if (!ignored) {
+                    console.error('Failed to load campaigns', error);
+                    notifications.show({
+                        title: t('notifications.loadFailed.title'),
+                        message: t('notifications.loadFailed.message'),
+                        color: 'red'
+                    });
+                }
             }
         };
 
-        fetchBusinessId();
-    }, [user, t]);
+        void fetchCampaigns();
 
-    // Load campaigns when businessId is available
-    useEffect(() => {
-        if (businessId) {
-            loadCampaigns();
-        }
-    }, [businessId, loadCampaigns]);
+        return () => { ignored = true; };
+    }, [organization, t]);
 
     // 2. Handlers
     const handleOpenAddAd = (campaignId: string) => {

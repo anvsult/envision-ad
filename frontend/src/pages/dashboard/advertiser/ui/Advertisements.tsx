@@ -1,22 +1,21 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Stack, Title, Group, Text, SegmentedControl } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { useTranslations } from "next-intl";
 import {
     ReservationResponseDTO,
     ReservationStatus,
 } from "@/entities/reservation";
 import { getAllReservationByAdvertiserBusinessId } from "@/features/reservation-management/api";
-import { getEmployeeOrganization } from "@/features/organization-management/api";
 import { PaymentModal } from "@/pages/dashboard/advertiser/ui/modals/PaymentModal";
-import {ReservationCards} from "@/shared/ui";
+import { ReservationCards } from "@/shared/ui";
+import { useOrganization } from "@/app/providers";
 
 export default function Advertisements() {
     const t = useTranslations("advertiserReservations");
-    const { user } = useUser();
+    const { organization } = useOrganization();
 
     const [reservations, setReservations] = useState<ReservationResponseDTO[]>([]);
     const [statusFilter, setStatusFilter] = useState<string>("approved");
@@ -25,34 +24,50 @@ export default function Advertisements() {
     const [selectedReservation, setSelectedReservation] =
         useState<ReservationResponseDTO | null>(null);
 
+    const loadReservations = useCallback(async () => {
+        if (!organization) return;
+        try {
+            const data = await getAllReservationByAdvertiserBusinessId(
+                organization.businessId
+            );
+            setReservations(data);
+        } catch (error) {
+            console.error("Failed to load reservations", error);
+            notifications.show({
+                title: t("notifications.loadFailed.title"),
+                message: t("notifications.loadFailed.message"),
+                color: "red",
+            });
+        }
+    }, [organization, t]);
+
     useEffect(() => {
-        if (!user) return;
+        if (!organization) return;
 
-        const loadReservations = async () => {
+        let ignored = false;
+
+        const fetchReservations = async () => {
             try {
-                const business = await getEmployeeOrganization(user.sub);
-
-                if (business == null) {
-                    throw new Error("Failed to load business information");
-                }
-
                 const data = await getAllReservationByAdvertiserBusinessId(
-                    business.businessId
+                    organization.businessId
                 );
-
-                setReservations(data);
+                if (!ignored) setReservations(data);
             } catch (error) {
-                console.error("Failed to load reservations", error);
-                notifications.show({
-                    title: t("notifications.loadFailed.title"),
-                    message: t("notifications.loadFailed.message"),
-                    color: "red",
-                });
+                if (!ignored) {
+                    console.error("Failed to load reservations", error);
+                    notifications.show({
+                        title: t("notifications.loadFailed.title"),
+                        message: t("notifications.loadFailed.message"),
+                        color: "red",
+                    });
+                }
             }
         };
 
-        loadReservations();
-    }, [user, t]);
+        void fetchReservations();
+
+        return () => { ignored = true; };
+    }, [organization, t]);
 
     const handlePayClick = (reservation: ReservationResponseDTO) => {
         setSelectedReservation(reservation);
@@ -63,30 +78,13 @@ export default function Advertisements() {
         setPaymentModalOpen(false);
         setSelectedReservation(null);
 
-        try {
-            if (!user) return;
+        await loadReservations();
 
-            const business = await getEmployeeOrganization(user.sub);
-
-            if (business == null) {
-                throw new Error("Failed to load business information");
-            }
-
-            const data = await getAllReservationByAdvertiserBusinessId(
-                business.businessId
-            );
-
-            setReservations(data);
-            setStatusFilter("confirmed");
-
-            notifications.show({
-                title: t("notifications.paymentSuccess.title"),
-                message: t("notifications.paymentSuccess.message"),
-                color: "green",
-            });
-        } catch (error) {
-            console.error("Failed to reload reservations", error);
-        }
+        notifications.show({
+            title: t("notifications.paymentSuccess.title"),
+            message: t("notifications.paymentSuccess.message"),
+            color: "green",
+        });
     };
 
     const pendingReservations = reservations.filter(
@@ -104,16 +102,11 @@ export default function Advertisements() {
 
     const filteredReservations = (() => {
         switch (statusFilter) {
-            case "pending":
-                return pendingReservations;
-            case "approved":
-                return approvedReservations;
-            case "denied":
-                return deniedReservations;
-            case "confirmed":
-                return confirmedReservations;
-            default:
-                return [];
+            case "pending": return pendingReservations;
+            case "approved": return approvedReservations;
+            case "denied": return deniedReservations;
+            case "confirmed": return confirmedReservations;
+            default: return [];
         }
     })();
 
@@ -133,22 +126,10 @@ export default function Advertisements() {
                 value={statusFilter}
                 onChange={setStatusFilter}
                 data={[
-                    {
-                        label: `${t("tabs.pending")} (${pendingReservations.length})`,
-                        value: "pending",
-                    },
-                    {
-                        label: `${t("tabs.approved")} (${approvedReservations.length})`,
-                        value: "approved",
-                    },
-                    {
-                        label: `${t("tabs.denied")} (${deniedReservations.length})`,
-                        value: "denied",
-                    },
-                    {
-                        label: `${t("tabs.confirmed")} (${confirmedReservations.length})`,
-                        value: "confirmed",
-                    },
+                    { label: `${t("tabs.pending")} (${pendingReservations.length})`, value: "pending" },
+                    { label: `${t("tabs.approved")} (${approvedReservations.length})`, value: "approved" },
+                    { label: `${t("tabs.denied")} (${deniedReservations.length})`, value: "denied" },
+                    { label: `${t("tabs.confirmed")} (${confirmedReservations.length})`, value: "confirmed" },
                 ]}
             />
 
