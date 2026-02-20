@@ -66,6 +66,7 @@
       "metricOverview": "Metrics",
       "advertisements": "Advertisements",
       "myAds": "My Campaigns",
+      "timeRangeSelect": "Select dashboard time range",
       "graphs": {
         "totalAdSpend": "Total Ad Spend",
         "activeCampaigns": "Active Campaigns",
@@ -911,7 +912,8 @@
       },
       "noCampaigns": "No campaigns found. Add your first campaign to get started!",
       "noAds": "No ads found in this campaign. Add your first ad to get started!",
-      "deleteCampaign": "Delete Campaign"
+      "deleteCampaign": "Delete Campaign",
+      "deleteAd": "Delete ad {name}"
     },
     "notifications": {
       "loadFailed": {

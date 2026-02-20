@@ -130,8 +130,8 @@ export function AdCampaignsTable({
                                                         <ActionIcon
                                                             color="red"
                                                             variant="subtle"
-                                                            aria-label={`Delete ad ${ad.name}`}
-                                                            title={`Delete ad ${ad.name}`}
+                                                            aria-label={t("deleteAd", { name: ad.name })}
+                                                            title={t("deleteAd", { name: ad.name })}
                                                             onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}
                                                         >
                                                             <IconTrash size={16} />

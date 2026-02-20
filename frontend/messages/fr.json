@@ -66,6 +66,7 @@
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
       "myAds": "Mes Campagnes",
+      "timeRangeSelect": "Sélectionner la période du tableau de bord",
       "graphs": {
         "totalAdSpend": "Dépenses publicitaires totales",
         "activeCampaigns": "Campagnes actives",
@@ -951,7 +952,8 @@
       },
       "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
       "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
-      "deleteCampaign": "Supprimer la campagne"
+      "deleteCampaign": "Supprimer la campagne",
+      "deleteAd": "Supprimer l’annonce {name}"
     },
     "notifications": {
       "loadFailed": {

@@ -255,7 +255,7 @@ export function AdvertiserOverview() {
                 <Title order={2}>Dashboard Overview</Title>
                 <Group>
                     <Select
-                        aria-label="Select dashboard time range"
+                        aria-label={t("timeRangeSelect")}
                         value={timeRange}
                         onChange={setTimeRange}
                         data={[
