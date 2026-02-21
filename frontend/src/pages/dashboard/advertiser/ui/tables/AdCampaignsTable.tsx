@@ -127,7 +127,13 @@ export function AdCampaignsTable({
                                                 </Table.Td>
                                                 <Table.Td style={{ verticalAlign: 'middle' }}>
                                                     <Group justify="flex-end">
-                                                        <ActionIcon color="red" variant="subtle" onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}>
+                                                        <ActionIcon
+                                                            color="red"
+                                                            variant="subtle"
+                                                            aria-label={t("deleteAd", { name: ad.name })}
+                                                            title={t("deleteAd", { name: ad.name })}
+                                                            onClick={() => onDeleteAd(campaign.campaignId, ad.adId)}
+                                                        >
                                                             <IconTrash size={16} />
                                                         </ActionIcon>
                                                     </Group>
