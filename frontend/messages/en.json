@@ -106,14 +106,13 @@
       "decreaseComparedToLastPeriod": "Decrease compared to last period"
     },
     "sections": {
-      "earningsTrendWeekly": "Earnings Trend (Weekly)",
-      "earningsTrendAllTime": "Earnings Trend (All-time)",
+      "earningsTrend": "Reservation Activity",
       "revenueByLocation": "Revenue by Location",
       "revenueByMedia": "Revenue by Media",
       "activeCampaignDetails": "Active Campaigns Details",
       "payoutHistory": "Payout History",
       "performanceMetrics": "Performance Metrics",
-      "mediaScreensReservations": "Media Screens Reservations"
+      "mediaReservations": "Media Reservations"
     },
     "table": {
       "transactionId": "Transaction ID",
@@ -138,6 +137,11 @@
     "payoutStatus": {
       "paid": "PAID",
       "processing": "PROCESSING"
+    },
+    "earningsTrend": {
+      "totalAmount": "Total Earnings",
+      "reservations": "Number of reservations",
+      "averageValue": "Average per reservation"
     }
   },
   "homepage": {

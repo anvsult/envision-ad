@@ -351,7 +351,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100001',
         NOW() - INTERVAL '10 days',
         NOW() + INTERVAL '5 days',
-        NOW() - INTERVAL '7 days',
+        NOW() - INTERVAL '13 days',
         'CONFIRMED',
         2400.00,
         'auth0|6934e8515479d2b6d3cf7575',
@@ -405,7 +405,7 @@ VALUES
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100006',
         NOW() + INTERVAL '1 day',
-        NOW() + INTERVAL '9 days',
+        NOW() + INTERVAL '6 days',
         NOW() - INTERVAL '2 days',
         'PENDING',
         1500.00,
@@ -415,9 +415,9 @@ VALUES
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100007',
-        NOW() - INTERVAL '4 days',
+        NOW() - INTERVAL '3 days',
         NOW() + INTERVAL '4 days',
-        NOW() - INTERVAL '1 day',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1750.00,
         'auth0|6934e8515479d2b6d3cf7575',
@@ -426,14 +426,47 @@ VALUES
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100008',
-        NOW() - INTERVAL '4 day',
-        NOW() + INTERVAL '6 days',
-        NOW() - INTERVAL '1 day',
+        NOW() - INTERVAL '3 days',
+        NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1650.00,
         'auth0|696a89137cfdb558ea4a4a4a',
         '91af2be4-8246-4cf8-b9d0-84779bc11002',
         (SELECT media_id FROM media WHERE title = 'Student Lounge 2' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100009',
+        NOW() - INTERVAL '3 days',
+        NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '4 days',
+        'CONFIRMED',
+        1100.00,
+        'auth0|696a88eb347945897ef17093',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100010',
+        NOW() - INTERVAL '2 days',
+        NOW() + INTERVAL '5 days',
+        NOW() - INTERVAL '3 days',
+        'CONFIRMED',
+        1100.00,
+        'auth0|696a88eb347945897ef17093',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100011',
+        NOW() - INTERVAL '1 day',
+        NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '2 days',
+        'CONFIRMED',
+        1100.00,
+        'auth0|696a88eb347945897ef17093',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
     );
 
 -- =========================== STRIPE DATA ===========================

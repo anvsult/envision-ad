@@ -161,6 +161,23 @@ function buildLocationAmounts(
     return amounts;
 }
 
+/**
+ * Returns per-location reservation counts keyed as "<locationName>_count".
+ * Used to derive a visible count when some locations are hidden by the legend.
+ */
+function buildLocationCounts(
+    matching: ReservationResponseDTO[],
+    locationMap: Map<string, string>
+): Record<string, number> {
+    const counts: Record<string, number> = {};
+    for (const r of matching) {
+        const locName = locationMap.get(r.mediaId) ?? "Unknown";
+        const key = `${locName}_count`;
+        counts[key] = (counts[key] ?? 0) + 1;
+    }
+    return counts;
+}
+
 export const buildWeeklyEarningsTrend = (
     reservations: ReservationResponseDTO[],
     mediaLocations: MediaLocation[] = []
@@ -189,6 +206,7 @@ export const buildWeeklyEarningsTrend = (
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
         const locationAmounts = buildLocationAmounts(matching, locationMap);
+        const locationCounts = buildLocationCounts(matching, locationMap);
 
         return {
             date: formatTrendDate(dayStart),
@@ -196,6 +214,7 @@ export const buildWeeklyEarningsTrend = (
             reservationCount,
             averageAmount,
             ...locationAmounts,
+            ...locationCounts,
         };
     });
 };
@@ -244,6 +263,7 @@ export const buildAllTimeEarningsTrend = (
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
         const locationAmounts = buildLocationAmounts(matching, locationMap);
+        const locationCounts = buildLocationCounts(matching, locationMap);
 
         monthBuckets.push({
             date: formatTrendMonth(monthStart),
@@ -251,6 +271,7 @@ export const buildAllTimeEarningsTrend = (
             reservationCount,
             averageAmount,
             ...locationAmounts,
+            ...locationCounts,
         });
 
         cursor.setMonth(cursor.getMonth() + 1);
@@ -288,6 +309,7 @@ export const buildDailyBuckets = (
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
         const locationAmounts = buildLocationAmounts(matching, locationMap);
+        const locationCounts = buildLocationCounts(matching, locationMap);
 
         buckets.push({
             date: formatTrendDate(dayStart),
@@ -295,6 +317,7 @@ export const buildDailyBuckets = (
             reservationCount,
             averageAmount,
             ...locationAmounts,
+            ...locationCounts,
         });
 
         cursor.setDate(cursor.getDate() + 1);
@@ -353,6 +376,7 @@ export const buildMonthlyBuckets = (
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
         const locationAmounts = buildLocationAmounts(matching, locationMap);
+        const locationCounts = buildLocationCounts(matching, locationMap);
 
         buckets.push({
             date: formatTrendMonth(monthStart),
@@ -360,6 +384,7 @@ export const buildMonthlyBuckets = (
             reservationCount,
             averageAmount,
             ...locationAmounts,
+            ...locationCounts,
         });
 
         cursor.setMonth(cursor.getMonth() + 1);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Box, Grid, Group, Paper, Select, Skeleton, Stack, Text, Title, Checkbox, Pagination, Divider } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { BarChart } from "@mantine/charts";
@@ -57,10 +57,7 @@ export default function MediaOwnerMetricsDashboard() {
         ...item,
         cityLabel: `${item.city} (City)`,
     }));
-    const earningsTrendSectionTitle =
-        overviewPeriod === "allTime"
-            ? t("sections.earningsTrendAllTime")
-            : t("sections.earningsTrendWeekly");
+    const earningsTrendSectionTitle = t("sections.earningsTrend");
 
     const [selectedMediaNames, setSelectedMediaNames] = useState<string[]>([]);
     const [legendPage, setLegendPage] = useState(1);
@@ -137,6 +134,32 @@ export default function MediaOwnerMetricsDashboard() {
 
     const EARNINGS_TREND_SERIES = activeSeries;
 
+    // Build a count-based trend: each location's bar height = number of reservations
+    // (not revenue), scoped to the currently selected series so the Y axis represents
+    // reservation counts. totalAmount is preserved for the tooltip.
+    const reservationCountTrend = useMemo(
+        () =>
+            earningsTrend.map((point) => {
+                const p = point as Record<string, number>;
+                const locationCounts = EARNINGS_TREND_SERIES.reduce(
+                    (acc, s) => {
+                        acc[s.name] = p[`${s.name}_count`] ?? 0;
+                        return acc;
+                    },
+                    {} as Record<string, number>
+                );
+
+                return {
+                    date: point.date,
+                    totalAmount: point.totalAmount,
+                    reservationCount: Object.values(locationCounts).reduce((a, b) => a + b, 0),
+                    averageAmount: point.averageAmount,
+                    ...locationCounts,
+                };
+            }),
+        [earningsTrend, EARNINGS_TREND_SERIES]
+    );
+
     const renderEarningsTrendTooltip = (
         payload: ChartTooltipPayload[] | undefined,
         label: string | number | undefined
@@ -153,15 +176,15 @@ export default function MediaOwnerMetricsDashboard() {
             <Paper px="md" py="xs" withBorder shadow="md" radius="md">
                 <Text fw={500} mb={5}>{labelText}</Text>
                 <Group gap="xs" justify="space-between" mt={4}>
-                    <Text size="sm" c="dimmed">Total amount</Text>
-                    <Text size="sm" fw={500}>{formatCurrency(total, { locale })}</Text>
-                </Group>
-                <Group gap="xs" justify="space-between" mt={4}>
-                    <Text size="sm" c="dimmed">Reservations</Text>
+                    <Text size="sm" c="dimmed">{t("earningsTrend.reservations")}</Text>
                     <Text size="sm" fw={500}>{count}</Text>
                 </Group>
                 <Group gap="xs" justify="space-between" mt={4}>
-                    <Text size="sm" c="dimmed">Avg. value</Text>
+                    <Text size="sm" c="dimmed">{t("earningsTrend.totalAmount")}</Text>
+                    <Text size="sm" fw={500}>{formatCurrency(total, { locale })}</Text>
+                </Group>
+                <Group gap="xs" justify="space-between" mt={4}>
+                    <Text size="sm" c="dimmed">{t("earningsTrend.averageValue")}</Text>
                     <Text size="sm" fw={500}>{formatCurrency(avg, { locale })}</Text>
                 </Group>
             </Paper>
@@ -238,7 +261,7 @@ export default function MediaOwnerMetricsDashboard() {
                                 <BarChart
                                     type="stacked"
                                     h={260}
-                                    data={earningsTrend}
+                                    data={reservationCountTrend}
                                     dataKey="date"
                                     series={EARNINGS_TREND_SERIES}
                                     withLegend={false}
@@ -285,7 +308,7 @@ export default function MediaOwnerMetricsDashboard() {
                 </Grid.Col>
 
                 <Grid.Col span={{ base: 12, lg: 6 }}>
-                    <Paper withBorder p="md" radius="md">
+                    <Paper withBorder p="md" radius="md" h="100%">
                         <Text fw={600} mb="sm">
                             {t("sections.revenueByLocation")}
                         </Text>
@@ -328,7 +351,7 @@ export default function MediaOwnerMetricsDashboard() {
                     <Paper withBorder p="md" radius="md">
                         <Group justify="space-between" align="center" mb="sm">
                             <Text fw={600}>
-                                {t("sections.mediaScreensReservations")}
+                                {t("sections.mediaReservations")}
                             </Text>
                             {mediaLocations.length > 0 && (
                                 <Select

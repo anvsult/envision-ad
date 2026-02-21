@@ -18,7 +18,7 @@ import {
   Text,
   Title,
   Box,
-  Tooltip,
+  Tooltip, Badge,
 } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
@@ -309,22 +309,24 @@ export default function MediaDetailsPage() {
                       {monthDefs.map((m) => {
                         const active = activeMonths.has(m.id);
                         return (
-                          <Button
+                          <Badge
                             key={m.id}
-                            size="xs"
-                            px={8}
+                            size="lg"
                             variant={active ? "filled" : "outline"}
                             color={active ? "blue" : "gray"}
-                            disabled={!active}
-                            styles={{
-                              label: {
-                                whiteSpace: "normal",
-                                lineHeight: 1.2,
-                              },
+                            style={{
+                              textTransform: "none",
+                              opacity: active ? 1 : 0.45,
+                              width: "100%",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              height: 32,
+                              fontSize: 12,
                             }}
                           >
                             {t(`months.${m.key}`)}
-                          </Button>
+                          </Badge>
                         );
                       })}
                     </SimpleGrid>

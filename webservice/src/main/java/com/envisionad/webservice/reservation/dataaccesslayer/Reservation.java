@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
+@Table(name = "reservations")
 @Data
 @NoArgsConstructor
 public class Reservation {
