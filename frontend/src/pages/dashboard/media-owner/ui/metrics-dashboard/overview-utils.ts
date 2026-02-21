@@ -103,17 +103,19 @@ export const buildOverviewMetricsData = (
         return isOverlappingRange(startMs, endMs, startBoundMs, endBoundMs);
     });
 
+    const mediaIdToLocationName = new Map<string, string>();
+    for (const loc of mediaLocations) {
+        for (const m of loc.mediaList ?? []) {
+            if (m.id) {
+                mediaIdToLocationName.set(m.id, loc.name ?? "Unknown Location");
+            }
+        }
+    }
+
     const revenueByMediaMap = new Map<string, { mediaName: string; revenue: number }>();
     periodFilteredReservations.forEach((reservation) => {
         const mediaId = reservation.mediaId;
-
-        let targetLocationName = "Unknown Location";
-        for (const loc of mediaLocations) {
-            if (loc.mediaList?.some((m) => m.id === mediaId)) {
-                targetLocationName = loc.name;
-                break;
-            }
-        }
+        const targetLocationName = mediaIdToLocationName.get(mediaId) ?? "Unknown Location";
 
         const amount = getReservationAmount(reservation);
 

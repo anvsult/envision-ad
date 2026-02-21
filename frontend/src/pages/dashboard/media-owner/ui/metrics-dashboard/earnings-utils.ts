@@ -130,6 +130,14 @@ export const buildEarningsKpis = (
     ];
 };
 
+function toDayKey(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function toMonthKey(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
 /**
  * Builds a map from mediaId → location name using mediaList on each location.
  */
@@ -187,21 +195,23 @@ export const buildWeeklyEarningsTrend = (
     const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
     const locationMap = buildLocationMap(mediaLocations);
 
+    // Pre-bucket reservations by "YYYY-MM-DD" key in a single pass
+    const byDay = new Map<string, ReservationResponseDTO[]>();
+    for (const r of confirmed) {
+        const createdMs = parseDateMs(r.createdAt);
+        if (createdMs === null) continue;
+        const key = toDayKey(new Date(createdMs));
+        const bucket = byDay.get(key) ?? [];
+        bucket.push(r);
+        byDay.set(key, bucket);
+    }
+
     return Array.from({ length: 7 }, (_, index) => {
         const dayStart = new Date(startDay);
         dayStart.setDate(startDay.getDate() + index);
+        const key = toDayKey(dayStart);
 
-        const dayEnd = new Date(dayStart);
-        dayEnd.setDate(dayStart.getDate() + 1);
-
-        const dayStartMs = dayStart.getTime();
-        const dayEndMs = dayEnd.getTime();
-
-        const matching = confirmed.filter((r) => {
-            const createdMs = parseDateMs(r.createdAt);
-            return createdMs !== null && createdMs >= dayStartMs && createdMs < dayEndMs;
-        });
-
+        const matching = byDay.get(key) ?? [];
         const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
@@ -227,10 +237,18 @@ export const buildAllTimeEarningsTrend = (
     const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
     const locationMap = buildLocationMap(mediaLocations);
 
-    const earliestCreatedMs = confirmed.reduce((min, r) => {
+    // Pre-bucket reservations by "YYYY-MM" key in a single pass
+    const byMonth = new Map<string, ReservationResponseDTO[]>();
+    let earliestCreatedMs = Number.POSITIVE_INFINITY;
+    for (const r of confirmed) {
         const ms = parseDateMs(r.createdAt);
-        return ms !== null ? Math.min(min, ms) : min;
-    }, Number.POSITIVE_INFINITY);
+        if (ms === null) continue;
+        if (ms < earliestCreatedMs) earliestCreatedMs = ms;
+        const key = toMonthKey(new Date(ms));
+        const bucket = byMonth.get(key) ?? [];
+        bucket.push(r);
+        byMonth.set(key, bucket);
+    }
 
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
     if (Number.isFinite(earliestCreatedMs)) {
@@ -249,16 +267,9 @@ export const buildAllTimeEarningsTrend = (
             cursor.getMonth() <= now.getMonth())
     ) {
         const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-        const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+        const key = toMonthKey(cursor);
 
-        const monthStartMs = monthStart.getTime();
-        const monthEndMs = monthEnd.getTime();
-
-        const matching = confirmed.filter((r) => {
-            const createdMs = parseDateMs(r.createdAt);
-            return createdMs !== null && createdMs >= monthStartMs && createdMs < monthEndMs;
-        });
-
+        const matching = byMonth.get(key) ?? [];
         const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
@@ -287,24 +298,28 @@ export const buildDailyBuckets = (
     mediaLocations: MediaLocation[] = []
 ): EarningsTrendPoint[] => {
     const buckets: EarningsTrendPoint[] = [];
-    const cursor = new Date(startMs);
-    const end = new Date(endMs);
     const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
     const locationMap = buildLocationMap(mediaLocations);
 
+    // Pre-bucket reservations by "YYYY-MM-DD" key in a single pass
+    const byDay = new Map<string, ReservationResponseDTO[]>();
+    for (const r of confirmed) {
+        const ms = parseDateMs(r.createdAt);
+        if (ms === null || ms < startMs || ms > endMs) continue;
+        const key = toDayKey(new Date(ms));
+        const bucket = byDay.get(key) ?? [];
+        bucket.push(r);
+        byDay.set(key, bucket);
+    }
+
+    const cursor = new Date(startMs);
+    const end = new Date(endMs);
+
     while (cursor <= end) {
         const dayStart = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
-        const dayEnd = new Date(dayStart);
-        dayEnd.setDate(dayStart.getDate() + 1);
+        const key = toDayKey(dayStart);
 
-        const dayStartMs = dayStart.getTime();
-        const dayEndMs = dayEnd.getTime();
-
-        const matching = confirmed.filter((r) => {
-            const createdMs = parseDateMs(r.createdAt);
-            return createdMs !== null && createdMs >= dayStartMs && createdMs < dayEndMs;
-        });
-
+        const matching = byDay.get(key) ?? [];
         const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
@@ -351,6 +366,17 @@ export const buildMonthlyBuckets = (
         }
     }
 
+    // Pre-bucket reservations by "YYYY-MM" key in a single pass
+    const byMonth = new Map<string, ReservationResponseDTO[]>();
+    for (const r of confirmed) {
+        const ms = parseDateMs(r.createdAt);
+        if (ms === null || ms < resolvedStartMs || ms > endMs) continue;
+        const key = toMonthKey(new Date(ms));
+        const bucket = byMonth.get(key) ?? [];
+        bucket.push(r);
+        byMonth.set(key, bucket);
+    }
+
     const start = new Date(resolvedStartMs);
     start.setDate(1);
     const end = new Date(endMs);
@@ -362,16 +388,9 @@ export const buildMonthlyBuckets = (
             cursor.getMonth() <= end.getMonth())
     ) {
         const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
-        const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+        const key = toMonthKey(cursor);
 
-        const monthStartMs = monthStart.getTime();
-        const monthEndMs = monthEnd.getTime();
-
-        const matching = confirmed.filter((r) => {
-            const createdMs = parseDateMs(r.createdAt);
-            return createdMs !== null && createdMs >= monthStartMs && createdMs < monthEndMs;
-        });
-
+        const matching = byMonth.get(key) ?? [];
         const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
         const reservationCount = matching.length;
         const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
@@ -411,15 +430,6 @@ export const buildEarningsTrendByCreatedAt = (
 
     return buildMonthlyBuckets(reservations, startBoundMs, endBoundMs, mediaLocations);
 };
-
-export const buildEarningsTrend = (
-    reservations: ReservationResponseDTO[],
-    period: OverviewPeriod,
-    mediaLocations: MediaLocation[] = []
-): EarningsTrendPoint[] =>
-    period === "weekly"
-        ? buildWeeklyEarningsTrend(reservations, mediaLocations)
-        : buildAllTimeEarningsTrend(reservations, mediaLocations);
 
 export const buildEarningsDashboardData = (
     payouts: StripeDashboardPayout[],

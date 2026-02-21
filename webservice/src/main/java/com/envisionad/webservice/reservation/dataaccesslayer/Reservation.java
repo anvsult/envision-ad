@@ -39,5 +39,6 @@ public class Reservation {
     private UUID mediaId;
 
     @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 }

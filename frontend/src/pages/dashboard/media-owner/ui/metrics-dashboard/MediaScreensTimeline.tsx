@@ -45,7 +45,7 @@ function packSegmentsIntoLanes(segments: MediaScreenTimelineSegment[]) {
 }
 
 export function MediaScreensTimeline({ data }: MediaScreensTimelineProps) {
-  const t = useTranslations("Dashboard.mediaOwnerMetrics.sections");
+  const t = useTranslations("mediaOwnerMetrics.sections");
   const { rows, startMs, endMs } = data;
 
   const totalDurationMs = endMs - startMs;

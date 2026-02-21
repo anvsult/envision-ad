@@ -26,7 +26,7 @@ export function ChartTooltipContent({ labelText, items }: ChartTooltipContentPro
                 {labelText}
             </Text>
             {activeItems.map((item, index) => (
-                <Group key={index} gap="xs" justify="space-between" mt={4}>
+                <Group key={item.dataKey ?? item.name ?? index} gap="xs" justify="space-between" mt={4}>
                     <Group gap={5}>
                         <ThemeIcon color={item.color} variant="filled" size={8} radius="xl" />
                         <Text size="sm" c="dimmed">
