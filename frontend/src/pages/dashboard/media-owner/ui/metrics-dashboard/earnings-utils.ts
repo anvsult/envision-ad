@@ -1,15 +1,21 @@
 import type { MetricTrend } from "@/pages/dashboard/media-owner/model/mockMetrics";
 import type {
+    DateRangeMap,
     EarningsDashboardData,
     EarningsTrendPoint,
     MetricsKpi,
     OverviewPeriod,
     PayoutAmountPoint,
+    ReservationResponseDTO,
     StripeDashboardPayout,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/types";
+import type { MediaLocation } from "@/entities/media-location";
+import { resolveDateRange } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/overview-utils";
 import {
     formatTrendMonth,
     formatTrendDate,
+    getReservationAmount,
+    parseDateMs,
     parseNumericValue,
     startOfDay,
     subtractDays,
@@ -17,6 +23,7 @@ import {
     subtractYears,
     sumAmountInRange,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/shared-utils";
+import { ReservationStatus } from "@/entities/reservation";
 
 const toKpiTrend = (
     currentTotal: number,
@@ -123,11 +130,45 @@ export const buildEarningsKpis = (
     ];
 };
 
+/**
+ * Builds a map from mediaId → location name using mediaList on each location.
+ */
+function buildLocationMap(mediaLocations: MediaLocation[]): Map<string, string> {
+    const map = new Map<string, string>();
+    for (const loc of mediaLocations) {
+        for (const media of loc.mediaList ?? []) {
+            if (media.id) {
+                map.set(media.id, loc.name);
+            }
+        }
+    }
+    return map;
+}
+
+/**
+ * Given a list of matching reservations and a location map, returns an object
+ * with a key per location name containing the summed amounts for that location.
+ */
+function buildLocationAmounts(
+    matching: ReservationResponseDTO[],
+    locationMap: Map<string, string>
+): Record<string, number> {
+    const amounts: Record<string, number> = {};
+    for (const r of matching) {
+        const locName = locationMap.get(r.mediaId) ?? "Unknown";
+        amounts[locName] = (amounts[locName] ?? 0) + getReservationAmount(r);
+    }
+    return amounts;
+}
+
 export const buildWeeklyEarningsTrend = (
-    points: PayoutAmountPoint[]
+    reservations: ReservationResponseDTO[],
+    mediaLocations: MediaLocation[] = []
 ): EarningsTrendPoint[] => {
     const today = startOfDay(new Date());
     const startDay = subtractDays(today, 6);
+    const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
+    const locationMap = buildLocationMap(mediaLocations);
 
     return Array.from({ length: 7 }, (_, index) => {
         const dayStart = new Date(startDay);
@@ -136,31 +177,46 @@ export const buildWeeklyEarningsTrend = (
         const dayEnd = new Date(dayStart);
         dayEnd.setDate(dayStart.getDate() + 1);
 
+        const dayStartMs = dayStart.getTime();
+        const dayEndMs = dayEnd.getTime();
+
+        const matching = confirmed.filter((r) => {
+            const createdMs = parseDateMs(r.createdAt);
+            return createdMs !== null && createdMs >= dayStartMs && createdMs < dayEndMs;
+        });
+
+        const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
+        const reservationCount = matching.length;
+        const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
+        const locationAmounts = buildLocationAmounts(matching, locationMap);
+
         return {
             date: formatTrendDate(dayStart),
-            earnings: sumAmountInRange(
-                points,
-                Math.floor(dayStart.getTime() / 1000),
-                Math.floor(dayEnd.getTime() / 1000)
-            ),
+            totalAmount,
+            reservationCount,
+            averageAmount,
+            ...locationAmounts,
         };
     });
 };
 
 export const buildAllTimeEarningsTrend = (
-    points: PayoutAmountPoint[]
+    reservations: ReservationResponseDTO[],
+    mediaLocations: MediaLocation[] = []
 ): EarningsTrendPoint[] => {
     const now = new Date();
+    const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
+    const locationMap = buildLocationMap(mediaLocations);
+
+    const earliestCreatedMs = confirmed.reduce((min, r) => {
+        const ms = parseDateMs(r.createdAt);
+        return ms !== null ? Math.min(min, ms) : min;
+    }, Number.POSITIVE_INFINITY);
+
     const start = new Date(now.getFullYear(), now.getMonth(), 1);
-
-    const earliestPointUnix = points.reduce(
-        (min, point) => Math.min(min, point.createdAtUnix),
-        Number.POSITIVE_INFINITY
-    );
-
-    if (Number.isFinite(earliestPointUnix)) {
-        const earliestPointDate = new Date(earliestPointUnix * 1000);
-        start.setFullYear(earliestPointDate.getFullYear(), earliestPointDate.getMonth(), 1);
+    if (Number.isFinite(earliestCreatedMs)) {
+        const earliest = new Date(earliestCreatedMs);
+        start.setFullYear(earliest.getFullYear(), earliest.getMonth(), 1);
     } else {
         start.setMonth(start.getMonth() - 11);
     }
@@ -176,13 +232,25 @@ export const buildAllTimeEarningsTrend = (
         const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
         const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
 
+        const monthStartMs = monthStart.getTime();
+        const monthEndMs = monthEnd.getTime();
+
+        const matching = confirmed.filter((r) => {
+            const createdMs = parseDateMs(r.createdAt);
+            return createdMs !== null && createdMs >= monthStartMs && createdMs < monthEndMs;
+        });
+
+        const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
+        const reservationCount = matching.length;
+        const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
+        const locationAmounts = buildLocationAmounts(matching, locationMap);
+
         monthBuckets.push({
             date: formatTrendMonth(monthStart),
-            earnings: sumAmountInRange(
-                points,
-                Math.floor(monthStart.getTime() / 1000),
-                Math.floor(monthEnd.getTime() / 1000)
-            ),
+            totalAmount,
+            reservationCount,
+            averageAmount,
+            ...locationAmounts,
         });
 
         cursor.setMonth(cursor.getMonth() + 1);
@@ -191,13 +259,142 @@ export const buildAllTimeEarningsTrend = (
     return monthBuckets;
 };
 
+export const buildDailyBuckets = (
+    reservations: ReservationResponseDTO[],
+    startMs: number,
+    endMs: number,
+    mediaLocations: MediaLocation[] = []
+): EarningsTrendPoint[] => {
+    const buckets: EarningsTrendPoint[] = [];
+    const cursor = new Date(startMs);
+    const end = new Date(endMs);
+    const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
+    const locationMap = buildLocationMap(mediaLocations);
+
+    while (cursor <= end) {
+        const dayStart = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+        const dayEnd = new Date(dayStart);
+        dayEnd.setDate(dayStart.getDate() + 1);
+
+        const dayStartMs = dayStart.getTime();
+        const dayEndMs = dayEnd.getTime();
+
+        const matching = confirmed.filter((r) => {
+            const createdMs = parseDateMs(r.createdAt);
+            return createdMs !== null && createdMs >= dayStartMs && createdMs < dayEndMs;
+        });
+
+        const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
+        const reservationCount = matching.length;
+        const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
+        const locationAmounts = buildLocationAmounts(matching, locationMap);
+
+        buckets.push({
+            date: formatTrendDate(dayStart),
+            totalAmount,
+            reservationCount,
+            averageAmount,
+            ...locationAmounts,
+        });
+
+        cursor.setDate(cursor.getDate() + 1);
+    }
+    return buckets;
+};
+
+export const buildMonthlyBuckets = (
+    reservations: ReservationResponseDTO[],
+    startMs: number,
+    endMs: number,
+    mediaLocations: MediaLocation[] = []
+): EarningsTrendPoint[] => {
+    const buckets: EarningsTrendPoint[] = [];
+    const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
+    const locationMap = buildLocationMap(mediaLocations);
+
+    let resolvedStartMs = startMs;
+    if (startMs === 0) {
+        const earliestCreatedMs = confirmed.reduce((min, r) => {
+            const ms = parseDateMs(r.createdAt);
+            return ms !== null ? Math.min(min, ms) : min;
+        }, Number.POSITIVE_INFINITY);
+
+        if (Number.isFinite(earliestCreatedMs)) {
+            resolvedStartMs = earliestCreatedMs;
+        } else {
+            const fallback = new Date();
+            fallback.setMonth(fallback.getMonth() - 11);
+            resolvedStartMs = fallback.getTime();
+        }
+    }
+
+    const start = new Date(resolvedStartMs);
+    start.setDate(1);
+    const end = new Date(endMs);
+    const cursor = new Date(start);
+
+    while (
+        cursor.getFullYear() < end.getFullYear() ||
+        (cursor.getFullYear() === end.getFullYear() &&
+            cursor.getMonth() <= end.getMonth())
+    ) {
+        const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1);
+        const monthEnd = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+
+        const monthStartMs = monthStart.getTime();
+        const monthEndMs = monthEnd.getTime();
+
+        const matching = confirmed.filter((r) => {
+            const createdMs = parseDateMs(r.createdAt);
+            return createdMs !== null && createdMs >= monthStartMs && createdMs < monthEndMs;
+        });
+
+        const totalAmount = matching.reduce((sum, r) => sum + getReservationAmount(r), 0);
+        const reservationCount = matching.length;
+        const averageAmount = reservationCount > 0 ? totalAmount / reservationCount : 0;
+        const locationAmounts = buildLocationAmounts(matching, locationMap);
+
+        buckets.push({
+            date: formatTrendMonth(monthStart),
+            totalAmount,
+            reservationCount,
+            averageAmount,
+            ...locationAmounts,
+        });
+
+        cursor.setMonth(cursor.getMonth() + 1);
+    }
+
+    return buckets;
+};
+
+export const buildEarningsTrendByCreatedAt = (
+    reservations: ReservationResponseDTO[],
+    period: OverviewPeriod,
+    dateRange?: DateRangeMap,
+    mediaLocations: MediaLocation[] = []
+): EarningsTrendPoint[] => {
+    const [startBoundMs, endBoundMs] = resolveDateRange(period, dateRange);
+
+    const DAILY_BUCKET_THRESHOLD_DAYS = 60;
+    const MS_PER_DAY = 24 * 60 * 60 * 1000;
+    const isShortRange = endBoundMs - startBoundMs <= DAILY_BUCKET_THRESHOLD_DAYS * MS_PER_DAY;
+
+    if (isShortRange) {
+        return buildDailyBuckets(reservations, startBoundMs, endBoundMs, mediaLocations);
+    }
+
+    return buildMonthlyBuckets(reservations, startBoundMs, endBoundMs, mediaLocations);
+};
+
 export const buildEarningsTrend = (
-    points: PayoutAmountPoint[],
-    period: OverviewPeriod
+    reservations: ReservationResponseDTO[],
+    period: OverviewPeriod,
+    mediaLocations: MediaLocation[] = []
 ): EarningsTrendPoint[] =>
     period === "weekly"
-        ? buildWeeklyEarningsTrend(points)
-        : buildAllTimeEarningsTrend(points);
+        ? buildWeeklyEarningsTrend(reservations, mediaLocations)
+        : buildAllTimeEarningsTrend(reservations, mediaLocations);
 
 export const buildEarningsDashboardData = (
     payouts: StripeDashboardPayout[],
@@ -206,7 +403,6 @@ export const buildEarningsDashboardData = (
     const points = mapPayoutsToAmountPoints(payouts);
     return {
         kpis: buildEarningsKpis(points, activeCampaignCount),
-        earningsTrend: buildWeeklyEarningsTrend(points),
     };
 };
 

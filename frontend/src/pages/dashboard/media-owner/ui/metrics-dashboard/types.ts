@@ -21,7 +21,21 @@ export interface PayoutAmountPoint {
     createdAtUnix: number;
 }
 
-export type OverviewPeriod = "allTime" | "weekly";
+export type OverviewPeriod = "allTime" | "weekly" | "monthly" | "yearly" | "custom";
+export type DateRangeMap = [Date | null, Date | null];
+
+export interface MediaScreenTimelineSegment {
+    id: string; // Reservation ID
+    startDateMs: number;
+    endDateMs: number;
+}
+
+export interface MediaScreenTimelineRow {
+    mediaId: string;
+    mediaName: string;
+    color: string;
+    segments: MediaScreenTimelineSegment[];
+}
 
 export interface OverviewMetricsData {
     revenueByMedia: RevenueByMediaItem[];
@@ -32,7 +46,6 @@ export interface OverviewMetricsData {
 
 export interface EarningsDashboardData {
     kpis: MetricsKpi[];
-    earningsTrend: EarningsTrendPoint[];
 }
 
 export interface PaginationInfo<T> {

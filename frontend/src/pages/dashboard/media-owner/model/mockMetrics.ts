@@ -9,7 +9,10 @@ export interface MetricsKpi {
 
 export interface EarningsTrendPoint {
     date: string;
-    earnings: number;
+    totalAmount: number;
+    reservationCount: number;
+    averageAmount: number;
+    [mediaName: string]: string | number;
 }
 
 export interface RevenueByLocationPoint {
@@ -54,13 +57,13 @@ export const mediaOwnerMetricsMock: MediaOwnerMetricsMock = {
         { id: "activeCampaigns", value: 8, deltaPercent: 0, trend: "up" },
     ],
     earningsTrend: [
-        { date: "Jan 1", earnings: 120 },
-        { date: "Jan 2", earnings: 150 },
-        { date: "Jan 3", earnings: 180 },
-        { date: "Jan 4", earnings: 220 },
-        { date: "Jan 5", earnings: 190 },
-        { date: "Jan 6", earnings: 250 },
-        { date: "Jan 7", earnings: 320 },
+        { date: "Jan 1", totalAmount: 120, reservationCount: 3, averageAmount: 40 },
+        { date: "Jan 2", totalAmount: 150, reservationCount: 4, averageAmount: 37.5 },
+        { date: "Jan 3", totalAmount: 180, reservationCount: 4, averageAmount: 45 },
+        { date: "Jan 4", totalAmount: 220, reservationCount: 5, averageAmount: 44 },
+        { date: "Jan 5", totalAmount: 190, reservationCount: 4, averageAmount: 47.5 },
+        { date: "Jan 6", totalAmount: 250, reservationCount: 6, averageAmount: 41.7 },
+        { date: "Jan 7", totalAmount: 320, reservationCount: 7, averageAmount: 45.7 },
     ],
     revenueByLocation: [
         { city: "New York", revenue: 26000 },

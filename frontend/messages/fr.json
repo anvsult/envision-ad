@@ -111,7 +111,9 @@
       "revenueByLocation": "Revenus par emplacement",
       "revenueByMedia": "Revenus par média",
       "activeCampaignDetails": "Détails des campagnes actives",
-      "payoutHistory": "Historique des paiements"
+      "payoutHistory": "Historique des paiements",
+      "performanceMetrics": "Métriques de performance",
+      "mediaScreensReservations": "Réservations d'écrans"
     },
     "table": {
       "transactionId": "ID de transaction",
@@ -124,7 +126,11 @@
     },
     "period": {
       "allTime": "Tout le temps",
-      "weekly": "Hebdomadaire"
+      "yearly": "Annuel",
+      "monthly": "Mensuel",
+      "weekly": "Hebdomadaire",
+      "custom": "Personnalisé",
+      "customPlaceholder": "Sélectionnez une plage..."
     },
     "emptyState": {
       "noData": "Aucune donnée disponible"
@@ -315,7 +321,7 @@
     "table": {
       "name": "Nom",
       "organizationSize": "Taille",
-      "address": "Adresse",
+      "address": "Ville",
       "dateCreated": "Date de création",
       "roles": "Rôles",
       "actions": "Actions",
@@ -1061,7 +1067,6 @@
         "denyFailed": "Échec du refus du statut de vérification de l’organisation."
       }
     },
-
     "metricsPage": {
       "title": "Métriques admin",
       "empty": "Aucune donnée",

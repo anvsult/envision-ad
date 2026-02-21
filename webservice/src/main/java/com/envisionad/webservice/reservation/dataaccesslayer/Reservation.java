@@ -3,13 +3,13 @@ package com.envisionad.webservice.reservation.dataaccesslayer;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "reservations")
 @Data
 @NoArgsConstructor
 public class Reservation {
@@ -36,4 +36,7 @@ public class Reservation {
     private String campaignId;
 
     private UUID mediaId;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }

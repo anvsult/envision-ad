@@ -111,7 +111,9 @@
       "revenueByLocation": "Revenue by Location",
       "revenueByMedia": "Revenue by Media",
       "activeCampaignDetails": "Active Campaigns Details",
-      "payoutHistory": "Payout History"
+      "payoutHistory": "Payout History",
+      "performanceMetrics": "Performance Metrics",
+      "mediaScreensReservations": "Media Screens Reservations"
     },
     "table": {
       "transactionId": "Transaction ID",
@@ -124,7 +126,11 @@
     },
     "period": {
       "allTime": "All-time",
-      "weekly": "Weekly"
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "weekly": "Weekly",
+      "custom": "Custom",
+      "customPlaceholder": "Select date range..."
     },
     "emptyState": {
       "noData": "No data available"
@@ -268,7 +274,7 @@
   },
   "browse": {
     "searchTitle": "Title",
-    "searchAddress": "Address",
+    "searchAddress": "City",
     "languages": {
       "primary": "en",
       "fallback": "fr-CA"

@@ -345,12 +345,13 @@ VALUES
 
 -- 3. Insert visual-impact media reservations for dashboard metrics preview
 -- These are tied to media owned by Visual Impact business_id: b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10
-INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, advertiser_id, campaign_id, media_id)
+INSERT INTO reservations (reservation_id, start_date, end_date, created_at, status, total_price, advertiser_id, campaign_id, media_id)
 VALUES
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100001',
-        NOW() - INTERVAL '3 days',
+        NOW() - INTERVAL '10 days',
         NOW() + INTERVAL '5 days',
+        NOW() - INTERVAL '7 days',
         'CONFIRMED',
         2400.00,
         'auth0|6934e8515479d2b6d3cf7575',
@@ -361,6 +362,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100002',
         NOW() - INTERVAL '2 days',
         NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1800.00,
         'auth0|696a88eb347945897ef17093',
@@ -371,6 +373,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100003',
         NOW() - INTERVAL '6 days',
         NOW() + INTERVAL '2 days',
+        NOW() - INTERVAL '15 days',
         'CONFIRMED',
         1200.00,
         'auth0|6979541a0aa6c868cf029d34',
@@ -381,6 +384,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100004',
         NOW() - INTERVAL '5 days',
         NOW() + INTERVAL '1 day',
+        NOW() - INTERVAL '9 days',
         'CONFIRMED',
         950.00,
         'auth0|6934e8515479d2b6d3cf7575',
@@ -391,6 +395,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100005',
         NOW() - INTERVAL '18 days',
         NOW() - INTERVAL '10 days',
+        NOW() - INTERVAL '22 days',
         'CONFIRMED',
         1100.00,
         'auth0|696a88eb347945897ef17093',
@@ -401,6 +406,7 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100006',
         NOW() + INTERVAL '1 day',
         NOW() + INTERVAL '9 days',
+        NOW() - INTERVAL '2 days',
         'PENDING',
         1500.00,
         'auth0|696a89137cfdb558ea4a4a4a',
@@ -409,8 +415,9 @@ VALUES
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100007',
-        NOW() - INTERVAL '2 days',
+        NOW() - INTERVAL '4 days',
         NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '1 day',
         'CONFIRMED',
         1750.00,
         'auth0|6934e8515479d2b6d3cf7575',
@@ -419,8 +426,9 @@ VALUES
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100008',
-        NOW() - INTERVAL '1 day',
+        NOW() - INTERVAL '4 day',
         NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '1 day',
         'CONFIRMED',
         1650.00,
         'auth0|696a89137cfdb558ea4a4a4a',

@@ -8,33 +8,36 @@ import type { ChartTooltipPayload } from "@/pages/dashboard/media-owner/ui/metri
 
 interface ChartTooltipContentProps {
     labelText: string;
-    seriesLabel: string;
-    item: ChartTooltipPayload;
+    items: ChartTooltipPayload[];
 }
 
-export function ChartTooltipContent({
-    labelText,
-    seriesLabel,
-    item,
-}: ChartTooltipContentProps) {
+export function ChartTooltipContent({ labelText, items }: ChartTooltipContentProps) {
     const locale = useLocale();
+
+    if (!items || items.length === 0) return null;
+
+    const activeItems = items.filter((item) => Number(item.value) > 0);
+
+    if (activeItems.length === 0) return null;
 
     return (
         <Paper px="md" py="xs" withBorder shadow="md" radius="md">
             <Text fw={500} mb={5}>
                 {labelText}
             </Text>
-            <Group gap="xs" justify="space-between">
-                <Group gap={5}>
-                    <ThemeIcon color={item.color} variant="filled" size={8} radius="xl" />
-                    <Text size="sm" c="dimmed">
-                        {seriesLabel}
+            {activeItems.map((item, index) => (
+                <Group key={index} gap="xs" justify="space-between" mt={4}>
+                    <Group gap={5}>
+                        <ThemeIcon color={item.color} variant="filled" size={8} radius="xl" />
+                        <Text size="sm" c="dimmed">
+                            {item.name}
+                        </Text>
+                    </Group>
+                    <Text size="sm" fw={500}>
+                        {formatCurrency(item.value, { locale })}
                     </Text>
                 </Group>
-                <Text size="sm" fw={500}>
-                    {formatCurrency(item.value, { locale })}
-                </Text>
-            </Group>
+            ))}
         </Paper>
     );
 }
