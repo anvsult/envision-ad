@@ -417,6 +417,8 @@
     },
     "verificationHistory": "Verification History",
     "requestVerification": "Request Verification",
+    "showOriginal": "Show Original",
+    "showTranslation": "Show Translation",
     "verificationTable": {
       "noHistory": "No verification request history found.",
       "requestDate": "Request Date",
