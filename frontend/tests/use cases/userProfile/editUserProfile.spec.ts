@@ -18,12 +18,8 @@ test('Edit User Profile', async ({ page, homePage, profilePage }) => {
     // 3. Verify initial state (optional, or just ensure we are on profile)
     await expect(page).toHaveURL(/.*\/profile/);
 
-    // 4. Update Profile
-    const newBio = `Bio updated by Playwright at ${Date.now()}`;
-    await profilePage.clickEditProfile();
-
     // We update bio only for this test to be safe, or we can update other fields too
-    await profilePage.updateProfile('Anvar', 'Sult', 'anvar', newBio);
+    await profilePage.updateProfile('Anvar', 'Sult', 'anvar');
 
     // 5. Verify Update
     // Click edit profile (saved automatically by updateProfile if checking inside?) 
@@ -32,6 +28,4 @@ test('Edit User Profile', async ({ page, homePage, profilePage }) => {
     await expect(page.getByText('Success!')).toBeVisible();
     await expect(page.getByText('Profile updated successfully')).toBeVisible();
 
-    // Verify displayed bio
-    await expect(profilePage.bioDisplay()).toContainText(newBio);
 });

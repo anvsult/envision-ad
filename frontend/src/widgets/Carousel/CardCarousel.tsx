@@ -22,6 +22,8 @@ function CardCarousel({title, children, slideSize}: CardCarouselProps) {
                 slideSize={slideSize ?? { base: '100%', xs:'33%', sm: '25%', md: '25%' }}
                 slideGap={{ base: 0, xs: 'xs', sm: 'md' }}
                 emblaOptions={{ loop: true, align: 'start', dragFree: true}}
+                nextControlProps={{'aria-label': "Next Slide"}}
+                previousControlProps={{'aria-label': "Previous Slide"}}
             >
                 {children}
             </Carousel>

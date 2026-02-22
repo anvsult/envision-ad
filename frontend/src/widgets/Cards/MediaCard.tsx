@@ -47,7 +47,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
     const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule ?? []);
 
     return (
-        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never"
+        <Anchor href={"/medias/" + href} id={"MediaCard" + index} c="black" underline="never" aria-label={`View Details for ${title}`}
             style={{scrollMarginTop: "25vh"}}
         >
             <Paper
@@ -77,7 +77,6 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                             <Text id={"MediaCardPrice" + index} size="lg" lineClamp={1} m={0}>
                                 {t('perWeek', { price: formatCurrency(price, { locale }) })}
                             </Text>
-
 
                             {mediaLocation &&
                             <Text id={"MediaCardAddress" + index} size="xs" lineClamp={1} m={0}>

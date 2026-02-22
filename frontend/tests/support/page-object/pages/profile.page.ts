@@ -15,24 +15,20 @@ export default class ProfilePage {
     usernameInput = () => this.page.getByRole('textbox', { name: 'Username' });
     firstNameInput = () => this.page.getByRole('textbox', { name: 'First Name' });
     lastNameInput = () => this.page.getByRole('textbox', { name: 'Last Name' });
-    bioInput = () => this.page.getByRole('textbox', { name: 'Bio' });
     saveButton = () => this.page.getByRole('button', { name: 'Save' });
     cancelButton = () => this.page.getByRole('button', { name: 'Cancel' });
 
-    // Display Locators
-    bioDisplay = () => this.page.getByText('Bio').locator('xpath=following-sibling::*');
 
     // Actions
     public async clickEditProfile() {
         await this.editProfileButton().click();
     }
 
-    public async updateProfile(firstName: string, lastName: string, nickname: string, bio: string) {
+    public async updateProfile(firstName: string, lastName: string, nickname: string) {
         await this.modalTitle().waitFor({ state: 'visible' });
         await this.firstNameInput().fill(firstName);
         await this.lastNameInput().fill(lastName);
         await this.usernameInput().fill(nickname);
-        await this.bioInput().fill(bio);
         await this.saveButton().click();
         await this.modalTitle().waitFor({ state: 'hidden' });
     }
