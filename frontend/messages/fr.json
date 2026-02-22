@@ -228,18 +228,18 @@
     "weeklyImpressions": "~{count} impressions",
     "weeklyImpressionsPerWeek": "~{count} impressions par semaine",
     "months": {
-      "january": "Janvier",
-      "february": "Février",
-      "march": "Mars",
-      "april": "Avril",
+      "january": "Jan",
+      "february": "Fév",
+      "march": "Mar",
+      "april": "Avr",
       "may": "Mai",
       "june": "Juin",
-      "july": "Juillet",
+      "july": "Juil",
       "august": "Août",
-      "september": "Septembre",
-      "october": "Octobre",
-      "november": "Novembre",
-      "december": "Décembre"
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Déc"
     },
     "days": {
       "monday": "Lundi",

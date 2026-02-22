@@ -1,33 +1,19 @@
 "use client";
 
 import {
-  ActionIcon,
-  Anchor,
-  AspectRatio,
   Button,
-  Card,
-  Center,
   Container,
-  Divider,
-  Group,
-  Image,
-  Loader,
-  Modal,
-  SimpleGrid,
   Stack,
   Text,
-  Title,
   Box,
   Tooltip,
 } from "@mantine/core";
-import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
-import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getMediaById, SpecialSort } from "@/features/media-management/api";
 import { getMediaReservations } from "@/features/reservation-management/api";
-import { useLocale, useTranslations } from "next-intl";
-import { getJoinedAddress, Media } from "@/entities/media";
+import { useTranslations } from "next-intl";
+import { Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
 import { MediaCardCarouselLoader, MediaCardStackLoader } from "@/widgets/Carousel/CardCarousel";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
@@ -35,30 +21,12 @@ import { LatLngLiteral } from "leaflet";
 import { ReservationStatus } from "@/entities/reservation";
 import { usePermissions } from "@/app/providers";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { formatCurrency } from "@/shared/lib/formatCurrency";
-import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
 import { useMediaQuery } from "@mantine/hooks";
-
-const monthDefs = [
-  { id: "January", key: "january" },
-  { id: "February", key: "february" },
-  { id: "March", key: "march" },
-  { id: "April", key: "april" },
-  { id: "May", key: "may" },
-  { id: "June", key: "june" },
-  { id: "July", key: "july" },
-  { id: "August", key: "august" },
-  { id: "September", key: "september" },
-  { id: "October", key: "october" },
-  { id: "November", key: "november" },
-  { id: "December", key: "december" },
-];
-
+import { MediaDetails } from "@/widgets/MediaDetails/MediaDetails";
 
 export default function MediaDetailsPage() {
   const t = useTranslations("mediaPage");
   const isMobile = useMediaQuery("(max-width: 575px)");
-  const locale = useLocale();
 
   const params = useParams();
   const id = params?.id as string | undefined;
@@ -67,7 +35,6 @@ export default function MediaDetailsPage() {
   const [loading, setLoading] = useState(true); //Whether the media for the current page is loading or not
   const [error, setError] = useState<string | null>(null); //The error message
   const [reserveModalOpen, setReserveModalOpen] = useState(false);
-  const [imageModalOpen, setImageModalOpen] = useState(false);
   const [activeAdsCount, setActiveAdsCount] = useState<number>(0);
   const user = useUser();
   const { permissions } = usePermissions();
@@ -124,306 +91,43 @@ export default function MediaDetailsPage() {
     size: 10
   }), [latlng, media?.businessId, media?.id]);
 
-
-  if (loading) {
-    return (
-      <>
-        <Container size="lg" py="xl">
-          <Center>
-            <Loader />
-          </Center>
-        </Container>
-      </>
-    );
-  }
-
-  if (error || !media) {
-    return (
-      <>
-        <Container size="lg" py="xl">
-          <Stack align="center" gap="sm">
-            <Text fw={600}>{t("errorTitle")}</Text>
-            <Text size="sm" c="dimmed">
-              {error ?? t("errorNotFound")}
-            </Text>
-            <BackButton />
-          </Stack>
-        </Container>
-      </>
-    );
-  }
-
-  const activeMonths = new Set(media.schedule?.selectedMonths ?? []);
-
-  const weeklyImpressions = calculateWeeklyImpressions(media.dailyImpressions ?? 0, media.schedule.weeklySchedule ?? []);
-
-  const isPoster = media.typeOfDisplay === "POSTER";
-  const isDigital = media.typeOfDisplay === "DIGITAL";
-
-  const typeLabel = isPoster
-    ? t("mediaTypes.POSTER")
-    : isDigital
-      ? t("mediaTypes.DIGITAL")
-      : media.typeOfDisplay || "N/A";
-
-  const loopDurationLabel =
-    media.loopDuration != null
-      ? t("loopDurationSeconds", { seconds: media.loopDuration })
-      : "N/A";
-
-  const widthLabel = media.width != null ? `${media.width}` : "N/A";
-  const heightLabel = media.height != null ? `${media.height}` : "N/A";
-
-  const priceLabel =
-    media.price != null
-      ? t("pricePerWeek", { price: formatCurrency(media.price, { locale }) })
-      : t("priceUnavailable");
-
-  const imageSrc = media.imageUrl || "/sample-screen.jpg";
-
   return (
     <>
-      <Container size="md" py={20} px={isMobile? "sm" :80}>
-        <Stack gap="sm">
-          {/* Title Bar */}
-          <Group gap="xs" justify="space-between">
-            <Group gap="xs">
-              <Anchor href={"/browse"}>
-
-                <ActionIcon
-                  variant="subtle"
-                  radius="xl"
-                  size="lg"
-
-                  aria-label="Go back"
-                >
-                  <IconArrowLeft size={20} />
-                </ActionIcon>
-              </Anchor>
-              <Title order={2}>{media.title}</Title>
-            </Group>
-            <Button
-              variant="outline"
-              radius="xl"
-              p={0}
-              style={{ width: 40, height: 40, borderRadius: "50%" }}
+      <Container size="lg" py={20} px={isMobile? "sm" :80}>
+        <Stack gap="xl">
+          <MediaDetails media={media} loading={loading} error={error} activeAdsCount={activeAdsCount} >
+            <Tooltip
+              label={!user.user ? t("loginRequired") : t("noPermission")}
+              disabled={!!user.user && permissions.includes("create:reservation")}
+              position="top"
+              withArrow
             >
-              <IconAlertCircle size={20} />
-            </Button>
-          </Group>
-          {/* Columns */}
-          <Group align="stretch" gap="50">
-            {/* Left Column */}
-            <Stack gap="sm" style={{ flex: 2, minWidth: 320 }}>
-              {/* Media Image */}
-              <Anchor
-                tabIndex={0}
-                h="auto"
-                w="auto"
-                onClick={() => setImageModalOpen(true)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setImageModalOpen(true);
-                  }
-                }}
-                style={{
-                  cursor: "zoom-in",
-                  borderRadius: 12,
-                  overflow: "hidden",
-                }}
-
-              >
-                <AspectRatio ratio={1}>
-                  <Image
-                    src={imageSrc}
-                    alt={media.title}
-                    fit="cover"
-                    radius={0}
-                  />
-                </AspectRatio>
-              </Anchor>
-              {/* Address */}
-              <Stack gap={4}>
-                <Text fw={600} size="lg">
-                  {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
-                </Text>
-                <Text size="sm">{media.businessName}</Text>
-                <Text size="sm" c="dimmed">
-                  {t("currentlyDisplaying", { count: activeAdsCount })}
-                </Text>
-              </Stack>
-
-              <Divider />
-
-              {/* Media Details */}
-              <Stack gap="5" >
-                <Text fw={600}>{t("detailsTitle")}</Text>
-
-                {(() => {
-                  const rows: [string, string][] = [
-                    [t("details.type"), typeLabel],
-                    [t("details.aspectRatio"), media.aspectRatio || "N/A"],
-                    [t("details.resolution"), media.resolution || "N/A"],
-                    [t("details.width"), widthLabel],
-                    [t("details.height"), heightLabel],
-                  ];
-
-                  if (!isPoster) {
-                    rows.push([t("details.loopDuration"), loopDurationLabel]);
-                  }
-
-                  rows.push([
-                    t("details.weeklyImpressions"),
-                    t("weeklyImpressions", {
-                      count: weeklyImpressions,
-                    }),
-                  ]);
-
-                  return rows.map(([label, val]) => (
-                    <Group key={label} justify="space-between">
-                      <Text size="sm" c="dimmed">
-                        {label}:
-                      </Text>
-                      <Text size="sm">{val}</Text>
-                    </Group>
-                  ));
-                })()}
-              </Stack>
-            </Stack>
-
-            {/* Right Column */}
-            <Stack style={{ flex: 1, minWidth: 320 }} align="stretch" justify="flex-start">
-              {/* Schedule */}
-              <Card withBorder radius="lg" p="lg">
-                <Stack gap="md">
-                  <Text fw="md">{t("scheduleTitle")}</Text>
-
-                  {/* Months */}
-                  <Stack gap="xs">
-                    <Text size="sm">
-                      {t("monthsTitle")}
-                    </Text>
-
-                    <SimpleGrid cols={4} spacing={6} verticalSpacing={6}>
-                      {monthDefs.map((m) => {
-                        const active = activeMonths.has(m.id);
-                        return (
-                          <Button
-                            key={m.id}
-                            size="xs"
-                            px={8}
-                            variant={active ? "filled" : "outline"}
-                            color={active ? "blue" : "gray"}
-                            disabled={!active}
-                            styles={{
-                              label: {
-                                whiteSpace: "normal",
-                                lineHeight: 1.2,
-                              },
-                            }}
-                          >
-                            {t(`months.${m.key}`)}
-                          </Button>
-                        );
-                      })}
-                    </SimpleGrid>
-                  </Stack>
-
-                  {/* Hours */}
-                  <Stack gap="xs">
-                    <Text size="sm" fw={500}>
-                      {t("hoursTitle")}
-                    </Text>
-
-                    {media.schedule.weeklySchedule.map((day) => {
-                      const isActive = day.isActive;
-                      const hoursText =
-                        !isActive ? t("days.closed")
-                          : ((day.startTime ?? "00:00") + " - " + (day.endTime ?? "00:00"));
-
-                      return (
-                        <Group key={day.dayOfWeek} justify="space-between">
-                          <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
-                            {t(`days.${day.dayOfWeek}`)}:
-                          </Text>
-                          <Text size="sm" c={!isActive ? "dimmed" : "dark"}>
-                            {hoursText}
-                          </Text>
-                        </Group>
-                      );
-                    })}
-                  </Stack>
-                </Stack>
-              </Card>
-
-              <Card withBorder radius="lg" shadow="md" p="lg">
-                <Stack align="center">
-                  <Text fw={600} size="xl" td="underline">
-                    {priceLabel}
-                  </Text>
-                  <Tooltip
-                    label={!user.user ? t("loginRequired") : t("noPermission")}
-                    disabled={!!user.user && permissions.includes("create:reservation")}
-                    position="top"
-                    withArrow
-                  >
-                    <Box w="100%">
-                      <Button
-                        radius="xl"
-                        fullWidth
-                        onClick={() => setReserveModalOpen(true)}
-                        disabled={!user.user || !permissions.includes("create:reservation")}
-                      >
-                        {t("reserveButton")}
-                      </Button>
-                    </Box>
-                  </Tooltip>
-                  <Text size="xs" c="dimmed">
-                    {t("reserveNote")}
-                  </Text>
-                </Stack>
-              </Card>
-            </Stack>
-            <Container w="100%" p="0">
-              {
-                isMobile ?
-                <MediaCardStackLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
-                :
-                <MediaCardCarouselLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
-              }
-            </Container>
-          </Group>
+              <Box w="100%">
+                <Button
+                  radius="xl"
+                  fullWidth
+                  onClick={() => setReserveModalOpen(true)}
+                  disabled={!user.user || !permissions.includes("create:reservation")}
+                >
+                  {t("reserveButton")}
+                </Button>
+              </Box>
+            </Tooltip>
+            <Text size="xs" c="dimmed">
+              {t("reserveNote")}
+            </Text>
+          </MediaDetails>
+          <Container w="100%" p="0">
+            {
+              media && 
+              (isMobile ?
+              <MediaCardStackLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
+              :
+              <MediaCardCarouselLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>)
+            }
+          </Container>
         </Stack>
-        <Modal
-          opened={imageModalOpen}
-          onClose={() => setImageModalOpen(false)}
-          centered
-          withCloseButton
-          title={media.title}
-          size="auto"
-          padding="md"
-          overlayProps={{ opacity: 0.6 }}
-          styles={{
-            content: {
-              maxWidth: "92vw",
-            },
-            body: {
-              paddingTop: 8,
-            },
-          }}
-        >
-          <Image
-            src={imageSrc}
-            alt={media.title}
-            fit="contain"
-            w="auto"
-            radius="md"
-            styles={{
-              root: { maxWidth: "88vw", maxHeight: "80vh" },
-            }}
-          />
-        </Modal>
+        
         {media && (
           <ReserveMediaModal
             opened={reserveModalOpen}
