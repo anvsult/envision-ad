@@ -13,8 +13,16 @@ import {Header} from "@/widgets/Header/Header";
 import {ModalsProvider} from "@mantine/modals";
 import {auth0} from "@/shared/api/auth0/auth0";
 import {Auth0Provider} from "@auth0/nextjs-auth0";
-import {Metadata} from "next";
 import {OrganizationProvider, PermissionsProvider} from "@/app/providers";
+import {Metadata, Viewport} from "next";
+import {PermissionsProvider} from "@/app/providers";
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    // maximumScale: 1, // Removed this to allow users to zoom if needed for accessibility
+    // userScalable: false,
+}
 
 export async function generateMetadata({
                                            params,
@@ -44,38 +52,35 @@ export default async function RootLayout({
     const user = session?.user;
 
     return (
-        <NextIntlClientProvider messages={messages} locale={locale}>
             <html
                 lang={locale}
                 {...mantineHtmlProps}
                 className={`${lato.variable} ${josefinSans.variable}`}
             >
             <head>
-                <ColorSchemeScript/>
-                <meta
-                    name="viewport"
-                    content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
-                />
+                {/* The title is handled by Next.js*/}
+                <ColorSchemeScript defaultColorScheme="light"/>
             </head>
             <body style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-            <Auth0Provider user={user}>
-                <PermissionsProvider>
-                    <OrganizationProvider>
-                        <MantineProvider theme={theme}>
-                            <ModalsProvider>
-                                <Notifications/>
-                                <Header/>
-                                <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-                                    {children}
-                                    <Footer/>
-                                </div>
-                            </ModalsProvider>
-                        </MantineProvider>
-                    </OrganizationProvider>
-                </PermissionsProvider>
-            </Auth0Provider>
+            <NextIntlClientProvider messages={messages} locale={locale}>
+                <Auth0Provider user={user}>
+                    <PermissionsProvider>
+                        <OrganizationProvider>
+                            <MantineProvider theme={theme}>
+                                <ModalsProvider>
+                                    <Notifications/>
+                                    <Header/>
+                                    <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                                        {children}
+                                        <Footer/>
+                                    </div>
+                                </ModalsProvider>
+                            </MantineProvider>
+                        </OrganizationProvider>
+                    </PermissionsProvider>
+                </Auth0Provider>
+            </NextIntlClientProvider>
             </body>
-            </html>
-        </NextIntlClientProvider>
+        </html>
     );
 }

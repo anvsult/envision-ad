@@ -250,11 +250,12 @@ export function AdvertiserOverview() {
     });
 
     return (
-        <Stack gap="xl" p="xl">
-            <Group justify="space-between" align="center" mb="lg">
+        <Stack gap="lg" p="xl">
+            <Group justify="space-between" align="center">
                 <Title order={2}>Dashboard Overview</Title>
                 <Group>
                     <Select
+                        aria-label={t("timeRangeSelect")}
                         value={timeRange}
                         onChange={setTimeRange}
                         data={[

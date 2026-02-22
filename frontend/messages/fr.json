@@ -66,6 +66,7 @@
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
       "myAds": "Mes Campagnes",
+      "timeRangeSelect": "Sélectionner la période du tableau de bord",
       "graphs": {
         "totalAdSpend": "Dépenses publicitaires totales",
         "activeCampaigns": "Campagnes actives",
@@ -844,7 +845,8 @@
       },
       "tabs": {
         "pending": "En Attente",
-        "confirmed": "Confirmé"
+        "confirmed": "Confirmé",
+        "filterLabel": "Filtrer par statut"
       },
       "status": {
         "pending": "En Attente",
@@ -852,7 +854,8 @@
       },
       "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
       "pending": "En attente",
-      "unknownCampaign": "Nom de campagne inconnue"
+      "unknownCampaign": "Nom de campagne inconnue",
+      "loading": "Chargement des demandes publicitaires..."
     },
     "modal": {
       "title": "Refuser la Demande Publicitaire",
@@ -1030,7 +1033,8 @@
       },
       "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
       "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
-      "deleteCampaign": "Supprimer la campagne"
+      "deleteCampaign": "Supprimer la campagne",
+      "deleteAd": "Supprimer l’annonce {name}"
     },
     "notifications": {
       "loadFailed": {
@@ -1111,6 +1115,8 @@
       "reviewUnavailable": "Révision indisponible",
       "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
       "pendingMedia": "Médias en attente d’approbation",
+      "pendingMediaPagination": "{start}-{end} sur {total} médias en attente",
+      "loadingPendingMedia": "Chargement des médias en attente...",
       "image": "Image",
       "name": "Nom",
       "status": "Statut",
@@ -1142,6 +1148,7 @@
     "metricsPage": {
       "title": "Métriques admin",
       "empty": "Aucune donnée",
+      "loading": "Chargement des métriques...",
       "errors": {
         "loadFailed": "Impossible de charger les métriques"
       },
@@ -1167,7 +1174,8 @@
         "users": "Utilisateurs",
         "mediaOwners": "Propriétaires de médias",
         "advertisers": "Annonceurs",
-        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme."
+        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme.",
+        "ariaLabel": "Graphique de répartition des rôles des utilisateurs montrant {total} utilisateurs au total, avec {mediaOwners} propriétaires de médias et {advertisers} annonceurs."
       }
     }
   },

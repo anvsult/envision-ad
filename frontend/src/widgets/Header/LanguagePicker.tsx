@@ -74,8 +74,8 @@ export function LanguagePicker() {
             },
           }}
       >
-        <Group gap={4}>
-          <Text size="sm" fw={600}>
+        <Group component="span" gap={4}>
+          <Text component="span" size="sm" fw={600}>
             {current.label}
           </Text>
         </Group>
