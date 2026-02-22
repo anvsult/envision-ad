@@ -37,29 +37,21 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
 
   if (loading) {
     return (
-      <>
-        <Container size="lg" py="xl">
-          <Center>
-            <Loader />
-          </Center>
-        </Container>
-      </>
+      <Center>
+        <Loader />
+      </Center>
     );
   }
 
   if (error || !media) {
     return (
-      <>
-        <Container size="lg" py="xl">
-          <Stack align="center" gap="sm">
-            <Text fw={600}>{t("errorTitle")}</Text>
-            <Text size="sm" c="dimmed">
-              {error ?? t("errorNotFound")}
-            </Text>
-            <BackButton />
-          </Stack>
-        </Container>
-      </>
+      <Stack align="center" gap="sm">
+        <Text fw={600}>{t("errorTitle")}</Text>
+        <Text size="sm" c="dimmed">
+          {error ?? t("errorNotFound")}
+        </Text>
+        <BackButton />
+      </Stack>
     );
   }
 
@@ -106,16 +98,12 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
           <Stack gap="sm" style={{ flex: 2, minWidth: 320, width: 430 }}>
             {/* Media Image */}
             <Anchor
-              tabIndex={0}
+              component="button"
+              type="button"
               h="auto"
               w="auto"
               onClick={() => setImageModalOpen(true)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  setImageModalOpen(true);
-                }
-              }}
+              aria-label={`Zoom image: ${media.title}`}
               style={{
                 cursor: "zoom-in",
                 borderRadius: 12,
@@ -226,8 +214,11 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
                   {media.schedule.weeklySchedule.map((day) => {
                     const isActive = day.isActive;
                     const hoursText =
-                      !isActive ? t("days.closed")
-                        : ((day.startTime ?? "00:00") + " - " + (day.endTime ?? "00:00"));
+                      !isActive
+                        ? t("days.closed")
+                        : day.startTime && day.endTime
+                          ? `${day.startTime} - ${day.endTime}`
+                          : "—";
 
                     return (
                       <Group key={day.dayOfWeek} justify="space-between">
