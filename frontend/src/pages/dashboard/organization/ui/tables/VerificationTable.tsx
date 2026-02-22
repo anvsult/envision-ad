@@ -3,7 +3,7 @@
 import {Accordion, Table, Text, Badge, ScrollArea, Group, Loader, ActionIcon, Tooltip} from "@mantine/core";
 import {useLocale, useTranslations} from "next-intl";
 import {VerificationResponseDTO} from "@/entities/organization/model/verification";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useMemo, useState} from "react";
 import translate from "translate";
 import {IconLanguage} from "@tabler/icons-react";
 
@@ -17,6 +17,7 @@ interface TranslatedComment {
     translated: string | null;
     isTranslating: boolean;
     showOriginal: boolean;
+    hasBeenProcessed: boolean;
 }
 
 export function VerificationHistoryTable({verifications}: VerificationHistoryTableProps) {
@@ -25,39 +26,58 @@ export function VerificationHistoryTable({verifications}: VerificationHistoryTab
 
     const [commentStates, setCommentStates] = useState<Record<string, TranslatedComment>>({});
 
-    const sortedVerifications = [...verifications].sort((a, b) =>
-        new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+    const sortedVerifications = useMemo(
+        () => [...verifications].sort((a, b) =>
+            new Date(b.dateCreated).getTime() - new Date(a.dateCreated).getTime()
+        ),
+        [verifications]
+    );
+
+    const verificationIdKey = useMemo(
+        () => sortedVerifications.map(v => v.verificationId).join(","),
+        [sortedVerifications]
     );
 
     useEffect(() => {
+        let isMounted = true;
+
         sortedVerifications.forEach((verification) => {
-            const { verificationId, comments } = verification;
+            const {verificationId, comments} = verification;
             if (!comments) return;
 
-            if (commentStates[verificationId]?.translated !== undefined ||
-                commentStates[verificationId]?.isTranslating) return;
+            if (commentStates[verificationId]?.hasBeenProcessed) return;
 
             setCommentStates((prev) => ({
                 ...prev,
-                [verificationId]: { translated: null, isTranslating: true, showOriginal: false },
+                [verificationId]: {
+                    translated: null,
+                    isTranslating: true,
+                    showOriginal: false,
+                    hasBeenProcessed: true,
+                },
             }));
 
-            translate(comments, { from: locale === "fr" ? "en" : "fr", to: locale })
+            translate(comments, {from: locale === "fr" ? "en" : "fr", to: locale})
                 .then((translated) => {
+                    if (!isMounted) return;
                     setCommentStates((prev) => ({
                         ...prev,
-                        [verificationId]: { ...prev[verificationId], translated, isTranslating: false },
+                        [verificationId]: {...prev[verificationId], translated, isTranslating: false},
                     }));
                 })
                 .catch(() => {
+                    if (!isMounted) return;
                     setCommentStates((prev) => ({
                         ...prev,
-                        [verificationId]: { ...prev[verificationId], translated: comments, isTranslating: false },
+                        [verificationId]: {...prev[verificationId], translated: comments, isTranslating: false},
                     }));
                 });
         });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sortedVerifications.map(v => v.verificationId).join(","), locale]);
+
+        return () => {
+            isMounted = false;
+        };
+    }, [verificationIdKey, locale]);
 
     const toggleShowOriginal = (verificationId: string) => {
         setCommentStates((prev) => ({
@@ -128,11 +148,11 @@ export function VerificationHistoryTable({verifications}: VerificationHistoryTab
                                                 <Table.Td>
                                                     {verification.comments ? (
                                                         <Group gap="xs" align="center" wrap="nowrap">
-                                                            <Text size="sm" style={{ wordBreak: "break-word", flex: 1 }}>
+                                                            <Text size="sm" style={{wordBreak: "break-word", flex: 1}}>
                                                                 {displayedComment}
                                                             </Text>
                                                             {state?.isTranslating ? (
-                                                                <Loader size="xs" style={{ flexShrink: 0 }} />
+                                                                <Loader size="xs" style={{flexShrink: 0}}/>
                                                             ) : state?.translated && state.translated !== verification.comments ? (
                                                                 <Tooltip
                                                                     label={state.showOriginal ? t("showTranslation") : t("showOriginal")}
@@ -142,10 +162,11 @@ export function VerificationHistoryTable({verifications}: VerificationHistoryTab
                                                                         size="sm"
                                                                         variant="subtle"
                                                                         color="gray"
-                                                                        style={{ flexShrink: 0 }}
+                                                                        style={{flexShrink: 0}}
+                                                                        aria-label={state.showOriginal ? t("showTranslation") : t("showOriginal")}
                                                                         onClick={() => toggleShowOriginal(verification.verificationId)}
                                                                     >
-                                                                        <IconLanguage size={16} />
+                                                                        <IconLanguage size={16}/>
                                                                     </ActionIcon>
                                                                 </Tooltip>
                                                             ) : null}
