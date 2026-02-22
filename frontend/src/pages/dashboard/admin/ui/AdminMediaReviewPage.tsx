@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Container,
   Group,
@@ -8,59 +8,21 @@ import {
   Text,
   Title,
   Stack,
-  Card,
-  Divider,
   Loader,
   Center,
-  SimpleGrid,
   Modal,
-  Image,
 } from "@mantine/core";
-import { IconAlertCircle } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/shared/lib/i18n/navigation";
 import { getMediaById } from "@/features/media-management/api";
 import { useTranslations } from "next-intl";
-import { getJoinedAddress, Media } from "@/entities/media";
+import { Media } from "@/entities/media";
 import { useAdminMedia } from "@/pages/dashboard/admin/hooks/useAdminMedia";
 import { notifications } from "@mantine/notifications";
 import { MediaStatusEnum } from "@/entities/media/model/media";
 import { useMediaQuery } from "@mantine/hooks";
-
-const monthDefs = [
-  { id: "January", key: "january" },
-  { id: "February", key: "february" },
-  { id: "March", key: "march" },
-  { id: "April", key: "april" },
-  { id: "May", key: "may" },
-  { id: "June", key: "june" },
-  { id: "July", key: "july" },
-  { id: "August", key: "august" },
-  { id: "September", key: "september" },
-  { id: "October", key: "october" },
-  { id: "November", key: "november" },
-  { id: "December", key: "december" },
-];
-
-const hourDefs: { dayId: string; dayKey: string; closed: boolean }[] = [
-  { dayId: "Monday", dayKey: "monday", closed: false },
-  { dayId: "Tuesday", dayKey: "tuesday", closed: false },
-  { dayId: "Wednesday", dayKey: "wednesday", closed: false },
-  { dayId: "Thursday", dayKey: "thursday", closed: false },
-  { dayId: "Friday", dayKey: "friday", closed: false },
-  { dayId: "Saturday", dayKey: "saturday", closed: true },
-  { dayId: "Sunday", dayKey: "sunday", closed: true },
-];
-
-function calculateWeeklyImpressions(
-    daily: number | null | undefined,
-    weeklySchedule: { isActive: boolean }[] | null | undefined
-) {
-  const d = daily ?? 0;
-  const activeDays = (weeklySchedule ?? []).filter((x) => x.isActive).length;
-  return d * activeDays;
-}
+import { MediaDetails } from "@/widgets/MediaDetails/MediaDetails";
 
 export default function AdminMediaReviewPage() {
   const t = useTranslations("mediaPage");
@@ -77,7 +39,6 @@ export default function AdminMediaReviewPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [imageModalOpen, setImageModalOpen] = useState(false);
 
   const [confirmAction, setConfirmAction] = useState<"approve" | "deny" | null>(
       null
@@ -196,295 +157,43 @@ export default function AdminMediaReviewPage() {
     );
   }
 
-  const activeMonths = new Set(media.schedule?.selectedMonths ?? []);
-
-  const isPoster = media.typeOfDisplay === "POSTER";
-  const isDigital = media.typeOfDisplay === "DIGITAL";
-
-  const typeLabel = isPoster
-      ? t("mediaTypes.POSTER")
-      : isDigital
-          ? t("mediaTypes.DIGITAL")
-          : media.typeOfDisplay || "N/A";
-
-  const loopDurationLabel =
-      media.loopDuration != null
-          ? t("loopDurationSeconds", { seconds: media.loopDuration })
-          : "N/A";
-
-  const widthLabel = media.width != null ? `${media.width}` : "N/A";
-  const heightLabel = media.height != null ? `${media.height}` : "N/A";
-
-  const priceLabel =
-      media.price != null
-          ? t("pricePerWeek", { price: media.price.toFixed(2) })
-          : t("priceUnavailable");
-
-  const weekly = media.schedule?.weeklySchedule ?? [];
-  const weeklyByDay = new Map(weekly.map((w) => [w.dayOfWeek.toLowerCase(), w]));
-
-  const imageSrc =
-      media.imageUrl || "https://placehold.co/600x400?text=Loading";
-
   return (
       <>
-        <Container size="lg" py="xl">
-          <Group align="flex-start" justify="space-between" wrap="wrap">
-            {/* Left Column */}
-            <Stack
-                gap="md"
-                style={{
-                  flex: isMobile ? "1 1 100%" : 2,
-                  minWidth: 0,
-                }}>
-              <Group gap="xs">
-                <BackButton />
-                <Title order={2}>{media.title}</Title>
-              </Group>
+        <Container size="md" py={20} px={isMobile? "sm" :80}>
+          <MediaDetails media={media} loading={loading} error={error} activeAdsCount={null}>
 
-              <Card p={0} withBorder radius="lg">
-                <div
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setImageModalOpen(true)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        setImageModalOpen(true);
-                      }
-                    }}
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: 300,
-                      cursor: "zoom-in",
-                      borderRadius: 12,
-                      overflow: "hidden",
-                    }}
-                >
-                  <Image
-                      src={imageSrc}
-                      alt={media.title}
-                      h={300}
-                      w="100%"
-                      fit="cover"
-                      radius={0}
-                      fallbackSrc="https://placehold.co/600x400?text=NotFound"
-                  />
-                </div>
-              </Card>
+              <Button
+                radius="xl"
+                fullWidth
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openConfirm("approve");
+                }}
+            >
+              {t1("approve")}
+            </Button>
 
-              <Stack gap={4}>
-                <Text fw={600} size="lg">
-                  {getJoinedAddress([
-                    media.mediaLocation.street,
-                    media.mediaLocation.city,
-                    media.mediaLocation.province,
-                  ])}
-                </Text>
-                <Text size="sm">{media.businessName ?? "—"}</Text>
-                <Text size="sm" c="dimmed">
-                  {t("currentlyDisplaying", { count: 0 })}
-                </Text>
-              </Stack>
-
-              <Divider my="md" />
-
-              <Stack gap="md">
-                <Text fw={600}>{t("detailsTitle")}</Text>
-
-                {(() => {
-                  const rows: [string, string][] = [
-                    [t("details.type"), typeLabel],
-                    [t("details.aspectRatio"), media.aspectRatio || "N/A"],
-                    [t("details.resolution"), media.resolution || "N/A"],
-                    [t("details.width"), widthLabel],
-                    [t("details.height"), heightLabel],
-                  ];
-
-                  if (!isPoster) {
-                    rows.push([t("details.loopDuration"), loopDurationLabel]);
-                  }
-                  const weeklyImpressions = calculateWeeklyImpressions(
-                      media.dailyImpressions,
-                      media.schedule?.weeklySchedule
-                  );
-
-                  rows.push([
-                    t("details.weeklyImpressions"),
-                    t("weeklyImpressionsPerWeek", { count: weeklyImpressions }),
-                  ]);
-
-                  return rows.map(([label, val]) => (
-                      <Group key={label} justify="space-between">
-                        <Text size="sm" c="dimmed">
-                          {label}:
-                        </Text>
-                        <Text size="sm">{val}</Text>
-                      </Group>
-                  ));
-                })()}
-              </Stack>
-
-              <Divider my="md" />
-            </Stack>
-
-            {/* Right Column */}
-            <Stack
-                gap="lg"
-                style={{
-                  flex: isMobile ? "1 1 100%" : 1,
-                  minWidth: 0,
-                }}>
-              <Group justify="flex-end">
-                <Button
-                    variant="outline"
-                    radius="xl"
-                    p={0}
-                    style={{ width: 40, height: 40, borderRadius: "50%" }}
-                    type="button"
-                >
-                  <IconAlertCircle size={20} />
-                </Button>
-              </Group>
-
-              {/* Schedule */}
-              <Card withBorder radius="lg" p="lg">
-                <Stack gap="md">
-                  <Text fw={600}>{t("scheduleTitle")}</Text>
-
-                  {/* Months */}
-                  <Stack gap="xs">
-                    <Text size="sm" fw={500}>
-                      {t("monthsTitle")}
-                    </Text>
-
-                    <SimpleGrid cols={4} spacing={6} verticalSpacing={6}>
-                      {monthDefs.map((m) => {
-                        const active = activeMonths.has(m.id);
-                        return (
-                            <Button
-                                key={m.id}
-                                size="xs"
-                                px={8}
-                                variant={active ? "filled" : "outline"}
-                                color={active ? "blue" : "gray"}
-                                disabled={!active}
-                                type="button"
-                                styles={{
-                                  label: { whiteSpace: "normal", lineHeight: 1.2 },
-                                }}
-                            >
-                              {t(`months.${m.key}`)}
-                            </Button>
-                        );
-                      })}
-                    </SimpleGrid>
-                  </Stack>
-
-                  {/* Hours */}
-                  <Stack gap="xs">
-                    <Text size="sm" fw={500}>
-                      {t("hoursTitle")}
-                    </Text>
-
-                    {hourDefs.map((h) => {
-                      const dayKey = h.dayKey;
-                      const entry = weeklyByDay.get(dayKey);
-
-                      const isActive = entry?.isActive ?? false;
-                      const start = entry?.startTime;
-                      const end = entry?.endTime;
-
-                      const closed = !isActive || !start || !end;
-
-                      const hoursText = closed ? t("days.closed") : `${start} - ${end}`;
-
-                      return (
-                          <Group key={h.dayId} justify="space-between">
-                            <Text size="sm" c={closed ? "dimmed" : "dark"}>
-                              {t(`days.${dayKey}`)}:
-                            </Text>
-                            <Text size="sm" c={closed ? "dimmed" : "dark"}>
-                              {hoursText}
-                            </Text>
-                          </Group>
-                      );
-                    })}
-                  </Stack>
-                </Stack>
-              </Card>
-
-              {/* Admin actions */}
-              <Card withBorder radius="lg" shadow="md" p="lg">
-                <Stack align="center">
-                  <Text fw={600} size="xl" td="underline">
-                    {priceLabel}
-                  </Text>
-
-                  <Button
-                      radius="xl"
-                      fullWidth
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openConfirm("approve");
-                      }}
-                  >
-                    {t1("approve")}
-                  </Button>
-
-                  <Button
-                      radius="xl"
-                      fullWidth
-                      color="red"
-                      variant="outline"
-                      type="button"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        openConfirm("deny");
-                      }}
-                  >
-                    {t1("deny")}
-                  </Button>
-                </Stack>
-              </Card>
-            </Stack>
-          </Group>
+            <Button
+                radius="xl"
+                fullWidth
+                color="red"
+                variant="outline"
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openConfirm("deny");
+                }}
+            >
+              {t1("deny")}
+            </Button>
+          </MediaDetails>
+              
         </Container>
-
-        <Modal
-            opened={imageModalOpen}
-            onClose={() => setImageModalOpen(false)}
-            centered
-            withCloseButton
-            title={media.title}
-            size="auto"
-            padding="md"
-            overlayProps={{ opacity: 0.6 }}
-            styles={{
-              content: { maxWidth: "92vw" },
-              body: { paddingTop: 8 },
-            }}
-        >
-          <Image
-              src={imageSrc}
-              alt={media.title}
-              fit="contain"
-              radius="md"
-              fallbackSrc="https://placehold.co/600x400?text=NotFound"
-              styles={{
-                root: {
-                  maxWidth: "88vw",
-                  maxHeight: "80vh",
-                },
-              }}
-          />
-        </Modal>
 
         <Modal
             key={confirmAction ?? "closed"}

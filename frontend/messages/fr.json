@@ -66,6 +66,7 @@
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
       "myAds": "Mes Campagnes",
+      "timeRangeSelect": "Sélectionner la période du tableau de bord",
       "graphs": {
         "totalAdSpend": "Dépenses publicitaires totales",
         "activeCampaigns": "Campagnes actives",
@@ -213,6 +214,7 @@
     "errorTitle": "Impossible de charger ce média.",
     "errorNotFound": "Média introuvable.",
     "errorLoading": "Échec du chargement des détails du média.",
+    "imageNotFound": "Image Pas Trouvée",
     "currentlyDisplaying": "Affiche actuellement {count} autres annonces !",
     "loginRequired": "Veuillez vous connecter d’abord pour réserver ce média.",
     "noPermission": "Vous n’avez pas l’autorisation de réserver ce média.",
@@ -237,18 +239,18 @@
     "weeklyImpressions": "~{count} impressions",
     "weeklyImpressionsPerWeek": "~{count} impressions par semaine",
     "months": {
-      "january": "Janvier",
-      "february": "Février",
-      "march": "Mars",
-      "april": "Avril",
+      "january": "Jan",
+      "february": "Fév",
+      "march": "Mar",
+      "april": "Avr",
       "may": "Mai",
       "june": "Juin",
-      "july": "Juillet",
+      "july": "Juil",
       "august": "Août",
-      "september": "Septembre",
-      "october": "Octobre",
-      "november": "Novembre",
-      "december": "Décembre"
+      "september": "Sep",
+      "october": "Oct",
+      "november": "Nov",
+      "december": "Déc"
     },
     "days": {
       "monday": "Lundi",
@@ -957,7 +959,8 @@
       },
       "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
       "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
-      "deleteCampaign": "Supprimer la campagne"
+      "deleteCampaign": "Supprimer la campagne",
+      "deleteAd": "Supprimer l’annonce {name}"
     },
     "notifications": {
       "loadFailed": {
