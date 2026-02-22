@@ -205,6 +205,7 @@
     "noPermission": "You don't have the permission to reserve this media.",
     "errorTitle": "Could not load this media.",
     "errorNotFound": "Media not found.",
+    "imageNotFound": "Image Not Found",
     "errorLoading": "Failed to load media details.",
     "currentlyDisplaying": "Currently displaying {count} other ads!",
     "detailsTitle": "Details",

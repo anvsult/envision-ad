@@ -6,6 +6,7 @@ import { useMediaQuery } from "@mantine/hooks";
 import {MediaLocation} from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
+import { ImgNotFound } from "../imageNotFound";
 
 export interface MediaCardProps {
     index: string;
@@ -41,6 +42,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
     const isMobile = useMediaQuery(`(max-width: ${mobileWidth ?? "575px"})`);
 
     const t = useTranslations("mediacard");
+    const t2 = useTranslations("mediaPage");
     const locale = useLocale();
     const weeklyImpressions = calculateWeeklyImpressions(dailyImpressions, schedule.weeklySchedule ?? []);
 
@@ -60,7 +62,7 @@ function MediaCard({index, href, imageUrl, imageRatio, title, organizationName, 
                         <Paper className={styles.imagecontainer} radius="md" shadow="xs" >
                             {/* <StatusBadge status={MediaAdStatuses.DISPLAYING}/> */}
                             <AspectRatio ratio={imageRatio ?? 1}>
-                                <Image src={imageUrl} alt="Media"  className={styles.image}  fit="cover" />
+                                <Image src={imageUrl} alt="Media"  className={styles.image}  fit="cover" fallbackSrc={ImgNotFound(t2('imageNotFound'))}/>
                             </AspectRatio>
                         </Paper>
                     </AspectRatio>

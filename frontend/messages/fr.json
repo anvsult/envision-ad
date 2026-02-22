@@ -204,6 +204,7 @@
     "errorTitle": "Impossible de charger ce média.",
     "errorNotFound": "Média introuvable.",
     "errorLoading": "Échec du chargement des détails du média.",
+    "imageNotFound": "Image Pas Trouvée",
     "currentlyDisplaying": "Affiche actuellement {count} autres annonces !",
     "loginRequired": "Veuillez vous connecter d’abord pour réserver ce média.",
     "noPermission": "Vous n’avez pas l’autorisation de réserver ce média.",

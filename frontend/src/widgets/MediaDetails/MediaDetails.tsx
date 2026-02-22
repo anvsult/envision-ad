@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { BackButton } from "../BackButton";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
+import { ImgNotFound } from "../imageNotFound";
 
 const monthDefs = [
   { id: "January", key: "january" },
@@ -128,6 +129,7 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
                   alt={media.title}
                   fit="cover"
                   radius={0}
+                  fallbackSrc={ImgNotFound(t('imageNotFound'))}
                 />
               </AspectRatio>
             </Anchor>
@@ -280,6 +282,7 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
             styles={{
               root: { maxWidth: "88vw", maxHeight: "80vh" },
             }}
+            fallbackSrc={ImgNotFound(t('imageNotFound'))}
           />
         </Modal>
       </Stack>
