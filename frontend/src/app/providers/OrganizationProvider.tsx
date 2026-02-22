@@ -32,7 +32,6 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         try {
             const business = await getEmployeeOrganization(user.sub);
             setOrganization(business);
-            console.log(business)
         } catch (error) {
             const status = (error as { response?: { status?: number } })?.response?.status;
             if (status === 404) {
