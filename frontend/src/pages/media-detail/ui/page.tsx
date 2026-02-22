@@ -202,14 +202,15 @@ export default function MediaDetailsPage() {
               </Anchor>
               <Title order={2}>{media.title}</Title>
             </Group>
-            <Button
-              variant="outline"
-              radius="xl"
-              p={0}
-              style={{ width: 40, height: 40, borderRadius: "50%" }}
-            >
-              <IconAlertCircle size={20} />
-            </Button>
+            {/*TODO - add reporting functionality, currently just a placeholder button*/}
+            {/*<Button*/}
+            {/*  variant="outline"*/}
+            {/*  radius="xl"*/}
+            {/*  p={0}*/}
+            {/*  style={{ width: 40, height: 40, borderRadius: "50%" }}*/}
+            {/*>*/}
+            {/*  <IconAlertCircle size={20} />*/}
+            {/*</Button>*/}
           </Group>
           {/* Columns */}
           <Group align="stretch" gap="50">

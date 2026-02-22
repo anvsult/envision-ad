@@ -144,7 +144,6 @@ CREATE TABLE ads
     ad_id VARCHAR(36) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     ad_url VARCHAR(512) NOT NULL,
-    ad_duration_seconds INTEGER NOT NULL,
     ad_type VARCHAR(50) NOT NULL,
 
     ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE

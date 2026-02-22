@@ -337,11 +337,11 @@ VALUES
     ('91af2be4-8246-4cf8-b9d0-84779bc11002', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'Weekend Sports Promo');
 
 -- 2. Insert Dummy Ads
-INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+INSERT INTO ads (ad_id, name, ad_url, ad_type, ad_campaign_ref_id)
 VALUES
-    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
-    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 1),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 1);
 
 -- 3. Insert visual-impact media reservations for dashboard metrics preview
 -- These are tied to media owned by Visual Impact business_id: b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10

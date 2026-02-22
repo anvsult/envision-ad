@@ -76,7 +76,6 @@ export function AdCampaignsTable({
                                         <Table.Th>{t('preview')}</Table.Th>
                                         <Table.Th>{t('name')}</Table.Th>
                                         <Table.Th>{t('type')}</Table.Th>
-                                        <Table.Th>{t('duration')}</Table.Th>
                                         <Table.Th style={{ textAlign: "right" }}>{t('actions')}</Table.Th>
                                     </Table.Tr>
                                 </Table.Thead>
@@ -121,9 +120,6 @@ export function AdCampaignsTable({
                                                     <Badge leftSection={getIcon(ad.adType)} color={ad.adType === "VIDEO" ? "blue" : "green"} variant="light">
                                                         {t("types." + ad.adType.toLowerCase())}
                                                     </Badge>
-                                                </Table.Td>
-                                                <Table.Td style={{ verticalAlign: 'middle' }}>
-                                                    {ad.adDurationSeconds}s
                                                 </Table.Td>
                                                 <Table.Td style={{ verticalAlign: 'middle' }}>
                                                     <Group justify="flex-end">

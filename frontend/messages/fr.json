@@ -223,7 +223,7 @@
       "resolution": "Résolution",
       "width": "Largeur",
       "height": "Hauteur",
-      "loopDuration": "Durée de la boucle",
+      "loopDuration": "Durée d'une publicité (sec)",
       "weeklyImpressions": "Impressions par semaine"
     },
     "scheduleTitle": "Horaire",
@@ -590,7 +590,7 @@
       "mediaName": "Nom du média",
       "mediaImage": "Image du média",
       "typeOfDisplay": "Type d'affichage",
-      "loopDuration": "Durée de la boucle (sec)",
+      "loopDuration": "Durée d'une publicité (sec)",
       "resolution": "Résolution (px)",
       "resolutionWidth": "Résolution - Largeur (px)",
       "resolutionHeight": "Résolution - Hauteur (px)",
@@ -612,8 +612,8 @@
       "resolutionWidth": "Ex. 1920",
       "resolutionHeight": "Ex. 1080",
       "aspectRatio": "Ex. 16:9",
-      "aspectRatioWidth": "Ex. 16",
-      "aspectRatioHeight": "Ex. 9",
+      "aspectRatioWidth": "Ex. 9",
+      "aspectRatioHeight": "Ex. 16",
       "width": "Ex. 80",
       "height": "Ex. 200",
       "price": "50,00 $CA",
@@ -727,7 +727,6 @@
     "labels": {
       "name": "Nom",
       "type": "Type",
-      "duration": "Durée (secondes)",
       "media": "Média"
     },
     "placeholders": {
@@ -755,13 +754,10 @@
       "imageUploaded": "Image téléversée",
       "videoUploaded": "Vidéo téléversée"
     },
-    "alerts": {
-      "croppingTitle": "Rogning automatique",
-      "croppingMessage": "La vidéo fait {orig}s. Elle sera rognée aux {keep}s initiaux."
-    },
     "validation": {
       "nameTooShort": "Nom trop court",
-      "fileRequired": "Le fichier est requis"
+      "fileRequired": "Le fichier est requis",
+      "videoTooLong": "La vidéo doit faire {max} secondes ou moins"
     }
   },
   "adRequests": {

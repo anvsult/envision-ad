@@ -12,7 +12,6 @@ public interface AdResponseMapper {
 
     @Mapping(target = "adId", source = "adIdentifier.adIdentifier")
     @Mapping(target = "campaignId", source = "campaign.campaignId.campaignId")
-    @Mapping(target = "adDurationSeconds", source = "adDurationSeconds.seconds")
     AdResponseModel entityToResponseModel(Ad ad);
 
     List<AdResponseModel> entitiesToResponseModelList(List<Ad> ads);
