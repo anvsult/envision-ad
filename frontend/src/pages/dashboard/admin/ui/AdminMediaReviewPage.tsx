@@ -159,7 +159,7 @@ export default function AdminMediaReviewPage() {
 
   return (
       <>
-        <Container size="lg" py={20} px={isMobile? "sm" :80}>
+        <Container size="md" py={20} px={isMobile? "sm" :80}>
           <MediaDetails media={media} loading={loading} error={error} activeAdsCount={null}>
 
               <Button
