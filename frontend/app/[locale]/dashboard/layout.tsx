@@ -2,16 +2,26 @@
 
 import React from "react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { Box, Drawer, Group, Paper } from "@mantine/core";
+import { Box, Center, Drawer, Group, Loader, Paper } from "@mantine/core";
 import SideBar from "@/widgets/SideBar/SideBar";
+import { useOrganization } from "@/app/providers";
 
 export default function DashboardLayout({
-    children,
-}: {
+                                            children,
+                                        }: {
     children: React.ReactNode;
 }) {
     const [opened, { close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const { organization, loading } = useOrganization();
+
+    if (loading) {
+        return (
+            <Center h="100vh" w="100vw">
+                <Loader size="xl" />
+            </Center>
+        );
+    }
 
     return (
         <Box>
@@ -27,7 +37,7 @@ export default function DashboardLayout({
             </Drawer>
 
             <Group align="stretch" gap={0} wrap="nowrap">
-                {!isMobile && (
+                {!isMobile && organization && (
                     <Paper
                         w={250}
                         p="md"

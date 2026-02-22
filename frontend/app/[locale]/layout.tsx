@@ -57,8 +57,7 @@ export default async function RootLayout({
                     content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
                 />
             </head>
-            <body
-                style={{minHeight: "100vh", display: "flex", flexDirection: "column"}}>
+            <body style={{ height: "100vh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <Auth0Provider user={user}>
                 <PermissionsProvider>
                     <OrganizationProvider>
@@ -66,8 +65,10 @@ export default async function RootLayout({
                             <ModalsProvider>
                                 <Notifications/>
                                 <Header/>
-                                {children}
-                                <Footer/>
+                                <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                                    {children}
+                                    <Footer/>
+                                </div>
                             </ModalsProvider>
                         </MantineProvider>
                     </OrganizationProvider>

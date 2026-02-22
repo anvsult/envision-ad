@@ -140,7 +140,7 @@ export default function OrganizationEmployees() {
     }
 
     if (!organization) {
-        return <Stack gap="md" p="md"><Title order={2}>{t("noOrganization")}</Title></Stack>;
+        return null //won't happen because the provider will redirect first
     }
 
     return (

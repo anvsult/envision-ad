@@ -95,6 +95,92 @@
       "pendingOrganizations": "Verification Requests"
     }
   },
+  "onboarding": {
+    "stepLabel": "Step {number}",
+    "badge": {
+      "complete": "Complete",
+      "current": "In Progress"
+    },
+    "header": {
+      "title": "Get started",
+      "description": "Create your organization or ask your organization owner to send you an invitation."
+    },
+    "roles": {
+      "mediaOwner": "Media Owner",
+      "advertiser": "Advertiser"
+    },
+    "steps": {
+      "organization": {
+        "title": "Create your organization",
+        "description": "Set up your profile, choose your role as media owner and/or advertiser — you can update this later from your organization overview."
+      },
+      "stripe": {
+        "title": "Connect Stripe",
+        "description": "Link your Stripe account so you can receive payments from advertisers."
+      },
+      "media": {
+        "title": "Add a media location",
+        "description": "Create a location, then add your first media to it so advertisers can discover and book it."
+      },
+      "campaign": {
+        "title": "Create a campaign",
+        "description": "Set up your first advertising campaign to start reaching your audience."
+      },
+      "reservation": {
+        "title": "Make a reservation",
+        "description": "Browse available media locations and book your first ad slot."
+      }
+    },
+    "actions": {
+      "organization": {
+        "prompt": "Let's start by creating your organization",
+        "hint": "Choose your role as media owner and/or advertiser. You'll only need to do this once — roles can be updated later from your organization overview.",
+        "cta": "Create organization"
+      },
+      "stripe": {
+        "loading": "Checking Stripe status...",
+        "prompt": "Now let's connect your Stripe account",
+        "hint": "Stripe lets you securely receive payments from advertisers. You'll be redirected to Stripe to complete setup.",
+        "cta": "Connect Stripe",
+        "ctaContinue": "Continue Stripe setup",
+        "errors": {
+          "connectFailed": "Failed to connect to Stripe. Please try again."
+        }
+      },
+      "media": {
+        "prompt": "Add your first media location",
+        "hint": "Create a location, then add your first media to it so advertisers can find and book it.",
+        "cta": "Add media location"
+      },
+      "campaign": {
+        "prompt": "Launch your first campaign",
+        "hint": "Define your target audience, budget, and creative to start advertising on the platform.",
+        "cta": "Create campaign"
+      },
+      "reservation": {
+        "prompt": "Book your first ad slot",
+        "hint": "Browse available media locations and reserve the one that best fits your campaign needs.",
+        "cta": "Browse locations"
+      }
+    },
+    "trackComplete": {
+      "mediaOwner": "Your media owner setup is complete.",
+      "advertiser": "Your advertiser setup is complete."
+    },
+    "allDone": {
+      "title": "You're all set!",
+      "description": "Your organization is fully set up. You can now create and manage your media and campaigns.",
+      "cta": "Go to dashboard"
+    },
+    "success": {
+      "title": "Success",
+      "create": "Organization has been created."
+    },
+    "errors": {
+      "title": "Error",
+      "createFailed": "Failed to create organization."
+    }
+  },
   "mediaOwnerMetrics": {
     "title": "Dashboard Metrics",
     "cards": {
@@ -304,10 +390,6 @@
   },
   "organization": {
     "title": "Organization",
-    "createButton": "Create Organization",
-    "noOrganization": "No organization found.",
-    "noOrganizationDescription": "Not part of any organization yet? Create your own organization to get started!",
-    "createOrganization": "Create Organization",
     "roles": {
       "mediaOwner": "Media Owner",
       "advertiser": "Advertiser"
@@ -437,15 +519,13 @@
     "success": {
       "title": "Success",
       "verificationRequest": "Verification request has been sent.",
-      "update": "Organization details has been updated.",
-      "create": "Organization has been created."
+      "update": "Organization details has been updated."
     },
     "errors": {
       "title": "Error",
       "loadFailed": "Failed to load organization for editing.",
       "verificationRequestFailed": "Failed to request verification.",
-      "updateFailed": "Failed to update organization details.",
-      "createFailed": "Failed to create organization."
+      "updateFailed": "Failed to update organization details."
     }
   },
   "media": {
