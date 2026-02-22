@@ -265,17 +265,10 @@ public class BusinessServiceImpl implements BusinessService {
         if (employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId))
             throw new AccessDeniedException("User is already an employee");
 
-        // Extract email from JWT token
-        String email = jwt.getClaimAsString("email");
-        if (email == null || email.isEmpty()) {
-            email = invitation.getEmail(); // Fallback to invitation email
-        }
-
         Employee employee = new Employee();
         employee.setBusinessId(new BusinessIdentifier(businessId));
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setUserId(userId);
-        employee.setEmail(email);
 
         return employeeMapper.toResponse(employeeRepository.save(employee));
     }

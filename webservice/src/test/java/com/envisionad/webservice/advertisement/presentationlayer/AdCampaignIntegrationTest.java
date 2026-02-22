@@ -49,7 +49,6 @@ public class AdCampaignIntegrationTest {
     private static final String TEST_USER_ID = "auth0|696a88eb347945897ef17093";
 
     private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
-    private static final String TEST_EMAIL = "test@email.com";
     @Autowired
     private ReservationRepository reservationRepository;
 
@@ -127,7 +126,6 @@ public class AdCampaignIntegrationTest {
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setBusinessId(businessId);
         employee.setUserId(TEST_USER_ID);
-        employee.setEmail(TEST_EMAIL);
         employeeRepository.save(employee);
     }
 

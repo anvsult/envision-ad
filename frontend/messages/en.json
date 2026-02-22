@@ -108,7 +108,7 @@
     "sections": {
       "earningsTrend": "Reservation Activity",
       "revenueByLocation": "Revenue by Location",
-      "revenueByMedia": "Revenue by Media",
+      "revenueByMediaLocation": "Revenue by Media Location",
       "activeCampaignDetails": "Active Campaigns Details",
       "payoutHistory": "Payout History",
       "performanceMetrics": "Performance Metrics",

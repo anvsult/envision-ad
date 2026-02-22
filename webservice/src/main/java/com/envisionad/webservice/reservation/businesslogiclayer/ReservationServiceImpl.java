@@ -5,6 +5,8 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignReposit
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.dataaccesslayer.Employee;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -45,12 +47,13 @@ public class ReservationServiceImpl implements ReservationService {
     private final JwtUtils jwtUtils;
     private final PaymentIntentRepository paymentIntentRepository;
     private final BusinessRepository businessRepository;
+    private final EmployeeRepository employeeRepository;
 
     public ReservationServiceImpl(ReservationRepository reservationRepository, MediaRepository mediaRepository,
                                   AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper,
                                   ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils,
                                   PaymentIntentRepository paymentIntentRepository,
-                                  BusinessRepository businessRepository) {
+                                  BusinessRepository businessRepository, EmployeeRepository employeeRepository) {
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
         this.adCampaignRepository = adCampaignRepository;
@@ -59,6 +62,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.jwtUtils = jwtUtils;
         this.paymentIntentRepository = paymentIntentRepository;
         this.businessRepository = businessRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
@@ -111,6 +115,7 @@ public class ReservationServiceImpl implements ReservationService {
         // 1. Validate input and authentication
         ReservationValidator.validateReservation(requestModel, mediaId);
         String userId = jwtUtils.extractUserId(jwt);
+        Employee employee = employeeRepository.findByUserId(userId);
 
         // 2. Load and validate entities
         Media media = loadAndValidateMedia(mediaId);
@@ -120,6 +125,7 @@ public class ReservationServiceImpl implements ReservationService {
         String businessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
         jwtUtils.validateBusinessOwnsCampaign(businessId, campaign);
+        String advertiserOrganizationId = employee.getBusinessId().getBusinessId();
 
 //        // Prevent a business from reserving their own media
 //        String mediaOwnerBusinessId = media.getBusinessId().toString();
@@ -144,10 +150,10 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (paymentIntentId != null && !paymentIntentId.isBlank()) {
             // Payment flow: verify payment and create/update reservation
-            reservation = handlePaidReservation(paymentIntentId, requestModel, media, userId, totalPrice);
+            reservation = handlePaidReservation(paymentIntentId, requestModel, media, advertiserOrganizationId, totalPrice);
         } else {
             // No payment provided: create pending reservation (webhook will confirm)
-            reservation = createPendingReservation(requestModel, media, userId, totalPrice);
+            reservation = createPendingReservation(requestModel, media, advertiserOrganizationId, totalPrice);
         }
 
         // 7. Save reservation
@@ -489,13 +495,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     private Reservation createPendingReservation(ReservationRequestModel requestModel, Media media,
-                                                 String userId, BigDecimal totalPrice) {
+                                                 String advertiserOrganizationId, BigDecimal totalPrice) {
         log.info("Creating new PENDING reservation (no payment provided, webhook will confirm)");
         Reservation reservation = reservationRequestMapper.requestModelToEntity(requestModel);
         reservation.setReservationId(UUID.randomUUID().toString());
         reservation.setMediaId(media.getId());
         reservation.setTotalPrice(totalPrice);
-        reservation.setAdvertiserId(userId);
+        reservation.setAdvertiserId(advertiserOrganizationId);
         reservation.setStatus(ReservationStatus.PENDING);
         return reservation;
     }

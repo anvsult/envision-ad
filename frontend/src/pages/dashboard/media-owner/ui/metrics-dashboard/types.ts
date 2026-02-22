@@ -5,8 +5,8 @@ import type {
     EarningsTrendPoint,
     MetricsKpi,
     PayoutHistoryRow,
+    RevenueByLocationItem,
     RevenueByLocationPoint,
-    RevenueByMediaItem,
 } from "@/pages/dashboard/media-owner/model/mockMetrics";
 
 export interface ChartTooltipPayload {
@@ -38,7 +38,7 @@ export interface MediaScreenTimelineRow {
 }
 
 export interface OverviewMetricsData {
-    revenueByMedia: RevenueByMediaItem[];
+    revenueByMediaLocation: RevenueByLocationItem[];
     revenueByLocation: RevenueByLocationPoint[];
     activeCampaignDetails: ActiveCampaignItem[];
     activeCampaignCount: number;
@@ -66,7 +66,7 @@ export type {
     MetricsKpi,
     PayoutHistoryRow,
     ReservationResponseDTO,
+    RevenueByLocationItem,
     RevenueByLocationPoint,
-    RevenueByMediaItem,
     StripeDashboardPayout,
 };

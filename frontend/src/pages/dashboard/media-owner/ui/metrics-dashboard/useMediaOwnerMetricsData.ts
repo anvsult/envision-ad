@@ -41,7 +41,8 @@ export function useMediaOwnerMetricsData() {
     >([]);
     const [mediaLocations, setMediaLocations] = useState<MediaLocation[]>([]);
     const [selectedMediaLocationId, setSelectedMediaLocationId] = useState<string | null>(null);
-    const [revenueByMediaPage, setRevenueByMediaPage] = useState(1);
+    const [revenueByMediaLocationPage, setRevenueByMediaLocationPage] = useState(1);
+
     const [activeCampaignDetailsPage, setActiveCampaignDetailsPage] = useState(1);
     const [earningsKpis, setEarningsKpis] = useState<MetricsKpi[]>(() =>
         buildEarningsKpis([], 0)
@@ -88,14 +89,14 @@ export function useMediaOwnerMetricsData() {
         [payoutHistoryRows, payoutPage]
     );
 
-    const revenueByMediaPagination = useMemo(
+    const revenueByMediaLocationPagination = useMemo(
         () =>
             buildPaginationInfo({
-                rows: overviewMetricsData.revenueByMedia,
-                page: revenueByMediaPage,
+                rows: overviewMetricsData.revenueByMediaLocation,
+                page: revenueByMediaLocationPage,
                 rowsPerPage: REVENUE_BY_MEDIA_PER_PAGE,
             }),
-        [overviewMetricsData.revenueByMedia, revenueByMediaPage]
+        [overviewMetricsData.revenueByMediaLocation, revenueByMediaLocationPage]
     );
 
     const activeCampaignDetailsPagination = useMemo(
@@ -151,7 +152,7 @@ export function useMediaOwnerMetricsData() {
                             ? reservationsResult.value
                             : []
                     );
-                    setRevenueByMediaPage(1);
+                    setRevenueByMediaLocationPage(1);
                     setActiveCampaignDetailsPage(1);
                 } else {
                     console.error(
@@ -159,7 +160,7 @@ export function useMediaOwnerMetricsData() {
                         reservationsResult.reason
                     );
                     setMediaOwnerReservations([]);
-                    setRevenueByMediaPage(1);
+                    setRevenueByMediaLocationPage(1);
                     setActiveCampaignDetailsPage(1);
                 }
 
@@ -180,7 +181,7 @@ export function useMediaOwnerMetricsData() {
                     setPayoutHistoryRows([]);
                     setMediaOwnerReservations([]);
                     setMediaLocations([]);
-                    setRevenueByMediaPage(1);
+                    setRevenueByMediaLocationPage(1);
                     setActiveCampaignDetailsPage(1);
                     setPayoutPage(1);
                 }
@@ -197,14 +198,14 @@ export function useMediaOwnerMetricsData() {
     const setOverviewPeriod = (period: OverviewPeriod) => {
         setOverviewPeriodState(period);
         setPayoutPage(1);
-        setRevenueByMediaPage(1);
+        setRevenueByMediaLocationPage(1);
         setActiveCampaignDetailsPage(1);
     };
 
     const setDateRange = (range: DateRangeMap) => {
         setDateRangeState(range);
         setPayoutPage(1);
-        setRevenueByMediaPage(1);
+        setRevenueByMediaLocationPage(1);
         setActiveCampaignDetailsPage(1);
     };
 
@@ -220,11 +221,11 @@ export function useMediaOwnerMetricsData() {
         payoutPage: payoutPagination.currentPage,
         payoutTotalPages: payoutPagination.totalPages,
         setPayoutPage,
-        revenueByMediaRows: revenueByMediaPagination.rows,
-        revenueByMediaPage: revenueByMediaPagination.currentPage,
-        revenueByMediaTotalPages: revenueByMediaPagination.totalPages,
-        revenueByMediaRowsPerPage: REVENUE_BY_MEDIA_PER_PAGE,
-        setRevenueByMediaPage,
+        revenueByMediaLocationRows: revenueByMediaLocationPagination.rows,
+        revenueByMediaLocationPage: revenueByMediaLocationPagination.currentPage,
+        revenueByMediaLocationTotalPages: revenueByMediaLocationPagination.totalPages,
+        revenueByMediaLocationRowsPerPage: REVENUE_BY_MEDIA_PER_PAGE,
+        setRevenueByMediaLocationPage,
         activeCampaignDetailsRows: activeCampaignDetailsPagination.rows,
         activeCampaignDetailsPage: activeCampaignDetailsPagination.currentPage,
         activeCampaignDetailsTotalPages: activeCampaignDetailsPagination.totalPages,

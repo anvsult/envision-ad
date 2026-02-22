@@ -42,6 +42,12 @@ okta:
     issuer: "https://${AUTH0_DOMAIN}/"
     audience: ${AUTH0_AUDIENCE}
 
+auth0:
+  management:
+    client-id: ${AUTH0_MGMT_CLIENT_ID}
+    client-secret: ${AUTH0_MGMT_CLIENT_SECRET}
+    audience: https://${AUTH0_DOMAIN}/api/v2/
+
 app:
   base:
     url: ${APP_BASE_URL}

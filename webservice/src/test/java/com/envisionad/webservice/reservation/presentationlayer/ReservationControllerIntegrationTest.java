@@ -114,7 +114,6 @@ class ReservationControllerIntegrationTest {
         employee.setEmployeeId(new EmployeeIdentifier());
         employee.setBusinessId(new BusinessIdentifier(businessId));
         employee.setUserId(USER_ID);
-        employee.setEmail("test@example.com");
         employeeRepository.save(employee);
 
         // Create Media Location

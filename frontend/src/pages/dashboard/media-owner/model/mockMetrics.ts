@@ -20,8 +20,8 @@ export interface RevenueByLocationPoint {
     revenue: number;
 }
 
-export interface RevenueByMediaItem {
-    mediaName: string;
+export interface RevenueByLocationItem {
+    locationName: string;
     revenue: number;
     color: string;
 }
@@ -44,7 +44,7 @@ export interface MediaOwnerMetricsMock {
     kpis: MetricsKpi[];
     earningsTrend: EarningsTrendPoint[];
     revenueByLocation: RevenueByLocationPoint[];
-    revenueByMedia: RevenueByMediaItem[];
+    revenueByMediaLocation: RevenueByLocationItem[];
     activeCampaigns: ActiveCampaignItem[];
     payoutHistory: PayoutHistoryRow[];
 }
@@ -72,11 +72,11 @@ export const mediaOwnerMetricsMock: MediaOwnerMetricsMock = {
         { city: "Houston", revenue: 9500 },
         { city: "Miami", revenue: 6800 },
     ],
-    revenueByMedia: [
-        { mediaName: "Digital Billboard A", revenue: 12500, color: "blue.6" },
-        { mediaName: "City Center Screen", revenue: 8500, color: "cyan.6" },
-        { mediaName: "Mall Entrance", revenue: 4500, color: "teal.6" },
-        { mediaName: "Highway Display", revenue: 15600, color: "grape.6" },
+    revenueByMediaLocation: [
+        { locationName: "Digital Billboard A", revenue: 12500, color: "blue.6" },
+        { locationName: "City Center Screen", revenue: 8500, color: "cyan.6" },
+        { locationName: "Mall Entrance", revenue: 4500, color: "teal.6" },
+        { locationName: "Highway Display", revenue: 15600, color: "grape.6" },
     ],
     activeCampaigns: [
         {

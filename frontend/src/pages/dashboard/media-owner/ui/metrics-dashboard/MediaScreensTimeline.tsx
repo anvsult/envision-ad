@@ -1,6 +1,7 @@
 import { Box, Group, Paper, Stack, Text, Tooltip } from "@mantine/core";
 import { useMemo } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
 import type {
   MediaScreenTimelineRow,
   MediaScreenTimelineSegment,
@@ -46,6 +47,8 @@ function packSegmentsIntoLanes(segments: MediaScreenTimelineSegment[]) {
 
 export function MediaScreensTimeline({ data }: MediaScreensTimelineProps) {
   const t = useTranslations("mediaOwnerMetrics.sections");
+  const locale = useLocale();
+
   const { rows, startMs, endMs } = data;
 
   const totalDurationMs = endMs - startMs;
@@ -88,11 +91,12 @@ export function MediaScreensTimeline({ data }: MediaScreensTimelineProps) {
   };
 
   const formatDate = (ms: number) =>
-    new Date(ms).toLocaleDateString(undefined, {
+    new Date(ms).toLocaleDateString(locale, {
       year: "numeric",
       month: "short",
       day: "numeric",
     });
+
 
   return (
     <Stack gap="md" mt="md" w="100%" style={{ overflowX: "auto" }}>

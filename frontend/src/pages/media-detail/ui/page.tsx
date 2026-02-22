@@ -18,7 +18,7 @@ import {
   Text,
   Title,
   Box,
-  Tooltip, Badge,
+  Tooltip,
 } from "@mantine/core";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { BackButton } from "@/widgets/BackButton";
@@ -202,15 +202,14 @@ export default function MediaDetailsPage() {
               </Anchor>
               <Title order={2}>{media.title}</Title>
             </Group>
-            {/*TODO - add reporting functionality, currently just a placeholder button*/}
-            {/*<Button*/}
-            {/*  variant="outline"*/}
-            {/*  radius="xl"*/}
-            {/*  p={0}*/}
-            {/*  style={{ width: 40, height: 40, borderRadius: "50%" }}*/}
-            {/*>*/}
-            {/*  <IconAlertCircle size={20} />*/}
-            {/*</Button>*/}
+            <Button
+              variant="outline"
+              radius="xl"
+              p={0}
+              style={{ width: 40, height: 40, borderRadius: "50%" }}
+            >
+              <IconAlertCircle size={20} />
+            </Button>
           </Group>
           {/* Columns */}
           <Group align="stretch" gap="50">
@@ -310,24 +309,22 @@ export default function MediaDetailsPage() {
                       {monthDefs.map((m) => {
                         const active = activeMonths.has(m.id);
                         return (
-                          <Badge
+                        <Button
                             key={m.id}
-                            size="lg"
+                            size="xs"
+                            px={8}
                             variant={active ? "filled" : "outline"}
                             color={active ? "blue" : "gray"}
-                            style={{
-                              textTransform: "none",
-                              opacity: active ? 1 : 0.45,
-                              width: "100%",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                              whiteSpace: "nowrap",
-                              height: 32,
-                              fontSize: 12,
+                            disabled={!active}
+                            styles={{
+                              label: {
+                                whiteSpace: "normal",
+                                lineHeight: 1.2,
+                              },
                             }}
                           >
                             {t(`months.${m.key}`)}
-                          </Badge>
+                        </Button>
                         );
                       })}
                     </SimpleGrid>

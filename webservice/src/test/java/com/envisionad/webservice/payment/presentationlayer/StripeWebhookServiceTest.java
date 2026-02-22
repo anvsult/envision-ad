@@ -6,6 +6,7 @@ import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.config.Auth0Service;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.payment.businesslogiclayer.StripeWebhookService;
@@ -69,6 +70,9 @@ class StripeWebhookServiceTest {
     private AdCampaignService adCampaignService;
 
     @Mock
+    private Auth0Service auth0Service;
+
+    @Mock
     private Event event;
 
     @Mock
@@ -80,7 +84,7 @@ class StripeWebhookServiceTest {
 
     @BeforeEach
     void setUp() {
-        reset(paymentIntentRepository, reservationRepository, mediaRepository, adCampaignRepository, employeeRepository, emailService, stripeAccountRepository, adCampaignService, event, deserializer);
+        reset(paymentIntentRepository, reservationRepository, mediaRepository, adCampaignRepository, employeeRepository, emailService, stripeAccountRepository, adCampaignService, auth0Service, event, deserializer);
     }
 
     // ==================== handleCheckoutSessionCompleted Tests ====================
@@ -488,7 +492,7 @@ class StripeWebhookServiceTest {
         mockCampaign.setName("Test Campaign");
 
         Employee mockEmployee = mock(Employee.class);
-        when(mockEmployee.getEmail()).thenReturn("owner@example.com");
+        when(mockEmployee.getUserId()).thenReturn("auth0|owner123");
 
         com.stripe.model.PaymentIntent stripePaymentIntent = mock(com.stripe.model.PaymentIntent.class);
         when(stripePaymentIntent.getId()).thenReturn(PAYMENT_INTENT_ID);
@@ -500,6 +504,7 @@ class StripeWebhookServiceTest {
         when(mediaRepository.findById(reservation.getMediaId())).thenReturn(Optional.of(mockMedia));
         when(adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId())).thenReturn(mockCampaign);
         when(employeeRepository.findAllByBusinessId_BusinessId(any())).thenReturn(List.of(mockEmployee));
+        when(auth0Service.getUserEmailByUserId("auth0|owner123")).thenReturn("owner@example.com");
 
         // Act
         stripeWebhookService.handlePaymentIntentSucceeded(event);
@@ -707,7 +712,8 @@ class StripeWebhookServiceTest {
         when(campaign.getName()).thenReturn("Test Campaign Name");
 
         Employee employee = mock(Employee.class);
-        when(employee.getEmail()).thenReturn(mediaOwnerEmail);
+        when(employee.getUserId()).thenReturn("auth0|owner456");
+        when(auth0Service.getUserEmailByUserId("auth0|owner456")).thenReturn(mediaOwnerEmail);
 
         List<String> imageLinks = List.of("http://example.com/ad1.jpg", "http://example.com/ad2.png");
         when(adCampaignService.getAllCampaignImageLinks(campaignId)).thenReturn(imageLinks);
@@ -829,7 +835,8 @@ class StripeWebhookServiceTest {
         when(campaign.getName()).thenReturn("Test Campaign Name");
 
         Employee employee = mock(Employee.class);
-        when(employee.getEmail()).thenReturn(mediaOwnerEmail);
+        when(employee.getUserId()).thenReturn("auth0|owner789");
+        when(auth0Service.getUserEmailByUserId("auth0|owner789")).thenReturn(mediaOwnerEmail);
 
         when(adCampaignService.getAllCampaignImageLinks(campaignId)).thenReturn(List.of()); // No image links
         when(employeeRepository.findAllByBusinessId_BusinessId(businessId.toString()))

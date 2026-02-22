@@ -4,10 +4,10 @@ import React from "react";
 import { Group, Pagination, Paper, Stack, Text, ThemeIcon } from "@mantine/core";
 import { useLocale, useTranslations } from "next-intl";
 import { formatCurrency } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/formatting-utils";
-import type { RevenueByMediaItem } from "@/pages/dashboard/media-owner/model/mockMetrics";
+import type { RevenueByLocationItem } from "@/pages/dashboard/media-owner/model/mockMetrics";
 
 interface RevenueByMediaSectionProps {
-    rows: RevenueByMediaItem[];
+    rows: RevenueByLocationItem[];
     totalRows: number;
     currentPage: number;
     totalPages: number;
@@ -29,7 +29,7 @@ export function RevenueByMediaSection({
     return (
         <Paper withBorder p="md" radius="md">
             <Text fw={600} mb="sm">
-                {t("sections.revenueByMedia")}
+                {t("sections.revenueByMediaLocation")}
             </Text>
             {totalRows === 0 ? (
                 <Text size="sm" c="dimmed">
@@ -38,10 +38,10 @@ export function RevenueByMediaSection({
             ) : (
                 <Stack gap="md">
                     {rows.map((item) => (
-                        <Group justify="space-between" key={item.mediaName}>
+                        <Group justify="space-between" key={item.locationName}>
                             <Group gap="xs">
                                 <ThemeIcon size={10} radius="xl" color={item.color} />
-                                <Text size="sm">{item.mediaName}</Text>
+                                <Text size="sm">{item.locationName}</Text>
                             </Group>
                             <Text fw={600} size="sm">
                                 {formatCurrency(item.revenue, { locale })}

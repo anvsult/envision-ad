@@ -37,11 +37,11 @@ export default function MediaOwnerMetricsDashboard() {
         payoutPage,
         payoutTotalPages,
         setPayoutPage,
-        revenueByMediaRows,
-        revenueByMediaPage,
-        revenueByMediaTotalPages,
-        revenueByMediaRowsPerPage,
-        setRevenueByMediaPage,
+        revenueByMediaLocationRows,
+        revenueByMediaLocationPage,
+        revenueByMediaLocationTotalPages,
+        revenueByMediaLocationRowsPerPage,
+        setRevenueByMediaLocationPage,
         activeCampaignDetailsRows,
         activeCampaignDetailsPage,
         activeCampaignDetailsTotalPages,
@@ -66,24 +66,24 @@ export default function MediaOwnerMetricsDashboard() {
 
     // Initialise to the first N media once data loads; runs only once
     useEffect(() => {
-        if (selectedMediaNames.length === 0 && overviewMetricsData.revenueByMedia.length > 0) {
+        if (selectedMediaNames.length === 0 && overviewMetricsData.revenueByMediaLocation.length > 0) {
             setSelectedMediaNames(
-                overviewMetricsData.revenueByMedia
+                overviewMetricsData.revenueByMediaLocation
                     .slice(0, DEFAULT_SELECTED_MEDIA_COUNT)
-                    .map((m) => m.mediaName)
+                    .map((m) => m.locationName)
             );
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [overviewMetricsData.revenueByMedia]);
+    }, [overviewMetricsData.revenueByMediaLocation]);
 
-    const activeSeries = overviewMetricsData.revenueByMedia
-        .filter((m) => selectedMediaNames.includes(m.mediaName))
-        .map((m) => ({ name: m.mediaName, color: m.color }));
+    const activeSeries = overviewMetricsData.revenueByMediaLocation
+        .filter((m) => selectedMediaNames.includes(m.locationName))
+        .map((m) => ({ name: m.locationName, color: m.color }));
 
     const totalLegendPages = Math.ceil(
-        overviewMetricsData.revenueByMedia.length / legendItemsPerPage
+        overviewMetricsData.revenueByMediaLocation.length / legendItemsPerPage
     );
-    const paginatedLegendItems = overviewMetricsData.revenueByMedia.slice(
+    const paginatedLegendItems = overviewMetricsData.revenueByMediaLocation.slice(
         (legendPage - 1) * legendItemsPerPage,
         legendPage * legendItemsPerPage
     );
@@ -279,16 +279,17 @@ export default function MediaOwnerMetricsDashboard() {
                                 <Skeleton h={260} radius="md" />
                             )}
                         </Box>
-                        {overviewMetricsData.revenueByMedia.length > 0 && (
+                        {overviewMetricsData.revenueByMediaLocation.length > 0 && (
+
                             <Stack mt="md" gap="sm">
                                 <Group gap="md">
                                     {paginatedLegendItems.map((media) => (
                                         <Checkbox
-                                            key={media.mediaName}
-                                            label={media.mediaName}
+                                            key={media.locationName}
+                                            label={media.locationName}
                                             color={media.color.split(".")[0]}
-                                            checked={selectedMediaNames.includes(media.mediaName)}
-                                            onChange={() => toggleMediaSelection(media.mediaName)}
+                                            checked={selectedMediaNames.includes(media.locationName)}
+                                            onChange={() => toggleMediaSelection(media.locationName)}
                                         />
                                     ))}
                                 </Group>
@@ -410,12 +411,12 @@ export default function MediaOwnerMetricsDashboard() {
             <Grid gutter="md">
                 <Grid.Col span={{ base: 12, lg: 6 }}>
                     <RevenueByMediaSection
-                        rows={revenueByMediaRows}
-                        totalRows={overviewMetricsData.revenueByMedia.length}
-                        currentPage={revenueByMediaPage}
-                        totalPages={revenueByMediaTotalPages}
-                        rowsPerPage={revenueByMediaRowsPerPage}
-                        onPageChange={setRevenueByMediaPage}
+                        rows={revenueByMediaLocationRows}
+                        totalRows={overviewMetricsData.revenueByMediaLocation.length}
+                        currentPage={revenueByMediaLocationPage}
+                        totalPages={revenueByMediaLocationTotalPages}
+                        rowsPerPage={revenueByMediaLocationRowsPerPage}
+                        onPageChange={setRevenueByMediaLocationPage}
                     />
                 </Grid.Col>
 

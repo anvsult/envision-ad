@@ -112,25 +112,29 @@ export const buildOverviewMetricsData = (
         }
     }
 
-    const revenueByMediaMap = new Map<string, { mediaName: string; revenue: number }>();
+    const revenueByMediaLocationMap = new Map<string, { locationName: string; revenue: number }>();
+
     periodFilteredReservations.forEach((reservation) => {
         const mediaId = reservation.mediaId;
         const targetLocationName = mediaIdToLocationName.get(mediaId) ?? "Unknown Location";
 
         const amount = getReservationAmount(reservation);
 
-        const current = revenueByMediaMap.get(targetLocationName) ?? {
-            mediaName: targetLocationName,
+        const current = revenueByMediaLocationMap.get(targetLocationName) ?? {
+            locationName: targetLocationName,
+
             revenue: 0,
         };
         current.revenue += amount;
-        revenueByMediaMap.set(targetLocationName, current);
+        revenueByMediaLocationMap.set(targetLocationName, current);
+
     });
 
-    const revenueByMedia = Array.from(revenueByMediaMap.values())
+    const revenueByMediaLocation = Array.from(revenueByMediaLocationMap.values())
+
         .sort((a, b) => b.revenue - a.revenue)
         .map((item, index) => ({
-            mediaName: item.mediaName,
+            locationName: item.locationName,
             revenue: item.revenue,
             color: mediaLegendColors[index % mediaLegendColors.length],
         }));
@@ -188,7 +192,7 @@ export const buildOverviewMetricsData = (
     );
 
     return {
-        revenueByMedia,
+        revenueByMediaLocation,
         revenueByLocation,
         activeCampaignDetails,
         activeCampaignCount: activeCampaignMap.size,
