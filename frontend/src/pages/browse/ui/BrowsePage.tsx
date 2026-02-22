@@ -220,7 +220,7 @@ function BrowsePage() {
                   placeholder={t('searchAddress')}
                   id='AddressSearch'
                   data={locationOptions.map((o) => o)}
-                  
+                  aria-label='Address Search Input'
                   value={draftAddressSearch}
                   onChange={ setDraftAddressSearch }
                   onKeyDown={(event) => {
@@ -229,7 +229,7 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)}>
+                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)} aria-label='Address Search Input Button'>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
@@ -238,6 +238,7 @@ function BrowsePage() {
                 <TextInput
                   placeholder={t('searchTitle')}
                   id='TitleSearch'
+                  aria-label='Title Search Input'
                   value={draftTitleFilter}
                   onChange={(event) => setDraftTitleFilter(event.currentTarget.value)}
                   onKeyDown={(event) => {
@@ -246,7 +247,7 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)}>
+                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)} aria-label='Title Search Input Button'>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }

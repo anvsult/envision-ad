@@ -12,10 +12,11 @@ interface FilterNumberInputProps{
     label: string;
     placeholder?: string;
     prefix?: string;
+    ariaLabel?: string;
     w?: number;
 }
 
-export function FilterNumberInput({value, setValue, label, placeholder, prefix, w}: FilterNumberInputProps){
+export function FilterNumberInput({value, setValue, label, placeholder, prefix, ariaLabel, w}: FilterNumberInputProps){
     return(
         <Stack gap="xs">
             <Text size="sm">{label}</Text>
@@ -28,6 +29,7 @@ export function FilterNumberInput({value, setValue, label, placeholder, prefix, 
                     min={0}
                     w={w}
                     value={value ?? undefined}
+                    aria-label={ariaLabel}
                     onChange={(v) => setValue(v === "" || v === null || v === undefined ? null : Number(v))}
                 />
             </Group>
@@ -112,6 +114,7 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
                     label={t('from')}
                     prefix="$"
                     placeholder={t('from')}
+                    ariaLabel="Minimum Price Filter Input"
                     w={125}
                     value={draftMin}
                     setValue={setDraftMin}
@@ -120,6 +123,7 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
                     label={t('to')}
                     prefix="$"
                     placeholder={t('to')}
+                    ariaLabel="Maximum Price Filter Input"
                     w={125}
                     value={draftMax}
                     setValue={setDraftMax}
