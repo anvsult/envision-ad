@@ -418,9 +418,6 @@ export default function OnboardingPage() {
                             </ThemeIcon>
                             <Title order={4}>{t("allDone.title")}</Title>
                             <Text size="sm" c="dimmed">{t("allDone.description")}</Text>
-                            <Button fullWidth variant="light" color="green" component="a" href="/dashboard">
-                                {t("allDone.cta")}
-                            </Button>
                         </Stack>
                     </Paper>
                 )}

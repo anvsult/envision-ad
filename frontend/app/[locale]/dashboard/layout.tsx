@@ -17,7 +17,7 @@ export default function DashboardLayout({
 
     if (loading) {
         return (
-            <Center h="100vh" w="100vw">
+            <Center style={{ flex: 1 }}>
                 <Loader size="xl" />
             </Center>
         );

@@ -48,14 +48,8 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
 
     const refreshOrganization = useCallback(async () => {
         if (!user) return;
-
         setLoading(true);
-        try {
-            await fetchOrganization();
-        } catch (error) {
-            console.error('Failed to refresh organization:', error);
-            setLoading(false);
-        }
+        await fetchOrganization();
     }, [fetchOrganization, user]);
 
     useEffect(() => {

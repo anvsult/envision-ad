@@ -49,6 +49,8 @@ export default function MediaLocations() {
     const { organization } = useOrganization();
 
     const [locations, setLocations] = useState<MediaLocation[]>([]);
+    const [refreshCount, setRefreshCount] = useState(0);
+
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [locationToEdit, setLocationToEdit] = useState<MediaLocation | null>(null);
@@ -60,20 +62,9 @@ export default function MediaLocations() {
     const [isMediaModalOpen, setIsMediaModalOpen] = useState(false);
     const [editingMediaId, setEditingMediaId] = useState<string | null>(null);
 
-    const loadLocations = useCallback(async () => {
-        if (!organization) return;
-        try {
-            const data = await getAllMediaLocations(organization.businessId);
-            setLocations(data);
-        } catch (error) {
-            console.error("Failed to load media locations", error);
-            notifications.show({
-                title: t('notifications.loadFailed.title'),
-                message: t('notifications.loadFailed.message'),
-                color: "red"
-            });
-        }
-    }, [organization, t]);
+    const refreshLocations = useCallback(() => {
+        setRefreshCount(c => c + 1);
+    }, []);
 
     useEffect(() => {
         if (!organization) return;
@@ -99,7 +90,7 @@ export default function MediaLocations() {
         void fetchLocations();
 
         return () => { ignored = true; };
-    }, [organization, t]);
+    }, [organization, t, refreshCount]);
 
     const handleCreateLocation = async (payload: MediaLocationRequestDTO) => {
         if (!organization) return;
@@ -110,7 +101,7 @@ export default function MediaLocations() {
                 message: t('notifications.create.success.message'),
                 color: "green"
             });
-            await loadLocations();
+            refreshLocations();
         } catch (error) {
             const apiMessage = getApiErrorMessage(error);
             const message = apiMessage || (hasApiFieldErrors(error)
@@ -139,7 +130,7 @@ export default function MediaLocations() {
                 message: t('notifications.delete.success.message'),
                 color: "green"
             });
-            loadLocations();
+            refreshLocations();
         } catch (error) {
             const apiStatus = getApiErrorStatus(error);
             const apiMessage = getApiErrorMessage(error);
@@ -173,7 +164,7 @@ export default function MediaLocations() {
             });
             setIsMediaModalOpen(false);
             resetForm();
-            loadLocations();
+            refreshLocations();
         } catch (error) {
             console.error("Failed to create media", error);
             const apiMessage = getApiErrorMessage(error);
@@ -254,7 +245,7 @@ export default function MediaLocations() {
                 setIsMediaModalOpen(false);
                 setEditingMediaId(null);
                 resetForm();
-                loadLocations();
+                refreshLocations();
             } catch (error) {
                 console.error("Failed to update media", error);
                 notifications.show({ title: "Error", message: t("notifications.updateMedia.error.message"), color: "red" });
@@ -272,7 +263,7 @@ export default function MediaLocations() {
                 message: t("notifications.deleteMedia.success.message"),
                 color: "green",
             });
-            loadLocations();
+            refreshLocations();
         } catch (error) {
             console.error("Failed to delete media", error);
             notifications.show({ title: "Error", message: t("notifications.deleteMedia.error.message"), color: "red" });
@@ -287,7 +278,7 @@ export default function MediaLocations() {
                 message: t("notifications.statusMedia.success.message"),
                 color: "green",
             });
-            await loadLocations();
+            refreshLocations();
         } catch (error) {
             console.error("Failed to toggle status", error);
             notifications.show({ title: "Error", message: t("notifications.statusMedia.error.message"), color: "red" });
@@ -326,7 +317,7 @@ export default function MediaLocations() {
                 opened={isEditModalOpen}
                 onClose={() => { setIsEditModalOpen(false); setLocationToEdit(null); }}
                 location={locationToEdit}
-                onSuccess={loadLocations}
+                onSuccess={refreshLocations}
             />
 
             <ConfirmationModal
