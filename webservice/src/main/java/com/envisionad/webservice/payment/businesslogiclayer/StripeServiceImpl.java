@@ -160,10 +160,6 @@ public class StripeServiceImpl implements StripeService {
     @Override
     public Map<String, String> createCheckoutSession(String reservationId, BigDecimal amount, String businessId)
             throws StripeException {
-        // Validate amount
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidPricingException(amount);
-        }
 
         // Check for duplicate payment - only prevent if payment already SUCCEEDED
         // Allow retries for pending payments (incomplete Stripe sessions)
@@ -191,6 +187,10 @@ public class StripeServiceImpl implements StripeService {
             throw new StripeOnboardingIncompleteException(businessId);
         }
 
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.error("Invalid payment amount: ${} for reservation: {}", amount, reservationId);
+            throw new InvalidPricingException(amount);
+        }
         // Round to 2 decimals (HALF_UP) and convert to cents
         BigDecimal scaledAmount = amount.setScale(2, java.math.RoundingMode.HALF_UP);
         long amountInCents = scaledAmount.multiply(BigDecimal.valueOf(100)).longValueExact();
@@ -294,11 +294,8 @@ public class StripeServiceImpl implements StripeService {
         }
 
         // 2. SECURITY: Validate that the user owns this campaign
-        String userId = jwtUtils.extractUserId(jwt);
         String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
-        jwtUtils.validateUserIsEmployeeOfBusiness(userId, advertiserBusinessId);
-        log.info("User {} authorized to create payment for campaign {} (business: {})",
-                 userId, campaignId, advertiserBusinessId);
+        jwtUtils.validateUserIsEmployeeOfBusiness(jwt, advertiserBusinessId);
 
         // 3. Validate that the media exists
         UUID mediaUuid = UUID.fromString(mediaId);

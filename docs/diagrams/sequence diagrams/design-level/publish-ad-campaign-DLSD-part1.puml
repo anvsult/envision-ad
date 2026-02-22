@@ -1,0 +1,183 @@
+ @startuml
+
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 1)
+
+
+skinparam participantPadding 90
+
+actor Advertiser
+participant "<<UI>>\nMedia Details Page" as MediaDetailsPage
+participant "<<UI>>\nReserveMediaModal" as ReservationModal
+participant "<<control>>\nreservationController\n:ReservationController" as Controller
+participant "<<control>>\nreservationService\n:ReservationService" as Service
+participant "<<entity>>\nreservation\n:Reservation" as Reservation
+participant "<<mapper>>\nreservationResponseMapper\n:ReservationResponseMapper" as ResponseMapper
+participant "<<mapper>>\nreservationRequestMapper\n:ReservationRequestMapper" as RequestMapper
+participant "<<utility>>\nreservationValidator\n:ReservationValidator" as Validator
+participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
+participant "<<entity>>\nadCampaign\n:AdCampaign" as Campaign
+participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
+participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
+participant "<<repository>>\nreservationRepository\n:ReservationRepository" as ReservationRepo
+database "<<database>>\n:Database" as DB
+actor "Media Owner" as MediaOwner
+
+ref over Advertiser
+    <i>UC- Create Ad Campaign Use Case</i>
+end ref
+ref over Advertiser
+    <i>UC- Browse Media Use Case</i>
+end ref
+ref over Advertiser
+    <i>UC- View Media Listing Details Use Case</i>
+end ref
+
+Advertiser -> MediaDetailsPage: Initiate Reservation
+activate MediaDetailsPage
+
+MediaDetailsPage -> ReservationModal: ReservationMediaModal()
+activate ReservationModal
+
+ReservationModal -> Controller: POST /api/v1/media/{mediaId}/reservations\ncreateReservation(campaignId, startDate, endDate)
+activate Controller
+
+Controller -> Service: createReservation(jwt, mediaId, reservationRequestModel)
+
+activate Service
+
+Service -> Validator: validateReservation(requestModel, mediaId)
+activate Validator
+
+alt validation fails
+    Validator --> Controller: throws BadReservationRequestException
+    Controller --> ReservationModal: HTTP 400 Bad Request
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+deactivate Validator
+
+Service -> JwtUtils: extractUserId(jwt)
+activate JwtUtils
+JwtUtils --> Service: userId
+deactivate JwtUtils
+
+Service -> Service: loadAndValidateMedia(mediaId)
+alt validation fails
+    Service --> Controller: throws AdCampaignNotFoundException
+    Controller --> ReservationModal: HTTP 404 Not Found
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
+
+Service -> MediaRepo: findById(mediaId)
+activate MediaRepo
+MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaId
+activate DB
+DB --> MediaRepo: media data
+deactivate DB
+deactivate DB
+MediaRepo --> Service: media: Media
+deactivate MediaRepo
+
+Service -> Service: loadAndValidateCampaign(requestModel.getCampaignId())
+alt validation fails
+    Service --> Controller: throws AdCampaignNotFoundException
+    Controller --> ReservationModal: HTTP 404 Not Found
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
+Service -> CampaignRepo: findById(campaignId)
+activate CampaignRepo
+CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
+activate DB
+DB --> CampaignRepo: campaign data
+deactivate DB
+CampaignRepo --> Service: campaign: Campaign
+deactivate CampaignRepo
+
+Service -> Campaign: getBusinessId()
+activate Campaign
+Campaign --> Service: businessId
+deactivate Campaign
+
+Service -> JwtUtils: validateUserIsEmployeeOfBusiness(userId, businessId)
+activate JwtUtils
+alt validation fails
+    JwtUtils --> Controller: throws AccessDeniedException
+    deactivate JwtUtils
+    Controller --> ReservationModal: HTTP 403 Forbidden
+    ReservationModal --> MediaDetailsPage: Error
+else validation succeeds
+
+
+Service -> ReservationRepo: existsByMediaIdAndCampaignIdAndDateRange(mediaId, campaignId, startDate, endDate)
+activate ReservationRepo
+ReservationRepo -> DB: SELECT COUNT(*) FROM reservations \nWHERE media_id = mediaId AND \ncampaign_id = campaignId AND \n status IN('CONFIRMED', 'APPROVED', 'PENDING')\n(start_date < endDate AND end_date > startDate)
+activate DB
+DB --> ReservationRepo: exists (true/false)
+deactivate DB
+
+ReservationRepo --> Service: exists: boolean
+deactivate ReservationRepo
+alt reservation exists
+    Service --> Controller: throws ReservationConflictException
+    Controller --> ReservationModal: HTTP 409 Conflict
+    ReservationModal --> MediaDetailsPage: Error
+else reservation does not exist
+
+
+Service -> Service: calculateTotalPrice(media, requestModel)
+Service -> Service: totalPrice
+
+Service -> Service: createPendingReservation(requestModel, media, userId, totalPrice)
+
+Service -> RequestMapper: requestModelToEntity(requestModel)
+activate RequestMapper
+RequestMapper -> Reservation: new Reservation()
+activate Reservation
+deactivate Reservation
+RequestMapper --> Service: reservation: Reservation
+deactivate RequestMapper
+
+Service -> Reservation: setReservationId(UUID.randomUUID().toString())
+Service -> Reservation: setMediaId(media.getId())
+Service -> Reservation: setTotalPrice(totalPrice)
+Service -> Reservation: setAdvertiserId(userId)
+Service -> Reservation: setStatus(PENDING)
+
+note left
+  Reservation created with PENDING status.
+  Requires media owner approval.
+end note
+
+Service -> ReservationRepo: save(reservation)
+activate ReservationRepo
+ReservationRepo -> DB: INSERT INTO reservations (details) VALUES (details)
+activate DB
+DB --> ReservationRepo
+deactivate DB
+ReservationRepo --> Service: savedReservation
+deactivate ReservationRepo
+
+Service -> ResponseMapper: entityToResponseModel(savedReservation)
+activate ResponseMapper
+ResponseMapper --> Service: reservationResponse
+deactivate ResponseMapper
+
+Service --> Controller: reservationResponse
+deactivate Service
+
+Controller --> ReservationModal: reservationResponse (HTTP 201)
+ReservationModal --> MediaDetailsPage: close()
+deactivate Controller
+deactivate MediaDetailsPage
+deactivate ReservationModal
+
+ref over MediaOwner
+    <i>UC- Approve Reservation Use Case</i>
+end ref
+end alt
+end alt
+end alt
+end alt
+end alt
+@enduml

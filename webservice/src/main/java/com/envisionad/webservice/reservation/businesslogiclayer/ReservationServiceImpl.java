@@ -8,10 +8,10 @@ import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntent;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentIntentRepository;
-import com.envisionad.webservice.payment.dataaccesslayer.PaymentStatus;
 import com.envisionad.webservice.reservation.dataaccesslayer.*;
+import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
+import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationRequestMapper;
 import com.envisionad.webservice.reservation.datamapperlayer.ReservationResponseMapper;
 import com.envisionad.webservice.reservation.exceptions.*;
@@ -20,7 +20,6 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import com.envisionad.webservice.reservation.presentationlayer.models.ReservationResponseModel;
 import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.JwtUtils;
-import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -43,13 +41,11 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRequestMapper reservationRequestMapper;
     private final ReservationResponseMapper reservationResponseMapper;
     private final JwtUtils jwtUtils;
-    private final PaymentIntentRepository paymentIntentRepository;
     private final BusinessRepository businessRepository;
 
     public ReservationServiceImpl(ReservationRepository reservationRepository, MediaRepository mediaRepository,
                                   AdCampaignRepository adCampaignRepository, ReservationRequestMapper reservationRequestMapper,
                                   ReservationResponseMapper reservationResponseMapper, JwtUtils jwtUtils,
-                                  PaymentIntentRepository paymentIntentRepository,
                                   BusinessRepository businessRepository) {
         this.reservationRepository = reservationRepository;
         this.mediaRepository = mediaRepository;
@@ -57,7 +53,6 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationRequestMapper = reservationRequestMapper;
         this.reservationResponseMapper = reservationResponseMapper;
         this.jwtUtils = jwtUtils;
-        this.paymentIntentRepository = paymentIntentRepository;
         this.businessRepository = businessRepository;
     }
 
@@ -119,13 +114,6 @@ public class ReservationServiceImpl implements ReservationService {
         // 3. Validate user permissions
         String businessId = campaign.getBusinessId().getBusinessId();
         jwtUtils.validateUserIsEmployeeOfBusiness(userId, businessId);
-        jwtUtils.validateBusinessOwnsCampaign(businessId, campaign);
-
-//        // Prevent a business from reserving their own media
-//        String mediaOwnerBusinessId = media.getBusinessId().toString();
-//        if (businessId.equals(mediaOwnerBusinessId)) {
-//            throw new IllegalStateException("A business cannot reserve its own media");
-//        }
 
         // 4. Validate non-conflicting reservation with same ad campaign, media and date range
         boolean hasConflict = reservationRepository.existsByMediaIdAndCampaignIdAndDateRange(
@@ -135,22 +123,13 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ReservationConflictException();
         }
 
-        // 5. Calculate price
+        // 4. Calculate price
         BigDecimal totalPrice = calculateTotalPrice(media, requestModel);
 
-        // 6. Handle payment and reservation creation
-        Reservation reservation;
-        String paymentIntentId = requestModel.getPaymentIntentId();
+        // 5. Create pending reservation
+        Reservation reservation = createPendingReservation(requestModel, media, userId, totalPrice);
 
-        if (paymentIntentId != null && !paymentIntentId.isBlank()) {
-            // Payment flow: verify payment and create/update reservation
-            reservation = handlePaidReservation(paymentIntentId, requestModel, media, userId, totalPrice);
-        } else {
-            // No payment provided: create pending reservation (webhook will confirm)
-            reservation = createPendingReservation(requestModel, media, userId, totalPrice);
-        }
-
-        // 7. Save reservation
+        // 6. Save reservation
         Reservation savedReservation = reservationRepository.save(reservation);
         log.info("Reservation {} created with status: {}", savedReservation.getReservationId(), savedReservation.getStatus());
 
@@ -345,149 +324,6 @@ public class ReservationServiceImpl implements ReservationService {
         return media.getPrice().multiply(BigDecimal.valueOf(weeks));
     }
 
-    private Reservation handlePaidReservation(String paymentIntentId, ReservationRequestModel requestModel,
-                                              Media media, String userId, BigDecimal totalPrice) {
-        try {
-            com.stripe.model.PaymentIntent intent = com.stripe.model.PaymentIntent.retrieve(paymentIntentId);
-
-            // Verify payment succeeded
-            if (!"succeeded".equals(intent.getStatus())) {
-                throw new PaymentVerificationException(
-                        String.format("PaymentIntent %s has status '%s', expected 'succeeded'",
-                                paymentIntentId, intent.getStatus())
-                );
-            }
-
-            // Extract and validate metadata
-            Map<String, String> metadata = intent.getMetadata();
-            if (metadata == null || metadata.isEmpty()) {
-                throw new PaymentVerificationException("PaymentIntent missing required metadata");
-            }
-
-            String metaReservationId = metadata.get("reservationId");
-            String metaBusinessId = metadata.get("businessId");
-
-//            // Ensure the PaymentIntent was created for the media owner (destination)
-//            if (metaBusinessId == null || metaBusinessId.isBlank()) {
-//                throw new PaymentVerificationException("PaymentIntent metadata missing businessId");
-//            }
-
-
-            // CRITICAL SECURITY CHECK: Verify this PaymentIntent hasn't been used before
-            Optional<PaymentIntent> existingPayment = paymentIntentRepository.findByStripePaymentIntentId(paymentIntentId);
-            if (existingPayment.isPresent()) {
-                PaymentIntent payment = existingPayment.get();
-
-                // If payment already has a reservation, ensure we're not creating a duplicate
-                if (payment.getReservationId() != null && !payment.getReservationId().isEmpty()) {
-                    // This PaymentIntent is already associated with a reservation
-                    String existingReservationId = payment.getReservationId();
-
-                    // If metadata reservationId matches the existing one, it's idempotent (OK)
-                    if (metaReservationId != null && metaReservationId.equals(existingReservationId)) {
-                        log.info("PaymentIntent {} already used for reservation {}, returning existing",
-                                paymentIntentId, existingReservationId);
-
-                        // Return the existing reservation
-                        Optional<Reservation> existingRes = reservationRepository.findByReservationId(existingReservationId);
-                        if (existingRes.isPresent()) {
-                            return existingRes.get();
-                        }
-                    } else {
-                        // PaymentIntent is being reused for a DIFFERENT reservation - REJECT
-                        throw new PaymentVerificationException(
-                                String.format("PaymentIntent %s is already associated with reservation %s, cannot reuse for another reservation",
-                                        paymentIntentId, existingReservationId)
-                        );
-                    }
-                }
-            }
-
-            // Verify amount and currency
-            long expectedCents = totalPrice.setScale(2, java.math.RoundingMode.HALF_UP)
-                    .multiply(BigDecimal.valueOf(100)).longValueExact();
-
-            Long intentAmount = intent.getAmount();
-            String intentCurrency = intent.getCurrency();
-
-            if (intentAmount == null || intentAmount != expectedCents) {
-                throw new PaymentVerificationException(
-                        String.format("PaymentIntent amount mismatch: expected %d cents, got %d cents",
-                                expectedCents, intentAmount)
-                );
-            }
-
-            if (intentCurrency == null || !intentCurrency.equalsIgnoreCase("cad")) {
-                throw new PaymentVerificationException(
-                        String.format("PaymentIntent currency mismatch: expected CAD, got %s", intentCurrency)
-                );
-            }
-
-            // Check if reservation already exists by metadata reservationId (idempotency)
-            Reservation existingReservation = null;
-            if (metaReservationId != null && !metaReservationId.isBlank()) {
-                existingReservation = reservationRepository.findByReservationId(metaReservationId).orElse(null);
-            }
-
-            if (existingReservation != null) {
-                // Reservation exists - verify it matches the payment
-                log.info("Reservation {} already exists for PaymentIntent {}", metaReservationId, paymentIntentId);
-
-                // Update to confirmed if it was pending
-                if (existingReservation.getStatus() != ReservationStatus.CONFIRMED) {
-                    existingReservation.setStatus(ReservationStatus.CONFIRMED);
-                    existingReservation.setTotalPrice(totalPrice);
-                    existingReservation.setAdvertiserId(userId);
-                }
-
-                return existingReservation;
-            }
-
-            // Create new confirmed reservation
-            // Use reservationId from metadata if available, otherwise generate new one
-            String reservationId = (metaReservationId != null && !metaReservationId.isBlank())
-                    ? metaReservationId
-                    : UUID.randomUUID().toString();
-
-            log.info("Creating new CONFIRMED reservation: {}", reservationId);
-            Reservation reservation = reservationRequestMapper.requestModelToEntity(requestModel);
-            reservation.setReservationId(reservationId);
-            reservation.setMediaId(media.getId());
-            reservation.setTotalPrice(totalPrice);
-            reservation.setAdvertiserId(userId);
-            reservation.setStatus(ReservationStatus.CONFIRMED);
-
-            // CRITICAL: Mark this PaymentIntent as consumed to prevent reuse
-            if (existingPayment.isPresent()) {
-                PaymentIntent payment = existingPayment.get();
-                // Update if reservationId is not set yet
-                if (payment.getReservationId() == null || payment.getReservationId().isEmpty()) {
-                    payment.setReservationId(reservationId);
-                    payment.setStatus(PaymentStatus.SUCCEEDED);
-                    paymentIntentRepository.save(payment);
-                    log.info("Updated existing payment record {} with reservation {}", paymentIntentId, reservationId);
-                }
-            } else {
-                // Create new payment record
-                PaymentIntent newPayment = new PaymentIntent();
-                newPayment.setStripePaymentIntentId(paymentIntentId);
-                newPayment.setReservationId(reservationId);
-                newPayment.setBusinessId(metaBusinessId);
-                newPayment.setAmount(totalPrice);
-                newPayment.setStatus(PaymentStatus.SUCCEEDED);
-                newPayment.setCreatedAt(java.time.LocalDateTime.now());
-                paymentIntentRepository.save(newPayment);
-                log.info("Created payment record for PaymentIntent {} and reservation {}", paymentIntentId, reservationId);
-            }
-
-            return reservation;
-
-        } catch (StripeException e) {
-            log.error("Failed to retrieve PaymentIntent {}: {}", paymentIntentId, e.getMessage(), e);
-            throw new PaymentVerificationException("Failed to verify payment with Stripe: " + e.getMessage(), e);
-        }
-    }
-
     private Reservation createPendingReservation(ReservationRequestModel requestModel, Media media,
                                                  String userId, BigDecimal totalPrice) {
         log.info("Creating new PENDING reservation (no payment provided, webhook will confirm)");
@@ -496,7 +332,7 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setMediaId(media.getId());
         reservation.setTotalPrice(totalPrice);
         reservation.setAdvertiserId(userId);
-        reservation.setStatus(ReservationStatus.PENDING);
+        reservation.setStatus(ReservationStatus.PENDING); // Will be updated to APPROVED or DENIED by media owner, or CONFIRMED by payment webhook
         return reservation;
     }
 

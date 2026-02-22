@@ -1,0 +1,211 @@
+@startuml
+title <u>Design Level Sequence Diagram</u>\nPublish Ad Campaign (part 2)
+
+
+actor Advertiser
+
+participant "<<UI>>\nAdvertisements Page" as AdvertisementsPage
+participant "<<UI>>\nPaymentModal" as PaymentModal
+participant "<<UI>>\nEmbeddedCheckoutProvider" as EmbeddedCheckoutProvider
+participant "<<UI>>\nEmbeddedCheckout" as EmbeddedCheckout
+participant "<<control>>\npaymentController\n:PaymentController" as PaymentController
+participant "<<control>>\nstripeService\n:StripeService" as StripeService
+participant "<<repository>>\nadCampaignRepository\n:AdCampaignRepository" as CampaignRepo
+participant "<<utility>>\njwtUtils\n:JwtUtils" as JwtUtils
+participant "<<repository>>\nmediaRepository\n:MediaRepository" as MediaRepo
+participant "<<repository>>\nstripeAccountRepository\n:StripeAccountRepository" as StripeAccountRepo
+participant "<<repository>>\npaymentIntentRepository\n:PaymentIntentRepository" as PaymentIntentRepo
+database "<<database>>\n:Database" as DB
+participant "<<external>>\nStripe API" as StripeAPI
+actor "Media Owner" as MediaOwner
+ref over MediaOwner
+    <i>UC- Approve Reservation Use Case</i>
+end ref
+
+
+Advertiser -> AdvertisementsPage: Initiate Payment
+activate AdvertisementsPage
+
+AdvertisementsPage -> PaymentModal: PaymentModal()
+activate PaymentModal
+
+PaymentModal -> PaymentController: POST /api/v1/payments/create-payment-intent\ncreateCheckoutSession(reservationId, mediaId, campaignId, startDate, endDate)
+activate PaymentController
+
+PaymentController -> StripeService: createAuthorizedCheckoutSession(jwt, campaignId, mediaId, reservationId, startDate, endDate)
+activate StripeService
+
+StripeService -> CampaignRepo: findByCampaignId(campaignId)
+activate CampaignRepo
+
+CampaignRepo -> DB: SELECT * FROM ad_campaigns WHERE campaign_id = campaignId
+activate DB
+DB --> CampaignRepo: campaign data
+deactivate DB
+CampaignRepo --> StripeService: campaign: Campaign
+deactivate CampaignRepo
+
+alt campaign not found
+    StripeService -> PaymentController: throw new AdCampaignNotFoundException()
+    PaymentController -> PaymentModal: HTTP 404 Not Found
+    PaymentModal -> AdvertisementsPage: Error
+else campaign found
+
+' Validate that the user owns the campaign
+StripeService -> JwtUtils: validateUserIsEmployeeOfBusiness(jwt, advertiserBusinessId)
+note left
+    Validating whether the advertiser's
+    organization owns the campaign
+end note
+activate JwtUtils
+
+alt validation fails
+    JwtUtils --> PaymentController: throws AccessDeniedException
+    deactivate JwtUtils
+    PaymentController -> PaymentModal: HTTP 401 Unauthorized
+    PaymentModal -> AdvertisementsPage: Error
+else validation succeeds
+
+StripeService -> MediaRepo: findById(UUID.fromString(mediaId))
+activate MediaRepo
+MediaRepo -> DB: SELECT * FROM media WHERE media_id = mediaId
+activate DB
+DB --> MediaRepo: media data
+deactivate DB
+MediaRepo --> StripeService: media: Media
+deactivate MediaRepo
+
+alt media not found
+    StripeService -> PaymentController: throw new MediaNotFoundException()
+    PaymentController -> PaymentModal: HTTP 404 Not Found
+    PaymentModal -> AdvertisementsPage: Error
+else media found
+
+
+StripeService -> StripeService: calculatePriceFromDates(mediaPrice, startDate, endDate)
+note left of StripeService
+    - Convert amount to cents
+    - Calculate platform fee
+    - Create Idempotency Key
+end note
+
+alt price calculation fails (e.g. endDate before startDate)
+    StripeService -> PaymentController: throw new InvalidPricingException()
+    PaymentController -> PaymentModal: HTTP 400 Bad Request
+    PaymentModal -> AdvertisementsPage: Error
+else price calculated successfully
+
+' The call to createCheckoutSession is now detailed below
+StripeService -> StripeService: createCheckoutSession(reservationId, calculatedAmount, mediaOwnerBusinessId)
+
+StripeService -> PaymentIntentRepo: findByReservationId(reservationId)
+activate PaymentIntentRepo
+note right: Check if a payment has already been made
+PaymentIntentRepo -> DB: SELECT * FROM payment_intents WHERE reservation_id = reservationId
+activate DB
+DB --> PaymentIntentRepo: payment data
+deactivate DB
+PaymentIntentRepo --> StripeService: existingPayment (Optional)
+deactivate PaymentIntentRepo
+
+alt payment already exists for this reservation
+    StripeService -> PaymentController: throw new DuplicatePaymentException()
+    PaymentController -> PaymentModal: HTTP 409 Conflict
+    PaymentModal -> AdvertisementsPage: Error
+else no existing payment
+
+StripeService -> StripeAccountRepo: findByBusinessId(businessId)
+activate StripeAccountRepo
+note right: Find media owner's Stripe account
+StripeAccountRepo -> DB: SELECT * FROM stripe_accounts WHERE business_id = businessId
+activate DB
+DB --> StripeAccountRepo: stripeAccount data
+deactivate DB
+StripeAccountRepo --> StripeService: stripeAccount
+deactivate StripeAccountRepo
+
+alt stripe onboarding incomplete or account not found
+    StripeService -> PaymentController: throw new StripeOnboardingIncompleteException()
+    PaymentController -> PaymentModal: HTTP 404 Not Found
+    PaymentModal -> AdvertisementsPage: Error
+else stripe account found and onboarding complete
+
+
+
+
+
+StripeService -> StripeAPI: Session.create(SessionCreateParams)
+note left: Create Stripe checkout session with transfer data and platform fee
+activate StripeAPI
+StripeAPI --> StripeService: session: com.stripe.checkout.Session
+deactivate StripeAPI
+
+StripeService -> PaymentIntentRepo: save(paymentIntent)
+note left: Create or update local payment record with PENDING status
+activate PaymentIntentRepo
+PaymentIntentRepo -> DB: INSERT/UPDATE payment_intent
+activate DB
+DB --> PaymentIntentRepo:
+deactivate DB
+PaymentIntentRepo --> StripeService: savedPaymentIntent
+deactivate PaymentIntentRepo
+
+'deactivate StripeService
+StripeService --> PaymentController: result: Map<String, String>
+note left
+    The result map includes the session_id
+    and the client_secret from the payment intent,
+    which is needed by the frontend to complete the payment.
+    This information is safe to share with the client.
+end note
+deactivate StripeService
+
+PaymentController --> PaymentModal: ResponseEntity.ok(result)
+deactivate PaymentController
+
+PaymentModal -> EmbeddedCheckoutProvider: EmbeddedCheckoutProvider(stripePromise, options)
+activate EmbeddedCheckoutProvider
+note left
+    The EmbeddedCheckoutProvider
+    is a UI component provided by
+    Stripe that renders the payment
+    form and handles the payment.
+    Options argument includes the client
+    secret from the payment intent
+    and an onComplete callback function
+end note
+
+EmbeddedCheckoutProvider -> EmbeddedCheckout: EmbeddedCheckout()
+activate EmbeddedCheckout
+note left
+    The EmbeddedCheckout component is
+    responsible for the payment form and
+    handling user interactions.
+    It uses the Stripe.js library
+    to securely handle payment information
+    and communicate with Stripe's servers.
+end note
+
+
+Advertiser -> EmbeddedCheckout: Enter Payment Details and submit
+
+EmbeddedCheckout -> StripeAPI: confirmPayment(clientSecret, paymentDetails)
+activate StripeAPI
+StripeAPI --> EmbeddedCheckout: PaymentIntent
+deactivate StripeAPI
+
+EmbeddedCheckout --> PaymentModal: onComplete()
+deactivate EmbeddedCheckout
+deactivate EmbeddedCheckoutProvider
+PaymentModal --> AdvertisementsPage: Payment Successful
+deactivate PaymentModal
+deactivate AdvertisementsPage
+
+
+end alt
+end alt
+end alt
+end alt
+end alt
+end alt
+@enduml

@@ -244,7 +244,7 @@ public class StripeWebhookService {
                         .orElseThrow(() -> new MediaNotFoundException(reservation.getMediaId().toString()));
                 AdCampaign campaign = adCampaignRepository.findByCampaignId_CampaignId(reservation.getCampaignId());
                 if (campaign == null) {
-                    throw new AdCampaignNotFoundException(reservation.getCampaignId());
+                    log.error("Ad campaign not found for reservation: {}", reservationId);
                 }
                 BigDecimal totalPrice = reservation.getTotalPrice();
                 if(totalPrice == null) {

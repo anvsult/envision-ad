@@ -1,0 +1,59 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+'skinparam linetype ortho
+' --- Increase spacing and make the box larger test ---
+skinparam ranksep 40
+skinparam nodesep 30
+skinparam rectangle {
+  Padding 40
+  Margin 40
+}
+
+actor Advertiser as ADV
+actor "Media Owner" as MO
+
+rectangle "Use Case Diagram\nPublish Ad Campaign" {
+' --- Advertiser use cases ---
+'  usecase "UC_13.3 Preview Ad on Media" as Preview
+  usecase "UC_13 Create Pending Reservation" as CreatePendingReservation
+'  usecase "UC_07 Confirm Proof of Display" as ConfirmProof
+' Once the media owner approves the pending reservation, the advertiser can go on his dashboard to make the payment for that reservation.
+' Once the payment is made, the media owner will be send an email with the ad campaign images and details to be able to manually display the ad campaign on his media.
+  usecase "UC_03 Make Ad Payment" as Pay
+'  usecase "UC_13.2 Upload Ad Content" as UploadContent
+'  usecase "UC_13.1 Select Ad Start/End Dates" as SelectDates
+' Once the pending reservation is created, the media owner can go on his dashboard to either approve or deny that reservation
+  usecase "Manage Reservation" as ManageReservation
+
+  ' --- Media Owner use cases ---
+'  usecase "UC_04 Approve/Deny Ad" as ApproveAd
+'  usecase "UC_14.1 Download Ad Content" as DownloadContent
+'  usecase "UC_06 Provide Proof of Display" as ProvideProof
+'  usecase "UC_14 Retrieve Ad for Display" as DisplayAd
+
+  ' --- Actor connections ---
+  '==================
+  ADV -- CreatePendingReservation
+  ADV -- Pay
+  ManageReservation -- MO
+  ' ==================
+'  ADV -- ConfirmProof
+
+'  DisplayAd -- MO
+'  ProvideProof  -- MO
+
+  ' --- Relationships  ---
+'  CreatePendingReservation <.. Preview : <<extends>>
+'  CreatePendingReservation ..> SelectDates : <<includes>>
+'  CreatePendingReservation ..> UploadContent : <<includes>>
+' ==============
+  Pay ..> ManageReservation : <<includes>>
+  ManageReservation ..> CreatePendingReservation : <<includes>>
+' ===============
+'  ConfirmProof ..> ProvideProof  : <<includes>>
+'  DownloadContent <.. DisplayAd : <<includes>>
+'  ApproveAd <.. DisplayAd : <<includes>>
+
+}
+@enduml
