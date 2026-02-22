@@ -229,7 +229,7 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)} aria-label='Address Search Input Button'>
+                    <ActionIcon id='AddressSearchButton' onClick={() => setAddressSearch(draftAddressSearch)} aria-label='Enter Address Search Input'>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
@@ -247,7 +247,7 @@ function BrowsePage() {
                     }
                   }}
                   rightSection={
-                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)} aria-label='Title Search Input Button'>
+                    <ActionIcon id='TitleSearchButton' onClick={() => setTitleFilter(draftTitleFilter)} aria-label='Enter Title Search Input'>
                       <IconSearch size={16} />
                     </ActionIcon>
                   }
