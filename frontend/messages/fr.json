@@ -419,6 +419,8 @@
     },
     "verificationHistory": "Historique des vérifications",
     "requestVerification": "Demander une vérification",
+    "showOriginal": "Afficher l'original",
+    "showTranslation": "Afficher la traduction",
     "verificationTable": {
       "noHistory": "Aucun historique de demande de vérification trouvé.",
       "requestDate": "Date de la demande",
