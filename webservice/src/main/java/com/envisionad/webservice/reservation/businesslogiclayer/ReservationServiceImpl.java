@@ -24,6 +24,7 @@ import com.envisionad.webservice.reservation.utils.ReservationValidator;
 import com.envisionad.webservice.utils.JwtUtils;
 import com.stripe.exception.StripeException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +117,9 @@ public class ReservationServiceImpl implements ReservationService {
         ReservationValidator.validateReservation(requestModel, mediaId);
         String userId = jwtUtils.extractUserId(jwt);
         Employee employee = employeeRepository.findByUserId(userId);
+        if (employee == null) {
+            throw new AccessDeniedException("User is not an employee of any business");
+        }
 
         // 2. Load and validate entities
         Media media = loadAndValidateMedia(mediaId);
