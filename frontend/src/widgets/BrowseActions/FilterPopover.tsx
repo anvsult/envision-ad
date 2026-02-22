@@ -133,7 +133,7 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
     )
 }
 
-export function FilterValuePopover({id, value, setValue, label, placeholder, prefix}: FilterNumberInputProps) {
+export function FilterValuePopover({id, value, setValue, label, placeholder, prefix, ariaLabel}: FilterNumberInputProps) {
     const [draftValue, setdraftValue] = useState<number | null>(value ?? null);
     
 
@@ -149,6 +149,7 @@ export function FilterValuePopover({id, value, setValue, label, placeholder, pre
                     prefix={prefix}
                     placeholder={placeholder}
                     value={draftValue}
+                    ariaLabel={ariaLabel}
                     setValue={setdraftValue}
                 />
             </Group>
