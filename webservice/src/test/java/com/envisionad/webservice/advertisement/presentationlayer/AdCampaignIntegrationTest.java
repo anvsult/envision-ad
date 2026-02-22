@@ -205,7 +205,6 @@ public class AdCampaignIntegrationTest {
         AdRequestModel adRequestModel = new AdRequestModel();
         adRequestModel.setName("Summer Beach Banner");
         adRequestModel.setAdUrl("https://cdn.envisionad.com/summer-beach.jpg");
-        adRequestModel.setAdDurationSeconds(30);
         adRequestModel.setAdType("IMAGE");
 
         // Act & Assert
@@ -221,7 +220,6 @@ public class AdCampaignIntegrationTest {
                 .expectBody()
                 .jsonPath("$.name").isEqualTo("Summer Beach Banner")
                 .jsonPath("$.adUrl").isEqualTo("https://cdn.envisionad.com/summer-beach.jpg")
-                .jsonPath("$.adDurationSeconds").isEqualTo(30)
                 .jsonPath("$.adType").isEqualTo("IMAGE")
                 .jsonPath("$.adId").isNotEmpty();
         // Assert
@@ -248,7 +246,7 @@ public class AdCampaignIntegrationTest {
 
         // Assert
         assertEquals(1, adCampaignRepository.count());
-        AdCampaign savedCampaign = adCampaignRepository.findAll().get(0);
+        AdCampaign savedCampaign = adCampaignRepository.findAll().getFirst();
         assertEquals("Spring Sale", savedCampaign.getName());
         assertNotNull(savedCampaign.getCampaignId());
         assertNotNull(savedCampaign.getCampaignId().getCampaignId());
@@ -266,7 +264,6 @@ public class AdCampaignIntegrationTest {
         ad.setName("Winter Discount");
         ad.setAdUrl("http://example.com/winter-discount");
         ad.setAdType(AdType.IMAGE);
-        ad.setAdDurationSeconds(AdDuration.S10);
         ad.setAdIdentifier(new AdIdentifier());
 
         // IMPORTANT: set both sides of the relationship before save
@@ -288,7 +285,6 @@ public class AdCampaignIntegrationTest {
                 .jsonPath("$.name").isEqualTo("Winter Discount")
                 .jsonPath("$.adUrl").isEqualTo("http://example.com/winter-discount")
                 .jsonPath("$.adType").isEqualTo("IMAGE")
-                .jsonPath("$.adDurationSeconds").isEqualTo(10)
                 .jsonPath("$.adId").isEqualTo(adId);
 
         AdCampaign updatedCampaign = adCampaignRepository.findByCampaignIdWithAds(campaignId);
@@ -312,7 +308,6 @@ public class AdCampaignIntegrationTest {
         AdRequestModel adRequestModel = new AdRequestModel();
         adRequestModel.setName("Invalid Type Ad");
         adRequestModel.setAdUrl("https://cdn.envisionad.com/img.jpg");
-        adRequestModel.setAdDurationSeconds(30);
         // ACT: Set an invalid Type string to trigger IllegalArgumentException in the service
         adRequestModel.setAdType("NON_EXISTENT_TYPE");
 
@@ -328,39 +323,7 @@ public class AdCampaignIntegrationTest {
                 // EXPECTATION: Depends on your GlobalExceptionHandler.
                 // Usually 422 (Unprocessable Entity) or 400 (Bad Request).
                 .expectStatus().is4xxClientError()
-                .expectBody()
-                // Optional: Check if the error message matches your exception message
-                .jsonPath("$.message").value(v -> v.toString().contains("NON_EXISTENT_TYPE"));
-    }
-
-    @Test
-    void addAdToCampaign_shouldThrowInvalidAdDurationException_whenDurationIsInvalid() {
-        // Arrange
-
-        AdCampaign adCampaign = new AdCampaign();
-        adCampaign.setName("Winter Sale");
-        adCampaign.setCampaignId(new AdCampaignIdentifier());
-        adCampaign.setBusinessId(businessId);
-        AdCampaign savedCampaign = adCampaignRepository.save(adCampaign);
-        String campaignId = savedCampaign.getCampaignId().getCampaignId();
-
-        AdRequestModel adRequestModel = new AdRequestModel();
-        adRequestModel.setName("Invalid Duration Ad");
-        adRequestModel.setAdUrl("https://cdn.envisionad.com/img.jpg");
-        adRequestModel.setAdType("IMAGE"); // Valid type
-        // ACT: Set invalid duration (assuming your domain logic rejects negative numbers)
-        adRequestModel.setAdDurationSeconds(-50);
-
-        // Act & Assert
-        webTestClient.post()
-                .uri(uriBuilder -> uriBuilder
-                        .path(BASE_URI_AD_CAMPAIGNS + "/{campaignId}/ads")
-                        .build(businessId.getBusinessId(), campaignId))
-                .headers(headers -> headers.setBearerAuth("advertiser-token"))
-                .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
-                .bodyValue(adRequestModel)
-                .exchange()
-                .expectStatus().is4xxClientError(); // Expect 422 or 400
+                .expectBody();
     }
 
     @Test
@@ -371,7 +334,6 @@ public class AdCampaignIntegrationTest {
         AdRequestModel adRequestModel = new AdRequestModel();
         adRequestModel.setName("Orphan Ad");
         adRequestModel.setAdUrl("https://cdn.envisionad.com/img.jpg");
-        adRequestModel.setAdDurationSeconds(30);
         adRequestModel.setAdType("IMAGE");
 
         // Act & Assert

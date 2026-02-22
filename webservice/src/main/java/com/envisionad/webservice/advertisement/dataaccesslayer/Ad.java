@@ -1,6 +1,5 @@
 package com.envisionad.webservice.advertisement.dataaccesslayer;
 
-import com.envisionad.webservice.advertisement.datamapperlayer.AdDurationConverter;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,11 +28,6 @@ public class Ad {
     @Column(name = "ad_type")
     @Enumerated(EnumType.STRING)
     private AdType adType;
-
-    // This only accepts durations of 10, 15, and 30 seconds
-    @Column(name = "ad_duration_seconds")
-    @Convert(converter = AdDurationConverter.class)
-    private AdDuration adDurationSeconds;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ad_campaign_ref_id", nullable = false)

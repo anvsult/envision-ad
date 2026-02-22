@@ -1,16 +1,18 @@
 import { ReservationStatus } from "@/entities/reservation";
 import type {
+    DateRangeMap,
     OverviewMetricsData,
     OverviewPeriod,
     ReservationResponseDTO,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/types";
+import type { MediaLocation } from "@/entities/media-location/model/mediaLocation";
 import {
     getReservationAmount,
     normalizeText,
     parseDateMs,
 } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/shared-utils";
 
-const mediaLegendColors = [
+export const mediaLegendColors = [
     "blue.6",
     "cyan.6",
     "teal.6",
@@ -27,12 +29,67 @@ const isOverlappingRange = (
     rangeEndMs: number
 ) => startMs < rangeEndMs && endMs > rangeStartMs;
 
+const isUTCMidnight = (d: Date): boolean =>
+    d.getUTCHours() === 0 && d.getUTCMinutes() === 0 && d.getUTCSeconds() === 0;
+
+const getLocalMidnightMs = (dateInput: Date | string | number | null): number => {
+    if (!dateInput) return 0;
+    const d = new Date(dateInput);
+    if (isUTCMidnight(d)) {
+        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()).getTime();
+    }
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+};
+
+const getLocalEndOfDayMs = (dateInput: Date | string | number | null): number => {
+    if (!dateInput) return 0;
+    const d = new Date(dateInput);
+    if (isUTCMidnight(d)) {
+        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999).getTime();
+    }
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999).getTime();
+};
+
+export const resolveDateRange = (
+    period: OverviewPeriod,
+    customRange?: DateRangeMap
+): [number, number] => {
+    const nowMs = Date.now();
+    const now = new Date();
+
+    if (period === "allTime") {
+        return [0, nowMs];
+    }
+    if (period === "yearly") {
+        const start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        return [start.getTime(), nowMs];
+    }
+    if (period === "monthly") {
+        const start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        return [start.getTime(), nowMs];
+    }
+    if (period === "custom") {
+        if (!customRange || (!customRange[0] && !customRange[1])) {
+            return [0, nowMs];
+        }
+        const [start, end] = customRange;
+        const startMs = start ? getLocalMidnightMs(start) : 0;
+        const endMs = end ? getLocalEndOfDayMs(end) : nowMs;
+        return [startMs, endMs];
+    }
+
+    // Default to weekly
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+    return [start.getTime(), nowMs];
+};
+
 export const buildOverviewMetricsData = (
     reservations: ReservationResponseDTO[],
-    period: OverviewPeriod
+    mediaLocations: MediaLocation[],
+    period: OverviewPeriod,
+    dateRange?: DateRangeMap
 ): OverviewMetricsData => {
-    const nowMs = Date.now();
-    const weeklyStartMs = nowMs - 7 * 24 * 60 * 60 * 1000;
+    const [startBoundMs, endBoundMs] = resolveDateRange(period, dateRange);
 
     const confirmedReservations = reservations.filter(
         (reservation) => reservation.status === ReservationStatus.CONFIRMED
@@ -43,23 +100,31 @@ export const buildOverviewMetricsData = (
         const startMs = parseDateMs(reservation.startDate);
         const endMs = parseDateMs(reservation.endDate);
         if (startMs === null || endMs === null) return false;
-        return isOverlappingRange(startMs, endMs, weeklyStartMs, nowMs);
+        return isOverlappingRange(startMs, endMs, startBoundMs, endBoundMs);
     });
+
+    const mediaIdToLocationName = new Map<string, string>();
+    for (const loc of mediaLocations) {
+        for (const m of loc.mediaList ?? []) {
+            if (m.id) {
+                mediaIdToLocationName.set(m.id, loc.name ?? "Unknown Location");
+            }
+        }
+    }
 
     const revenueByMediaMap = new Map<string, { mediaName: string; revenue: number }>();
     periodFilteredReservations.forEach((reservation) => {
         const mediaId = reservation.mediaId;
-        const fallbackMediaName =
-            mediaId && mediaId.length >= 8 ? `Media ${mediaId.slice(0, 8)}` : "Unknown Media";
-        const mediaName = normalizeText(reservation.mediaTitle, fallbackMediaName);
+        const targetLocationName = mediaIdToLocationName.get(mediaId) ?? "Unknown Location";
+
         const amount = getReservationAmount(reservation);
 
-        const current = revenueByMediaMap.get(mediaId) ?? {
-            mediaName,
+        const current = revenueByMediaMap.get(targetLocationName) ?? {
+            mediaName: targetLocationName,
             revenue: 0,
         };
         current.revenue += amount;
-        revenueByMediaMap.set(mediaId, current);
+        revenueByMediaMap.set(targetLocationName, current);
     });
 
     const revenueByMedia = Array.from(revenueByMediaMap.values())
@@ -81,6 +146,7 @@ export const buildOverviewMetricsData = (
         .map(([city, revenue]) => ({ city, revenue }))
         .sort((a, b) => b.revenue - a.revenue);
 
+    const nowMs = Date.now();
     const activeReservations = confirmedReservations.filter((reservation) => {
         const startMs = parseDateMs(reservation.startDate);
         const endMs = parseDateMs(reservation.endDate);

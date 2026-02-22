@@ -14,6 +14,5 @@ public class AdResponseModel {
 
     private String name;
     private String adUrl;
-    private Integer adDurationSeconds;
     private String adType;
 }

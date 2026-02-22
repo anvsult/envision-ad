@@ -18,6 +18,7 @@ export interface ReservationResponseDTO {
     totalPrice: number;
     startDate: string;
     endDate: string;
+    createdAt?: string;
 }
 
 export enum ReservationStatus {

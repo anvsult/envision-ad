@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 public class ReservationResponseModel {
@@ -21,4 +22,5 @@ public class ReservationResponseModel {
     private Double totalPrice;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
+    private LocalDateTime createdAt;
 }

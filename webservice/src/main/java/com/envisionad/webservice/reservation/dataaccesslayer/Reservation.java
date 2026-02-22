@@ -3,6 +3,7 @@ package com.envisionad.webservice.reservation.dataaccesslayer;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,4 +37,8 @@ public class Reservation {
     private String campaignId;
 
     private UUID mediaId;
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 }
