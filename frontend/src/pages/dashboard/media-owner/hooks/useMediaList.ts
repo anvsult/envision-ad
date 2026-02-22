@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { MediaStatusEnum } from "@/entities/media/model/media";
-
 import {
     addMedia,
     getMediaByBusinessId,
@@ -9,42 +7,25 @@ import {
     updateMedia,
     deleteMedia,
 } from "@/features/media-management/api";
-import { getEmployeeOrganization } from "@/features/organization-management/api";
 import type { MediaRowData } from "@/pages/dashboard/media-owner/ui/tables/MediaRow";
 import type { MediaFormState } from "./useMediaForm";
 import { MediaRequestDTO } from "@/entities/media";
-import {patchMediaStatus} from "@/features/media-management/api/patchMediaStatus";
+import { patchMediaStatus } from "@/features/media-management/api/patchMediaStatus";
+import { useOrganization } from "@/app/providers";
 
 export function useMediaList() {
     const [media, setMedia] = useState<MediaRowData[]>([]);
-    const [businessId, setBusinessId] = useState<string | undefined>();
-    const { user } = useUser();
+    const { organization } = useOrganization();
 
-    // Fetch businessId on mount
     useEffect(() => {
-        if (!user?.sub) return;
+        if (!organization) return;
 
-        const fetchBusinessId = async () => {
+        let ignored = false;
+
+        const fetchMedia = async () => {
             try {
-                const business = await getEmployeeOrganization(user.sub as string);
-                if (!business) {
-                    throw new Error('Business not found');
-                }
-                setBusinessId(business.businessId);
-            } catch (err) {
-                console.error("Failed to load business info:", err);
-            }
-        };
-
-        fetchBusinessId();
-    }, [user]);
-
-    // Fetch media when businessId is available
-    useEffect(() => {
-        if (!businessId) return;
-
-        getMediaByBusinessId(businessId)
-            .then((data) => {
+                const data = await getMediaByBusinessId(organization.businessId);
+                if (ignored) return;
                 const items = (data || []).filter((m) => m.id != null);
                 const mapped = items.map((m) => ({
                     id: String(m.id),
@@ -57,11 +38,15 @@ export function useMediaList() {
                     price: `${Number(m.price)}`
                 }));
                 setMedia(mapped);
-            })
-            .catch((err) => {
-                console.error("Failed to load media:", err);
-            });
-    }, [businessId]);
+            } catch (err) {
+                if (!ignored) console.error("Failed to load media:", err);
+            }
+        };
+
+        void fetchMedia();
+
+        return () => { ignored = true; };
+    }, [organization]);
 
     const buildScheduleFromForm = (formState: MediaFormState) => {
         const selectedMonths = Object.keys(formState.activeMonths).filter(
@@ -77,20 +62,11 @@ export function useMediaList() {
             endTime: formState.dailyOperatingHours[day]?.end ?? null
         }));
 
-        return {
-            selectedMonths,
-            weeklySchedule,
-        };
+        return { selectedMonths, weeklySchedule };
     };
 
-
-
     const addNewMedia = async (formState: MediaFormState) => {
-        if (!formState.mediaTitle) {
-            throw new Error("Please enter a media name");
-        }
-
-        const schedule = buildScheduleFromForm(formState);
+        if (!formState.mediaTitle) throw new Error("Please enter a media name");
 
         const payload: MediaRequestDTO = {
             title: formState.mediaTitle,
@@ -104,16 +80,14 @@ export function useMediaList() {
             height: Number(formState.heightCm),
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
-            schedule: schedule,
+            schedule: buildScheduleFromForm(formState),
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
         };
 
         try {
-            const created = await addMedia(payload as MediaRequestDTO);
-            if (!created || created.id == null) {
-                throw new Error('Created media did not return an id');
-            }
+            const created = await addMedia(payload);
+            if (!created || created.id == null) throw new Error('Created media did not return an id');
             const newRow: MediaRowData = {
                 id: String(created.id),
                 name: formState.mediaTitle,
@@ -133,8 +107,6 @@ export function useMediaList() {
     };
 
     const editMedia = async (id: string | number, formState: MediaFormState) => {
-        const schedule = buildScheduleFromForm(formState);
-
         const payload: MediaRequestDTO = {
             title: formState.mediaTitle,
             mediaOwnerName: formState.mediaOwnerName,
@@ -146,14 +118,14 @@ export function useMediaList() {
             height: Number(formState.heightCm),
             price: Number(formState.weeklyPrice),
             dailyImpressions: Number(formState.dailyImpressions),
-            schedule: schedule,
+            schedule: buildScheduleFromForm(formState),
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
             previewConfiguration: formState.previewConfiguration
         };
 
         try {
-            const updated = await updateMedia(String(id), payload as MediaRequestDTO);
+            const updated = await updateMedia(String(id), payload);
             setMedia((prev) =>
                 prev.map((r) =>
                     String(r.id) === String(id)
@@ -188,13 +160,11 @@ export function useMediaList() {
         return getMediaById(String(id));
     };
 
-    // Toggle status
     const toggleMediaStatus = async (
         id: string | number,
         nextStatus?: MediaStatusEnum.ACTIVE | MediaStatusEnum.INACTIVE
     ) => {
         const targetId = String(id);
-
         const currentRow = media.find((m) => String(m.id) === targetId);
         if (!currentRow) return;
 
@@ -207,25 +177,18 @@ export function useMediaList() {
         }
 
         const currentStatus = currentRow.status;
-
-        const computedNextStatus =
+        const finalNextStatus = nextStatus ?? (
             currentStatus === MediaStatusEnum.ACTIVE
                 ? MediaStatusEnum.INACTIVE
-                : MediaStatusEnum.ACTIVE;
+                : MediaStatusEnum.ACTIVE
+        );
 
-        const finalNextStatus = nextStatus ?? computedNextStatus;
-
-        // optimistic UI update
         setMedia((prev) =>
-            prev.map((m) =>
-                String(m.id) === targetId ? { ...m, status: finalNextStatus } : m
-            )
+            prev.map((m) => String(m.id) === targetId ? { ...m, status: finalNextStatus } : m)
         );
 
         try {
             const updated = await patchMediaStatus(targetId, { status: finalNextStatus });
-
-            // sync with backend response
             setMedia((prev) =>
                 prev.map((m) =>
                     String(m.id) === targetId
@@ -233,13 +196,10 @@ export function useMediaList() {
                         : m
                 )
             );
-
             return finalNextStatus;
         } catch (err) {
             setMedia((prev) =>
-                prev.map((m) =>
-                    String(m.id) === targetId ? { ...m, status: currentStatus } : m
-                )
+                prev.map((m) => String(m.id) === targetId ? { ...m, status: currentStatus } : m)
             );
             throw err;
         }

@@ -51,7 +51,7 @@
       "metrics": "Métriques",
       "media": "Médias",
       "displayedAds": "Annonces affichées",
-      "adRequests": "Demandes d'annonce",
+      "adRequests": "Publicités",
       "proof": "Soumettre Une Preuve",
       "locations": "Mes emplacements"
     },
@@ -94,6 +94,93 @@
       "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification"
+    }
+  },
+  "onboarding": {
+    "stepLabel": "Étape {number}",
+    "badge": {
+      "complete": "Terminé",
+      "current": "En cours"
+    },
+    "header": {
+      "title": "Commencer",
+      "description": "Créez votre organisation ou demandez à son responsable de vous envoyer une invitation."
+    },
+    "roles": {
+      "mediaOwner": "Propriétaire de médias",
+      "advertiser": "Annonceur"
+    },
+    "steps": {
+      "organization": {
+        "title": "Créer votre organisation",
+        "description": "Configurez votre profil, choisissez votre rôle en tant que propriétaire de médias et/ou annonceur — modifiable à tout moment depuis l'aperçu de votre organisation."
+      },
+      "stripe": {
+        "title": "Connecter Stripe",
+        "description": "Liez votre compte Stripe pour recevoir les paiements des annonceurs."
+      },
+      "media": {
+        "title": "Ajouter un emplacement média",
+        "description": "Créez un emplacement, puis ajoutez-y votre premier média pour que les annonceurs puissent le découvrir et le réserver."
+      },
+      "campaign": {
+        "title": "Créer une campagne",
+        "description": "Configurez votre première campagne publicitaire pour commencer à atteindre votre audience."
+      },
+      "reservation": {
+        "title": "Faire une réservation",
+        "description": "Parcourez les emplacements médias disponibles et réservez votre premier espace publicitaire."
+      }
+    },
+    "actions": {
+      "organization": {
+        "prompt": "Commençons par créer votre organisation",
+        "hint": "Choisissez votre rôle en tant que propriétaire de médias et/ou annonceur. Vous n'aurez à le faire qu'une seule fois — les rôles peuvent être modifiés depuis l'aperçu de votre organisation.",
+        "cta": "Créer une organisation"
+      },
+      "stripe": {
+        "loading": "Vérification du statut Stripe...",
+        "prompt": "Connectons maintenant votre compte Stripe",
+        "hint": "Stripe vous permet de recevoir les paiements des annonceurs en toute sécurité. Vous serez redirigé vers Stripe pour finaliser la configuration.",
+        "cta": "Connecter Stripe",
+        "ctaContinue": "Continuer la configuration Stripe",
+        "errors": {
+          "connectFailed": "Échec de la connexion à Stripe. Veuillez réessayer."
+        }
+      },
+      "media": {
+        "prompt": "Ajoutez votre premier emplacement média",
+        "hint": "Créez un emplacement, puis ajoutez-y votre premier média pour que les annonceurs puissent le trouver et le réserver.",
+        "cta": "Ajouter un emplacement média"
+      },
+      "campaign": {
+        "prompt": "Lancez votre première campagne",
+        "hint": "Définissez votre audience cible, votre budget et vos créatifs pour commencer à diffuser vos publicités.",
+        "cta": "Créer une campagne"
+      },
+      "reservation": {
+        "prompt": "Réservez votre premier espace publicitaire",
+        "hint": "Parcourez les emplacements disponibles et réservez celui qui correspond le mieux à vos besoins.",
+        "cta": "Parcourir les emplacements"
+      }
+    },
+    "trackComplete": {
+      "mediaOwner": "La configuration propriétaire de médias est terminée.",
+      "advertiser": "La configuration annonceur est terminée."
+    },
+    "allDone": {
+      "title": "Tout est prêt !",
+      "description": "Votre organisation est entièrement configurée. Vous pouvez désormais créer et gérer vos médias et campagnes.",
+      "cta": "Aller au tableau de bord"
+    },
+    "success": {
+      "title": "Succès",
+      "create": "L'organisation a été créée."
+    },
+    "errors": {
+      "title": "Erreur",
+      "loadFailed": "Échec du chargement de l'organisation pour modification.",
+      "createFailed": "Échec de la création de l'organisation."
     }
   },
   "mediaOwnerMetrics": {
@@ -305,10 +392,6 @@
   },
   "organization": {
     "title": "Organisation",
-    "createButton": "Créer une organisation",
-    "noOrganization": "Aucune organisation trouvée.",
-    "noOrganizationDescription": "Vous ne faites encore partie d’aucune organisation ? Créez votre propre organisation pour commencer !",
-    "createOrganization": "Créer une organisation",
     "roles": {
       "mediaOwner": "Propriétaire de médias",
       "advertiser": "Annonceur"
@@ -438,15 +521,13 @@
     "success": {
       "title": "Succès",
       "verificationRequest": "La demande de vérification a été envoyée.",
-      "update": "Les informations de l’organisation ont été mises à jour.",
-      "create": "L’organisation a été créée."
+      "update": "Les informations de l’organisation ont été mises à jour."
     },
     "errors": {
       "title": "Erreur",
       "loadFailed": "Échec du chargement de l’organisation pour modification.",
       "verificationRequestFailed": "Échec de la demande de vérification.",
-      "updateFailed": "Échec de la mise à jour des informations de l’organisation.",
-      "createFailed": "Échec de la création de l’organisation."
+      "updateFailed": "Échec de la mise à jour des informations de l’organisation."
     }
   },
   "media": {

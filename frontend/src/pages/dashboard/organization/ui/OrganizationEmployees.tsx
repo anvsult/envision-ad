@@ -1,33 +1,31 @@
 "use client";
 
-import React, {useEffect, useState} from "react";
-import {Accordion, Button, Group, Stack, Title, Loader, Center} from "@mantine/core";
-import {useTranslations} from "next-intl";
-import {AddEmployeeModal} from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
-import {useUser} from "@auth0/nextjs-auth0/client";
+import React, { useEffect, useState } from "react";
+import { Accordion, Button, Group, Stack, Title, Loader, Center } from "@mantine/core";
+import { useTranslations } from "next-intl";
+import { AddEmployeeModal } from "@/pages/dashboard/organization/ui/modals/AddEmployeeModal";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import {
     cancelInviteEmployeeToOrganization,
     getAllOrganizationEmployees,
     getAllOrganizationInvitations,
-    getEmployeeOrganization,
     removeEmployeeFromOrganization
 } from "@/features/organization-management/api";
-import {EmployeeTable} from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
-import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
-import type {Employee, OrganizationResponseDTO} from "@/entities/organization";
-import {InvitationResponse} from "@/entities/organization";
-import {InvitationTable} from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
-import {notifications} from "@mantine/notifications";
-import {AUTH0_ROLES} from "@/shared/lib/auth/roles";
+import { EmployeeTable } from "@/pages/dashboard/organization/ui/tables/EmployeesTable";
+import { ConfirmationModal } from "@/shared/ui/ConfirmationModal";
+import type { Employee } from "@/entities/organization";
+import { InvitationResponse } from "@/entities/organization";
+import { InvitationTable } from "@/pages/dashboard/organization/ui/tables/InvitationsTable";
+import { notifications } from "@mantine/notifications";
+import { AUTH0_ROLES } from "@/shared/lib/auth/roles";
+import { useOrganization } from "@/app/providers";
 
 export default function OrganizationEmployees() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [invitations, setInvitations] = useState<InvitationResponse[]>([]);
-    const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [confirmEmployeeOpen, setConfirmEmployeeOpen] = useState(false);
     const [confirmInviteOpen, setConfirmInviteOpen] = useState(false);
     const [employeeToRemove, setEmployeeToRemove] = useState<Employee | null>(null);
@@ -35,53 +33,48 @@ export default function OrganizationEmployees() {
 
     const t = useTranslations("organization.employees");
     const { user } = useUser();
+    const { organization } = useOrganization();
 
     useEffect(() => {
-        if (!user?.sub) return;
+        if (!organization) return;
 
-        const loadOrganization = async () => {
+        let ignored = false;
+
+        const loadEmployeesAndInvitations = async () => {
             try {
                 setLoading(true);
-                const organization = await getEmployeeOrganization(user.sub);
-                setOrganization(organization);
+                const [invitationsData, employeesData] = await Promise.all([
+                    getAllOrganizationInvitations(organization.businessId),
+                    getAllOrganizationEmployees(organization.businessId)
+                ]);
 
-                if (organization?.businessId) {
-                    const [invitationsData, employeesData] = await Promise.all([
-                        getAllOrganizationInvitations(organization.businessId),
-                        getAllOrganizationEmployees(organization.businessId)
-                    ]);
+                if (ignored) return;
 
-                    setInvitations(invitationsData);
+                setInvitations(invitationsData);
 
-                    const employeeData: Employee[] = await Promise.all(
-                        employeesData.map(async (employee) => {
-                            const res = await fetch(`/api/auth0/get-user/${encodeURIComponent(employee.user_id)}`);
-                            const auth0Data = await res.json();
-                            return {
-                                ...employee,
-                                ...auth0Data
-                            };
-                        })
-                    );
-                    setEmployees(employeeData);
-                }
+                const employeeData: Employee[] = await Promise.all(
+                    employeesData.map(async (employee) => {
+                        const res = await fetch(`/api/auth0/get-user/${encodeURIComponent(employee.user_id)}`);
+                        const auth0Data = await res.json();
+                        return { ...employee, ...auth0Data };
+                    })
+                );
+
+                if (!ignored) setEmployees(employeeData);
             } catch (error) {
-                console.error("Failed to load organization", error);
+                console.error("Failed to load organization employees", error);
             } finally {
-                setLoading(false);
+                if (!ignored) setLoading(false);
             }
         };
 
-        void loadOrganization();
-    }, [user?.sub]);
+        void loadEmployeesAndInvitations();
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false);
-    };
+        return () => { ignored = true; };
+    }, [organization]);
 
     const handleSuccess = async () => {
         setIsModalOpen(false);
-
         if (organization?.businessId) {
             const invitationsData = await getAllOrganizationInvitations(organization.businessId);
             setInvitations(invitationsData);
@@ -106,9 +99,7 @@ export default function OrganizationEmployees() {
 
             await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(employeeToRemove.user_id)}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     roles: [
                         ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
@@ -117,23 +108,11 @@ export default function OrganizationEmployees() {
                 })
             });
 
-            setEmployees((prev) =>
-                prev.filter((e) => e.employee_id !== employeeToRemove.employee_id)
-            );
-
-            notifications.show({
-                title: t("success.title"),
-                message: t("success.deleteEmployee"),
-                color: "green",
-            });
+            setEmployees((prev) => prev.filter((e) => e.employee_id !== employeeToRemove.employee_id));
+            notifications.show({ title: t("success.title"), message: t("success.deleteEmployee"), color: "green" });
         } catch (error) {
             console.error('Failed to remove employee', error);
-            notifications.show({
-                title: t("errors.error"),
-                message: t("errors.deleteEmployeeFailed"),
-                color: "red",
-            });
-
+            notifications.show({ title: t("errors.error"), message: t("errors.deleteEmployeeFailed"), color: "red" });
         } finally {
             setConfirmEmployeeOpen(false);
             setEmployeeToRemove(null);
@@ -144,25 +123,12 @@ export default function OrganizationEmployees() {
         if (!invitationToRemove || !organization?.businessId) return;
 
         try {
-            await cancelInviteEmployeeToOrganization(organization.businessId, invitationToRemove.invitationId)
-
-            setInvitations((prev) =>
-                prev.filter((i) => i.invitationId !== invitationToRemove.invitationId)
-            );
-
-            notifications.show({
-                title: t("success.title"),
-                message: t("success.deleteInvitation"),
-                color: "green",
-            });
+            await cancelInviteEmployeeToOrganization(organization.businessId, invitationToRemove.invitationId);
+            setInvitations((prev) => prev.filter((i) => i.invitationId !== invitationToRemove.invitationId));
+            notifications.show({ title: t("success.title"), message: t("success.deleteInvitation"), color: "green" });
         } catch (error) {
-            console.error('Failed to remove employee', error);
-            notifications.show({
-                title: t("errors.error"),
-                message: t("errors.deleteInvitationFailed"),
-                color: "red",
-            });
-
+            console.error('Failed to remove invitation', error);
+            notifications.show({ title: t("errors.error"), message: t("errors.deleteInvitationFailed"), color: "red" });
         } finally {
             setConfirmInviteOpen(false);
             setInvitationToRemove(null);
@@ -170,39 +136,25 @@ export default function OrganizationEmployees() {
     };
 
     if (loading) {
-        return (
-            <Center h={400}>
-                <Loader size="lg" />
-            </Center>
-        );
+        return <Center h={400}><Loader size="lg" /></Center>;
     }
 
     if (!organization) {
-        return (
-            <Stack gap="md" p="md">
-                <Title order={2}>{t("noOrganization")}</Title>
-            </Stack>
-        );
+        return null //won't happen because the provider will redirect first
     }
 
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
                 <Title order={2}>{t("title")}</Title>
-                {user?.sub === organization.ownerId &&
-                    <Button
-                        onClick={() => {
-                            setIsModalOpen(true);
-                        }}
-                    >
-                        {t("addButton")}
-                    </Button>
-                }
+                {user?.sub === organization.ownerId && (
+                    <Button onClick={() => setIsModalOpen(true)}>{t("addButton")}</Button>
+                )}
             </Group>
 
             <AddEmployeeModal
                 opened={isModalOpen}
-                onClose={handleCloseModal}
+                onClose={() => setIsModalOpen(false)}
                 onSuccess={handleSuccess}
                 employees={employees}
                 invitations={invitations}
@@ -211,11 +163,7 @@ export default function OrganizationEmployees() {
 
             {user?.sub && organization.ownerId && (
                 <Accordion variant="separated" defaultValue={["active", "invites"]} multiple>
-                    <InvitationTable
-                        invitations={invitations}
-                        onDelete={handleDeleteInvitation}
-                    />
-
+                    <InvitationTable invitations={invitations} onDelete={handleDeleteInvitation} />
                     <EmployeeTable
                         employees={employees}
                         onDelete={handleDeleteEmployee}

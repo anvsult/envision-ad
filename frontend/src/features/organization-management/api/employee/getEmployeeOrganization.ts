@@ -1,18 +1,10 @@
 import { OrganizationResponseDTO } from "@/entities/organization";
 import axiosInstance from "@/shared/api/axios/axios";
-import axios from "axios";
 
 
 export const getEmployeeOrganization = async (id: string): Promise<OrganizationResponseDTO | null> => {
-    try {
-        const response = await axiosInstance.get(`/businesses/employee/${encodeURIComponent(id)}`);
-        return response.data;
-    } catch (error) {
-        if (axios.isAxiosError(error) && error.response?.status === 404) {
-            return null;
-        }
-        throw error;
-    }
+    const response = await axiosInstance.get(`/businesses/employee/${encodeURIComponent(id)}`);
+    return response.data;
 };
 
 export const getEmployeeOrganizationServer = async (id: string, token: string): Promise<OrganizationResponseDTO | null> => {

@@ -13,15 +13,16 @@ import {
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";
+import { useOrganization } from "@/app/providers/OrganizationProvider";
 
 export default function SideBar() {
     const { permissions } = usePermissions();
+    const { organization } = useOrganization();
     const pathname = usePathname();
     const t = useTranslations("sideBar");
-    const hasMediaOwnerAccess = permissions.includes("read:media");
 
-    const mediaOwnerNavItems = [
-        hasMediaOwnerAccess && (
+    const mediaOwnerNavItems = organization?.roles?.mediaOwner ? [
+        permissions.includes("read:media") && (
             <NavLink
                 key="metrics"
                 component={Link}
@@ -31,7 +32,7 @@ export default function SideBar() {
                 active={pathname?.includes("/media-owner/metrics")}
             />
         ),
-        (permissions.includes('create:media')) && (
+        permissions.includes("create:media") && (
             <NavLink
                 key="media"
                 component={Link}
@@ -41,7 +42,7 @@ export default function SideBar() {
                 active={pathname?.includes("/media-owner/locations")}
             />
         ),
-        (permissions.includes("create:media")) && (
+        permissions.includes("create:media") && (
             <NavLink
                 key="proof"
                 component={Link}
@@ -51,7 +52,7 @@ export default function SideBar() {
                 active={pathname?.endsWith("/media-owner/proof")}
             />
         ),
-        (permissions.includes("update:reservation")) && (
+        permissions.includes("update:reservation") && (
             <NavLink
                 key="advertisements"
                 component={Link}
@@ -60,11 +61,11 @@ export default function SideBar() {
                 leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
                 active={pathname?.includes("/dashboard/media-owner/advertisements")}
             />
-        )
-    ].filter(Boolean);
+        ),
+    ].filter(Boolean) : [];
 
-    const advertiserNavItems = [
-        (permissions.includes('read:campaign')) && (
+    const advertiserNavItems = organization?.roles?.advertiser ? [
+        permissions.includes("read:campaign") && (
             <NavLink
                 key="metricOverview"
                 component={Link}
@@ -74,7 +75,7 @@ export default function SideBar() {
                 active={pathname === "/dashboard/advertiser/metrics"}
             />
         ),
-        (permissions.includes('read:campaign')) && (
+        permissions.includes("read:campaign") && (
             <NavLink
                 key="campaigns"
                 component={Link}
@@ -84,7 +85,7 @@ export default function SideBar() {
                 active={pathname?.endsWith("/advertiser/campaigns")}
             />
         ),
-        (permissions.includes('readAll:reservation')) && (
+        permissions.includes("readAll:reservation") && (
             <NavLink
                 key="advertisements"
                 component={Link}
@@ -93,11 +94,11 @@ export default function SideBar() {
                 leftSection={<IconSpeakerphone size={20} stroke={1.5} />}
                 active={pathname?.endsWith("/advertiser/advertisements")}
             />
-        )
-    ].filter(Boolean);
+        ),
+    ].filter(Boolean) : [];
 
     const adminNavItems = [
-        (permissions.includes("patch:media_status")) && (
+        permissions.includes("patch:media_status") && (
             <NavLink
                 key="adminMetrics"
                 component={Link}
@@ -107,8 +108,7 @@ export default function SideBar() {
                 active={pathname?.includes("/dashboard/admin/metrics")}
             />
         ),
-
-        (permissions.includes('update:verification')) && (
+        permissions.includes("update:verification") && (
             <NavLink
                 key="pendingMedia"
                 component={Link}
@@ -118,8 +118,7 @@ export default function SideBar() {
                 active={pathname?.includes("/dashboard/admin/media/pending")}
             />
         ),
-
-        (permissions.includes('update:verification')) && (
+        permissions.includes("update:verification") && (
             <NavLink
                 key="pendingOrganizations"
                 component={Link}
@@ -128,39 +127,34 @@ export default function SideBar() {
                 leftSection={<IconDiscountCheck size={20} stroke={1.5} />}
                 active={pathname?.includes("/dashboard/admin/organization/verification")}
             />
-        )
+        ),
     ].filter(Boolean);
 
     return (
         <Accordion
             multiple
             variant="separated"
-
             defaultValue={["organization", "media-owner", "advertiser", "admin"]}
         >
-            {advertiserNavItems.length > 0 &&
+            {advertiserNavItems.length > 0 && (
                 <Accordion.Item value="advertiser">
                     <Accordion.Control>{t("advertiserTitle")}</Accordion.Control>
                     <Accordion.Panel>
-                        <Stack gap="xs">
-                            {advertiserNavItems}
-                        </Stack>
+                        <Stack gap="xs">{advertiserNavItems}</Stack>
                     </Accordion.Panel>
                 </Accordion.Item>
-            }
+            )}
 
-            {mediaOwnerNavItems.length > 0 &&
+            {mediaOwnerNavItems.length > 0 && (
                 <Accordion.Item value="media-owner">
                     <Accordion.Control>{t("mediaOwnerTitle")}</Accordion.Control>
                     <Accordion.Panel>
-                        <Stack gap="xs">
-                            {mediaOwnerNavItems}
-                        </Stack>
+                        <Stack gap="xs">{mediaOwnerNavItems}</Stack>
                     </Accordion.Panel>
                 </Accordion.Item>
-            }
+            )}
 
-            {adminNavItems.length == 0 &&
+            {adminNavItems.length === 0 && (
                 <Accordion.Item value="organization">
                     <Accordion.Control>{t("organizationTitle")}</Accordion.Control>
                     <Accordion.Panel>
@@ -173,8 +167,7 @@ export default function SideBar() {
                                 leftSection={<IconLayoutDashboard size={20} stroke={1.5} />}
                                 active={pathname?.endsWith("/organization/overview")}
                             />
-
-                            {(permissions.includes('read:employee')) &&
+                            {permissions.includes("read:employee") && (
                                 <NavLink
                                     key="employees"
                                     component={Link}
@@ -183,22 +176,20 @@ export default function SideBar() {
                                     leftSection={<IconUsers size={20} stroke={1.5} />}
                                     active={pathname?.endsWith("/organization/employees")}
                                 />
-                            }
+                            )}
                         </Stack>
                     </Accordion.Panel>
                 </Accordion.Item>
-            }
+            )}
 
-            {adminNavItems.length > 0 &&
+            {adminNavItems.length > 0 && (
                 <Accordion.Item value="admin">
                     <Accordion.Control>{t("adminTitle")}</Accordion.Control>
                     <Accordion.Panel>
-                        <Stack gap="xs">
-                            {adminNavItems}
-                        </Stack>
+                        <Stack gap="xs">{adminNavItems}</Stack>
                     </Accordion.Panel>
                 </Accordion.Item>
-            }
+            )}
         </Accordion>
-    )
+    );
 }
