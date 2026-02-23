@@ -450,6 +450,23 @@
       "createFailed": "Failed to create organization."
     }
   },
+  "invitation": {
+    "loading": "Processing your invitation...",
+    "back": "Go Home",
+    "invalidLink": {
+      "title": "Invalid Invitation Link",
+      "description": "This invitation link is invalid or incomplete."
+    },
+    "success": {
+      "title": "You're in!",
+      "message": "You've successfully joined the organization!",
+      "redirecting": "Redirecting to dashboard..."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "message": "An error occurred while accepting the invitation."
+    }
+  },
   "media": {
     "newMedia": "Add new media",
     "table": {
@@ -1193,18 +1210,6 @@
         "message": "Your session expired. Please try connecting again."
       }
     }
-  },
-  "invitation": {
-    "loading": "Loading...",
-    "processing": "Processing your invitation...",
-    "invalidLinkTitle": "Invalid Invitation Link",
-    "invalidLink": "This invitation link is invalid or incomplete.",
-    "successTitle": "Success!",
-    "success": "You've successfully joined the organization!",
-    "errorTitle": "Failed",
-    "error": "An error occurred while accepting the invitation.",
-    "redirecting": "Redirecting to dashboard...",
-    "goHome": "Go Home"
   },
   "stripeOnboarding": {
     "title": "Connect Your Payment Account",

@@ -1,15 +1,18 @@
-"use client";
+'use client';
 
-import {useEffect, useRef, useState} from "react";
+import { useTranslations } from 'next-intl';
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { Button, Center, Loader, Paper, Stack, Text, Title } from "@mantine/core";
+import { useEffect, useRef, useState } from "react";
+import { Button, Loader, Stack, Text, Title } from "@mantine/core";
 import { IconCheck, IconX } from "@tabler/icons-react";
-import {addEmployeeToOrganization, getOrganizationById} from "@/features/organization-management/api";
-import {AUTH0_ROLES} from "@/shared/lib/auth/roles";
-import {usePermissions} from "@/app/providers";
+import { addEmployeeToOrganization, getOrganizationById } from "@/features/organization-management/api";
+import { AUTH0_ROLES } from "@/shared/lib/auth/roles";
+import { usePermissions } from "@/app/providers";
+import { Link } from "@/shared/lib/i18n/navigation";
 
 export default function OrganizationInvitationPage() {
+    const t = useTranslations('invitation');
     const searchParams = useSearchParams();
     const router = useRouter();
     const { user, isLoading } = useUser();
@@ -23,113 +26,84 @@ export default function OrganizationInvitationPage() {
     const invitationProcessed = useRef(false);
 
     useEffect(() => {
-        if (!searchParams || invitationProcessed.current) {
-            return;
-        }
+        if (!searchParams || invitationProcessed.current) return;
+        if (!token || !organizationId) return;
 
         const acceptInvitation = async () => {
             invitationProcessed.current = true;
             try {
-                await addEmployeeToOrganization(organizationId!, token!)
-
-                const organization = await getOrganizationById(organizationId!);
+                await addEmployeeToOrganization(organizationId, token);
+                const organization = await getOrganizationById(organizationId);
 
                 await fetch(`/api/auth0/update-user-roles/${encodeURIComponent(user!.sub)}`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({roles: [
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        roles: [
                             ...(organization.roles.advertiser ? [AUTH0_ROLES.ADVERTISER] : []),
-                            ...(organization.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : [])
-                        ]})
+                            ...(organization.roles.mediaOwner ? [AUTH0_ROLES.MEDIA_OWNER] : []),
+                        ],
+                    }),
                 });
 
                 await refreshPermissions();
-
                 setStatus("success");
-                setMessage("You've successfully joined the organization!");
-
-                setTimeout(() => {
-                    router.push("/dashboard/organization/overview");
-                }, 2000);
-
+                setMessage(t('success.message'));
+                setTimeout(() => router.push("/dashboard/organization/overview"), 2000);
             } catch {
                 setStatus("error");
-                setMessage("An error occurred while accepting the invitation.");
+                setMessage(t('error.message'));
             }
         };
 
         if (!isLoading && !user) {
-            const returnUrl = `/invite?businessId=${encodeURIComponent(organizationId!)}&token=${encodeURIComponent(token!)}`;
+            const returnUrl = `/invite?businessId=${encodeURIComponent(organizationId)}&token=${encodeURIComponent(token)}`;
             router.push(`/auth/login?returnTo=${encodeURIComponent(returnUrl)}`);
             return;
         }
 
-        if (user && token && organizationId) {
-            acceptInvitation();
+        if (user) {
+            void acceptInvitation();
         }
-    }, [user, isLoading, token, organizationId, router, searchParams, refreshPermissions]);
+    }, [user, isLoading, token, organizationId, router, searchParams, refreshPermissions, t]);
 
-    // Show loading while searchParams is being initialized
-    if (!searchParams) {
+    if (searchParams && (!token || !organizationId)) {
         return (
-            <Center style={{ minHeight: "100vh" }}>
-                <Stack align="center">
-                    <Loader size="xl" />
-                    <Text>Loading...</Text>
-                </Stack>
-            </Center>
+            <Stack align="center" justify="center" gap="md" style={{ minHeight: "calc(100vh - 340px)" }}>
+                <IconX size={48} color="red" />
+                <Title order={1} ta="center" size="h2">{t('invalidLink.title')}</Title>
+                <Text ta="center">{t('invalidLink.description')}</Text>
+                <Button size="sm" component={Link} href="/">{t('back')}</Button>
+            </Stack>
         );
     }
 
-    if (!token || !organizationId) {
+    if (!searchParams || isLoading || status === "loading") {
         return (
-            <Center style={{ minHeight: "100vh" }}>
-                <Paper shadow="md" p="xl" withBorder>
-                    <Stack align="center">
-                        <IconX size={48} color="red" />
-                        <Title order={3}>Invalid Invitation Link</Title>
-                        <Text c="dimmed">This invitation link is invalid or incomplete.</Text>
-                        <Button onClick={() => router.push("/")}>Go Home</Button>
-                    </Stack>
-                </Paper>
-            </Center>
-        );
-    }
-
-    if (isLoading || status === "loading") {
-        return (
-            <Center style={{ minHeight: "100vh" }}>
-                <Stack align="center">
-                    <Loader size="xl" />
-                    <Text>Processing your invitation...</Text>
-                </Stack>
-            </Center>
+            <Stack align="center" justify="center" gap="md" style={{ minHeight: "calc(100vh - 340px)" }}>
+                <Loader size="xl" />
+                <Text>{t('loading')}</Text>
+            </Stack>
         );
     }
 
     return (
-        <Center style={{ minHeight: "100vh" }}>
-            <Paper shadow="md" p="xl" withBorder>
-                <Stack align="center">
-                    {status === "success" ? (
-                        <>
-                            <IconCheck size={48} color="green" />
-                            <Title order={3}>Success!</Title>
-                            <Text c="dimmed">{message}</Text>
-                            <Text size="sm">Redirecting to dashboard...</Text>
-                        </>
-                    ) : (
-                        <>
-                            <IconX size={48} color="red" />
-                            <Title order={3}>Failed</Title>
-                            <Text c="dimmed">{message}</Text>
-                            <Button onClick={() => router.push("/")}>Go Home</Button>
-                        </>
-                    )}
-                </Stack>
-            </Paper>
-        </Center>
+        <Stack align="center" justify="center" gap="md" style={{ minHeight: "calc(100vh - 340px)" }}>
+            {status === "success" ? (
+                <>
+                    <IconCheck size={48} color="green" />
+                    <Title order={1} ta="center" size="h2">{t('success.title')}</Title>
+                    <Text ta="center">{message}</Text>
+                    <Text size="sm" c="dimmed">{t('success.redirecting')}</Text>
+                </>
+            ) : (
+                <>
+                    <IconX size={48} color="red" />
+                    <Title order={1} ta="center" size="h2">{t('error.title')}</Title>
+                    <Text ta="center">{message}</Text>
+                    <Button size="sm" component={Link} href="/">{t('back')}</Button>
+                </>
+            )}
+        </Stack>
     );
 }
