@@ -5,7 +5,7 @@ import {
     Center, Stack, Title, Text, Button, Group, Loader,
     ThemeIcon, Badge, Divider, Paper, Box, Alert, SimpleGrid,
 } from "@mantine/core";
-import { useTranslations } from "next-intl";
+import {useLocale, useTranslations} from "next-intl";
 import { useMediaQuery } from "@mantine/hooks";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { notifications } from "@mantine/notifications";
@@ -23,6 +23,7 @@ import { getAllMediaLocations } from "@/features/media-location-management/api";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
 import { getAllReservationByAdvertiserBusinessId } from "@/features/reservation-management/api";
 import { ReservationStatus } from "@/entities/reservation";
+import {useRouter} from "next/navigation";
 
 interface StripeStatus {
     connected: boolean;
@@ -44,11 +45,13 @@ interface Step {
 export default function OnboardingPage() {
     const t = useTranslations("onboarding");
     const { user } = useUser();
-    const { organization, refreshOrganization } = useOrganization();
-    const { refreshPermissions } = usePermissions();
+    const { organization, refreshOrganization, loading: orgLoading } = useOrganization();
+    const { permissions, refreshPermissions, loading: permissionsLoading } = usePermissions();
     const { formState, updateField, resetForm } = useOrganizationForm();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isMobile = useMediaQuery("(max-width: 48em)") ?? false;
+    const router = useRouter();
+    const locale = useLocale();
 
     const [stripeStatus, setStripeStatus] = useState<StripeStatus | null>(null);
     const [isStripeLoading, setIsStripeLoading] = useState(false);
@@ -58,6 +61,17 @@ export default function OnboardingPage() {
     const isMediaOwner = !!organization?.roles?.mediaOwner;
     const isAdvertiser = !!organization?.roles?.advertiser;
     const isBoth = isMediaOwner && isAdvertiser;
+    const isAdmin =
+        permissions.includes('patch:media_status') &&
+        permissions.includes('readAll:verification') &&
+        permissions.includes('update:verification');
+
+
+    useEffect(() => {
+        if (isAdmin) {
+            router.push(`/${locale}/dashboard/admin/metrics`);
+        }
+    }, [isAdmin, locale, router]);
 
     const fetchStripeStatus = useCallback(async () => {
         if (!organization || !isMediaOwner) return;
@@ -300,6 +314,14 @@ export default function OnboardingPage() {
     const advertiserCurrentStep = isBoth ? getCurrentStep(advertiserTrackFull) : undefined;
 
     const singleCurrentStep = !isBoth ? getCurrentStep(allStepKeys) : undefined;
+
+    if (permissionsLoading || orgLoading || isAdmin) {
+        return (
+            <Center h="100vh">
+                <Loader />
+            </Center>
+        );
+    }
 
     return (
         <Center py={{ base: "md", sm: "xl" }} px={{ base: "xs", sm: "md" }}>

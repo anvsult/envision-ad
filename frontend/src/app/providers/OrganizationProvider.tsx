@@ -6,6 +6,7 @@ import {getEmployeeOrganization} from "@/features/organization-management/api";
 import {OrganizationResponseDTO} from "@/entities/organization";
 import { useRouter} from "next/navigation";
 import { useLocale } from "next-intl";
+import {usePermissions} from "@/app/providers/PermissionProvider";
 
 interface OrganizationContextType {
     organization: OrganizationResponseDTO | null;
@@ -19,15 +20,22 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const { user, isLoading } = useUser();
+    const { permissions, loading: permissionsLoading} = usePermissions();
     const router = useRouter();
     const locale = useLocale();
 
     const fetchOrganization = useCallback(async () => {
-        if (!user) {
+        if (!user || permissionsLoading || (
+            permissions.includes('patch:media_status') &&
+            permissions.includes('readAll:verification') &&
+            permissions.includes('update:verification'))
+        ) {
             setOrganization(null);
             setLoading(false);
             return;
         }
+
+        console.log(permissions);
 
         try {
             const business = await getEmployeeOrganization(user.sub);
@@ -44,7 +52,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }, [user, router, locale]);
+    }, [user, permissions, permissionsLoading, router, locale]);
 
     const refreshOrganization = useCallback(async () => {
         if (!user) return;
@@ -53,10 +61,10 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     }, [fetchOrganization, user]);
 
     useEffect(() => {
-        if (!isLoading) {
-            fetchOrganization();
+        if (!isLoading && !permissionsLoading) {
+            void fetchOrganization();
         }
-    }, [isLoading, fetchOrganization]);
+    }, [isLoading, permissionsLoading, fetchOrganization]);
 
     return (
         <OrganizationContext.Provider value={{ organization, refreshOrganization, loading: loading || isLoading }}>
