@@ -46,8 +46,8 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
             const status = (error as { response?: { status?: number } })?.response?.status;
             if (status === 404) {
                 setOrganization(null);
-                if (!pathname.endsWith('/invite')) {
-                    if (!hasRedirected.current){
+                if (!hasRedirected.current) {
+                    if (!pathname.endsWith('/invite')) {
                         router.push('/dashboard');
                     }
                     hasRedirected.current = true;
