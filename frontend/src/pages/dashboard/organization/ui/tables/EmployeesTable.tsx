@@ -42,6 +42,7 @@ export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: Emp
                                                         variant="light"
                                                         color="red"
                                                         size="md"
+                                                        aria-label={t("deleteEmployee")}
                                                         onClick={() => onDelete?.(emp)}
                                                     >
                                                         <IconTrash size={16}/>
@@ -63,10 +64,7 @@ export function EmployeeTable({employees, onDelete, currentUserId, ownerId}: Emp
                         </Table.Tbody>
                     </Table>
                 </ScrollArea>
-
-
             </Accordion.Panel>
         </Accordion.Item>
-
     );
 }

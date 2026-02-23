@@ -45,38 +45,38 @@ export function Partners() {
   const animationDuration = 30;
 
   return (
-    <div className={classes.partnersSection}>
-      <Title size="h1" fw={700} className={classes.title}>
-        {t("title")}
-      </Title>
+      <div className={classes.partnersSection}>
+        <Title order={2} size="h1" fw={700} className={classes.title}>
+          {t("title")}
+        </Title>
 
-      <div className={classes.scrollContainer}>
-        {partners.map((partner, index) => (
-          <div
-            key={index}
-            className={classes.partnerLogo}
-            style={{
-              animationDelay: `calc(${animationDuration}s / ${totalItems} * (${totalItems} - ${
-                index + 1
-              }) * -1)`,
-            }}
-          >
-            <div className={classes.logoImageWrapper}>
-              <Image
-                src={partner.logo}
-                alt={t(`${partner.key}.alt`)}
-                width={150}
-                height={150}
-                style={{ objectFit: "contain" }}
-                priority
-              />
-            </div>
-            <Text size="xl" fw={700} c="grey" mt="lg">
-              {t(`${partner.key}.name`)}
-            </Text>
-          </div>
-        ))}
+        <div className={classes.scrollContainer}>
+          {partners.map((partner, index) => (
+              <div
+                  key={index}
+                  className={classes.partnerLogo}
+                  style={{
+                    animationDelay: `calc(${animationDuration}s / ${totalItems} * (${totalItems} - ${
+                        index + 1
+                    }) * -1)`,
+                  }}
+              >
+                <div className={classes.logoImageWrapper}>
+                  <Image
+                      src={partner.logo}
+                      alt={t(`${partner.key}.alt`)}
+                      width={150}
+                      height={150}
+                      style={{ objectFit: "contain" }}
+                      priority
+                  />
+                </div>
+                <Text component="h3" size="xl" fw={700} c="grey" mt="lg">
+                  {t(`${partner.key}.name`)}
+                </Text>
+              </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 }

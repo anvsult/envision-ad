@@ -62,32 +62,9 @@
     },
     "advertiserTitle": "Advertiser",
     "advertiser": {
-      "overview": "Overview",
       "metricOverview": "Metrics",
       "advertisements": "Advertisements",
-      "myAds": "My Campaigns",
-      "timeRangeSelect": "Select dashboard time range",
-      "graphs": {
-        "totalAdSpend": "Total Ad Spend",
-        "activeCampaigns": "Active Campaigns",
-        "estimatedImpressions": "Estimated Impressions",
-        "averageCPM": "Average CPM",
-        "campaignPerformance": "Campaign Performance",
-        "mediaDistribution": "Media Distribution",
-        "comparedToLastWeek": "Compared to last week",
-        "comparedToLastMonth": "Compared to last month",
-        "comparedToLastYear": "Compared to last year",
-        "impressions": "Impressions",
-        "spent": "Spent",
-        "gym": "Gym",
-        "barbershop": "Barbershop",
-        "groceryStore": "Grocery Store"
-      },
-      "timeRanges": {
-        "weekly": "Weekly",
-        "monthly": "Monthly",
-        "yearly": "Yearly"
-      }
+      "myAds": "My Campaigns"
     },
     "adminTitle": "Admin",
     "admin": {
@@ -96,8 +73,33 @@
       "pendingOrganizations": "Verification Requests"
     }
   },
+  "advertiserMetrics": {
+    "title": "Advertising Metrics",
+    "timeRangeSelect": "Select dashboard time range",
+    "graphs": {
+      "totalAdSpend": "Total Ad Spend",
+      "activeCampaigns": "Active Campaigns",
+      "estimatedImpressions": "Estimated Impressions",
+      "averageCPM": "Average CPM",
+      "campaignPerformance": "Campaign Performance",
+      "mediaDistribution": "Media Distribution",
+      "comparedToLastWeek": "Compared to last week",
+      "comparedToLastMonth": "Compared to last month",
+      "comparedToLastYear": "Compared to last year",
+      "impressions": "Impressions",
+      "spent": "Spent",
+      "gym": "Gym",
+      "barbershop": "Barbershop",
+      "groceryStore": "Grocery Store"
+    },
+    "timeRanges": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    }
+  },
   "mediaOwnerMetrics": {
-    "title": "Dashboard Metrics",
+    "title": "Media Owning Metrics",
     "cards": {
       "weeklyEarnings": "Total Weekly Earnings",
       "monthlyEarnings": "Total Monthly Earnings",

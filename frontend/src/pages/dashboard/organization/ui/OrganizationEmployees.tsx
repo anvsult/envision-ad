@@ -180,7 +180,7 @@ export default function OrganizationEmployees() {
     if (!organization) {
         return (
             <Stack gap="md" p="md">
-                <Title order={2}>{t("noOrganization")}</Title>
+                <Title order={1}>{t("noOrganization")}</Title>
             </Stack>
         );
     }
@@ -188,7 +188,7 @@ export default function OrganizationEmployees() {
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
-                <Title order={2}>{t("title")}</Title>
+                <Title order={1}>{t("title")}</Title>
                 {user?.sub === organization.ownerId &&
                     <Button
                         onClick={() => {

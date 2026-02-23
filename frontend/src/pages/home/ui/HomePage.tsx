@@ -48,7 +48,7 @@ export default function HomePage() {
             </Text>
 
             <Box className={classes.ctaSection}>
-              <Title order={3} size="h3" fw={700} mb="md">
+              <Title order={2} size="h3" fw={700} mb="md">
                 {t("ctaTitle")}
               </Title>
               <Link href="/browse">

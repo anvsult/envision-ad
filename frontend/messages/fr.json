@@ -62,32 +62,9 @@
     },
     "advertiserTitle": "Annonceur",
     "advertiser": {
-      "overview": "Aperçu",
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
-      "myAds": "Mes Campagnes",
-      "timeRangeSelect": "Sélectionner la période du tableau de bord",
-      "graphs": {
-        "totalAdSpend": "Dépenses publicitaires totales",
-        "activeCampaigns": "Campagnes actives",
-        "estimatedImpressions": "Impressions estimées",
-        "averageCPM": "CPM moyen",
-        "campaignPerformance": "Performance de la campagne",
-        "mediaDistribution": "Répartition des médias",
-        "comparedToLastWeek": "Par rapport à la semaine dernière",
-        "impressions": "Impressions",
-        "spent": "Dépenses",
-        "gym": "Gym",
-        "barbershop": "Barbier",
-        "groceryStore": "Épicerie",
-        "comparedToLastMonth": "Par rapport au mois dernier",
-        "comparedToLastYear": "Par rapport à l'année dernière"
-      },
-      "timeRanges": {
-        "weekly": "Hebdomadaire",
-        "monthly": "Mensuel",
-        "yearly": "Annuel"
-      }
+      "myAds": "Mes Campagnes"
     },
     "adminTitle": "Admin",
     "admin": {
@@ -96,8 +73,33 @@
       "pendingOrganizations": "Demandes de vérification"
     }
   },
+  "advertiserMetrics": {
+    "title": "Métriques publicitaires",
+    "timeRangeSelect": "Sélectionner la période du tableau de bord",
+    "graphs": {
+      "totalAdSpend": "Dépenses publicitaires totales",
+      "activeCampaigns": "Campagnes actives",
+      "estimatedImpressions": "Impressions estimées",
+      "averageCPM": "CPM moyen",
+      "campaignPerformance": "Performance de la campagne",
+      "mediaDistribution": "Répartition des médias",
+      "comparedToLastWeek": "Par rapport à la semaine dernière",
+      "impressions": "Impressions",
+      "spent": "Dépenses",
+      "gym": "Gym",
+      "barbershop": "Barbier",
+      "groceryStore": "Épicerie",
+      "comparedToLastMonth": "Par rapport au mois dernier",
+      "comparedToLastYear": "Par rapport à l'année dernière"
+    },
+    "timeRanges": {
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
+    }
+  },
   "mediaOwnerMetrics": {
-    "title": "Métriques du tableau de bord",
+    "title": "Métriques des médias détenus",
     "cards": {
       "weeklyEarnings": "Gains hebdomadaires totaux",
       "monthlyEarnings": "Gains mensuels totaux",
