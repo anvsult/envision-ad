@@ -22,7 +22,7 @@ class EmailServiceTest {
     @Mock
     private JavaMailSender mailSender;
 
-    private static final String FROM_EMAIL = "megadoxs@gmail.com";
+    private static final String FROM_EMAIL = "envisionadinc@gmail.com";
     private static final String TO_EMAIL = "recipient@example.com";
     private static final String SUBJECT = "Test Subject";
     private static final String BODY = "Test email body content";
@@ -64,6 +64,7 @@ class EmailServiceTest {
 
         SimpleMailMessage capturedMessage = messageCaptor.getValue();
         assertEquals(multilineBody, capturedMessage.getText());
+        assertNotNull(capturedMessage.getText());
         assertTrue(capturedMessage.getText().contains("Line 1"));
         assertTrue(capturedMessage.getText().contains("Line 2"));
         assertTrue(capturedMessage.getText().contains("Line 3"));
@@ -113,6 +114,7 @@ class EmailServiceTest {
 
         SimpleMailMessage capturedMessage = messageCaptor.getValue();
         assertEquals(longBody, capturedMessage.getText());
+        assertNotNull(capturedMessage.getText());
         assertEquals(5000, capturedMessage.getText().length());
     }
 
@@ -193,9 +195,7 @@ class EmailServiceTest {
                 .when(mailSender).send(any(SimpleMailMessage.class));
 
         // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            emailService.sendSimpleEmail(TO_EMAIL, SUBJECT, BODY);
-        });
+        assertThrows(RuntimeException.class, () -> emailService.sendSimpleEmail(TO_EMAIL, SUBJECT, BODY));
 
         verify(mailSender, times(1)).send(any(SimpleMailMessage.class));
     }

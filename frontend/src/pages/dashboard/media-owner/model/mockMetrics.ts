@@ -9,7 +9,10 @@ export interface MetricsKpi {
 
 export interface EarningsTrendPoint {
     date: string;
-    earnings: number;
+    totalAmount: number;
+    reservationCount: number;
+    averageAmount: number;
+    [mediaName: string]: string | number;
 }
 
 export interface RevenueByLocationPoint {
@@ -17,8 +20,8 @@ export interface RevenueByLocationPoint {
     revenue: number;
 }
 
-export interface RevenueByMediaItem {
-    mediaName: string;
+export interface RevenueByLocationItem {
+    locationName: string;
     revenue: number;
     color: string;
 }
@@ -41,7 +44,7 @@ export interface MediaOwnerMetricsMock {
     kpis: MetricsKpi[];
     earningsTrend: EarningsTrendPoint[];
     revenueByLocation: RevenueByLocationPoint[];
-    revenueByMedia: RevenueByMediaItem[];
+    revenueByMediaLocation: RevenueByLocationItem[];
     activeCampaigns: ActiveCampaignItem[];
     payoutHistory: PayoutHistoryRow[];
 }
@@ -54,13 +57,13 @@ export const mediaOwnerMetricsMock: MediaOwnerMetricsMock = {
         { id: "activeCampaigns", value: 8, deltaPercent: 0, trend: "up" },
     ],
     earningsTrend: [
-        { date: "Jan 1", earnings: 120 },
-        { date: "Jan 2", earnings: 150 },
-        { date: "Jan 3", earnings: 180 },
-        { date: "Jan 4", earnings: 220 },
-        { date: "Jan 5", earnings: 190 },
-        { date: "Jan 6", earnings: 250 },
-        { date: "Jan 7", earnings: 320 },
+        { date: "Jan 1", totalAmount: 120, reservationCount: 3, averageAmount: 40 },
+        { date: "Jan 2", totalAmount: 150, reservationCount: 4, averageAmount: 37.5 },
+        { date: "Jan 3", totalAmount: 180, reservationCount: 4, averageAmount: 45 },
+        { date: "Jan 4", totalAmount: 220, reservationCount: 5, averageAmount: 44 },
+        { date: "Jan 5", totalAmount: 190, reservationCount: 4, averageAmount: 47.5 },
+        { date: "Jan 6", totalAmount: 250, reservationCount: 6, averageAmount: 41.7 },
+        { date: "Jan 7", totalAmount: 320, reservationCount: 7, averageAmount: 45.7 },
     ],
     revenueByLocation: [
         { city: "New York", revenue: 26000 },
@@ -69,11 +72,11 @@ export const mediaOwnerMetricsMock: MediaOwnerMetricsMock = {
         { city: "Houston", revenue: 9500 },
         { city: "Miami", revenue: 6800 },
     ],
-    revenueByMedia: [
-        { mediaName: "Digital Billboard A", revenue: 12500, color: "blue.6" },
-        { mediaName: "City Center Screen", revenue: 8500, color: "cyan.6" },
-        { mediaName: "Mall Entrance", revenue: 4500, color: "teal.6" },
-        { mediaName: "Highway Display", revenue: 15600, color: "grape.6" },
+    revenueByMediaLocation: [
+        { locationName: "Digital Billboard A", revenue: 12500, color: "blue.6" },
+        { locationName: "City Center Screen", revenue: 8500, color: "cyan.6" },
+        { locationName: "Mall Entrance", revenue: 4500, color: "teal.6" },
+        { locationName: "Highway Display", revenue: 15600, color: "grape.6" },
     ],
     activeCampaigns: [
         {

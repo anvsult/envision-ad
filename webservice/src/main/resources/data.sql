@@ -19,12 +19,12 @@ VALUES
        ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'Lotus Yoga Studio', 'auth0|696a88eb347945897ef17093', 'LARGE', 3, false, true, NOW())
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO employee (employee_id, user_id, business_id, email)
-VALUES  ('5bac8f38-4cc6-44d3-b355-7e4c6ccd24e1', 'auth0|6972cb215b943c997508c737', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10', 'anv.sult@gmail.com'),
-        ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'christopher24hd@gmail.com'),
-        ('a7413e1c-1fca-4cc8-8bc5-6a673b9635d5', 'auth0|6979541a0aa6c868cf029d34', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11', 'megadoxs@gmail.com'),
-        ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'christopher24hd@gmail.com'),
-        ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33', 'anv.sult@gmail.com')
+INSERT INTO employee (employee_id, user_id, business_id)
+VALUES  ('5bac8f38-4cc6-44d3-b355-7e4c6ccd24e1', 'auth0|6972cb215b943c997508c737', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10'),
+        ('94471b2f-8e87-4f47-bb14-604b8c4a32e6', 'auth0|6934e8515479d2b6d3cf7575', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
+        ('a7413e1c-1fca-4cc8-8bc5-6a673b9635d5', 'auth0|6979541a0aa6c868cf029d34', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11'),
+        ('f0252067-78a2-41ea-ba88-34280aea7056', 'auth0|696a89137cfdb558ea4a4a4a', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22'),
+        ('1f9b5afd-f206-447c-97b0-22002a4ff137', 'auth0|696a88eb347945897ef17093', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33')
     ON CONFLICT (employee_id) DO NOTHING;
 
 INSERT INTO invitation (invitation_id, business_id, email, token, time_created, time_expires)
@@ -337,23 +337,24 @@ VALUES
     ('91af2be4-8246-4cf8-b9d0-84779bc11002', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'Weekend Sports Promo');
 
 -- 2. Insert Dummy Ads
-INSERT INTO ads (ad_id, name, ad_url, ad_duration_seconds, ad_type, ad_campaign_ref_id)
+INSERT INTO ads (ad_id, name, ad_url, ad_type, ad_campaign_ref_id)
 VALUES
-    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 1),
-    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 15, 'IMAGE', 2),
-    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 30, 'IMAGE', 1);
+    ('33333333-4444-5555-6666-777777777777', 'BF Countdown Timer', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 1),
+    ('44444444-5555-6666-7777-888888888888', 'BF Main video', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 2),
+    ('55555555-6666-7777-8888-999999999999', 'Cyber Monday Teaser', 'https://res.cloudinary.com/dt3ru94xr/image/upload/v1765687012/izrudgmkxeohp1vhxlad.jpg', 'IMAGE', 1);
 
 -- 3. Insert visual-impact media reservations for dashboard metrics preview
 -- These are tied to media owned by Visual Impact business_id: b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b10
-INSERT INTO reservations (reservation_id, start_date, end_date, status, total_price, advertiser_id, campaign_id, media_id)
+INSERT INTO reservations (reservation_id, start_date, end_date, created_at, status, total_price, advertiser_id, campaign_id, media_id)
 VALUES
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100001',
-        NOW() - INTERVAL '3 days',
+        NOW() - INTERVAL '10 days',
         NOW() + INTERVAL '5 days',
+        NOW() - INTERVAL '13 days',
         'CONFIRMED',
         2400.00,
-        'auth0|6934e8515479d2b6d3cf7575',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
         'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
         (SELECT media_id FROM media WHERE title = 'Gym Hallway Digital Board' LIMIT 1)
     ),
@@ -361,9 +362,10 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100002',
         NOW() - INTERVAL '2 days',
         NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1800.00,
-        'auth0|696a88eb347945897ef17093',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33',
         'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
         (SELECT media_id FROM media WHERE title = 'Entrepôt en Folie Main Entrance' LIMIT 1)
     ),
@@ -371,9 +373,10 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100003',
         NOW() - INTERVAL '6 days',
         NOW() + INTERVAL '2 days',
+        NOW() - INTERVAL '15 days',
         'CONFIRMED',
         1200.00,
-        'auth0|6979541a0aa6c868cf029d34',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
         'f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c',
         (SELECT media_id FROM media WHERE title = 'Ping Mo Store Entrance' LIMIT 1)
     ),
@@ -381,9 +384,10 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100004',
         NOW() - INTERVAL '5 days',
         NOW() + INTERVAL '1 day',
+        NOW() - INTERVAL '9 days',
         'CONFIRMED',
         950.00,
-        'auth0|6934e8515479d2b6d3cf7575',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
         'c1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
         (SELECT media_id FROM media WHERE title = 'Cafeteria Entrance' LIMIT 1)
     ),
@@ -391,41 +395,78 @@ VALUES
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100005',
         NOW() - INTERVAL '18 days',
         NOW() - INTERVAL '10 days',
+        NOW() - INTERVAL '22 days',
         'CONFIRMED',
         1100.00,
-        'auth0|696a88eb347945897ef17093',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33',
         'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
         (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100006',
         NOW() + INTERVAL '1 day',
-        NOW() + INTERVAL '9 days',
+        NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '2 days',
         'PENDING',
         1500.00,
-        'auth0|696a89137cfdb558ea4a4a4a',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
         'f1a2b3c4-d5e6-4f7a-8b9c-0d1e2f3a4b5c',
         (SELECT media_id FROM media WHERE title = 'Student Lounge 2' LIMIT 1)
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100007',
-        NOW() - INTERVAL '2 days',
+        NOW() - INTERVAL '3 days',
         NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1750.00,
-        'auth0|6934e8515479d2b6d3cf7575',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11',
         '91af2be4-8246-4cf8-b9d0-84779bc11001',
         (SELECT media_id FROM media WHERE title = 'Student Lounge 1' LIMIT 1)
     ),
     (
         '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100008',
-        NOW() - INTERVAL '1 day',
-        NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '3 days',
+        NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '4 days',
         'CONFIRMED',
         1650.00,
-        'auth0|696a89137cfdb558ea4a4a4a',
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22',
         '91af2be4-8246-4cf8-b9d0-84779bc11002',
         (SELECT media_id FROM media WHERE title = 'Student Lounge 2' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100009',
+        NOW() - INTERVAL '3 days',
+        NOW() + INTERVAL '4 days',
+        NOW() - INTERVAL '4 days',
+        'CONFIRMED',
+        1100.00,
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100010',
+        NOW() - INTERVAL '2 days',
+        NOW() + INTERVAL '5 days',
+        NOW() - INTERVAL '3 days',
+        'CONFIRMED',
+        1100.00,
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
+    ),
+    (
+        '7f8e3d9a-9f11-4af8-a8d1-2a5cf1100011',
+        NOW() - INTERVAL '1 day',
+        NOW() + INTERVAL '6 days',
+        NOW() - INTERVAL '2 days',
+        'CONFIRMED',
+        1100.00,
+        'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33',
+        'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5e',
+        (SELECT media_id FROM media WHERE title = 'Lola Salon Main Lobby' LIMIT 1)
     );
 
 -- =========================== STRIPE DATA ===========================

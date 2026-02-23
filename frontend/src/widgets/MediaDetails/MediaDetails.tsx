@@ -89,7 +89,7 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
         <Group gap="md" justify="space-between">
           <Group gap="xs">
             <BackButton />
-            <Title order={2}>{media.title}</Title>
+            <Title order={1}>{media.title}</Title>
           </Group>
         </Group>
         {/* Columns */}
@@ -236,7 +236,7 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
             </Card>
             <Card withBorder radius="lg" shadow="md" p="lg">
               <Stack align="center">
-                <Text fw={600} size="xl" td="underline">
+                <Text fw={600} size="xl">
                   {priceLabel}
                 </Text>
                 

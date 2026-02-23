@@ -1,10 +1,10 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { getEmployeeOrganization } from "@/features/organization-management/api";
 import { OrganizationResponseDTO } from "@/entities/organization";
-import { useRouter } from "@/shared/lib/i18n/navigation"; // ← shared next-intl router
+import { useRouter, usePathname } from "@/shared/lib/i18n/navigation";
 import { usePermissions } from "@/app/providers/PermissionProvider";
 
 interface OrganizationContextType {
@@ -21,6 +21,12 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     const { user, isLoading } = useUser();
     const { permissions, loading: permissionsLoading } = usePermissions();
     const router = useRouter();
+    const pathname = usePathname();
+    const hasRedirected = useRef(false);
+
+    useEffect(() => {
+        hasRedirected.current = false;
+    }, [user?.sub]);
 
     const fetchOrganization = useCallback(async () => {
         if (!user || permissionsLoading || (
@@ -40,7 +46,12 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
             const status = (error as { response?: { status?: number } })?.response?.status;
             if (status === 404) {
                 setOrganization(null);
-                router.push('/dashboard');
+                if (!hasRedirected.current) {
+                    if (!pathname.endsWith('/invite')) {
+                        router.push('/dashboard');
+                    }
+                    hasRedirected.current = true;
+                }
             } else {
                 console.error('Failed to fetch organization:', error);
                 setOrganization(null);
@@ -48,7 +59,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }, [user, permissions, permissionsLoading, router]);
+    }, [user, permissions, permissionsLoading, router, pathname]);
 
     const refreshOrganization = useCallback(async () => {
         if (!user) return;

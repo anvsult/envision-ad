@@ -62,38 +62,40 @@
     },
     "advertiserTitle": "Annonceur",
     "advertiser": {
-      "overview": "Aperçu",
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
-      "myAds": "Mes Campagnes",
-      "timeRangeSelect": "Sélectionner la période du tableau de bord",
-      "graphs": {
-        "totalAdSpend": "Dépenses publicitaires totales",
-        "activeCampaigns": "Campagnes actives",
-        "estimatedImpressions": "Impressions estimées",
-        "averageCPM": "CPM moyen",
-        "campaignPerformance": "Performance de la campagne",
-        "mediaDistribution": "Répartition des médias",
-        "comparedToLastWeek": "Par rapport à la semaine dernière",
-        "impressions": "Impressions",
-        "spent": "Dépenses",
-        "gym": "Gym",
-        "barbershop": "Barbier",
-        "groceryStore": "Épicerie",
-        "comparedToLastMonth": "Par rapport au mois dernier",
-        "comparedToLastYear": "Par rapport à l'année dernière"
-      },
-      "timeRanges": {
-        "weekly": "Hebdomadaire",
-        "monthly": "Mensuel",
-        "yearly": "Annuel"
-      }
+      "myAds": "Mes Campagnes"
     },
     "adminTitle": "Admin",
     "admin": {
       "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification"
+    }
+  },
+  "advertiserMetrics": {
+    "title": "Métriques publicitaires",
+    "timeRangeSelect": "Sélectionner la période du tableau de bord",
+    "graphs": {
+      "totalAdSpend": "Dépenses publicitaires totales",
+      "activeCampaigns": "Campagnes actives",
+      "estimatedImpressions": "Impressions estimées",
+      "averageCPM": "CPM moyen",
+      "campaignPerformance": "Performance de la campagne",
+      "mediaDistribution": "Répartition des médias",
+      "comparedToLastWeek": "Par rapport à la semaine dernière",
+      "impressions": "Impressions",
+      "spent": "Dépenses",
+      "gym": "Gym",
+      "barbershop": "Barbier",
+      "groceryStore": "Épicerie",
+      "comparedToLastMonth": "Par rapport au mois dernier",
+      "comparedToLastYear": "Par rapport à l'année dernière"
+    },
+    "timeRanges": {
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
     }
   },
   "onboarding": {
@@ -184,7 +186,7 @@
     }
   },
   "mediaOwnerMetrics": {
-    "title": "Métriques du tableau de bord",
+    "title": "Métriques des médias détenus",
     "cards": {
       "weeklyEarnings": "Gains hebdomadaires totaux",
       "monthlyEarnings": "Gains mensuels totaux",
@@ -194,12 +196,13 @@
       "decreaseComparedToLastPeriod": "Diminution par rapport à la période précédente"
     },
     "sections": {
-      "earningsTrendWeekly": "Tendance des gains (hebdomadaire)",
-      "earningsTrendAllTime": "Tendance des gains (toute période)",
+      "earningsTrend": "Activité de réservation",
       "revenueByLocation": "Revenus par emplacement",
-      "revenueByMedia": "Revenus par média",
+      "revenueByMediaLocation": "Revenus par emplacement",
       "activeCampaignDetails": "Détails des campagnes actives",
-      "payoutHistory": "Historique des paiements"
+      "payoutHistory": "Historique des paiements",
+      "performanceMetrics": "Métriques de performance",
+      "mediaReservations": "Réservations de médias"
     },
     "table": {
       "transactionId": "ID de transaction",
@@ -212,7 +215,11 @@
     },
     "period": {
       "allTime": "Tout le temps",
-      "weekly": "Hebdomadaire"
+      "yearly": "Annuel",
+      "monthly": "Mensuel",
+      "weekly": "Hebdomadaire",
+      "custom": "Personnalisé",
+      "customPlaceholder": "Sélectionnez une plage..."
     },
     "emptyState": {
       "noData": "Aucune donnée disponible"
@@ -220,6 +227,11 @@
     "payoutStatus": {
       "paid": "PAYÉ",
       "processing": "EN COURS"
+    },
+    "earningsTrend": {
+      "totalAmount": "Montant total des gains",
+      "reservations": "Réservations totales",
+      "averageValue": "Valeur moyenne par réservation"
     }
   },
   "homepage": {
@@ -302,7 +314,7 @@
       "resolution": "Résolution",
       "width": "Largeur",
       "height": "Hauteur",
-      "loopDuration": "Durée de la boucle",
+      "loopDuration": "Durée d'une publicité (sec)",
       "weeklyImpressions": "Impressions par semaine"
     },
     "scheduleTitle": "Horaire",
@@ -400,7 +412,7 @@
     "table": {
       "name": "Nom",
       "organizationSize": "Taille",
-      "address": "Adresse",
+      "address": "Ville",
       "dateCreated": "Date de création",
       "roles": "Rôles",
       "actions": "Actions",
@@ -502,6 +514,8 @@
     },
     "verificationHistory": "Historique des vérifications",
     "requestVerification": "Demander une vérification",
+    "showOriginal": "Afficher l'original",
+    "showTranslation": "Afficher la traduction",
     "verificationTable": {
       "noHistory": "Aucun historique de demande de vérification trouvé.",
       "requestDate": "Date de la demande",
@@ -531,6 +545,23 @@
       "updateFailed": "Échec de la mise à jour des informations de l’organisation."
     }
   },
+  "invitation": {
+    "loading": "Traitement de votre invitation...",
+    "back": "Accueil",
+    "invalidLink": {
+      "title": "Lien d'invitation invalide",
+      "description": "Ce lien d'invitation est invalide ou incomplet."
+    },
+    "success": {
+      "title": "Vous êtes connecté !",
+      "message": "Vous avez rejoint l'organisation avec succès !",
+      "redirecting": "Redirection vers le tableau de bord..."
+    },
+    "error": {
+      "title": "Une erreur est survenue",
+      "message": "Une erreur s'est produite lors de l'acceptation de l'invitation."
+    }
+  },
   "media": {
     "newMedia": "Ajouter un nouveau média",
     "table": {
@@ -541,8 +572,7 @@
       "pending": "Annonces en attente",
       "status": "Statut",
       "update": "Prochaine mise à jour",
-      "price": "Prix",
-      "actions": "Actions"
+      "price": "Prix"
     },
     "status": {
       "active": "Actif",
@@ -607,926 +637,910 @@
       "page": "{page} Page"
     }
   },
-    "proofOfDisplay": {
-      "modal": {
-        "title": "Ajouter une preuve pour {mediaName}"
-      },
-      "stepper": {
-        "campaign": {
-          "label": "Campagne",
-          "description": "Sélectionner une campagne"
-        },
-        "upload": {
-          "label": "Téléversement",
-          "description": "Téléverser des images de preuve"
-        }
-      },
-      "campaignSelect": {
+  "proofOfDisplay": {
+    "modal": {
+      "title": "Ajouter une preuve pour {mediaName}"
+    },
+    "stepper": {
+      "campaign": {
         "label": "Campagne",
-        "placeholder": "Sélectionner une campagne"
+        "description": "Sélectionner une campagne"
       },
       "upload": {
-        "helperText": "Téléversez une ou plusieurs photos montrant l’affichage de la publicité.",
-        "uploadedCount": "Téléversé(s) ({count})"
-      },
-      "buttons": {
-        "next": "Suivant",
-        "back": "Retour",
-        "uploadProofImages": "Téléverser des images de preuve",
-        "clear": "Effacer",
-        "submitProof": "Soumettre la preuve",
-        "close": "Fermer"
-      },
-      "completed": {
-        "title": "Preuve soumise",
-        "description": "L’annonceur a été informé par e-mail pour cette campagne.",
-        "uploadedFiles": "Téléversé(s) : {count} fichier(s)"
-      },
-      "page": {
-        "title": "Preuve d’affichage"
-      },
-      "table": {
-        "image": "Image",
-        "name": "Nom",
-        "adsDisplayed": "Publicités affichées",
-        "pending": "En attente",
-        "displayed": "Affichée",
-        "action": "Action",
-        "addProof": "Ajouter une preuve",
-        "noMedia": "Aucun média trouvé"
+        "label": "Téléversement",
+        "description": "Téléverser des images de preuve"
       }
     },
-    "mediaModal": {
-      "title": {
-        "create": "Publier un média",
-        "update": "Mettre à jour le média"
+    "campaignSelect": {
+      "label": "Campagne",
+      "placeholder": "Sélectionner une campagne"
+    },
+    "upload": {
+      "helperText": "Téléversez une ou plusieurs photos montrant l’affichage de la publicité.",
+      "uploadedCount": "Téléversé(s) ({count})"
+    },
+    "buttons": {
+      "next": "Suivant",
+      "back": "Retour",
+      "uploadProofImages": "Téléverser des images de preuve",
+      "clear": "Effacer",
+      "submitProof": "Soumettre la preuve",
+      "close": "Fermer"
+    },
+    "completed": {
+      "title": "Preuve soumise",
+      "description": "L’annonceur a été informé par e-mail pour cette campagne.",
+      "uploadedFiles": "Téléversé(s) : {count} fichier(s)"
+    },
+    "page": {
+      "title": "Preuve d’affichage"
+    },
+    "table": {
+      "image": "Image",
+      "name": "Nom",
+      "adsDisplayed": "Publicités affichées",
+      "pending": "En attente",
+      "displayed": "Affichée",
+      "action": "Action",
+      "addProof": "Ajouter une preuve",
+      "noMedia": "Aucun média trouvé"
+    }
+  },
+  "mediaModal": {
+    "title": {
+      "create": "Publier un média",
+      "update": "Mettre à jour le média"
+    },
+    "sections": {
+      "details": "Détails",
+      "months": "Mois",
+      "schedule": "Jours et heures",
+      "start": "Début",
+      "end": "Fin"
+    },
+    "labels": {
+      "mediaName": "Nom du média",
+      "mediaImage": "Image du média",
+      "typeOfDisplay": "Type d'affichage",
+      "loopDuration": "Durée d'une publicité (sec)",
+      "resolution": "Résolution (px)",
+      "resolutionWidth": "Résolution - Largeur (px)",
+      "resolutionHeight": "Résolution - Hauteur (px)",
+      "aspectRatio": "Format",
+      "aspectRatioWidth": "Format - Largeur",
+      "aspectRatioHeight": "Format - Hauteur",
+      "width": "Largeur (cm)",
+      "height": "Hauteur (cm)",
+      "price": "Prix (par semaine)",
+      "dailyImpressions": "Impressions quotidiennes",
+      "previewCorners": "Prévisualiser et définir les coins",
+      "dragCorners": "Faites glisser les coins pour correspondre à la zone d'affichage"
+    },
+    "placeholders": {
+      "mediaName": "Nom du média",
+      "selectType": "Sélectionner le type",
+      "loopDuration": "Ex. 12",
+      "resolution": "Ex. 1920x1080",
+      "resolutionWidth": "Ex. 1080",
+      "resolutionHeight": "Ex. 1920",
+      "aspectRatio": "Ex. 9:16",
+      "aspectRatioWidth": "Ex. 9",
+      "aspectRatioHeight": "Ex. 16",
+      "width": "Ex. 80",
+      "height": "Ex. 200",
+      "price": "50,00 $CA",
+      "dailyImpressions": "Impressions quotidiennes",
+      "timeOpen": "00:00",
+      "timeClosed": "Fermé"
+    },
+    "tooltips": {
+      "max5": "Max 5 caractères",
+      "max4": "Max 4 caractères",
+      "max52": "Max 52 caractères",
+      "max20": "Max 20 caractères",
+      "max10": "Max 10 caractères",
+      "max8": "Max 8 caractères",
+      "max2": "Max 2 caractères",
+      "maxDecimals": "Max 2 décimales"
+    },
+    "errors": {
+      "required": "Requis",
+      "mediaTitleRequired": "Le titre du média est requis",
+      "loopDurationRequired": "La durée de la boucle est requise",
+      "resolutionRequired": "La résolution est requise",
+      "aspectRatioRequired": "Le format est requis",
+      "widthRequired": "La largeur est requise",
+      "heightRequired": "La hauteur est requise",
+      "priceRequired": "Le prix est requis",
+      "impressionsRequired": "Les impressions quotidiennes sont requises",
+      "scheduleRequired": "Au moins un jour doit être actif dans l'horaire",
+      "startTimeAfterEndTime": "L'heure de fin doit être après l'heure de début",
+      "fixForm": "Veuillez corriger les erreurs dans le formulaire",
+      "mediaImageRequired": "Veuillez télécharger une image pour le média.",
+      "previewCornersRequired": "Veuillez définir les coins de prévisualisation sur l'image."
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "uploadFile": "Téléverser un fichier",
+      "changeFile": "Changer de fichier"
+    },
+    "calendar": {
+      "months": {
+        "january": "Janvier",
+        "february": "Février",
+        "march": "Mars",
+        "april": "Avril",
+        "may": "Mai",
+        "june": "Juin",
+        "july": "Juillet",
+        "august": "Août",
+        "september": "Septembre",
+        "october": "Octobre",
+        "november": "Novembre",
+        "december": "Décembre"
       },
-      "sections": {
-        "details": "Détails",
-        "months": "Mois",
-        "schedule": "Jours et heures",
-        "start": "Début",
-        "end": "Fin"
-      },
-      "labels": {
-        "mediaName": "Nom du média",
-        "mediaImage": "Image du média",
-        "typeOfDisplay": "Type d'affichage",
-        "loopDuration": "Durée de la boucle (sec)",
-        "resolution": "Résolution (px)",
-        "resolutionWidth": "Résolution - Largeur (px)",
-        "resolutionHeight": "Résolution - Hauteur (px)",
-        "aspectRatio": "Format",
-        "aspectRatioWidth": "Format - Largeur",
-        "aspectRatioHeight": "Format - Hauteur",
-        "width": "Largeur (cm)",
-        "height": "Hauteur (cm)",
-        "price": "Prix (par semaine)",
-        "dailyImpressions": "Impressions quotidiennes",
-        "previewCorners": "Prévisualiser et définir les coins",
-        "dragCorners": "Faites glisser les coins pour correspondre à la zone d'affichage"
-      },
-      "placeholders": {
-        "mediaName": "Nom du média",
-        "selectType": "Sélectionner le type",
-        "loopDuration": "Ex. 12",
-        "resolution": "Ex. 1920x1080",
-        "resolutionWidth": "Ex. 1920",
-        "resolutionHeight": "Ex. 1080",
-        "aspectRatio": "Ex. 16:9",
-        "aspectRatioWidth": "Ex. 16",
-        "aspectRatioHeight": "Ex. 9",
-        "width": "Ex. 80",
-        "height": "Ex. 200",
-        "price": "50,00 $CA",
-        "dailyImpressions": "Impressions quotidiennes",
-        "timeOpen": "00:00",
-        "timeClosed": "Fermé"
-      },
-      "tooltips": {
-        "max5": "Max 5 caractères",
-        "max4": "Max 4 caractères",
-        "max52": "Max 52 caractères",
-        "max20": "Max 20 caractères",
-        "max10": "Max 10 caractères",
-        "max8": "Max 8 caractères",
-        "max2": "Max 2 caractères",
-        "maxDecimals": "Max 2 décimales"
-      },
-      "errors": {
-        "required": "Requis",
-        "mediaTitleRequired": "Le titre du média est requis",
-        "loopDurationRequired": "La durée de la boucle est requise",
-        "resolutionRequired": "La résolution est requise",
-        "aspectRatioRequired": "Le format est requis",
-        "widthRequired": "La largeur est requise",
-        "heightRequired": "La hauteur est requise",
-        "priceRequired": "Le prix est requis",
-        "impressionsRequired": "Les impressions quotidiennes sont requises",
-        "scheduleRequired": "Au moins un jour doit être actif dans l'horaire",
-        "startTimeAfterEndTime": "L'heure de fin doit être après l'heure de début",
-        "fixForm": "Veuillez corriger les erreurs dans le formulaire",
-        "mediaImageRequired": "Veuillez télécharger une image pour le média.",
-        "previewCornersRequired": "Veuillez définir les coins de prévisualisation sur l'image."
-      },
-      "buttons": {
-        "cancel": "Annuler",
-        "save": "Enregistrer",
-        "uploadFile": "Téléverser un fichier",
-        "changeFile": "Changer de fichier"
-      },
-      "calendar": {
-        "months": {
-          "january": "Janvier",
-          "february": "Février",
-          "march": "Mars",
-          "april": "Avril",
-          "may": "Mai",
-          "june": "Juin",
-          "july": "Juillet",
-          "august": "Août",
-          "september": "Septembre",
-          "october": "Octobre",
-          "november": "Novembre",
-          "december": "Décembre"
-        },
-        "days": {
-          "monday": "Lundi",
-          "tuesday": "Mardi",
-          "wednesday": "Mercredi",
-          "thursday": "Jeudi",
-          "friday": "Vendredi",
-          "saturday": "Samedi",
-          "sunday": "Dimanche"
-        }
-      },
-      "warning": {
-        "onlySquareImages": "Seules les images carrées sont acceptées."
+      "days": {
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche"
       }
     },
-    "profilePage": {
-      "title": "Profil",
-      "backToHome": "Retour à l'accueil",
-      "personalInfo": {
-        "title": "Informations personnelles",
-        "username": "Nom d'utilisateur",
-        "firstName": "Prénom",
-        "lastName": "Nom",
-        "email": "Courriel",
-        "bio": "Bio",
-        "emailVerified": "Vérifié"
-      },
-      "businessInfo": {
-        "title": "Informations sur l'entreprise",
-        "companyName": "Nom de l'entreprise",
-        "companySize": "Taille de l'entreprise",
-        "address": "Adresse",
-        "role": "Rôle",
-        "noBusiness": "Aucune entreprise associée."
-      },
-      "editModal": {
-        "title": "Modifier le profil",
-        "firstName": "Prénom",
-        "firstNamePlaceholder": "Entrez votre prénom",
-        "lastName": "Nom",
-        "lastNamePlaceholder": "Entrez votre nom",
-        "username": "Nom d'utilisateur",
-        "usernamePlaceholder": "Entrez votre nom d'utilisateur",
-        "bio": "Bio",
-        "bioPlaceholder": "Parlez-nous de vous...",
-        "required": "Ce champ est requis",
-        "error": "Échec de la mise à jour du profil",
-        "successTitle": "Succès!",
-        "successMessage": "Profil mis à jour avec succès",
-        "cancel": "Annuler",
-        "save": "Enregistrer"
-      },
-      "editButton": "Modifier le profil",
-      "memberStatus": "Membre d'EnvisionAd"
+    "warning": {
+      "onlySquareImages": "Seules les images carrées sont acceptées."
+    }
+  },
+  "profilePage": {
+    "title": "Profil",
+    "backToHome": "Retour à l'accueil",
+    "personalInfo": {
+      "title": "Informations personnelles",
+      "username": "Nom d'utilisateur",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Courriel",
+      "bio": "Bio",
+      "emailVerified": "Vérifié"
     },
-    "AddAdModal": {
-      "title": "Ajouter une nouvelle annonce",
-      "labels": {
-        "name": "Nom",
-        "type": "Type",
-        "duration": "Durée (secondes)",
-        "media": "Média"
-      },
-      "placeholders": {
-        "name": "Nom de l'annonce"
-      },
-      "description": {
-        "autoDetect": "Détecté automatiquement selon le fichier téléchargé"
-      },
-      "type": {
-        "image": "Image",
-        "video": "Vidéo"
-      },
-      "duration": {
-        "10": "10",
-        "15": "15",
-        "30": "30"
-      },
-      "buttons": {
-        "uploadFile": "Téléverser le fichier",
-        "changeFile": "Changer le fichier",
-        "cancel": "Annuler",
-        "createAd": "Créer l'annonce"
-      },
-      "status": {
-        "imageUploaded": "Image téléversée",
-        "videoUploaded": "Vidéo téléversée"
-      },
-      "alerts": {
-        "croppingTitle": "Rogning automatique",
-        "croppingMessage": "La vidéo fait {orig}s. Elle sera rognée aux {keep}s initiaux."
-      },
-      "validation": {
-        "nameTooShort": "Nom trop court",
-        "fileRequired": "Le fichier est requis"
-      }
+    "businessInfo": {
+      "title": "Informations sur l'entreprise",
+      "companyName": "Nom de l'entreprise",
+      "companySize": "Taille de l'entreprise",
+      "address": "Adresse",
+      "role": "Rôle",
+      "noBusiness": "Aucune entreprise associée."
     },
-    "adRequests": {
-      "page": {
-        "title": "Publicités",
-        "requestCount": {
-          "singular": "demande en attente",
-          "plural": "demandes en attente"
-        },
-        "tabs": {
-          "pending": "En Attente",
-          "confirmed": "Confirmé",
-          "filterLabel": "Filtrer par statut"
-        },
-        "status": {
-          "pending": "En Attente",
-          "confirmed": "Confirmé"
-        },
-        "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
-        "pending": "En attente",
-        "unknownCampaign": "Nom de campagne inconnue",
-        "loading": "Chargement des demandes publicitaires..."
-      },
-      "modal": {
-        "title": "Refuser la Demande Publicitaire",
-        "description": "Veuillez sélectionner une raison pour refuser cette demande publicitaire :",
-        "reasonLabel": "Raison du Refus",
-        "reasonPlaceholder": "Sélectionnez une raison",
-        "detailsLabel": "Détails Supplémentaires",
-        "detailsPlaceholder": "Veuillez fournir des détails...",
-        "characterCount": "{count}/512 caractères",
-        "cancelButton": "Annuler",
-        "denyButton": "Refuser la Demande",
-        "reasons": {
-          "contentPolicy": "Problèmes de Contenu et de Politique",
-          "creativeTechnical": "Problèmes Créatifs / Techniques",
-          "legalCompliance": "Risque Juridique et de Conformité",
-          "mediaOwnerRules": "Règles du Propriétaire de Média",
-          "localVenue": "Restrictions du Lieu Local",
-          "other": "Autre"
-        },
-        "errors": {
-          "selectReason": "Veuillez sélectionner une raison pour le refus",
-          "provideDetails": "Veuillez fournir des détails lors de la sélection de 'Autre'"
-        }
-      },
-      "notifications": {
-        "loadFailed": {
-          "title": "Erreur",
-          "message": "Impossible de charger les demandes de publicité"
-        },
-        "approve": {
-          "success": {
-            "title": "Approuvée",
-            "message": "La demande de publicité a été approuvée avec succès"
-          }
-        },
-        "deny": {
-          "success": {
-            "title": "Refusée",
-            "message": "La demande de publicité a été refusée"
-          }
-        },
-        "updateFailed": {
-          "title": "Erreur",
-          "message": "Impossible de mettre à jour le statut de la demande"
-        },
-        "download": {
-          "success": {
-            "title": "Téléchargement Terminé",
-            "message": "Tous les fichiers publicitaires ont été téléchargés"
-          },
-          "error": {
-            "title": "Échec du Téléchargement",
-            "message": "Échec du téléchargement des fichiers publicitaires"
-          }
-        }
-      },
-      "detail": {
-        "errorTitle": "Erreur",
-        "errorNotFound": "Demande de publicité introuvable",
-        "mediaFiles": "Fichiers Publicitaires",
-        "downloadAllMedia": "Télécharger Toutes les Publicités",
-        "name": "Nom du Média",
-        "startDate": "Date de début",
-        "endDate": "Date de fin",
-        "duration": "Durée",
-        "oneWeek": "1 semaine",
-        "weeks": "{count} semaines",
-        "totalPrice": "Prix total",
-        "approve": "Approuver",
-        "deny": "Refuser",
-        "cancel": "Annuler",
-        "confirmApproveTitle": "Approuver la demande",
-        "confirmApproveText": "Êtes-vous sûr de vouloir approuver cette demande de publicité ?",
-        "confirmApprove": "Approuver",
-        "confirmDenyTitle": "Refuser la demande",
-        "confirmDenyText": "Êtes-vous sûr de vouloir refuser cette demande de publicité ?",
-        "confirmDeny": "Refuser"
-      }
+    "editModal": {
+      "title": "Modifier le profil",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Entrez votre prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Entrez votre nom",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "bio": "Bio",
+      "bioPlaceholder": "Parlez-nous de vous...",
+      "required": "Ce champ est requis",
+      "error": "Échec de la mise à jour du profil",
+      "successTitle": "Succès!",
+      "successMessage": "Profil mis à jour avec succès",
+      "cancel": "Annuler",
+      "save": "Enregistrer"
     },
-    "advertiserReservations": {
-      "page": {
-        "title": "Publicités",
-        "reservationCount": {
-          "singular": "réservation",
-          "plural": "réservations"
-        }
+    "editButton": "Modifier le profil",
+    "memberStatus": "Membre d'EnvisionAd"
+  },
+  "AddAdModal": {
+    "title": "Ajouter une nouvelle annonce",
+    "labels": {
+      "name": "Nom",
+      "type": "Type",
+      "media": "Média"
+    },
+    "placeholders": {
+      "name": "Nom de l'annonce"
+    },
+    "description": {
+      "autoDetect": "Détecté automatiquement selon le fichier téléchargé"
+    },
+    "type": {
+      "image": "Image",
+      "video": "Vidéo"
+    },
+    "duration": {
+      "10": "10",
+      "15": "15",
+      "30": "30"
+    },
+    "buttons": {
+      "uploadFile": "Téléverser le fichier",
+      "changeFile": "Changer le fichier",
+      "cancel": "Annuler",
+      "createAd": "Créer l'annonce"
+    },
+    "status": {
+      "imageUploaded": "Image téléversée",
+      "videoUploaded": "Vidéo téléversée"
+    },
+    "validation": {
+      "nameTooShort": "Nom trop court",
+      "fileRequired": "Le fichier est requis",
+      "videoTooLong": "La vidéo doit faire {max} secondes ou moins"
+    }
+  },
+  "adRequests": {
+    "page": {
+      "title": "Publicités",
+      "requestCount": {
+        "singular": "demande en attente",
+        "plural": "demandes en attente"
       },
       "tabs": {
-        "pending": "En attente",
-        "approved": "Approuvées",
-        "confirmed": "Confirmées",
-        "denied": "Refusées"
+        "pending": "En Attente",
+        "confirmed": "Confirmé",
+        "filterLabel": "Filtrer par statut"
       },
       "status": {
-        "pending": "En attente",
-        "approved": "Approuvée",
-        "confirmed": "Confirmée",
-        "denied": "Refusée"
+        "pending": "En Attente",
+        "confirmed": "Confirmé"
       },
-      "viewReason": "Voir la raison",
-      "denialReasonLabel": "Raison du refus",
-      "denialDetailsLabel": "Détails supplémentaires",
-      "showOriginal": "Afficher l'original",
-      "showTranslation": "Afficher la traduction",
-      "translating": "Traduction en cours...",
-      "denialReasons": {
-        "contentPolicy": "Problèmes de contenu et politique",
-        "creativeTechnical": "Problèmes créatifs / techniques",
-        "legalCompliance": "Risques juridiques et de conformité",
-        "mediaOwnerRules": "Règles propres au propriétaire média",
-        "localVenue": "Restrictions du lieu local",
+      "noRequests": "Vous n’avez aucune demande publicitaire en attente.",
+      "pending": "En attente",
+      "unknownCampaign": "Nom de campagne inconnue",
+      "loading": "Chargement des demandes publicitaires..."
+    },
+    "modal": {
+      "title": "Refuser la Demande Publicitaire",
+      "description": "Veuillez sélectionner une raison pour refuser cette demande publicitaire :",
+      "reasonLabel": "Raison du Refus",
+      "reasonPlaceholder": "Sélectionnez une raison",
+      "detailsLabel": "Détails Supplémentaires",
+      "detailsPlaceholder": "Veuillez fournir des détails...",
+      "characterCount": "{count}/512 caractères",
+      "cancelButton": "Annuler",
+      "denyButton": "Refuser la Demande",
+      "reasons": {
+        "contentPolicy": "Problèmes de Contenu et de Politique",
+        "creativeTechnical": "Problèmes Créatifs / Techniques",
+        "legalCompliance": "Risque Juridique et de Conformité",
+        "mediaOwnerRules": "Règles du Propriétaire de Média",
+        "localVenue": "Restrictions du Lieu Local",
         "other": "Autre"
       },
-      "noReservations": "Aucune réservation trouvée pour ce statut.",
-      "payButton": "Payer",
-      "payment": {
-        "title": "Compléter le paiement",
-        "reviewTitle": "Vérifier votre réservation",
-        "campaign": "Campagne",
-        "dates": "Dates",
-        "totalCost": "Coût total",
-        "cancel": "Annuler",
-        "proceedToPay": "Procéder au paiement",
-        "errorTitle": "Erreur de paiement",
-        "initFailed": "Échec de l'initialisation du paiement. Veuillez réessayer.",
-        "missingKey": "Erreur de configuration du paiement. Veuillez contacter le support.",
-        "successTitle": "Paiement réussi !",
-        "successMessage": "Votre paiement a été traité avec succès. La réservation est maintenant confirmée.",
-        "done": "Terminé"
-      },
-      "notifications": {
-        "loadFailed": {
-          "title": "Erreur",
-          "message": "Échec du chargement des réservations"
-        },
-        "paymentSuccess": {
-          "title": "Paiement terminé",
-          "message": "Votre réservation a été confirmée avec succès"
-        }
-      }
-    },
-    "adCampaigns": {
-      "page": {
-        "title": "Mes campagnes",
-        "createButton": "Créer une campagne",
-        "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
-      },
-      "createCampaignModal": {
-        "title": "Créer une campagne",
-        "labels": {
-          "name": "Nom"
-        },
-        "placeholders": {
-          "name": "Nom de la campagne"
-        },
-        "buttons": {
-          "cancel": "Annuler",
-          "create": "Créer"
-        },
-        "validation": {
-          "nameTooShort": "Nom trop court"
-        }
-      },
-      "table": {
-        "newAd": "Créer une annonce",
-        "preview": "Aperçu",
-        "name": "Nom",
-        "type": "Type",
-        "duration": "Durée",
-        "actions": "Actions",
-        "noAd": "Aucune annonce trouvée dans cette campagne",
-        "types": {
-          "video": "Vidéo",
-          "image": "Image"
-        },
-        "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
-        "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
-        "deleteCampaign": "Supprimer la campagne",
-        "deleteAd": "Supprimer l’annonce {name}"
-      },
-      "notifications": {
-        "loadFailed": {
-          "title": "Erreur",
-          "message": "Échec du chargement des campagnes"
-        },
-        "addAd": {
-          "success": {
-            "title": "Succès",
-            "message": "Annonce ajoutée"
-          },
-          "error": {
-            "title": "Erreur",
-            "tiedReservationMessage": "Échec de l’enregistrement de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant d’ajouter une nouvelle annonce.",
-            "genericMessage": "Échec de l’enregistrement de l’annonce"
-          }
-        },
-        "deleteAd": {
-          "success": {
-            "title": "Supprimée",
-            "message": "Annonce supprimée"
-          },
-          "error": {
-            "title": "Erreur",
-            "genericMessage": "Échec de la suppression de l’annonce",
-            "tiedReservationMessage": "Échec de la suppression de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer une annonce."
-          }
-        },
-        "deleteCampaign": {
-          "success": {
-            "title": "Supprimée",
-            "message": "Campagne supprimée"
-          },
-          "error": {
-            "title": "Erreur",
-            "tiedReservationMessage": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer.",
-            "genericMessage": "Échec de la suppression de la campagne"
-          }
-        },
-        "createCampaign": {
-          "success": {
-            "title": "Succès",
-            "message": "Campagne créée"
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la création de la campagne"
-          }
-        }
-      },
-      "confirmations": {
-        "deleteAd": {
-          "title": "Supprimer l’annonce",
-          "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible."
-        },
-        "deleteCampaign": {
-          "title": "Supprimer la campagne",
-          "message": "Êtes-vous sûr de vouloir supprimer cette campagne ? Cette action est irréversible et supprimera toutes les annonces associées à cette campagne."
-        },
-        "delete": {
-          "cancel": "Annuler",
-          "confirm": "Supprimer"
-        }
-      }
-    },
-    "admin": {
-      "adminActions": {
-        "businessName": "Nom de l’entreprise",
-        "noMediaPending": "Aucun média en attente d’approbation.",
-        "approveMedia": "Approuver le média",
-        "denyMedia": "Refuser le média",
-        "approveMediaConfirmation": "Approuver ce média ?",
-        "denyMediaConfirmation": "Refuser ce média ?",
-        "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
-        "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
-        "deny": "Refuser",
-        "approve": "Approuver",
-        "reviewUnavailable": "Révision indisponible",
-        "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
-        "pendingMedia": "Médias en attente d’approbation",
-        "pendingMediaPagination": "{start}-{end} sur {total} médias en attente",
-        "loadingPendingMedia": "Chargement des médias en attente...",
-        "image": "Image",
-        "name": "Nom",
-        "status": "Statut",
-        "price": "Prix",
-        "mediaOwner": "Propriétaire de médias",
-        "location": "Site",
-        "dailyImpressions": "Impressions quotidiennes",
-        "cancel": "Annuler",
-        "pendingOrganization": "Organisations en attente de vérification",
-        "organization": "Organisation",
-        "requestDate": "Date de la demande",
-        "noOrganizationsPending": "Pas d'organization en attente de vérification.",
-        "verificationDetails": "Détails de la vérification",
-        "approveConfirmMessage": "Êtes-vous sûr de vouloir approuver cette organisation ?",
-        "denyReason": "Raison du refus",
-        "denyReasonPlaceholder": "Entrez une raison pour refuser cette organisation.",
-        "success": {
-          "title": "Succès",
-          "approved": "Le statut de vérification de l’organisation a été approuvé.",
-          "denied": "Le statut de vérification de l’organisation a été refusé."
-        },
-        "errors": {
-          "title": "Erreur",
-          "approveFailed": "Échec de l’approbation du statut de vérification de l’organisation.",
-          "denyFailed": "Échec du refus du statut de vérification de l’organisation."
-        }
-      },
-      "metricsPage": {
-        "title": "Métriques admin",
-        "empty": "Aucune donnée",
-        "loading": "Chargement des métriques...",
-        "errors": {
-          "loadFailed": "Impossible de charger les métriques"
-        },
-        "cards": {
-          "totalRevenue": "Revenus totaux de la plateforme",
-          "totalRevenueDesc": "Agrégés à partir des paiements complétés",
-          "totalOrganizations": "Nombre total d’organisations",
-          "totalOrganizationsDesc": "Organisations actives + approuvées",
-          "totalMediaListings": "Nombre total de médias actifs",
-          "totalMediaListingsDesc": "Tous les médias actifs sur la plateforme",
-          "totalUsers": "Nombre total d’utilisateurs",
-          "totalUsersDesc": "Utilisateurs distincts connus",
-          "mediaOwners": "Propriétaires de médias",
-          "mediaOwnersDesc": "Utilisateurs avec le rôle propriétaire de médias",
-          "advertisers": "Annonceurs",
-          "advertisersDesc": "Utilisateurs avec le rôle annonceur"
-        },
-        "chart": {
-          "title": "Répartition des rôles des utilisateurs",
-          "subtitle": "Propriétaires de médias vs Annonceurs",
-          "noData": "Aucune donnée",
-          "noDataLabel": "Aucune\ndonnée",
-          "users": "Utilisateurs",
-          "mediaOwners": "Propriétaires de médias",
-          "advertisers": "Annonceurs",
-          "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme.",
-          "ariaLabel": "Graphique de répartition des rôles des utilisateurs montrant {total} utilisateurs au total, avec {mediaOwners} propriétaires de médias et {advertisers} annonceurs."
-        }
-      }
-    },
-    "reserveModal": {
-      "title": "Réserver : {title}",
-      "reservation": "Réservation",
-      "dates": "Sélectionner des dates",
-      "checkout": "Vérification",
-      "payment": "Paiement",
-      "selectCampaign": "Sélectionner une campagne",
-      "chooseCampaign": "Choisissez une de vos campagnes",
-      "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
-      "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
-      "processingPayment": "Traitement de votre paiement...",
-      "pleaseWait": "Veuillez patienter pendant que nous finalisons votre réservation",
       "errors": {
-        "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
-        "selectDate": "Veuillez sélectionner une date de début et de fin valides",
-        "missingPaymentInfo": "Informations de paiement requises manquantes",
-        "reservationFailed": "Échec de la réservation. Veuillez réessayer plus tard.",
-        "paymentRequired": "Le paiement doit être complété en premier",
-        "reservationConflict": "Une réservation pour {campaignName} existe déjà durant cette période ({startDate} - {endDate}). Choisissez d'autres dates."
-      },
-      "errorTitle": "Erreur de réservation",
-      "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
-      "campaignNotFoundErrorMessage": "Campagne introuvable.",
-      "mediaIdMissing": "L'identifiant du média est manquant.",
-      "successTitle": "Réservation réussie !",
-      "successMessage": "Réservation confirmée !",
-      "successMessageLong": "Votre créneau publicitaire a été réservé avec succès. Vous pouvez le consulter dans votre calendrier.",
-      "duplicateTitle": "Doublon",
-      "duplicateMessage": "Réservé déjà pour ces dates.",
-      "failedReserve": "Échec de la réservation.",
-      "networkError": "Erreur réseau.",
-      "doneButton": "Terminé",
-      "cancelButton": "Annuler",
-      "backButton": "Retour",
-      "nextStepButton": "Étape suivante",
-      "confirmPayButton": "Confirmer & Payer",
-      "reviewTitle": "Vérifier la réservation",
-      "confirmButton": "Confirmer la réservation",
-      "dateSelection": {
-        "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
-      },
-      "labels": {
-        "media": "Média",
-        "campaign": "Campagne",
-        "dates": "Dates",
-        "totalCost": "Coût total"
+        "selectReason": "Veuillez sélectionner une raison pour le refus",
+        "provideDetails": "Veuillez fournir des détails lors de la sélection de 'Autre'"
       }
     },
-    "paymentForm": {
-      "enterPaymentDetails": "Entrer les détails de paiement",
-      "total": "Total : {amount}",
-      "payButton": "Payer {amount}",
-      "back": "Retour",
-      "paymentFailed": "Paiement échoué",
-      "paymentError": "Une erreur s'est produite lors du paiement",
-      "unexpectedError": "Une erreur inattendue s'est produite"
-    },
-    "stripe": {
-      "title": "Compte Stripe",
-      "errors": {
-        "noBusiness": "Aucune entreprise trouvée pour votre utilisateur.",
-        "fetchFailed": "Échec de la récupération du statut du compte Stripe.",
-        "connectFailed": "Échec de l'initialisation de la connexion Stripe."
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Impossible de charger les demandes de publicité"
       },
-      "noStatus": "Impossible de récupérer le statut du compte Stripe.",
-      "status": {
-        "connected": {
-          "title": "Compte Stripe connecté",
-          "description": "Votre compte est entièrement configuré et prêt à recevoir les paiements des annonceurs.",
-          "accountId": "Votre identifiant de compte Stripe"
-        },
-        "incomplete": {
-          "title": "Terminez la configuration de vos paiements",
-          "description": "Pour afficher des médias et recevoir des paiements, vous devez terminer la configuration de votre compte Stripe.",
-          "checks": {
-            "onboarding": "Processus d'intégration",
-            "charges": "Peut accepter les paiements",
-            "payouts": "Peut recevoir des paiements"
-          }
-        }
-      },
-      "buttons": {
-        "connect": "Se connecter avec Stripe",
-        "continueOnboarding": "Continuer l'intégration"
-      },
-      "notifications": {
+      "approve": {
         "success": {
-          "title": "Intégration terminée !",
-          "message": "Votre compte est prêt. Nous confirmons juste les derniers détails avec Stripe."
+          "title": "Approuvée",
+          "message": "La demande de publicité a été approuvée avec succès"
+        }
+      },
+      "deny": {
+        "success": {
+          "title": "Refusée",
+          "message": "La demande de publicité a été refusée"
+        }
+      },
+      "updateFailed": {
+        "title": "Erreur",
+        "message": "Impossible de mettre à jour le statut de la demande"
+      },
+      "download": {
+        "success": {
+          "title": "Téléchargement Terminé",
+          "message": "Tous les fichiers publicitaires ont été téléchargés"
         },
-        "refresh": {
-          "title": "Session d'intégration expirée",
-          "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
+        "error": {
+          "title": "Échec du Téléchargement",
+          "message": "Échec du téléchargement des fichiers publicitaires"
         }
       }
     },
-    "invitation": {
-      "loading": "Chargement...",
-      "processing": "Traitement de votre invitation...",
-      "invalidLinkTitle": "Lien d'invitation invalide",
-      "invalidLink": "Ce lien d'invitation est invalide ou incomplet.",
-      "successTitle": "Succès !",
-      "success": "Vous avez rejoint l'organisation avec succès !",
-      "errorTitle": "Échec",
-      "error": "Une erreur s'est produite lors de l'acceptation de l'invitation.",
-      "redirecting": "Redirection vers le tableau de bord...",
-      "goHome": "Retour à l'accueil"
-    },
-    "stripeOnboarding": {
-      "title": "Connecter votre compte de paiement",
-      "description": "Configurez votre compte Stripe pour recevoir des paiements des annonceurs.",
-      "setupTitle": "Connecter un compte Stripe",
-      "setupDescription": "Vous devez connecter un compte Stripe pour recevoir des paiements lorsque les annonceurs réservent vos médias.",
-      "requiredTitle": "Requis pour recevoir des paiements",
-      "requiredMessage": "Sans un compte Stripe connecté, les annonceurs ne peuvent pas réserver vos médias.",
-      "whatYouNeed": "Ce dont vous aurez besoin :",
-      "requirement1": "Informations sur l'entreprise (nom légal, adresse)",
-      "requirement2": "Coordonnées bancaires pour les paiements",
-      "requirement3": "Numéro d'identification fiscale",
-      "requirement4": "Pièce d'identité personnelle (pour vérification)",
-      "connectStripe": "Connecter le compte Stripe",
-      "continueOnboarding": "Continuer l'intégration",
-      "securityNote": "Vos informations sont transmises en toute sécurité à Stripe et ne sont jamais stockées sur nos serveurs.",
-      "connectedTitle": "Compte de paiement connecté",
-      "connectedMessage": "Votre compte Stripe est entièrement configuré et prêt à recevoir des paiements !",
-      "statusTitle": "État du compte",
-      "onboardingStatus": "Intégration",
-      "chargesStatus": "Accepter les paiements",
-      "payoutsStatus": "Recevoir les paiements",
-      "complete": "Terminé",
-      "incomplete": "Incomplet",
-      "enabled": "Activé",
-      "disabled": "Désactivé",
-      "checkingStatus": "Vérification de l'état du compte...",
-      "errorTitle": "Erreur de connexion",
-      "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
-    },
-    "mediaLocations": {
-      "page": {
-        "title": "Mes Médias",
-        "createButton": "Créer un emplacement"
-      },
-      "table": {
-        "noLocations": "Aucun emplacement trouvé. Créez-en un pour commencer !",
-        "addMedia": "Ajouter un média",
-        "assignMedia": "Attribuer un média",
-        "assignedMedia": "Médias attribués",
-        "mediaTitle": "Titre",
-        "mediaType": "Type",
-        "resolution": "Résolution",
-        "noAssignedMedia": "Aucun média attribué pour le moment.",
-        "edit": "Modifier"
-      },
-      "notifications": {
-        "loadFailed": {
-          "title": "Échec du chargement",
-          "message": "Impossible de charger les emplacements médias."
-        },
-        "create": {
-          "success": {
-            "title": "Succès",
-            "message": "Emplacement média créé avec succès."
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la création de l'emplacement média.",
-            "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
-          }
-        },
-        "createMedia": {
-          "success": {
-            "title": "Succès",
-            "message": "Le média a été créé et assigné à cet emplacement avec succès."
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la création du média."
-          }
-        },
-        "delete": {
-          "success": {
-            "title": "Succès",
-            "message": "Emplacement média supprimé avec succès."
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la suppression de l'emplacement média.",
-            "activeMedia": "Impossible de supprimer cet emplacement car des médias actifs, en attente ou rejetés y sont attribués. Veuillez d'abord supprimer les médias."
-          }
-        },
-        "loadMedia": {
-          "error": {
-            "message": "Échec du chargement des détails du média."
-          }
-        },
-        "updateMedia": {
-          "success": {
-            "title": "Succès",
-            "message": "Média mis à jour avec succès."
-          },
-          "error": {
-            "message": "Échec de la mise à jour du média."
-          }
-        },
-        "deleteMedia": {
-          "success": {
-            "title": "Succès",
-            "message": "Média supprimé avec succès."
-          },
-          "error": {
-            "message": "Échec de la suppression du média."
-          }
-        },
-        "statusMedia": {
-          "success": {
-            "title": "Succès",
-            "message": "Le statut du média a été mis à jour avec succès."
-          },
-          "error": {
-            "message": "Échec de la mise à jour du statut du média."
-          }
-        },
-        "unassign": {
-          "success": {
-            "title": "Succès",
-            "message": "Média désassigné avec succès."
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la désassignation du média de l'emplacement."
-          }
-        }
-      },
-      "modals": {
-        "edit": {
-          "title": "Modifier l'emplacement média",
-          "fields": {
-            "name": "Nom",
-            "street": "Rue",
-            "city": "Ville",
-            "province": "Province/État",
-            "country": "Pays",
-            "postalCode": "Code Postal",
-            "latitude": "Latitude",
-            "longitude": "Longitude"
-          },
-          "placeholders": {
-            "name": "Ex. Panneaux Centre-ville",
-            "street": "123 Rue Principale",
-            "city": "Montréal",
-            "province": "QC",
-            "country": "Canada",
-            "postalCode": "H1A 1A1"
-          },
-          "validation": {
-            "name": "Le nom est trop court",
-            "latitude": "Latitude invalide",
-            "longitude": "Longitude invalide",
-            "nameRequired": "Le nom est requis",
-            "streetRequired": "La rue est requise",
-            "cityRequired": "La ville est requise",
-            "provinceRequired": "La province/l'état est requis(e)",
-            "countryRequired": "Le pays est requis",
-            "postalCodeRequired": "Le code postal est requis",
-            "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
-            "cityInvalidServer": "Veuillez vérifier la ville.",
-            "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
-            "countryInvalidServer": "Veuillez vérifier le pays.",
-            "postalCodeInvalidServer": "Veuillez vérifier le code postal."
-          },
-          "buttons": {
-            "cancel": "Annuler",
-            "save": "Enregistrer"
-          },
-          "success": {
-            "title": "Succès",
-            "message": "Emplacement mis à jour avec succès"
-          },
-          "error": {
-            "title": "Erreur",
-            "message": "Échec de la mise à jour de l'emplacement",
-            "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
-          }
-        }
-      },
-      "confirmations": {
-        "delete": {
-          "title": "Supprimer l'emplacement",
-          "message": "Êtes-vous sûr de vouloir supprimer cet emplacement ?",
-          "confirm": "Supprimer",
-          "cancel": "Annuler"
-        },
-        "unassign": {
-          "title": "Désassigner le média",
-          "message": "Êtes-vous sûr de vouloir désassigner ce média ? Le média lui-même ne sera pas supprimé.",
-          "confirm": "Désassigner",
-          "cancel": "Annuler"
-        }
+    "detail": {
+      "errorTitle": "Erreur",
+      "errorNotFound": "Demande de publicité introuvable",
+      "mediaFiles": "Fichiers Publicitaires",
+      "downloadAllMedia": "Télécharger Toutes les Publicités",
+      "name": "Nom du Média",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "duration": "Durée",
+      "oneWeek": "1 semaine",
+      "weeks": "{count} semaines",
+      "totalPrice": "Prix total",
+      "approve": "Approuver",
+      "deny": "Refuser",
+      "cancel": "Annuler",
+      "confirmApproveTitle": "Approuver la demande",
+      "confirmApproveText": "Êtes-vous sûr de vouloir approuver cette demande de publicité ?",
+      "confirmApprove": "Approuver",
+      "confirmDenyTitle": "Refuser la demande",
+      "confirmDenyText": "Êtes-vous sûr de vouloir refuser cette demande de publicité ?",
+      "confirmDeny": "Refuser"
+    }
+  },
+  "advertiserReservations": {
+    "page": {
+      "title": "Publicités",
+      "reservationCount": {
+        "singular": "réservation",
+        "plural": "réservations"
       }
     },
-    "CreateMediaLocationModal": {
-      "title": "Créer un emplacement média",
-      "validation": {
-        "nameTooShort": "Le nom est trop court",
-        "required": "Requis",
-        "nameRequired": "Le nom est requis",
-        "streetRequired": "La rue est requise",
-        "cityRequired": "La ville est requise",
-        "provinceRequired": "La province/l'état est requis(e)",
-        "countryRequired": "Le pays est requis",
-        "postalCodeRequired": "Le code postal est requis",
-        "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
-        "cityInvalidServer": "Veuillez vérifier la ville.",
-        "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
-        "countryInvalidServer": "Veuillez vérifier le pays.",
-        "postalCodeInvalidServer": "Veuillez vérifier le code postal."
+    "tabs": {
+      "pending": "En attente",
+      "approved": "Approuvées",
+      "confirmed": "Confirmées",
+      "denied": "Refusées"
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "confirmed": "Confirmée",
+      "denied": "Refusée"
+    },
+    "viewReason": "Voir la raison",
+    "denialReasonLabel": "Raison du refus",
+    "denialDetailsLabel": "Détails supplémentaires",
+    "showOriginal": "Afficher l'original",
+    "showTranslation": "Afficher la traduction",
+    "translating": "Traduction en cours...",
+    "denialReasons": {
+      "contentPolicy": "Problèmes de contenu et politique",
+      "creativeTechnical": "Problèmes créatifs / techniques",
+      "legalCompliance": "Risques juridiques et de conformité",
+      "mediaOwnerRules": "Règles propres au propriétaire média",
+      "localVenue": "Restrictions du lieu local",
+      "other": "Autre"
+    },
+    "noReservations": "Aucune réservation trouvée pour ce statut.",
+    "payButton": "Payer",
+    "payment": {
+      "title": "Compléter le paiement",
+      "reviewTitle": "Vérifier votre réservation",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total",
+      "cancel": "Annuler",
+      "proceedToPay": "Procéder au paiement",
+      "errorTitle": "Erreur de paiement",
+      "initFailed": "Échec de l'initialisation du paiement. Veuillez réessayer.",
+      "missingKey": "Erreur de configuration du paiement. Veuillez contacter le support.",
+      "successTitle": "Paiement réussi !",
+      "successMessage": "Votre paiement a été traité avec succès. La réservation est maintenant confirmée.",
+      "done": "Terminé"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Échec du chargement des réservations"
       },
+      "paymentSuccess": {
+        "title": "Paiement terminé",
+        "message": "Votre réservation a été confirmée avec succès"
+      }
+    }
+  },
+  "adCampaigns": {
+    "page": {
+      "title": "Mes campagnes",
+      "createButton": "Créer une campagne",
+      "noCampaigns": "Aucune campagne trouvée. Cliquez sur 'Créer une campagne' pour en ajouter une."
+    },
+    "createCampaignModal": {
+      "title": "Créer une campagne",
       "labels": {
-        "name": "Nom",
-        "street": "Rue",
-        "city": "Ville",
-        "province": "Province/État",
-        "country": "Pays",
-        "postalCode": "Code Postal",
-        "latitude": "Latitude",
-        "longitude": "Longitude"
+        "name": "Nom"
       },
       "placeholders": {
-        "name": "Ex. Panneaux Centre-ville",
-        "street": "123 Rue Principale",
-        "city": "Montréal",
-        "province": "QC",
-        "country": "Canada",
-        "postalCode": "H1A 1A1"
+        "name": "Nom de la campagne"
       },
       "buttons": {
         "cancel": "Annuler",
         "create": "Créer"
+      },
+      "validation": {
+        "nameTooShort": "Nom trop court"
+      }
+    },
+    "table": {
+      "newAd": "Créer une annonce",
+      "preview": "Aperçu",
+      "name": "Nom",
+      "type": "Type",
+      "duration": "Durée",
+      "actions": "Actions",
+      "noAd": "Aucune annonce trouvée dans cette campagne",
+      "types": {
+        "video": "Vidéo",
+        "image": "Image"
+      },
+      "noCampaigns": "Aucune campagne trouvée. Créez une campagne pour commencer.",
+      "noAds": "Aucune annonce trouvée dans cette campagne. Ajoutez une annonce pour commencer.",
+      "deleteCampaign": "Supprimer la campagne",
+      "deleteAd": "Supprimer l’annonce {name}"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Erreur",
+        "message": "Échec du chargement des campagnes"
+      },
+      "addAd": {
+        "success": {
+          "title": "Succès",
+          "message": "Annonce ajoutée"
+        },
+        "error": {
+          "title": "Erreur",
+          "tiedReservationMessage": "Échec de l’enregistrement de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant d’ajouter une nouvelle annonce.",
+          "genericMessage": "Échec de l’enregistrement de l’annonce"
+        }
+      },
+      "deleteAd": {
+        "success": {
+          "title": "Supprimée",
+          "message": "Annonce supprimée"
+        },
+        "error": {
+          "title": "Erreur",
+          "genericMessage": "Échec de la suppression de l’annonce",
+          "tiedReservationMessage": "Échec de la suppression de l’annonce car la campagne a des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer une annonce."
+        }
+      },
+      "deleteCampaign": {
+        "success": {
+          "title": "Supprimée",
+          "message": "Campagne supprimée"
+        },
+        "error": {
+          "title": "Erreur",
+          "tiedReservationMessage": "Échec de la suppression de la campagne car elle a encore des réservations à venir ou en cours. Veuillez attendre que toutes les réservations pour cette campagne soient terminées avant de supprimer.",
+          "genericMessage": "Échec de la suppression de la campagne"
+        }
+      },
+      "createCampaign": {
+        "success": {
+          "title": "Succès",
+          "message": "Campagne créée"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création de la campagne"
+        }
+      }
+    },
+    "confirmations": {
+      "deleteAd": {
+        "title": "Supprimer l’annonce",
+        "message": "Êtes-vous sûr de vouloir supprimer cette annonce ? Cette action est irréversible."
+      },
+      "deleteCampaign": {
+        "title": "Supprimer la campagne",
+        "message": "Êtes-vous sûr de vouloir supprimer cette campagne ? Cette action est irréversible et supprimera toutes les annonces associées à cette campagne."
+      },
+      "delete": {
+        "cancel": "Annuler",
+        "confirm": "Supprimer"
       }
     }
+  },
+  "admin": {
+    "adminActions": {
+      "businessName": "Nom de l’entreprise",
+      "noMediaPending": "Aucun média en attente d’approbation.",
+      "approveMedia": "Approuver le média",
+      "denyMedia": "Refuser le média",
+      "approveMediaConfirmation": "Approuver ce média ?",
+      "denyMediaConfirmation": "Refuser ce média ?",
+      "approveMediaText": "Êtes-vous sûr de vouloir approuver ce média ?",
+      "denyMediaText": "Êtes-vous sûr de vouloir refuser ce média ?",
+      "deny": "Refuser",
+      "approve": "Approuver",
+      "reviewUnavailable": "Révision indisponible",
+      "reviewDone": "Ce média a déjà été examiné ({status}). Vous ne pouvez plus l’approuver ou le refuser.",
+      "pendingMedia": "Médias en attente d’approbation",
+      "pendingMediaPagination": "{start}-{end} sur {total} médias en attente",
+      "loadingPendingMedia": "Chargement des médias en attente...",
+      "image": "Image",
+      "name": "Nom",
+      "status": "Statut",
+      "price": "Prix",
+      "mediaOwner": "Propriétaire de médias",
+      "location": "Site",
+      "dailyImpressions": "Impressions quotidiennes",
+      "cancel": "Annuler",
+      "pendingOrganization": "Organisations en attente de vérification",
+      "organization": "Organisation",
+      "requestDate": "Date de la demande",
+      "noOrganizationsPending": "Pas d'organization en attente de vérification.",
+      "close": "Fermer",
+      "verificationDetails": "Détails de la vérification",
+      "approveConfirmMessage": "Êtes-vous sûr de vouloir approuver cette organisation ?",
+      "denyReason": "Raison du refus",
+      "denyReasonPlaceholder": "Entrez une raison pour refuser cette organisation.",
+      "success": {
+        "title": "Succès",
+        "approved": "Le statut de vérification de l’organisation a été approuvé.",
+        "denied": "Le statut de vérification de l’organisation a été refusé."
+      },
+      "errors": {
+        "title": "Erreur",
+        "approveFailed": "Échec de l’approbation du statut de vérification de l’organisation.",
+        "denyFailed": "Échec du refus du statut de vérification de l’organisation."
+      }
+    },
+    "metricsPage": {
+      "title": "Métriques admin",
+      "empty": "Aucune donnée",
+      "loading": "Chargement des métriques...",
+      "errors": {
+        "loadFailed": "Impossible de charger les métriques"
+      },
+      "cards": {
+        "totalRevenue": "Revenus totaux de la plateforme",
+        "totalRevenueDesc": "Agrégés à partir des paiements complétés",
+        "totalOrganizations": "Nombre total d’organisations",
+        "totalOrganizationsDesc": "Organisations actives + approuvées",
+        "totalMediaListings": "Nombre total de médias actifs",
+        "totalMediaListingsDesc": "Tous les médias actifs sur la plateforme",
+        "totalUsers": "Nombre total d’utilisateurs",
+        "totalUsersDesc": "Utilisateurs distincts connus",
+        "mediaOwners": "Propriétaires de médias",
+        "mediaOwnersDesc": "Utilisateurs avec le rôle propriétaire de médias",
+        "advertisers": "Annonceurs",
+        "advertisersDesc": "Utilisateurs avec le rôle annonceur"
+      },
+      "chart": {
+        "title": "Répartition des rôles des utilisateurs",
+        "subtitle": "Propriétaires de médias vs Annonceurs",
+        "noData": "Aucune donnée",
+        "noDataLabel": "Aucune\ndonnée",
+        "users": "Utilisateurs",
+        "mediaOwners": "Propriétaires de médias",
+        "advertisers": "Annonceurs",
+        "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme.",
+        "ariaLabel": "Graphique de répartition des rôles des utilisateurs montrant {total} utilisateurs au total, avec {mediaOwners} propriétaires de médias et {advertisers} annonceurs."
+      }
+    }
+  },
+  "reserveModal": {
+    "title": "Réserver : {title}",
+    "reservation": "Réservation",
+    "dates": "Sélectionner des dates",
+    "checkout": "Vérification",
+    "payment": "Paiement",
+    "selectCampaign": "Sélectionner une campagne",
+    "chooseCampaign": "Choisissez une de vos campagnes",
+    "selectStartDateNote": "Sélectionnez une date de début. Les dates de fin sont limitées aux mêmes jours de la semaine.",
+    "endDateWeekday": "La date de fin doit être le même jour de la semaine que la date de début.",
+    "processingPayment": "Traitement de votre paiement...",
+    "pleaseWait": "Veuillez patienter pendant que nous finalisons votre réservation",
+    "errors": {
+      "selectCampaign": "Veuillez sélectionner une campagne pour continuer",
+      "selectDate": "Veuillez sélectionner une date de début et de fin valides",
+      "missingPaymentInfo": "Informations de paiement requises manquantes",
+      "reservationFailed": "Échec de la réservation. Veuillez réessayer plus tard.",
+      "paymentRequired": "Le paiement doit être complété en premier",
+      "reservationConflict": "Une réservation pour {campaignName} existe déjà durant cette période ({startDate} - {endDate}). Choisissez d'autres dates."
+    },
+    "errorTitle": "Erreur de réservation",
+    "missingPermissionErrorMessage": "Permission manquante pour réserver ce média.",
+    "campaignNotFoundErrorMessage": "Campagne introuvable.",
+    "mediaIdMissing": "L'identifiant du média est manquant.",
+    "successTitle": "Réservation réussie !",
+    "successMessage": "Réservation confirmée !",
+    "successMessageLong": "Votre créneau publicitaire a été réservé avec succès. Vous pouvez le consulter dans votre calendrier.",
+    "duplicateTitle": "Doublon",
+    "duplicateMessage": "Réservé déjà pour ces dates.",
+    "failedReserve": "Échec de la réservation.",
+    "networkError": "Erreur réseau.",
+    "doneButton": "Terminé",
+    "cancelButton": "Annuler",
+    "backButton": "Retour",
+    "nextStepButton": "Étape suivante",
+    "confirmPayButton": "Confirmer & Payer",
+    "reviewTitle": "Vérifier la réservation",
+    "confirmButton": "Confirmer la réservation",
+    "dateSelection": {
+      "selected": "Sélectionné : {start} à {end} ({weeks, plural, one {# semaine} other {# semaines}})"
+    },
+    "labels": {
+      "media": "Média",
+      "campaign": "Campagne",
+      "dates": "Dates",
+      "totalCost": "Coût total"
+    }
+  },
+  "paymentForm": {
+    "enterPaymentDetails": "Entrer les détails de paiement",
+    "total": "Total : {amount}",
+    "payButton": "Payer {amount}",
+    "back": "Retour",
+    "paymentFailed": "Paiement échoué",
+    "paymentError": "Une erreur s'est produite lors du paiement",
+    "unexpectedError": "Une erreur inattendue s'est produite"
+  },
+  "stripe": {
+    "title": "Compte Stripe",
+    "errors": {
+      "noBusiness": "Aucune entreprise trouvée pour votre utilisateur.",
+      "fetchFailed": "Échec de la récupération du statut du compte Stripe.",
+      "connectFailed": "Échec de l'initialisation de la connexion Stripe."
+    },
+    "noStatus": "Impossible de récupérer le statut du compte Stripe.",
+    "status": {
+      "connected": {
+        "title": "Compte Stripe connecté",
+        "description": "Votre compte est entièrement configuré et prêt à recevoir les paiements des annonceurs.",
+        "accountId": "Votre identifiant de compte Stripe"
+      },
+      "incomplete": {
+        "title": "Terminez la configuration de vos paiements",
+        "description": "Pour afficher des médias et recevoir des paiements, vous devez terminer la configuration de votre compte Stripe.",
+        "checks": {
+          "onboarding": "Processus d'intégration",
+          "charges": "Peut accepter les paiements",
+          "payouts": "Peut recevoir des paiements"
+        }
+      }
+    },
+    "buttons": {
+      "connect": "Se connecter avec Stripe",
+      "continueOnboarding": "Continuer l'intégration"
+    },
+    "notifications": {
+      "success": {
+        "title": "Intégration terminée !",
+        "message": "Votre compte est prêt. Nous confirmons juste les derniers détails avec Stripe."
+      },
+      "refresh": {
+        "title": "Session d'intégration expirée",
+        "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
+      }
+    }
+  },
+  "stripeOnboarding": {
+    "title": "Connecter votre compte de paiement",
+    "description": "Configurez votre compte Stripe pour recevoir des paiements des annonceurs.",
+    "setupTitle": "Connecter un compte Stripe",
+    "setupDescription": "Vous devez connecter un compte Stripe pour recevoir des paiements lorsque les annonceurs réservent vos médias.",
+    "requiredTitle": "Requis pour recevoir des paiements",
+    "requiredMessage": "Sans un compte Stripe connecté, les annonceurs ne peuvent pas réserver vos médias.",
+    "whatYouNeed": "Ce dont vous aurez besoin :",
+    "requirement1": "Informations sur l'entreprise (nom légal, adresse)",
+    "requirement2": "Coordonnées bancaires pour les paiements",
+    "requirement3": "Numéro d'identification fiscale",
+    "requirement4": "Pièce d'identité personnelle (pour vérification)",
+    "connectStripe": "Connecter le compte Stripe",
+    "continueOnboarding": "Continuer l'intégration",
+    "securityNote": "Vos informations sont transmises en toute sécurité à Stripe et ne sont jamais stockées sur nos serveurs.",
+    "connectedTitle": "Compte de paiement connecté",
+    "connectedMessage": "Votre compte Stripe est entièrement configuré et prêt à recevoir des paiements !",
+    "statusTitle": "État du compte",
+    "onboardingStatus": "Intégration",
+    "chargesStatus": "Accepter les paiements",
+    "payoutsStatus": "Recevoir les paiements",
+    "complete": "Terminé",
+    "incomplete": "Incomplet",
+    "enabled": "Activé",
+    "disabled": "Désactivé",
+    "checkingStatus": "Vérification de l'état du compte...",
+    "errorTitle": "Erreur de connexion",
+    "connectionError": "Échec de la connexion au compte Stripe. Veuillez réessayer."
+  },
+  "mediaLocations": {
+    "page": {
+      "title": "Mes Médias",
+      "createButton": "Créer un emplacement"
+    },
+    "table": {
+      "noLocations": "Aucun emplacement trouvé. Créez-en un pour commencer !",
+      "addMedia": "Ajouter un média",
+      "assignMedia": "Attribuer un média",
+      "assignedMedia": "Médias attribués",
+      "mediaTitle": "Titre",
+      "mediaType": "Type",
+      "resolution": "Résolution",
+      "noAssignedMedia": "Aucun média attribué pour le moment.",
+      "edit": "Modifier"
+    },
+    "notifications": {
+      "loadFailed": {
+        "title": "Échec du chargement",
+        "message": "Impossible de charger les emplacements médias."
+      },
+      "create": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média créé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création de l'emplacement média.",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
+        }
+      },
+      "createMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le média a été créé et assigné à cet emplacement avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la création du média."
+        }
+      },
+      "delete": {
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement média supprimé avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la suppression de l'emplacement média.",
+          "activeMedia": "Impossible de supprimer cet emplacement car des médias actifs, en attente ou rejetés y sont attribués. Veuillez d'abord supprimer les médias."
+        }
+      },
+      "loadMedia": {
+        "error": {
+          "message": "Échec du chargement des détails du média."
+        }
+      },
+      "updateMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du média."
+        }
+      },
+      "deleteMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Média supprimé avec succès."
+        },
+        "error": {
+          "message": "Échec de la suppression du média."
+        }
+      },
+      "statusMedia": {
+        "success": {
+          "title": "Succès",
+          "message": "Le statut du média a été mis à jour avec succès."
+        },
+        "error": {
+          "message": "Échec de la mise à jour du statut du média."
+        }
+      },
+      "unassign": {
+        "success": {
+          "title": "Succès",
+          "message": "Média désassigné avec succès."
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la désassignation du média de l'emplacement."
+        }
+      }
+    },
+    "modals": {
+      "edit": {
+        "title": "Modifier l'emplacement média",
+        "fields": {
+          "name": "Nom",
+          "street": "Rue",
+          "city": "Ville",
+          "province": "Province/État",
+          "country": "Pays",
+          "postalCode": "Code Postal",
+          "latitude": "Latitude",
+          "longitude": "Longitude"
+        },
+        "placeholders": {
+          "name": "Ex. Panneaux Centre-ville",
+          "street": "123 Rue Principale",
+          "city": "Montréal",
+          "province": "QC",
+          "country": "Canada",
+          "postalCode": "H1A 1A1"
+        },
+        "validation": {
+          "name": "Le nom est trop court",
+          "latitude": "Latitude invalide",
+          "longitude": "Longitude invalide",
+          "nameRequired": "Le nom est requis",
+          "streetRequired": "La rue est requise",
+          "cityRequired": "La ville est requise",
+          "provinceRequired": "La province/l'état est requis(e)",
+          "countryRequired": "Le pays est requis",
+          "postalCodeRequired": "Le code postal est requis",
+          "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+          "cityInvalidServer": "Veuillez vérifier la ville.",
+          "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+          "countryInvalidServer": "Veuillez vérifier le pays.",
+          "postalCodeInvalidServer": "Veuillez vérifier le code postal."
+        },
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer"
+        },
+        "success": {
+          "title": "Succès",
+          "message": "Emplacement mis à jour avec succès"
+        },
+        "error": {
+          "title": "Erreur",
+          "message": "Échec de la mise à jour de l'emplacement",
+          "addressGuidance": "Veuillez vérifier la rue, la ville, la province/état, le pays et le code postal."
+        }
+      }
+    },
+    "confirmations": {
+      "delete": {
+        "title": "Supprimer l'emplacement",
+        "message": "Êtes-vous sûr de vouloir supprimer cet emplacement ?",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      },
+      "unassign": {
+        "title": "Désassigner le média",
+        "message": "Êtes-vous sûr de vouloir désassigner ce média ? Le média lui-même ne sera pas supprimé.",
+        "confirm": "Désassigner",
+        "cancel": "Annuler"
+      }
+    }
+  },
+  "CreateMediaLocationModal": {
+    "title": "Créer un emplacement média",
+    "validation": {
+      "nameTooShort": "Le nom est trop court",
+      "required": "Requis",
+      "nameRequired": "Le nom est requis",
+      "streetRequired": "La rue est requise",
+      "cityRequired": "La ville est requise",
+      "provinceRequired": "La province/l'état est requis(e)",
+      "countryRequired": "Le pays est requis",
+      "postalCodeRequired": "Le code postal est requis",
+      "streetInvalidServer": "Veuillez vérifier le nom ou le numéro de rue.",
+      "cityInvalidServer": "Veuillez vérifier la ville.",
+      "provinceInvalidServer": "Veuillez vérifier la province/l'état.",
+      "countryInvalidServer": "Veuillez vérifier le pays.",
+      "postalCodeInvalidServer": "Veuillez vérifier le code postal."
+    },
+    "labels": {
+      "name": "Nom",
+      "street": "Rue",
+      "city": "Ville",
+      "province": "Province/État",
+      "country": "Pays",
+      "postalCode": "Code Postal",
+      "latitude": "Latitude",
+      "longitude": "Longitude"
+    },
+    "placeholders": {
+      "name": "Ex. Panneaux Centre-ville",
+      "street": "123 Rue Principale",
+      "city": "Montréal",
+      "province": "QC",
+      "country": "Canada",
+      "postalCode": "H1A 1A1"
+    },
+    "buttons": {
+      "cancel": "Annuler",
+      "create": "Créer"
+    }
   }
-
+}

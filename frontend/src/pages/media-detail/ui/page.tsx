@@ -120,7 +120,7 @@ export default function MediaDetailsPage() {
           </MediaDetails>
           <Container w="100%" p="0">
             {
-              media && 
+              media &&
               (isMobile ?
               <MediaCardStackLoader id="other-media-by-organization-list" title={t("otherMediaBy") + media.businessName} filteredMediaProps={filteredOrgMediaProps}/>
               :
@@ -128,7 +128,7 @@ export default function MediaDetailsPage() {
             }
           </Container>
         </Stack>
-        
+
         {media && (
           <ReserveMediaModal
             opened={reserveModalOpen}

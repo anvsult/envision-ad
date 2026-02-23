@@ -105,7 +105,7 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
     function handleApply() {
         setMinPrice(draftMin);
         setMaxPrice(draftMax);
-    };
+    }
 
     return(
         <FilterPopover id={id} buttonName={t('price')} applyActions={handleApply}>
@@ -139,7 +139,7 @@ export function FilterValuePopover({id, value, setValue, label, placeholder, pre
 
     function handleApply() {
         setValue(draftValue);
-    };
+    }
 
     return(
         <FilterPopover id={id} buttonName={label} applyActions={handleApply}>

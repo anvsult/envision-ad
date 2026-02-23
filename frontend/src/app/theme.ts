@@ -47,6 +47,18 @@ export const theme = createTheme({
         '#0ca678',
         '#099268',
         '#087f5b',
+    ],
+    red: [
+        '#fff5f5',
+        '#ffe3e3',
+        '#ffc9c9',
+        '#ffa8a8',
+        '#ff8787',
+        '#ff6b6b',
+        '#be0000',
+        '#f03e3e',
+        '#e03131',
+        '#c92a2a',
     ]
   },
   fontFamily: 'var(--font-lato), Lato, sans-serif', // for all regular text

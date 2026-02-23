@@ -213,7 +213,7 @@ export default function AdCampaigns() {
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
-                <Title order={2}>{t('page.title')}</Title>
+                <Title order={1}>{t('page.title')}</Title>
                 <Button onClick={() => setIsCreateCampaignOpen(true)}>
                     {t('page.createButton')}
                 </Button>
