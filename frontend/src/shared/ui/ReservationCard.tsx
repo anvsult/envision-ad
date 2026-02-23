@@ -98,47 +98,60 @@ function ReservationCard({
     const [loading, setLoading] = useState(true);
     const [reasonOpened, setReasonOpened] = useState(false);
     const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
+    const [hasBeenProcessed, setHasBeenProcessed] = useState(false);
     const [isTranslating, setIsTranslating] = useState(false);
     const [showOriginal, setShowOriginal] = useState(false);
 
     useEffect(() => {
+        let isMounted = true;
+
         const fetchMedia = async () => {
             try {
                 const mediaData = await getMediaById(reservation.mediaId);
-                setMedia(mediaData);
+                if (isMounted) setMedia(mediaData);
             } catch (error) {
                 console.error("Failed to load media:", error);
             } finally {
-                setLoading(false);
+                if (isMounted) setLoading(false);
             }
         };
 
         fetchMedia();
+
+        return () => {
+            isMounted = false;
+        };
     }, [reservation.mediaId]);
 
-    // Translate description when popover opens
     useEffect(() => {
-        if (reasonOpened &&
-            reservation.denialDetails?.description &&
-            !translatedDescription &&
-            !isTranslating) {
+        if (!reasonOpened ||
+            !reservation.denialDetails?.description ||
+            hasBeenProcessed) return;
 
-            setIsTranslating(true);
+        let isMounted = true;
 
-            // Client-side translation
-            translate(reservation.denialDetails.description, { to: locale })
-                .then(translated => {
-                    setTranslatedDescription(translated);
-                })
-                .catch(error => {
-                    console.error('Translation error:', error);
-                    setTranslatedDescription(reservation.denialDetails?.description || '');
-                })
-                .finally(() => {
-                    setIsTranslating(false);
-                });
-        }
-    }, [reasonOpened, reservation.denialDetails?.description, translatedDescription, locale, isTranslating]);
+        setHasBeenProcessed(true);
+        setIsTranslating(true);
+
+        translate(reservation.denialDetails.description, { from: locale === 'fr' ? 'en' : 'fr', to: locale })
+            .then(translated => {
+                if (!isMounted) return;
+                setTranslatedDescription(translated);
+            })
+            .catch(error => {
+                console.error('Translation error:', error);
+                if (!isMounted) return;
+                setTranslatedDescription(reservation.denialDetails?.description || '');
+            })
+            .finally(() => {
+                if (!isMounted) return;
+                setIsTranslating(false);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [reasonOpened, reservation.denialDetails?.description, hasBeenProcessed, locale]);
 
     const handleCardClick = () => {
         if (viewType === "media-owner") {
@@ -154,6 +167,8 @@ function ReservationCard({
     const displayedDescription = showOriginal
         ? reservation.denialDetails?.description
         : translatedDescription || reservation.denialDetails?.description;
+
+    const toggleLabel = showOriginal ? t("showTranslation") : t("showOriginal");
 
     return (
         <Card
@@ -256,14 +271,12 @@ function ReservationCard({
                                                 {t("denialDetailsLabel")}
                                             </Text>
                                             {translatedDescription && translatedDescription !== reservation.denialDetails.description && (
-                                                <Tooltip
-                                                    label={showOriginal ? t("showTranslation") : t("showOriginal")}
-                                                    position="top"
-                                                >
+                                                <Tooltip label={toggleLabel} position="top">
                                                     <ActionIcon
                                                         size="sm"
                                                         variant="subtle"
                                                         color="gray"
+                                                        aria-label={toggleLabel}
                                                         onClick={() => setShowOriginal(!showOriginal)}
                                                     >
                                                         <IconLanguage size={16} />
