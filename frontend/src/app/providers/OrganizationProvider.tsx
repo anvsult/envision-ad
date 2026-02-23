@@ -2,11 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import {getEmployeeOrganization} from "@/features/organization-management/api";
-import {OrganizationResponseDTO} from "@/entities/organization";
-import { useRouter} from "next/navigation";
-import { useLocale } from "next-intl";
-import {usePermissions} from "@/app/providers/PermissionProvider";
+import { getEmployeeOrganization } from "@/features/organization-management/api";
+import { OrganizationResponseDTO } from "@/entities/organization";
+import { useRouter } from "@/shared/lib/i18n/navigation"; // ← shared next-intl router
+import { usePermissions } from "@/app/providers/PermissionProvider";
 
 interface OrganizationContextType {
     organization: OrganizationResponseDTO | null;
@@ -20,9 +19,8 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
     const [organization, setOrganization] = useState<OrganizationResponseDTO | null>(null);
     const [loading, setLoading] = useState(true);
     const { user, isLoading } = useUser();
-    const { permissions, loading: permissionsLoading} = usePermissions();
+    const { permissions, loading: permissionsLoading } = usePermissions();
     const router = useRouter();
-    const locale = useLocale();
 
     const fetchOrganization = useCallback(async () => {
         if (!user || permissionsLoading || (
@@ -35,8 +33,6 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
             return;
         }
 
-        console.log(permissions);
-
         try {
             const business = await getEmployeeOrganization(user.sub);
             setOrganization(business);
@@ -44,7 +40,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
             const status = (error as { response?: { status?: number } })?.response?.status;
             if (status === 404) {
                 setOrganization(null);
-                router.push(`/${locale}/dashboard`);
+                router.push('/dashboard');
             } else {
                 console.error('Failed to fetch organization:', error);
                 setOrganization(null);
@@ -52,7 +48,7 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false);
         }
-    }, [user, permissions, permissionsLoading, router, locale]);
+    }, [user, permissions, permissionsLoading, router]);
 
     const refreshOrganization = useCallback(async () => {
         if (!user) return;

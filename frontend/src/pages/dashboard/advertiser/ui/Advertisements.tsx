@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Stack, Title, Group, Text, SegmentedControl } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { useTranslations } from "next-intl";
@@ -21,8 +21,9 @@ export default function Advertisements() {
     const [statusFilter, setStatusFilter] = useState<string>("approved");
 
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-    const [selectedReservation, setSelectedReservation] =
-        useState<ReservationResponseDTO | null>(null);
+    const [selectedReservation, setSelectedReservation] = useState<ReservationResponseDTO | null>(null);
+
+    const ignoredRef = useRef(false);
 
     const loadReservations = useCallback(async () => {
         if (!organization) return;
@@ -30,44 +31,31 @@ export default function Advertisements() {
             const data = await getAllReservationByAdvertiserBusinessId(
                 organization.businessId
             );
-            setReservations(data);
+            if (!ignoredRef.current) setReservations(data);
         } catch (error) {
-            console.error("Failed to load reservations", error);
-            notifications.show({
-                title: t("notifications.loadFailed.title"),
-                message: t("notifications.loadFailed.message"),
-                color: "red",
-            });
+            if (!ignoredRef.current) {
+                console.error("Failed to load reservations", error);
+                notifications.show({
+                    title: t("notifications.loadFailed.title"),
+                    message: t("notifications.loadFailed.message"),
+                    color: "red",
+                });
+            }
         }
     }, [organization, t]);
 
     useEffect(() => {
         if (!organization) return;
 
-        let ignored = false;
+        ignoredRef.current = false;
 
-        const fetchReservations = async () => {
-            try {
-                const data = await getAllReservationByAdvertiserBusinessId(
-                    organization.businessId
-                );
-                if (!ignored) setReservations(data);
-            } catch (error) {
-                if (!ignored) {
-                    console.error("Failed to load reservations", error);
-                    notifications.show({
-                        title: t("notifications.loadFailed.title"),
-                        message: t("notifications.loadFailed.message"),
-                        color: "red",
-                    });
-                }
-            }
+        const fetchOnMount = async () => {
+            await loadReservations();
         };
+        void fetchOnMount();
 
-        void fetchReservations();
-
-        return () => { ignored = true; };
-    }, [organization, t]);
+        return () => { ignoredRef.current = true; };
+    }, [organization, loadReservations]);
 
     const handlePayClick = (reservation: ReservationResponseDTO) => {
         setSelectedReservation(reservation);

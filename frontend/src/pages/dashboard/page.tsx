@@ -5,7 +5,7 @@ import {
     Center, Stack, Title, Text, Button, Group, Loader,
     ThemeIcon, Badge, Divider, Paper, Box, Alert, SimpleGrid,
 } from "@mantine/core";
-import {useLocale, useTranslations} from "next-intl";
+import { useTranslations } from "next-intl";
 import { useMediaQuery } from "@mantine/hooks";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { notifications } from "@mantine/notifications";
@@ -23,7 +23,7 @@ import { getAllMediaLocations } from "@/features/media-location-management/api";
 import { getAllAdCampaigns } from "@/features/ad-campaign-management/api";
 import { getAllReservationByAdvertiserBusinessId } from "@/features/reservation-management/api";
 import { ReservationStatus } from "@/entities/reservation";
-import {useRouter} from "next/navigation";
+import { useRouter, Link } from "@/shared/lib/i18n/navigation";
 
 interface StripeStatus {
     connected: boolean;
@@ -51,7 +51,6 @@ export default function OnboardingPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const isMobile = useMediaQuery("(max-width: 48em)") ?? false;
     const router = useRouter();
-    const locale = useLocale();
 
     const [stripeStatus, setStripeStatus] = useState<StripeStatus | null>(null);
     const [isStripeLoading, setIsStripeLoading] = useState(false);
@@ -66,12 +65,11 @@ export default function OnboardingPage() {
         permissions.includes('readAll:verification') &&
         permissions.includes('update:verification');
 
-
     useEffect(() => {
         if (isAdmin) {
-            router.push(`/${locale}/dashboard/admin/metrics`);
+            router.push('/dashboard/admin/metrics');
         }
-    }, [isAdmin, locale, router]);
+    }, [isAdmin, router]);
 
     const fetchStripeStatus = useCallback(async () => {
         if (!organization || !isMediaOwner) return;
@@ -147,6 +145,7 @@ export default function OnboardingPage() {
             })
             .catch((e) => console.error("Failed to fetch reservations", e));
     }, [organization, isAdvertiser]);
+
     const hasOrganization = !!organization;
 
     const stepCompletionMap: Record<StepKey, boolean> = {
@@ -264,7 +263,7 @@ export default function OnboardingPage() {
             <Stack gap="sm">
                 <Text fw={500}>{t("actions.media.prompt")}</Text>
                 <Text size="sm" c="dimmed">{t("actions.media.hint")}</Text>
-                <Button fullWidth component="a" href="/dashboard/media-owner/locations">
+                <Button fullWidth component={Link} href="/dashboard/media-owner/locations">
                     {t("actions.media.cta")}
                 </Button>
             </Stack>
@@ -273,7 +272,7 @@ export default function OnboardingPage() {
             <Stack gap="sm">
                 <Text fw={500}>{t("actions.campaign.prompt")}</Text>
                 <Text size="sm" c="dimmed">{t("actions.campaign.hint")}</Text>
-                <Button fullWidth component="a" href="/dashboard/advertiser/campaigns">
+                <Button fullWidth component={Link} href="/dashboard/advertiser/campaigns">
                     {t("actions.campaign.cta")}
                 </Button>
             </Stack>
@@ -282,7 +281,7 @@ export default function OnboardingPage() {
             <Stack gap="sm">
                 <Text fw={500}>{t("actions.reservation.prompt")}</Text>
                 <Text size="sm" c="dimmed">{t("actions.reservation.hint")}</Text>
-                <Button fullWidth component="a" href="/browse">
+                <Button fullWidth component={Link} href="/browse">
                     {t("actions.reservation.cta")}
                 </Button>
             </Stack>
