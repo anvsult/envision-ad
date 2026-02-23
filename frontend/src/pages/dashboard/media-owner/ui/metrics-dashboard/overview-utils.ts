@@ -61,11 +61,17 @@ export const resolveDateRange = (
         return [0, nowMs];
     }
     if (period === "yearly") {
-        const start = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+        const targetYear = now.getFullYear() - 1;
+        const targetMonth = now.getMonth();
+        const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const start = new Date(targetYear, targetMonth, Math.min(now.getDate(), daysInTargetMonth));
         return [start.getTime(), nowMs];
     }
     if (period === "monthly") {
-        const start = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+        const targetYear = now.getFullYear();
+        const targetMonth = now.getMonth() - 1;
+        const daysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+        const start = new Date(targetYear, targetMonth, Math.min(now.getDate(), daysInTargetMonth));
         return [start.getTime(), nowMs];
     }
     if (period === "custom") {

@@ -166,6 +166,7 @@ export default function AdminMediaReviewPage() {
                 radius="xl"
                 fullWidth
                 type="button"
+                aria-label="Approve"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
                   e.preventDefault();
@@ -182,6 +183,7 @@ export default function AdminMediaReviewPage() {
                 color="red"
                 variant="outline"
                 type="button"
+                aria-label="Deny"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={(e) => {
                   e.preventDefault();
@@ -192,7 +194,6 @@ export default function AdminMediaReviewPage() {
               {t1("deny")}
             </Button>
           </MediaDetails>
-              
         </Container>
 
         <Modal
@@ -221,6 +222,7 @@ export default function AdminMediaReviewPage() {
                       type="button"
                       disabled={submitting}
                       onClick={closeConfirm}
+                      aria-label="Close"
                   >
                     {t2("cancel")}
                   </Button>
@@ -230,6 +232,7 @@ export default function AdminMediaReviewPage() {
                       loading={submitting}
                       color={confirmAction === "approve" ? "blue" : "red"}
                       onClick={handleConfirm}
+                      aria-label="Confirm"
                   >
                     {confirmAction === "approve"
                         ? t1("approveMedia")

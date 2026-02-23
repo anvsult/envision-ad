@@ -107,6 +107,7 @@ export default function MediaDetailsPage() {
                   radius="xl"
                   fullWidth
                   onClick={() => setReserveModalOpen(true)}
+                  aria-label="Create Reservation"
                   disabled={!user.user || !permissions.includes("create:reservation")}
                 >
                   {t("reserveButton")}

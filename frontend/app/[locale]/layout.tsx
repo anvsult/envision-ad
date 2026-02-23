@@ -13,8 +13,8 @@ import {Header} from "@/widgets/Header/Header";
 import {ModalsProvider} from "@mantine/modals";
 import {auth0} from "@/shared/api/auth0/auth0";
 import {Auth0Provider} from "@auth0/nextjs-auth0";
+import {OrganizationProvider, PermissionsProvider} from "@/app/providers";
 import {Metadata, Viewport} from "next";
-import {PermissionsProvider} from "@/app/providers";
 
 export const viewport: Viewport = {
     width: "device-width",
@@ -60,18 +60,22 @@ export default async function RootLayout({
                 {/* The title is handled by Next.js*/}
                 <ColorSchemeScript defaultColorScheme="light"/>
             </head>
-            <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+            <body style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
             <NextIntlClientProvider messages={messages} locale={locale}>
                 <Auth0Provider user={user}>
                     <PermissionsProvider>
-                        <MantineProvider theme={theme}>
-                            <ModalsProvider>
-                                <Notifications />
-                                <Header />
-                                {children}
-                                <Footer />
-                            </ModalsProvider>
-                        </MantineProvider>
+                        <OrganizationProvider>
+                            <MantineProvider theme={theme}>
+                                <ModalsProvider>
+                                    <Notifications/>
+                                    <Header/>
+                                    <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
+                                        {children}
+                                        <Footer/>
+                                    </div>
+                                </ModalsProvider>
+                            </MantineProvider>
+                        </OrganizationProvider>
                     </PermissionsProvider>
                 </Auth0Provider>
             </NextIntlClientProvider>

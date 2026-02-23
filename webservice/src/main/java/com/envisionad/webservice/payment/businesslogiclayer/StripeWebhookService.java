@@ -266,7 +266,7 @@ public class StripeWebhookService {
         List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
         List<String> mediaOwnerEmailAddresses = mediaOwners.stream()
                 .map(Employee::getUserId)
-                .filter(uid -> uid != null && !uid.isEmpty())
+                .filter(uid -> uid != null && !uid.isBlank())
                 .distinct()
                 .map(uid -> {
                     try {

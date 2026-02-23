@@ -59,6 +59,7 @@ export default function BrowseActions({filters,  setSortBy, sortSelectValue, isM
                     {(!isMobile && !mapVisible) && <Text>{t('sort.actionName')}</Text>}
                     <Select
                         id="SortSelect"
+                        aria-label="Sort Selection"
                         data={sortSelectData}
                         value={sortSelectValue}
                         defaultValue={SpecialSort.nearest}

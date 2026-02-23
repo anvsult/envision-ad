@@ -17,7 +17,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.Instant;
 import java.util.Map;
 
@@ -34,21 +36,31 @@ class Auth0ServiceUnitTest {
     @InjectMocks
     private Auth0Service auth0Service;
 
-    private static final String ISSUER       = "https://dev-test.auth0.com/";
-    private static final String CLIENT_ID    = "test-client-id";
+    private static final String BASE_URL      = "https://dev-test.auth0.com/";
+    private static final String CLIENT_ID     = "test-client-id";
     private static final String CLIENT_SECRET = "test-client-secret";
-    private static final String AUDIENCE     = "https://dev-test.auth0.com/api/v2/";
-    private static final String TOKEN_URL    = ISSUER + "oauth/token";
-    private static final String VALID_TOKEN  = "mocked-management-token";
-    private static final String USER_ID      = "auth0|abc123";
-    private static final String USER_EMAIL   = "advertiser@example.com";
+    private static final String AUDIENCE      = "https://dev-test.auth0.com/api/v2/";
+    private static final String TOKEN_URL     = BASE_URL + "oauth/token";
+    private static final String VALID_TOKEN   = "mocked-management-token";
+    private static final String USER_ID       = "auth0|abc123";
+    private static final String USER_EMAIL    = "advertiser@example.com";
+
+    /** The URI that Auth0Service actually builds via UriComponentsBuilder.pathSegment(). */
+    private static URI userUri(String userId) {
+        return UriComponentsBuilder
+                .fromUriString(BASE_URL)
+                .pathSegment("api", "v2", "users", userId)
+                .build()
+                .toUri();
+    }
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(auth0Service, "issuer",               ISSUER);
-        ReflectionTestUtils.setField(auth0Service, "managementClientId",   CLIENT_ID);
+        ReflectionTestUtils.setField(auth0Service, "managementTokenUrl",    TOKEN_URL);
+        ReflectionTestUtils.setField(auth0Service, "managementBaseUrl",     BASE_URL);
+        ReflectionTestUtils.setField(auth0Service, "managementClientId",    CLIENT_ID);
         ReflectionTestUtils.setField(auth0Service, "managementClientSecret", CLIENT_SECRET);
-        ReflectionTestUtils.setField(auth0Service, "managementAudience",   AUDIENCE);
+        ReflectionTestUtils.setField(auth0Service, "managementAudience",    AUDIENCE);
         // Clear the cached token between tests so each test starts fresh
         ReflectionTestUtils.setField(auth0Service, "cachedToken",
                 new java.util.concurrent.atomic.AtomicReference<>());
@@ -58,8 +70,8 @@ class Auth0ServiceUnitTest {
     // Helper stubs
     // -------------------------------------------------------------------------
 
-    private void stubTokenEndpoint(String token) {
-        Map<String, Object> tokenBody = Map.of("access_token", token);
+    private void stubTokenEndpoint() {
+        Map<String, Object> tokenBody = Map.of("access_token", Auth0ServiceUnitTest.VALID_TOKEN, "expires_in", 86400);
         when(restTemplate.exchange(
                 eq(TOKEN_URL),
                 eq(HttpMethod.POST),
@@ -68,10 +80,10 @@ class Auth0ServiceUnitTest {
         )).thenReturn(new ResponseEntity<>(tokenBody, HttpStatus.OK));
     }
 
-    private void stubUserEndpoint(String userId, String email) {
-        Map<String, Object> userBody = Map.of("email", email, "user_id", userId);
+    private void stubUserEndpoint() {
+        Map<String, Object> userBody = Map.of("email", Auth0ServiceUnitTest.USER_EMAIL, "user_id", Auth0ServiceUnitTest.USER_ID);
         when(restTemplate.exchange(
-                eq(ISSUER + "api/v2/users/" + userId),
+                eq(userUri(Auth0ServiceUnitTest.USER_ID)),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -85,8 +97,8 @@ class Auth0ServiceUnitTest {
     @Test
     void whenGetUserEmailByUserId_withValidUserId_thenReturnsEmail() {
         // Arrange
-        stubTokenEndpoint(VALID_TOKEN);
-        stubUserEndpoint(USER_ID, USER_EMAIL);
+        stubTokenEndpoint();
+        stubUserEndpoint();
 
         // Act
         String result = auth0Service.getUserEmailByUserId(USER_ID);
@@ -94,7 +106,7 @@ class Auth0ServiceUnitTest {
         // Assert
         assertEquals(USER_EMAIL, result);
         verify(restTemplate, times(1)).exchange(eq(TOKEN_URL), eq(HttpMethod.POST), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
-        verify(restTemplate, times(1)).exchange(eq(ISSUER + "api/v2/users/" + USER_ID), eq(HttpMethod.GET), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
+        verify(restTemplate, times(1)).exchange(eq(userUri(USER_ID)), eq(HttpMethod.GET), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
     }
 
     // =========================================================================
@@ -104,9 +116,9 @@ class Auth0ServiceUnitTest {
     @Test
     void whenGetUserEmailByUserId_andUserNotFound_thenThrowsAuth0UserNotFoundException() {
         // Arrange
-        stubTokenEndpoint(VALID_TOKEN);
+        stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(ISSUER + "api/v2/users/" + USER_ID),
+                eq(userUri(USER_ID)),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -121,15 +133,15 @@ class Auth0ServiceUnitTest {
     }
 
     // =========================================================================
-    // getUserEmailByUserId — 401 → Auth0ServiceUnavailableException
+    // getUserEmailByUserId — 401 → clears cache, retries, then throws
     // =========================================================================
 
     @Test
     void whenGetUserEmailByUserId_andUnauthorized_thenThrowsAuth0ServiceUnavailableException() {
-        // Arrange
-        stubTokenEndpoint(VALID_TOKEN);
+        // Arrange — first token fetch succeeds; both user-endpoint calls (initial + retry) get 401
+        stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(ISSUER + "api/v2/users/" + USER_ID),
+                eq(userUri(USER_ID)),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -141,7 +153,8 @@ class Auth0ServiceUnitTest {
                 () -> auth0Service.getUserEmailByUserId(USER_ID)
         );
         assertTrue(ex.getMessage().contains(USER_ID));
-        assertInstanceOf(HttpClientErrorException.class, ex.getCause());
+        // The retry path wraps the second RestClientException as the cause
+        assertNotNull(ex.getCause());
     }
 
     // =========================================================================
@@ -151,9 +164,9 @@ class Auth0ServiceUnitTest {
     @Test
     void whenGetUserEmailByUserId_andNetworkFailure_thenThrowsAuth0ServiceUnavailableException() {
         // Arrange
-        stubTokenEndpoint(VALID_TOKEN);
+        stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(ISSUER + "api/v2/users/" + USER_ID),
+                eq(userUri(USER_ID)),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -197,8 +210,8 @@ class Auth0ServiceUnitTest {
     @Test
     void whenGetUserEmailByUserId_calledMultipleTimes_thenTokenEndpointCalledOnlyOnce() {
         // Arrange
-        stubTokenEndpoint(VALID_TOKEN);
-        stubUserEndpoint(USER_ID, USER_EMAIL);
+        stubTokenEndpoint();
+        stubUserEndpoint();
 
         // Act
         auth0Service.getUserEmailByUserId(USER_ID);
@@ -213,7 +226,7 @@ class Auth0ServiceUnitTest {
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
         );
         verify(restTemplate, times(3)).exchange(
-                eq(ISSUER + "api/v2/users/" + USER_ID),
+                eq(userUri(USER_ID)),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -232,8 +245,8 @@ class Auth0ServiceUnitTest {
         );
         ReflectionTestUtils.setField(auth0Service, "cachedToken", expiredCache);
 
-        stubTokenEndpoint(VALID_TOKEN);
-        stubUserEndpoint(USER_ID, USER_EMAIL);
+        stubTokenEndpoint();
+        stubUserEndpoint();
 
         // Act
         String result = auth0Service.getUserEmailByUserId(USER_ID);
@@ -260,7 +273,7 @@ class Auth0ServiceUnitTest {
         );
         ReflectionTestUtils.setField(auth0Service, "cachedToken", validCache);
 
-        stubUserEndpoint(USER_ID, USER_EMAIL);
+        stubUserEndpoint();
 
         // Act
         String result = auth0Service.getUserEmailByUserId(USER_ID);
