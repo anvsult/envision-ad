@@ -46,7 +46,9 @@ auth0:
   management:
     client-id: ${AUTH0_MGMT_CLIENT_ID}
     client-secret: ${AUTH0_MGMT_CLIENT_SECRET}
-    audience: https://${AUTH0_DOMAIN}/api/v2/
+    audience: https://${AUTH0_MGMT_DOMAIN}/api/v2/
+    token-url: https://${AUTH0_MGMT_DOMAIN}/oauth/token
+    base-url: https://${AUTH0_MGMT_DOMAIN}/
 
 app:
   base:

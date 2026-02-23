@@ -29,9 +29,6 @@ public class Auth0Service {
 
     private final RestTemplate restTemplate;
 
-    @Value("${okta.oauth2.issuer}")
-    private String issuer;
-
     @Value("${auth0.management.client-id}")
     private String managementClientId;
 
@@ -40,6 +37,12 @@ public class Auth0Service {
 
     @Value("${auth0.management.audience}")
     private String managementAudience;
+
+    @Value("${auth0.management.token-url}")
+    private String managementTokenUrl;
+
+    @Value("${auth0.management.base-url}")
+    private String managementBaseUrl;
 
     /** Cached token entry: index 0 = access_token (String), index 1 = expiry (Instant). */
     private final AtomicReference<Object[]> cachedToken = new AtomicReference<>();
@@ -61,7 +64,7 @@ public class Auth0Service {
 
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    issuer + "api/v2/users/" + userId,
+                    managementBaseUrl + "api/v2/users/" + userId,
                     HttpMethod.GET,
                     entity,
                     getMapTypeRef()
@@ -95,7 +98,7 @@ public class Auth0Service {
 
         try {
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    issuer + "oauth/token",
+                    managementTokenUrl,
                     HttpMethod.POST,
                     request,
                     getMapTypeRef()

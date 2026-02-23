@@ -14,11 +14,6 @@ public class WebConfig implements WebMvcConfigurer {
 
     private final ApplicationProperties applicationProps;
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
     @Override
     public void addCorsMappings(final CorsRegistry registry) {
         registry.addMapping("/**")
@@ -26,5 +21,10 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders(HttpHeaders.AUTHORIZATION, HttpHeaders.CONTENT_TYPE)
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .maxAge(86400);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
