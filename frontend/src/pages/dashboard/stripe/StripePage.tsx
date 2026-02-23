@@ -1,24 +1,14 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import { useUser } from '@auth0/nextjs-auth0/client';
-import { getEmployeeOrganization } from '@/features/organization-management/api';
 import { getStripeAccountStatus, createStripeConnection } from '@/features/payment';
 import {
-    Title,
-    Paper,
-    Text,
-    Button,
-    Loader,
-    Alert,
-    Stack,
-    Group,
-    ThemeIcon,
-    rem
+    Title, Paper, Text, Button, Loader, Alert, Stack, Group, ThemeIcon, rem
 } from '@mantine/core';
 import { IconCheck, IconX, IconAlertTriangle } from '@tabler/icons-react';
 import { useTranslations } from "next-intl";
 import { useSearchParams } from 'next/navigation';
 import { notifications } from '@mantine/notifications';
+import { useOrganization } from "@/app/providers";
 
 interface StripeStatus {
     connected: boolean;
@@ -30,7 +20,7 @@ interface StripeStatus {
 
 export default function StripePage() {
     const t = useTranslations('stripe');
-    const { user, isLoading: isUserLoading } = useUser();
+    const { organization } = useOrganization();
     const searchParams = useSearchParams();
 
     const [status, setStatus] = useState<StripeStatus | null>(null);
@@ -39,28 +29,21 @@ export default function StripePage() {
     const [isConnecting, setIsConnecting] = useState(false);
 
     const fetchStatus = useCallback(async () => {
-        if (user?.sub) {
-            try {
-                setIsLoading(true);
-                const org = await getEmployeeOrganization(user.sub);
-                if (org && org.businessId) {
-                    const stripeStatus = await getStripeAccountStatus(org.businessId);
-                    setStatus(stripeStatus);
-                } else {
-                    setError(t('errors.noBusiness'));
-                }
-            } catch (e) {
-                console.error("Failed to fetch Stripe status", e);
-                const errorMessage = e instanceof Error ? e.message : t('errors.fetchFailed');
-                setError(errorMessage);
-            } finally {
-                setIsLoading(false);
-            }
+        if (!organization) return;
+        try {
+            setIsLoading(true);
+            const stripeStatus = await getStripeAccountStatus(organization.businessId);
+            setStatus(stripeStatus);
+        } catch (e) {
+            console.error("Failed to fetch Stripe status", e);
+            setError(e instanceof Error ? e.message : t('errors.fetchFailed'));
+        } finally {
+            setIsLoading(false);
         }
-    }, [user, t]);
+    }, [organization, t]);
 
     useEffect(() => {
-        if (!searchParams) return; // Add null check for searchParams
+        if (!searchParams) return;
 
         const onboardingStatus = searchParams.get('onboarding');
         if (onboardingStatus === 'success') {
@@ -70,11 +53,8 @@ export default function StripePage() {
                 color: 'teal',
                 icon: <IconCheck />,
             });
-            // Refetch status after a short delay to allow Stripe to update
-            const timer = setTimeout(() => {
-                void fetchStatus();
-            }, 2000);
-            return () => clearTimeout(timer); // Cleanup timer on unmount
+            const timer = setTimeout(() => { void fetchStatus(); }, 2000);
+            return () => clearTimeout(timer);
         } else if (onboardingStatus === 'refresh') {
             notifications.show({
                 title: t('notifications.refresh.title'),
@@ -83,59 +63,44 @@ export default function StripePage() {
             });
         }
     }, [searchParams, t, fetchStatus]);
-    
+
     useEffect(() => {
-        if (!isUserLoading) {
-            void fetchStatus();
-        }
-    }, [user, isUserLoading, fetchStatus]);
+        void fetchStatus();
+    }, [fetchStatus]);
 
     const handleConnect = async () => {
-        if (!user?.sub) return;
+        if (!organization) return;
 
         setIsConnecting(true);
         try {
-            const org = await getEmployeeOrganization(user.sub);
-            if (org && org.businessId) {
-                const response = await createStripeConnection(org.businessId);
-                if (response && response.onboardingUrl) {
-                    window.location.href = response.onboardingUrl;
-                } else {
-                    setError(t('errors.connectFailed'));
-                }
+            const response = await createStripeConnection(organization.businessId);
+            if (response?.onboardingUrl) {
+                window.location.href = response.onboardingUrl;
             } else {
-                setError(t('errors.noBusiness'));
+                setError(t('errors.connectFailed'));
             }
         } catch (e) {
             console.error("Failed to connect to Stripe", e);
-            let errorMessage = t('errors.connectFailed');
-
-            if (e && typeof e === 'object' && 'response' in e) {
-                const response = (e as { response?: { data?: { message?: string }}}).response;
-                errorMessage = response?.data?.message || errorMessage;
-            } else if (e instanceof Error) {
-                errorMessage = e.message;
-            }
-            
-            setError(errorMessage);
+            const apiMessage = (e as { response?: { data?: { message?: string } } })?.response?.data?.message;
+            setError(apiMessage || (e instanceof Error ? e.message : t('errors.connectFailed')));
         } finally {
             setIsConnecting(false);
         }
     };
-    
-    const StatusCheck = ({ label, checked }: { label: string, checked: boolean }) => (
+
+    const StatusCheck = ({ label, checked }: { label: string; checked: boolean }) => (
         <Group>
             <ThemeIcon color={checked ? 'teal' : 'red'} size={24} radius="xl">
-                {checked ? <IconCheck style={{ width: rem(16), height: rem(16) }} /> : <IconX style={{ width: rem(16), height: rem(16) }} />}
+                {checked
+                    ? <IconCheck style={{ width: rem(16), height: rem(16) }} />
+                    : <IconX style={{ width: rem(16), height: rem(16) }} />}
             </ThemeIcon>
             <Text>{label}</Text>
         </Group>
     );
 
     const renderStatus = () => {
-        if (!status) {
-            return <Text>{t('noStatus')}</Text>;
-        }
+        if (!status) return <Text>{t('noStatus')}</Text>;
 
         const isFullyOnboarded = status.connected && status.onboardingComplete && status.chargesEnabled && status.payoutsEnabled;
 
@@ -167,12 +132,10 @@ export default function StripePage() {
     return (
         <Stack gap="lg" p="md">
             <Title order={2}>{t('title')}</Title>
-            {isLoading || isUserLoading ? (
+            {isLoading ? (
                 <Loader />
             ) : error ? (
-                <Alert icon={<IconAlertTriangle size="1rem" />} title="Error" color="red">
-                    {error}
-                </Alert>
+                <Alert icon={<IconAlertTriangle size="1rem" />} title="Error" color="red">{error}</Alert>
             ) : (
                 renderStatus()
             )}
