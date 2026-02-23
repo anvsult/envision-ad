@@ -69,6 +69,7 @@ export function OrganizationDetailsModal({
             onClose={handleModalClose}
             title={t("verificationDetails")}
             size="lg"
+            closeButtonProps={{ "aria-label": t("close") }}
         >
             <Stack gap="md">
                 <Stack gap={4}>

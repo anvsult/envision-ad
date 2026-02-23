@@ -1135,6 +1135,7 @@
       "organization": "Organization",
       "requestDate": "Date Requested",
       "noOrganizationsPending": "No organizations pending verification status review.",
+      "close": "Close",
       "verificationDetails": "Verification Details",
       "approveConfirmMessage": "Are you sure you want to approve this organization?",
       "denyReason": "Denial Reason",
