@@ -46,10 +46,10 @@ class Auth0ServiceUnitTest {
     private static final String USER_EMAIL    = "advertiser@example.com";
 
     /** The URI that Auth0Service actually builds via UriComponentsBuilder.pathSegment(). */
-    private static URI userUri(String userId) {
+    private static URI userUri() {
         return UriComponentsBuilder
                 .fromUriString(BASE_URL)
-                .pathSegment("api", "v2", "users", userId)
+                .pathSegment("api", "v2", "users", Auth0ServiceUnitTest.USER_ID)
                 .build()
                 .toUri();
     }
@@ -83,7 +83,7 @@ class Auth0ServiceUnitTest {
     private void stubUserEndpoint() {
         Map<String, Object> userBody = Map.of("email", Auth0ServiceUnitTest.USER_EMAIL, "user_id", Auth0ServiceUnitTest.USER_ID);
         when(restTemplate.exchange(
-                eq(userUri(Auth0ServiceUnitTest.USER_ID)),
+                eq(userUri()),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -106,7 +106,7 @@ class Auth0ServiceUnitTest {
         // Assert
         assertEquals(USER_EMAIL, result);
         verify(restTemplate, times(1)).exchange(eq(TOKEN_URL), eq(HttpMethod.POST), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
-        verify(restTemplate, times(1)).exchange(eq(userUri(USER_ID)), eq(HttpMethod.GET), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
+        verify(restTemplate, times(1)).exchange(eq(userUri()), eq(HttpMethod.GET), any(), ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any());
     }
 
     // =========================================================================
@@ -118,7 +118,7 @@ class Auth0ServiceUnitTest {
         // Arrange
         stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(userUri(USER_ID)),
+                eq(userUri()),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -141,7 +141,7 @@ class Auth0ServiceUnitTest {
         // Arrange — first token fetch succeeds; both user-endpoint calls (initial + retry) get 401
         stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(userUri(USER_ID)),
+                eq(userUri()),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -166,7 +166,7 @@ class Auth0ServiceUnitTest {
         // Arrange
         stubTokenEndpoint();
         when(restTemplate.exchange(
-                eq(userUri(USER_ID)),
+                eq(userUri()),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -226,7 +226,7 @@ class Auth0ServiceUnitTest {
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
         );
         verify(restTemplate, times(3)).exchange(
-                eq(userUri(USER_ID)),
+                eq(userUri()),
                 eq(HttpMethod.GET),
                 any(),
                 ArgumentMatchers.<ParameterizedTypeReference<Map<String, Object>>>any()
@@ -238,11 +238,16 @@ class Auth0ServiceUnitTest {
     // =========================================================================
 
     @Test
-    void whenCachedTokenIsExpired_thenFetchesNewToken() {
-        // Arrange — pre-load an already-expired token into the cache
-        var expiredCache = new java.util.concurrent.atomic.AtomicReference<>(
-                new Object[]{"expired-token", Instant.now().minusSeconds(60)}
-        );
+    void whenCachedTokenIsExpired_thenFetchesNewToken() throws Exception {
+        // Arrange — pre-load an already-expired CachedToken into the cache
+        Class<?> cachedTokenClass = Class.forName(
+                "com.envisionad.webservice.config.Auth0Service$CachedToken");
+        java.lang.reflect.Constructor<?> ctor =
+                cachedTokenClass.getDeclaredConstructor(String.class, Instant.class);
+        ctor.setAccessible(true);
+        Object expiredToken = ctor.newInstance("expired-token", Instant.now().minusSeconds(60));
+
+        var expiredCache = new java.util.concurrent.atomic.AtomicReference<>(expiredToken);
         ReflectionTestUtils.setField(auth0Service, "cachedToken", expiredCache);
 
         stubTokenEndpoint();
@@ -261,16 +266,22 @@ class Auth0ServiceUnitTest {
         );
     }
 
+
     // =========================================================================
     // Token caching — valid cached token is not refreshed
     // =========================================================================
 
     @Test
-    void whenCachedTokenIsStillValid_thenTokenEndpointIsNotCalled() {
-        // Arrange — pre-load a still-valid token (expires in 22 hours)
-        var validCache = new java.util.concurrent.atomic.AtomicReference<>(
-                new Object[]{VALID_TOKEN, Instant.now().plusSeconds(22 * 3600)}
-        );
+    void whenCachedTokenIsStillValid_thenTokenEndpointIsNotCalled() throws Exception {
+        // Arrange — pre-load a still-valid CachedToken (expires in 22 hours)
+        Class<?> cachedTokenClass = Class.forName(
+                "com.envisionad.webservice.config.Auth0Service$CachedToken");
+        java.lang.reflect.Constructor<?> ctor =
+                cachedTokenClass.getDeclaredConstructor(String.class, Instant.class);
+        ctor.setAccessible(true);
+        Object validToken = ctor.newInstance(VALID_TOKEN, Instant.now().plusSeconds(22 * 3600));
+
+        var validCache = new java.util.concurrent.atomic.AtomicReference<>(validToken);
         ReflectionTestUtils.setField(auth0Service, "cachedToken", validCache);
 
         stubUserEndpoint();
