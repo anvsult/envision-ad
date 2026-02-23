@@ -198,7 +198,8 @@ export default function ProofMediaTable({
                             "aria-label": t("pagination.page", { page: item }),
                             "aria-current": item === page ? "page" : undefined,
                         })}
-                    />                </Group>
+                    />
+                </Group>
             )}
         </Paper>
     );
