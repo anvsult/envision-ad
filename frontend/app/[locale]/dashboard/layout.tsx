@@ -2,32 +2,37 @@
 
 import React from "react";
 import { useDisclosure, useMediaQuery } from "@mantine/hooks";
-import { Box, Drawer, Group, Paper } from "@mantine/core";
+import {Box, Center, Drawer, Group, Loader, Paper} from "@mantine/core";
 import SideBar from "@/widgets/SideBar/SideBar";
+import { useOrganization, usePermissions } from "@/app/providers";
 
-export default function DashboardLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [opened, { close }] = useDisclosure(false);
     const isMobile = useMediaQuery("(max-width: 768px)");
+    const { organization, loading: orgLoading } = useOrganization();
+    const { permissions, loading: permissionsLoading } = usePermissions();
+
+    const isAdmin =
+        permissions.includes('patch:media_status') &&
+        permissions.includes('readAll:verification') &&
+        permissions.includes('update:verification');
+
+    if (orgLoading || permissionsLoading) {
+        return (
+            <Center style={{ minHeight: "calc(100vh - 80px)" }}>
+                <Loader />
+            </Center>
+        );
+    }
 
     return (
         <Box>
-            <Drawer
-                opened={opened}
-                onClose={close}
-                size="xs"
-                padding="md"
-                hiddenFrom="md"
-                zIndex={1000}
-            >
+            <Drawer opened={opened} onClose={close} size="xs" padding="md" hiddenFrom="md" zIndex={1000}>
                 <SideBar />
             </Drawer>
 
             <Group align="stretch" gap={0} wrap="nowrap">
-                {!isMobile && (
+                {!isMobile && (!!organization || isAdmin) && (
                     <Paper
                         w={250}
                         p="md"
@@ -38,7 +43,6 @@ export default function DashboardLayout({
                         <SideBar />
                     </Paper>
                 )}
-
                 <div style={{ flex: 1, minWidth: 0 }}>
                     {children}
                 </div>

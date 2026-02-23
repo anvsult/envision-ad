@@ -1,8 +1,6 @@
 "use client";
 
-import { useUser } from "@auth0/nextjs-auth0/client";
 import { useEffect, useMemo, useState } from "react";
-import { getEmployeeOrganization } from "@/features/organization-management/api";
 import { getPaymentsDashboardData } from "@/features/payment";
 import { getAllReservationByMediaOwnerBusinessId } from "@/features/reservation-management/api";
 import {
@@ -24,22 +22,19 @@ import {
 import { buildOverviewMetricsData } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/overview-utils";
 import { buildPaginationInfo } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/pagination-utils";
 import { mapPayoutsToRows } from "@/pages/dashboard/media-owner/ui/metrics-dashboard/payout-utils";
+import { useOrganization } from "@/app/providers";
 
 const PAYOUTS_PER_PAGE = 10;
 const REVENUE_BY_MEDIA_PER_PAGE = 5;
 const ACTIVE_CAMPAIGN_DETAILS_PER_PAGE = 3;
 
 export function useMediaOwnerMetricsData() {
-    const { user } = useUser();
+    const { organization } = useOrganization();
     const [overviewPeriod, setOverviewPeriodState] = useState<OverviewPeriod>("allTime");
-    const [mediaOwnerReservations, setMediaOwnerReservations] = useState<
-        ReservationResponseDTO[]
-    >([]);
+    const [mediaOwnerReservations, setMediaOwnerReservations] = useState<ReservationResponseDTO[]>([]);
     const [revenueByMediaPage, setRevenueByMediaPage] = useState(1);
     const [activeCampaignDetailsPage, setActiveCampaignDetailsPage] = useState(1);
-    const [earningsKpis, setEarningsKpis] = useState<MetricsKpi[]>(() =>
-        buildEarningsKpis([], 0)
-    );
+    const [earningsKpis, setEarningsKpis] = useState<MetricsKpi[]>(() => buildEarningsKpis([], 0));
     const [payoutAmountPoints, setPayoutAmountPoints] = useState(() => mapPayoutsToAmountPoints([]));
     const [payoutHistoryRows, setPayoutHistoryRows] = useState<PayoutHistoryRow[]>([]);
     const [payoutPage, setPayoutPage] = useState(1);
@@ -50,11 +45,7 @@ export function useMediaOwnerMetricsData() {
     );
 
     const kpis = useMemo(
-        () =>
-            applyActiveCampaignCountToKpis(
-                earningsKpis,
-                overviewMetricsData.activeCampaignCount
-            ),
+        () => applyActiveCampaignCountToKpis(earningsKpis, overviewMetricsData.activeCampaignCount),
         [earningsKpis, overviewMetricsData.activeCampaignCount]
     );
 
@@ -64,67 +55,44 @@ export function useMediaOwnerMetricsData() {
     );
 
     const payoutPagination = useMemo(
-        () =>
-            buildPaginationInfo({
-                rows: payoutHistoryRows,
-                page: payoutPage,
-                rowsPerPage: PAYOUTS_PER_PAGE,
-            }),
+        () => buildPaginationInfo({ rows: payoutHistoryRows, page: payoutPage, rowsPerPage: PAYOUTS_PER_PAGE }),
         [payoutHistoryRows, payoutPage]
     );
 
     const revenueByMediaPagination = useMemo(
-        () =>
-            buildPaginationInfo({
-                rows: overviewMetricsData.revenueByMedia,
-                page: revenueByMediaPage,
-                rowsPerPage: REVENUE_BY_MEDIA_PER_PAGE,
-            }),
+        () => buildPaginationInfo({ rows: overviewMetricsData.revenueByMedia, page: revenueByMediaPage, rowsPerPage: REVENUE_BY_MEDIA_PER_PAGE }),
         [overviewMetricsData.revenueByMedia, revenueByMediaPage]
     );
 
     const activeCampaignDetailsPagination = useMemo(
-        () =>
-            buildPaginationInfo({
-                rows: overviewMetricsData.activeCampaignDetails,
-                page: activeCampaignDetailsPage,
-                rowsPerPage: ACTIVE_CAMPAIGN_DETAILS_PER_PAGE,
-            }),
+        () => buildPaginationInfo({ rows: overviewMetricsData.activeCampaignDetails, page: activeCampaignDetailsPage, rowsPerPage: ACTIVE_CAMPAIGN_DETAILS_PER_PAGE }),
         [overviewMetricsData.activeCampaignDetails, activeCampaignDetailsPage]
     );
 
     useEffect(() => {
-        if (!user?.sub) return;
+        if (!organization) return;
 
         let isCancelled = false;
 
         const fetchMetrics = async () => {
             try {
-                const organization = await getEmployeeOrganization(user.sub);
-                if (!organization?.businessId) return;
-
-                const [dashboardDataResult, reservationsResult] =
-                    await Promise.allSettled([
-                        getPaymentsDashboardData(organization.businessId, "monthly"),
-                        getAllReservationByMediaOwnerBusinessId(organization.businessId),
-                    ]);
+                const [dashboardDataResult, reservationsResult] = await Promise.allSettled([
+                    getPaymentsDashboardData(organization.businessId, "monthly"),
+                    getAllReservationByMediaOwnerBusinessId(organization.businessId),
+                ]);
 
                 if (isCancelled) return;
 
                 if (dashboardDataResult.status === "fulfilled") {
                     const payouts = Array.isArray(dashboardDataResult.value.payouts)
-                        ? dashboardDataResult.value.payouts
-                        : [];
+                        ? dashboardDataResult.value.payouts : [];
                     const earningsDashboardData = buildEarningsDashboardData(payouts, 0);
                     setEarningsKpis(earningsDashboardData.kpis);
                     setPayoutAmountPoints(mapPayoutsToAmountPoints(payouts));
                     setPayoutHistoryRows(mapPayoutsToRows(payouts));
                     setPayoutPage(1);
                 } else {
-                    console.error(
-                        "Failed to load payout history",
-                        dashboardDataResult.reason
-                    );
+                    console.error("Failed to load payout history", dashboardDataResult.reason);
                     setEarningsKpis(buildEarningsKpis([], 0));
                     setPayoutAmountPoints(mapPayoutsToAmountPoints([]));
                     setPayoutHistoryRows([]);
@@ -132,18 +100,11 @@ export function useMediaOwnerMetricsData() {
                 }
 
                 if (reservationsResult.status === "fulfilled") {
-                    setMediaOwnerReservations(
-                        Array.isArray(reservationsResult.value)
-                            ? reservationsResult.value
-                            : []
-                    );
+                    setMediaOwnerReservations(Array.isArray(reservationsResult.value) ? reservationsResult.value : []);
                     setRevenueByMediaPage(1);
                     setActiveCampaignDetailsPage(1);
                 } else {
-                    console.error(
-                        "Failed to load media owner reservations",
-                        reservationsResult.reason
-                    );
+                    console.error("Failed to load media owner reservations", reservationsResult.reason);
                     setMediaOwnerReservations([]);
                     setRevenueByMediaPage(1);
                     setActiveCampaignDetailsPage(1);
@@ -164,10 +125,8 @@ export function useMediaOwnerMetricsData() {
 
         void fetchMetrics();
 
-        return () => {
-            isCancelled = true;
-        };
-    }, [user?.sub]);
+        return () => { isCancelled = true; };
+    }, [organization]);
 
     const setOverviewPeriod = (period: OverviewPeriod) => {
         setOverviewPeriodState(period);

@@ -3,11 +3,8 @@
 import React, {useCallback, useEffect, useState} from "react";
 import {Button, Group, Stack, Title} from "@mantine/core";
 import {notifications} from "@mantine/notifications";
-import {useUser} from "@auth0/nextjs-auth0/client";
 import {useTranslations} from 'next-intl';
 
-
-// Imports from our new files
 import {AdRequestDTO} from "@/entities/ad";
 import {AdCampaign, AdCampaignRequestDTO} from "@/entities/ad-campaign";
 import {
@@ -20,78 +17,55 @@ import {AdCampaignsTable} from "@/pages/dashboard/advertiser/ui/tables/AdCampaig
 import {AddAdModal} from "@/pages/dashboard/advertiser/ui/modals/AddAdModal";
 import {CreateCampaignModal} from "@/pages/dashboard/advertiser/ui/modals/CreateCampaignModal";
 import {ConfirmationModal} from "@/shared/ui/ConfirmationModal";
-import {getEmployeeOrganization} from "@/features/organization-management/api";
+import {useOrganization} from "@/app/providers";
 
 export default function AdCampaigns() {
     const t = useTranslations('adCampaigns');
 
-    // Data State
     const [campaigns, setCampaigns] = useState<AdCampaign[]>([]);
-    const [businessId, setBusinessId] = useState<string | undefined>();
-    const {user} = useUser();
+    const [refreshCount, setRefreshCount] = useState(0);
+    const { organization } = useOrganization();
 
-    // Modal State
     const [isAddAdModalOpen, setIsAddAdModalOpen] = useState(false);
     const [targetCampaignId, setTargetCampaignId] = useState<string | null>(null);
 
-    // Create Campaign Modal State
     const [isCreateCampaignOpen, setIsCreateCampaignOpen] = useState(false);
 
-    // Confirmation Modal State
     const [confirmDeleteAdOpen, setConfirmDeleteAdOpen] = useState(false);
     const [confirmDeleteCampaignOpen, setConfirmDeleteCampaignOpen] = useState(false);
     const [adToDelete, setAdToDelete] = useState<{ campaignId: string; adId: string } | null>(null);
     const [campaignIdToDelete, setCampaignIdToDelete] = useState<string | null>(null);
 
-    // 1. Fetch Data - Single method to load campaigns
-    const loadCampaigns = useCallback(async () => {
-        if (!businessId) return;
+    const refreshCampaigns = useCallback(() => {
+        setRefreshCount(c => c + 1);
+    }, []);
 
-        try {
-            const data = await getAllAdCampaigns(businessId);
-            setCampaigns(data);
-        } catch (error) {
-            console.error('Failed to load campaigns', error);
-            notifications.show({
-                title: t('notifications.loadFailed.title'),
-                message: t('notifications.loadFailed.message'),
-                color: 'red'
-            });
-        }
-    }, [businessId, t]);
-
-    // Get businessId on mount
     useEffect(() => {
-        if (!user) return;
+        if (!organization) return;
 
-        const fetchBusinessId = async () => {
+        let ignored = false;
+
+        const fetchCampaigns = async () => {
             try {
-                const business = await getEmployeeOrganization(user.sub);
-                if (!business) {
-                    throw new Error('Business not found');
-                }
-                setBusinessId(business.businessId);
+                const data = await getAllAdCampaigns(organization.businessId);
+                if (!ignored) setCampaigns(data);
             } catch (error) {
-                console.error('Failed to load business info', error);
-                notifications.show({
-                    title: t('notifications.loadFailed.title'),
-                    message: t('notifications.loadFailed.message'),
-                    color: 'red'
-                });
+                if (!ignored) {
+                    console.error('Failed to load campaigns', error);
+                    notifications.show({
+                        title: t('notifications.loadFailed.title'),
+                        message: t('notifications.loadFailed.message'),
+                        color: 'red'
+                    });
+                }
             }
         };
 
-        fetchBusinessId();
-    }, [user, t]);
+        void fetchCampaigns();
 
-    // Load campaigns when businessId is available
-    useEffect(() => {
-        if (businessId) {
-            loadCampaigns();
-        }
-    }, [businessId, loadCampaigns]);
+        return () => { ignored = true; };
+    }, [organization, t, refreshCount]);
 
-    // 2. Handlers
     const handleOpenAddAd = (campaignId: string) => {
         setTargetCampaignId(campaignId);
         setIsAddAdModalOpen(true);
@@ -102,15 +76,13 @@ export default function AdCampaigns() {
 
         try {
             await addAdToCampaign(targetCampaignId, payload);
-
             notifications.show({
                 title: t('notifications.addAd.success.title'),
                 message: t('notifications.addAd.success.message'),
                 color: 'green'
             });
-
             setIsAddAdModalOpen(false);
-            await loadCampaigns();
+            refreshCampaigns();
         } catch (error) {
             const err = error as { response?: { status?: number; data?: { message?: string } } };
             const status = err.response?.status;
@@ -135,7 +107,6 @@ export default function AdCampaigns() {
         }
     };
 
-
     const handleDeleteAd = (campaignId: string, adId: string) => {
         setAdToDelete({campaignId, adId});
         setConfirmDeleteAdOpen(true);
@@ -144,7 +115,7 @@ export default function AdCampaigns() {
     const handleDeleteAdCampaign = (campaignId: string) => {
         setCampaignIdToDelete(campaignId);
         setConfirmDeleteCampaignOpen(true);
-    }
+    };
 
     const confirmDeleteAd = async () => {
         if (!adToDelete) return;
@@ -156,7 +127,7 @@ export default function AdCampaigns() {
                 message: t('notifications.deleteAd.success.message'),
                 color: 'green'
             });
-            await loadCampaigns(); // Refresh list
+            refreshCampaigns();
             setConfirmDeleteAdOpen(false);
             setAdToDelete(null);
         } catch (error) {
@@ -182,23 +153,20 @@ export default function AdCampaigns() {
     };
 
     const confirmDeleteCampaign = async () => {
-        if (!campaignIdToDelete) return;
-        if (!businessId) return;
+        if (!campaignIdToDelete || !organization) return;
 
         try {
-            await deleteAdCampaign(businessId, campaignIdToDelete);
+            await deleteAdCampaign(organization.businessId, campaignIdToDelete);
             notifications.show({
                 title: t('notifications.deleteCampaign.success.title'),
                 message: t('notifications.deleteCampaign.success.message'),
                 color: 'green'
             });
-            await loadCampaigns(); // Refresh list
+            refreshCampaigns();
             setConfirmDeleteCampaignOpen(false);
             setCampaignIdToDelete(null);
         } catch (error) {
             console.error('Failed to delete campaign', error);
-
-            // Simple type narrowing
             const err = error as { response?: { status?: number; data?: { message?: string } } };
             const status = err.response?.status;
             const serverMessage = err.response?.data?.message;
@@ -218,21 +186,20 @@ export default function AdCampaigns() {
                 color: 'red'
             });
         }
-    }
+    };
 
-    // Create Campaign Handler
     const handleCreateCampaign = async (payload: AdCampaignRequestDTO) => {
-        if (!businessId) return;
+        if (!organization) return;
 
         try {
-            await createAdCampaign(businessId, payload);
+            await createAdCampaign(organization.businessId, payload);
             notifications.show({
                 title: t('notifications.createCampaign.success.title'),
                 message: t('notifications.createCampaign.success.message'),
                 color: 'green'
             });
             setIsCreateCampaignOpen(false);
-            loadCampaigns();
+            refreshCampaigns();
         } catch (error) {
             console.error('Failed to create campaign', error);
             notifications.show({
@@ -245,8 +212,6 @@ export default function AdCampaigns() {
 
     return (
         <Stack gap="md" p="md">
-
-            {/* Page Title & Top Actions */}
             <Group justify="space-between">
                 <Title order={2}>{t('page.title')}</Title>
                 <Button onClick={() => setIsCreateCampaignOpen(true)}>
