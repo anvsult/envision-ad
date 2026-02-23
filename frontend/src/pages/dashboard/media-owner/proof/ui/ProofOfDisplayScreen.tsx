@@ -102,7 +102,7 @@ export default function ProofOfDisplayScreen() {
 
     return (
         <Stack gap="xs" p="md" style={{ flex: 1, minWidth: 0 }}>
-            <Title order={2} mb={0}>
+            <Title order={1} mb={0}>
                 {t("page.title")}
             </Title>
 

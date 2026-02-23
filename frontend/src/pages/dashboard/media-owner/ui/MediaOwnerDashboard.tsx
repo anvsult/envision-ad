@@ -6,7 +6,7 @@ import { MediaTable } from "@/pages/dashboard/media-owner/ui/tables/MediaTable";
 import { useMediaList } from "@/pages/dashboard/media-owner/hooks/useMediaList";
 import { useMediaForm } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 import { useTranslations } from "next-intl";
-import { Alert, Button, Group, Loader, Pagination, Stack, Title } from "@mantine/core";
+import {Alert, Button, Group, Loader, Pagination, Stack, Title, VisuallyHidden} from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { notifications } from "@mantine/notifications";
 import { WeeklyScheduleModel } from "@/entities/media";
@@ -174,7 +174,9 @@ export default function MediaOwnerPage() {
     return (
         <Stack gap="md" p="md" style={{ flex: 1, minWidth: 0 }}>
             <Group justify="space-between">
-                <Title order={2}>{t('page.title')}</Title>
+                <VisuallyHidden>
+                    <Title order={1}>{t('page.title')}</Title>
+                </VisuallyHidden>
                 {isStripeLoading ? (
                     <Loader />
                 ) : isStripeOnboarded ? (
@@ -205,7 +207,15 @@ export default function MediaOwnerPage() {
 
             {totalPages > 1 && (
                 <Group justify="center" mt="md">
-                    <Pagination total={totalPages} value={activePage} onChange={setActivePage} size="md" />
+                    <Pagination.Root total={totalPages} value={activePage} onChange={setActivePage}>
+                        <Group gap="xs">
+                            <Pagination.First aria-label={t("pagination.first")} />
+                            <Pagination.Previous aria-label={t("pagination.prev")} />
+                            <Pagination.Items />
+                            <Pagination.Next aria-label={t("pagination.next")} />
+                            <Pagination.Last aria-label={t("pagination.last")} />
+                        </Group>
+                    </Pagination.Root>
                 </Group>
             )}
         </Stack>

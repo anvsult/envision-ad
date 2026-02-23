@@ -1,5 +1,5 @@
 import React from "react";
-import { Accordion, ActionIcon, Button, Group, Table, Text, Box, Flex } from "@mantine/core";
+import { Accordion, ActionIcon, Button, Group, Table, Text, Box, Flex, VisuallyHidden } from "@mantine/core";
 import { IconTrash, IconPlus, IconMapPin } from "@tabler/icons-react";
 import { MediaLocation } from "@/entities/media-location/model/mediaLocation";
 import { useTranslations } from "next-intl";
@@ -82,6 +82,8 @@ export function MediaLocationsTable({
                             <ActionIcon
                                 variant="subtle"
                                 color="red"
+                                aria-label={t("deleteLocationAria", { name: location.name })}
+                                title={t("deleteLocationAria", { name: location.name })}
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     onDeleteLocation(location.id);
@@ -109,7 +111,9 @@ export function MediaLocationsTable({
                                             <Table.Th w={120} ta="right">{tMedia("status")}</Table.Th>
                                             <Table.Th w={120} ta="right">{tMedia("update")}</Table.Th>
                                             <Table.Th w={140} ta="right">{tMedia("price")}</Table.Th>
-                                            <Table.Th w={60} ta="right" />
+                                            <Table.Th w={60} ta="right">
+                                                <VisuallyHidden>{tMedia("actions")}</VisuallyHidden>
+                                            </Table.Th>
                                         </Table.Tr>
                                     </Table.Thead>
                                     <Table.Tbody>
