@@ -60,7 +60,7 @@ export default async function RootLayout({
                 {/* The title is handled by Next.js*/}
                 <ColorSchemeScript defaultColorScheme="light"/>
             </head>
-            <body style={{ height: "100dvh", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+            <body style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
             <NextIntlClientProvider messages={messages} locale={locale}>
                 <Auth0Provider user={user}>
                     <PermissionsProvider>
@@ -68,11 +68,9 @@ export default async function RootLayout({
                             <MantineProvider theme={theme}>
                                 <ModalsProvider>
                                     <Notifications/>
-                                    <Header/>
-                                    <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column" }}>
-                                        {children}
-                                        <Footer/>
-                                    </div>
+                                    <Header />
+                                    {children}
+                                    <Footer />
                                 </ModalsProvider>
                             </MantineProvider>
                         </OrganizationProvider>
