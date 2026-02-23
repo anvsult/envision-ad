@@ -20,7 +20,7 @@ export function OrganizationDetail({organization, onEdit}: OrganizationDetailPro
             <Stack gap="sm">
                 <Group justify="space-between">
                     <Group gap="xs">
-                        <Title order={3}>{organization.name}</Title>
+                        <Title order={2}>{organization.name}</Title>
                         {organization.verified &&
                             <IconDiscountCheck size={30} stroke={1.5} />
                         }

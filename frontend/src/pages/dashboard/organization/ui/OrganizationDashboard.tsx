@@ -155,7 +155,7 @@ export default function OrganizationDashboard() {
     return (
         <Stack gap="md" p="md">
             <Group justify="space-between">
-                <Title order={2}>{t("title")}</Title>
+                <Title order={1}>{t("title")}</Title>
             </Group>
 
             <OrganizationDetail organization={organization} onEdit={handleEdit} />
@@ -172,7 +172,7 @@ export default function OrganizationDashboard() {
             {(permissions.includes('read:verification') || permissions.includes('create:verification')) && (
                 <Stack gap="md">
                     <Group justify="space-between" align="center">
-                        <Title order={3}>{t("verificationHistory")}</Title>
+                        <Title order={2}>{t("verificationHistory")}</Title>
                         <Button
                             onClick={() => setConfirmVerificationRequest(true)}
                             disabled={!canRequestVerification}

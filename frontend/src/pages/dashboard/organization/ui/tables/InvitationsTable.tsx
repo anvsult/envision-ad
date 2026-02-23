@@ -17,7 +17,6 @@ export function InvitationTable({invitations, onDelete,}: InvitationTableProps) 
         const expires = new Date(expiryDate + 'Z');
         const diffMs = expires.getTime() - now.getTime();
 
-        // If already expired
         if (diffMs <= 0) {
             return t("expired");
         }
@@ -57,16 +56,17 @@ export function InvitationTable({invitations, onDelete,}: InvitationTableProps) 
                                     <Table.Td>{getTimeLeft(inv.timeExpires)}</Table.Td>
                                     <Table.Td>
                                         <Group gap="xs" wrap="nowrap" justify="flex-end">
-                                                <Tooltip label={t("cancelInvitation")}>
-                                                    <ActionIcon
-                                                        variant="light"
-                                                        color="red"
-                                                        size="md"
-                                                        onClick={() => onDelete?.(inv)}
-                                                    >
-                                                        <IconTrash size={16}/>
-                                                    </ActionIcon>
-                                                </Tooltip>
+                                            <Tooltip label={t("cancelInvitation")}>
+                                                <ActionIcon
+                                                    variant="light"
+                                                    color="red"
+                                                    size="md"
+                                                    aria-label={t("cancelInvitation")}
+                                                    onClick={() => onDelete?.(inv)}
+                                                >
+                                                    <IconTrash size={16}/>
+                                                </ActionIcon>
+                                            </Tooltip>
                                         </Group>
                                     </Table.Td>
                                 </Table.Tr>
@@ -82,10 +82,7 @@ export function InvitationTable({invitations, onDelete,}: InvitationTableProps) 
                         </Table.Tbody>
                     </Table>
                 </ScrollArea>
-
-
             </Accordion.Panel>
         </Accordion.Item>
-
     );
 }

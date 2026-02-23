@@ -62,38 +62,40 @@
     },
     "advertiserTitle": "Advertiser",
     "advertiser": {
-      "overview": "Overview",
       "metricOverview": "Metrics",
       "advertisements": "Advertisements",
-      "myAds": "My Campaigns",
-      "timeRangeSelect": "Select dashboard time range",
-      "graphs": {
-        "totalAdSpend": "Total Ad Spend",
-        "activeCampaigns": "Active Campaigns",
-        "estimatedImpressions": "Estimated Impressions",
-        "averageCPM": "Average CPM",
-        "campaignPerformance": "Campaign Performance",
-        "mediaDistribution": "Media Distribution",
-        "comparedToLastWeek": "Compared to last week",
-        "comparedToLastMonth": "Compared to last month",
-        "comparedToLastYear": "Compared to last year",
-        "impressions": "Impressions",
-        "spent": "Spent",
-        "gym": "Gym",
-        "barbershop": "Barbershop",
-        "groceryStore": "Grocery Store"
-      },
-      "timeRanges": {
-        "weekly": "Weekly",
-        "monthly": "Monthly",
-        "yearly": "Yearly"
-      }
+      "myAds": "My Campaigns"
     },
     "adminTitle": "Admin",
     "admin": {
       "metrics": "Metrics",
       "pendingMedia": "Pending Media",
       "pendingOrganizations": "Verification Requests"
+    }
+  },
+  "advertiserMetrics": {
+    "title": "Advertising Metrics",
+    "timeRangeSelect": "Select dashboard time range",
+    "graphs": {
+      "totalAdSpend": "Total Ad Spend",
+      "activeCampaigns": "Active Campaigns",
+      "estimatedImpressions": "Estimated Impressions",
+      "averageCPM": "Average CPM",
+      "campaignPerformance": "Campaign Performance",
+      "mediaDistribution": "Media Distribution",
+      "comparedToLastWeek": "Compared to last week",
+      "comparedToLastMonth": "Compared to last month",
+      "comparedToLastYear": "Compared to last year",
+      "impressions": "Impressions",
+      "spent": "Spent",
+      "gym": "Gym",
+      "barbershop": "Barbershop",
+      "groceryStore": "Grocery Store"
+    },
+    "timeRanges": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
     }
   },
   "onboarding": {
@@ -183,7 +185,7 @@
     }
   },
   "mediaOwnerMetrics": {
-    "title": "Dashboard Metrics",
+    "title": "Media Owning Metrics",
     "cards": {
       "weeklyEarnings": "Total Weekly Earnings",
       "monthlyEarnings": "Total Monthly Earnings",
@@ -540,6 +542,23 @@
       "loadFailed": "Failed to load organization for editing.",
       "verificationRequestFailed": "Failed to request verification.",
       "updateFailed": "Failed to update organization details."
+    }
+  },
+  "invitation": {
+    "loading": "Processing your invitation...",
+    "back": "Go Home",
+    "invalidLink": {
+      "title": "Invalid Invitation Link",
+      "description": "This invitation link is invalid or incomplete."
+    },
+    "success": {
+      "title": "You're in!",
+      "message": "You've successfully joined the organization!",
+      "redirecting": "Redirecting to dashboard..."
+    },
+    "error": {
+      "title": "Something went wrong",
+      "message": "An error occurred while accepting the invitation."
     }
   },
   "media": {
@@ -1282,18 +1301,6 @@
         "message": "Your session expired. Please try connecting again."
       }
     }
-  },
-  "invitation": {
-    "loading": "Loading...",
-    "processing": "Processing your invitation...",
-    "invalidLinkTitle": "Invalid Invitation Link",
-    "invalidLink": "This invitation link is invalid or incomplete.",
-    "successTitle": "Success!",
-    "success": "You've successfully joined the organization!",
-    "errorTitle": "Failed",
-    "error": "An error occurred while accepting the invitation.",
-    "redirecting": "Redirecting to dashboard...",
-    "goHome": "Go Home"
   },
   "stripeOnboarding": {
     "title": "Connect Your Payment Account",

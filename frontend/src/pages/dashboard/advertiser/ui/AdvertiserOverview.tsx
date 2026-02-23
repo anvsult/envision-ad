@@ -60,7 +60,7 @@ interface TooltipPayload {
 }
 
 export function AdvertiserOverview() {
-    const t = useTranslations("sideBar.advertiser");
+    const t = useTranslations("advertiserMetrics");
     const [timeRange, setTimeRange] = useState<string | null>("Weekly");
     const [mounted, setMounted] = useState(false);
     const [activeCampaignCount, setActiveCampaignCount] = useState<number | null>(null);
@@ -252,7 +252,7 @@ export function AdvertiserOverview() {
     return (
         <Stack gap="lg" p="xl">
             <Group justify="space-between" align="center">
-                <Title order={2}>Dashboard Overview</Title>
+                <Title order={1}>{t("title")}</Title>
                 <Group>
                     <Select
                         aria-label={t("timeRangeSelect")}

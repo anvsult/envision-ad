@@ -62,38 +62,40 @@
     },
     "advertiserTitle": "Annonceur",
     "advertiser": {
-      "overview": "Aperçu",
       "metricOverview": "Métriques",
       "advertisements": "Publicités",
-      "myAds": "Mes Campagnes",
-      "timeRangeSelect": "Sélectionner la période du tableau de bord",
-      "graphs": {
-        "totalAdSpend": "Dépenses publicitaires totales",
-        "activeCampaigns": "Campagnes actives",
-        "estimatedImpressions": "Impressions estimées",
-        "averageCPM": "CPM moyen",
-        "campaignPerformance": "Performance de la campagne",
-        "mediaDistribution": "Répartition des médias",
-        "comparedToLastWeek": "Par rapport à la semaine dernière",
-        "impressions": "Impressions",
-        "spent": "Dépenses",
-        "gym": "Gym",
-        "barbershop": "Barbier",
-        "groceryStore": "Épicerie",
-        "comparedToLastMonth": "Par rapport au mois dernier",
-        "comparedToLastYear": "Par rapport à l'année dernière"
-      },
-      "timeRanges": {
-        "weekly": "Hebdomadaire",
-        "monthly": "Mensuel",
-        "yearly": "Annuel"
-      }
+      "myAds": "Mes Campagnes"
     },
     "adminTitle": "Admin",
     "admin": {
       "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification"
+    }
+  },
+  "advertiserMetrics": {
+    "title": "Métriques publicitaires",
+    "timeRangeSelect": "Sélectionner la période du tableau de bord",
+    "graphs": {
+      "totalAdSpend": "Dépenses publicitaires totales",
+      "activeCampaigns": "Campagnes actives",
+      "estimatedImpressions": "Impressions estimées",
+      "averageCPM": "CPM moyen",
+      "campaignPerformance": "Performance de la campagne",
+      "mediaDistribution": "Répartition des médias",
+      "comparedToLastWeek": "Par rapport à la semaine dernière",
+      "impressions": "Impressions",
+      "spent": "Dépenses",
+      "gym": "Gym",
+      "barbershop": "Barbier",
+      "groceryStore": "Épicerie",
+      "comparedToLastMonth": "Par rapport au mois dernier",
+      "comparedToLastYear": "Par rapport à l'année dernière"
+    },
+    "timeRanges": {
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
     }
   },
   "onboarding": {
@@ -184,7 +186,7 @@
     }
   },
   "mediaOwnerMetrics": {
-    "title": "Métriques du tableau de bord",
+    "title": "Métriques des médias détenus",
     "cards": {
       "weeklyEarnings": "Gains hebdomadaires totaux",
       "monthlyEarnings": "Gains mensuels totaux",
@@ -541,6 +543,23 @@
       "loadFailed": "Échec du chargement de l’organisation pour modification.",
       "verificationRequestFailed": "Échec de la demande de vérification.",
       "updateFailed": "Échec de la mise à jour des informations de l’organisation."
+    }
+  },
+  "invitation": {
+    "loading": "Traitement de votre invitation...",
+    "back": "Accueil",
+    "invalidLink": {
+      "title": "Lien d'invitation invalide",
+      "description": "Ce lien d'invitation est invalide ou incomplet."
+    },
+    "success": {
+      "title": "Vous êtes connecté !",
+      "message": "Vous avez rejoint l'organisation avec succès !",
+      "redirecting": "Redirection vers le tableau de bord..."
+    },
+    "error": {
+      "title": "Une erreur est survenue",
+      "message": "Une erreur s'est produite lors de l'acceptation de l'invitation."
     }
   },
   "media": {
@@ -1283,18 +1302,6 @@
         "message": "Votre session a expiré. Veuillez essayer de vous reconnecter."
       }
     }
-  },
-  "invitation": {
-    "loading": "Chargement...",
-    "processing": "Traitement de votre invitation...",
-    "invalidLinkTitle": "Lien d'invitation invalide",
-    "invalidLink": "Ce lien d'invitation est invalide ou incomplet.",
-    "successTitle": "Succès !",
-    "success": "Vous avez rejoint l'organisation avec succès !",
-    "errorTitle": "Échec",
-    "error": "Une erreur s'est produite lors de l'acceptation de l'invitation.",
-    "redirecting": "Redirection vers le tableau de bord...",
-    "goHome": "Retour à l'accueil"
   },
   "stripeOnboarding": {
     "title": "Connecter votre compte de paiement",
