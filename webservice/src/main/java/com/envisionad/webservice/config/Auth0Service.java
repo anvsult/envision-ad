@@ -46,8 +46,14 @@ public class Auth0Service {
     @Value("${auth0.management.base-url}")
     private String managementBaseUrl;
 
-    /** Cached token entry: index 0 = access_token (String), index 1 = expiry (Instant). */
-    private final AtomicReference<Object[]> cachedToken = new AtomicReference<>();
+    /** Holds a fetched Management API token alongside the instant it expires. */
+    record CachedToken(String accessToken, Instant expiry) {
+        boolean isValid() {
+            return Instant.now().isBefore(expiry);
+        }
+    }
+
+    private final AtomicReference<CachedToken> cachedToken = new AtomicReference<>();
 
     /** Guards the check-then-fetch-then-set refresh sequence against concurrent threads. */
     private final ReentrantLock tokenRefreshLock = new ReentrantLock();
@@ -123,9 +129,9 @@ public class Auth0Service {
 
     private String getManagementApiToken() {
         // Fast path — lock-free read for the common case of a still-valid token.
-        Object[] cached = cachedToken.get();
-        if (isValid(cached)) {
-            return (String) cached[0];
+        CachedToken cached = cachedToken.get();
+        if (cached != null && cached.isValid()) {
+            return cached.accessToken();
         }
 
         // Slow path — acquire lock so only one thread fetches a new token.
@@ -133,8 +139,8 @@ public class Auth0Service {
         try {
             // Re-check after acquiring the lock; another thread may have already refreshed.
             cached = cachedToken.get();
-            if (isValid(cached)) {
-                return (String) cached[0];
+            if (cached != null && cached.isValid()) {
+                return cached.accessToken();
             }
 
             HttpHeaders headers = new HttpHeaders();
@@ -164,7 +170,7 @@ public class Auth0Service {
                 }
                 Number expiresIn = (Number) responseBody.getOrDefault("expires_in", 3600);
                 Instant expiry = Instant.now().plusSeconds(expiresIn.longValue()).minus(TOKEN_EXPIRY_BUFFER);
-                cachedToken.set(new Object[]{accessToken, expiry});
+                cachedToken.set(new CachedToken(accessToken, expiry));
                 return accessToken;
             } catch (RestClientException e) {
                 throw new Auth0ServiceUnavailableException(
@@ -175,10 +181,6 @@ public class Auth0Service {
         }
     }
 
-    /** Returns true only when the cache entry is non-null and its token has not yet expired. */
-    private static boolean isValid(Object[] entry) {
-        return entry != null && Instant.now().isBefore((Instant) entry[1]);
-    }
 
     private String extractEmail(ResponseEntity<Map<String, Object>> response, String userId) {
         Map<String, Object> body = Objects.requireNonNull(
