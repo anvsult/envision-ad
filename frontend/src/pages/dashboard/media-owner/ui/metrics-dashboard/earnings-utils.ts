@@ -237,13 +237,16 @@ export const buildAllTimeEarningsTrend = (
     const confirmed = reservations.filter((r) => r.status === ReservationStatus.CONFIRMED);
     const locationMap = buildLocationMap(mediaLocations);
 
-    // Pre-bucket reservations by "YYYY-MM" key in a single pass
+    const earliestCreatedMs = confirmed.reduce((min, r) => {
+        const ms = parseDateMs(r.createdAt);
+        return ms !== null ? Math.min(min, ms) : min;
+    }, Number.POSITIVE_INFINITY);
+
+    // Pre-bucket confirmed reservations by "YYYY-MM" key
     const byMonth = new Map<string, ReservationResponseDTO[]>();
-    let earliestCreatedMs = Number.POSITIVE_INFINITY;
     for (const r of confirmed) {
         const ms = parseDateMs(r.createdAt);
         if (ms === null) continue;
-        if (ms < earliestCreatedMs) earliestCreatedMs = ms;
         const key = toMonthKey(new Date(ms));
         const bucket = byMonth.get(key) ?? [];
         bucket.push(r);

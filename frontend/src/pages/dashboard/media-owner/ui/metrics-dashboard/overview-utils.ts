@@ -103,31 +103,35 @@ export const buildOverviewMetricsData = (
         return isOverlappingRange(startMs, endMs, startBoundMs, endBoundMs);
     });
 
-    const mediaIdToLocationName = new Map<string, string>();
+    const mediaIdToLocation = new Map<string, { locationId: string; locationName: string }>();
     for (const loc of mediaLocations) {
         for (const m of loc.mediaList ?? []) {
             if (m.id) {
-                mediaIdToLocationName.set(m.id, loc.name ?? "Unknown Location");
+                mediaIdToLocation.set(m.id, {
+                    locationId: loc.id,
+                    locationName: loc.name ?? "Unknown Location",
+                });
             }
         }
     }
 
-    const revenueByMediaLocationMap = new Map<string, { locationName: string; revenue: number }>();
+    const revenueByMediaLocationMap = new Map<string, { locationId: string; locationName: string; revenue: number }>();
 
     periodFilteredReservations.forEach((reservation) => {
         const mediaId = reservation.mediaId;
-        const targetLocationName = mediaIdToLocationName.get(mediaId) ?? "Unknown Location";
+        const location = mediaIdToLocation.get(mediaId);
+        const locationId = location?.locationId ?? `unknown:${mediaId}`;
+        const locationName = location?.locationName ?? "Unknown Location";
 
         const amount = getReservationAmount(reservation);
 
-        const current = revenueByMediaLocationMap.get(targetLocationName) ?? {
-            locationName: targetLocationName,
-
+        const current = revenueByMediaLocationMap.get(locationId) ?? {
+            locationId,
+            locationName,
             revenue: 0,
         };
         current.revenue += amount;
-        revenueByMediaLocationMap.set(targetLocationName, current);
-
+        revenueByMediaLocationMap.set(locationId, current);
     });
 
     const revenueByMediaLocation = Array.from(revenueByMediaLocationMap.values())

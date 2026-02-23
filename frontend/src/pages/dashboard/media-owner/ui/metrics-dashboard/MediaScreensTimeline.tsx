@@ -46,7 +46,7 @@ function packSegmentsIntoLanes(segments: MediaScreenTimelineSegment[]) {
 }
 
 export function MediaScreensTimeline({ data }: MediaScreensTimelineProps) {
-  const t = useTranslations("mediaOwnerMetrics.sections");
+  const t = useTranslations("mediaOwnerMetrics");
   const locale = useLocale();
 
   const { rows, startMs, endMs } = data;

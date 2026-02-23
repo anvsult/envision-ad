@@ -134,6 +134,11 @@ export default function MediaOwnerMetricsDashboard() {
 
     const EARNINGS_TREND_SERIES = activeSeries;
 
+    /** Maps raw Recharts series keys to their translated display labels. */
+    const seriesLabelMap: Record<string, string> = {
+        revenue: t("table.amount"),
+    };
+
     // Build a count-based trend: each location's bar height = number of reservations
     // (not revenue), scoped to the currently selected series so the Y axis represents
     // reservation counts. totalAmount is preserved for the tooltip.
@@ -196,7 +201,10 @@ export default function MediaOwnerMetricsDashboard() {
         label: string | number | undefined
     ) => {
         if (!payload || payload.length === 0) return null;
-        const uniquePayload = getUniqueTooltipItems(payload);
+        const uniquePayload = getUniqueTooltipItems(payload).map((item) => ({
+            ...item,
+            name: seriesLabelMap[item.name] ?? item.name,
+        }));
 
         const labelText = label == null ? "" : String(label);
         return <ChartTooltipContent labelText={labelText} items={uniquePayload} />;

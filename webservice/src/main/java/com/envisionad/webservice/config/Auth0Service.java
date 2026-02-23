@@ -16,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -47,7 +48,8 @@ public class Auth0Service {
     /** Cached token entry: index 0 = access_token (String), index 1 = expiry (Instant). */
     private final AtomicReference<Object[]> cachedToken = new AtomicReference<>();
 
-    private static final Duration TOKEN_TTL = Duration.ofHours(23);
+    /** Safety buffer subtracted from expires_in to avoid using a token right at its boundary. */
+    private static final Duration TOKEN_EXPIRY_BUFFER = Duration.ofSeconds(30);
 
 
 
@@ -63,14 +65,44 @@ public class Auth0Service {
         HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
+            java.net.URI uri = UriComponentsBuilder
+                    .fromUriString(managementBaseUrl)
+                    .pathSegment("api", "v2", "users", userId)
+                    .build()
+                    .toUri();
+
             ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
-                    managementBaseUrl + "api/v2/users/" + userId,
+                    uri,
                     HttpMethod.GET,
                     entity,
                     getMapTypeRef()
             );
 
             return (String) Objects.requireNonNull(response.getBody(), "Auth0 Management API returned null body for user: " + userId).get("email");
+        } catch (HttpClientErrorException.Unauthorized e) {
+            // Token may have expired early (clock drift, early revocation). Clear the cache
+            // and retry once with a fresh token before giving up.
+            cachedToken.set(null);
+            HttpHeaders retryHeaders = new HttpHeaders();
+            retryHeaders.setBearerAuth(getManagementApiToken());
+            HttpEntity<String> retryEntity = new HttpEntity<>(retryHeaders);
+            try {
+                java.net.URI uri = UriComponentsBuilder
+                        .fromUriString(managementBaseUrl)
+                        .pathSegment("api", "v2", "users", userId)
+                        .build()
+                        .toUri();
+                ResponseEntity<Map<String, Object>> retryResponse = restTemplate.exchange(
+                        uri,
+                        HttpMethod.GET,
+                        retryEntity,
+                        getMapTypeRef()
+                );
+                return (String) Objects.requireNonNull(retryResponse.getBody(), "Auth0 Management API returned null body for user: " + userId).get("email");
+            } catch (RestClientException retryEx) {
+                throw new Auth0ServiceUnavailableException(
+                        "Failed to retrieve email for user '" + userId + "' from Auth0 Management API after token refresh", retryEx);
+            }
         } catch (HttpClientErrorException.NotFound e) {
             throw new Auth0UserNotFoundException(userId, e);
         } catch (RestClientException e) {
@@ -104,8 +136,11 @@ public class Auth0Service {
                     getMapTypeRef()
             );
 
-            String accessToken = (String) Objects.requireNonNull(response.getBody(), "Auth0 token endpoint returned null body").get("access_token");
-            cachedToken.set(new Object[]{accessToken, Instant.now().plus(TOKEN_TTL)});
+            Map<String, Object> responseBody = Objects.requireNonNull(response.getBody(), "Auth0 token endpoint returned null body");
+            String accessToken = (String) responseBody.get("access_token");
+            Number expiresIn = (Number) responseBody.getOrDefault("expires_in", 3600);
+            Instant expiry = Instant.now().plusSeconds(expiresIn.longValue()).minus(TOKEN_EXPIRY_BUFFER);
+            cachedToken.set(new Object[]{accessToken, expiry});
             return accessToken;
         } catch (RestClientException e) {
             throw new Auth0ServiceUnavailableException(
