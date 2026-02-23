@@ -3,8 +3,6 @@ package com.envisionad.webservice.proofofdisplay.businesslogiclayer;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.exceptions.ReservationNotFoundException;
 import com.envisionad.webservice.utils.JwtUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.jwt.Jwt;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
@@ -14,6 +12,7 @@ import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
+import com.envisionad.webservice.config.Auth0Service;
 import com.envisionad.webservice.proofofdisplay.exceptions.AdvertiserEmailNotFoundException;
 import com.envisionad.webservice.proofofdisplay.presentationlayer.models.ProofOfDisplayRequest;
 import com.envisionad.webservice.utils.EmailService;
@@ -31,6 +30,7 @@ public class ProofOfDisplayService {
     private final AdCampaignRepository adCampaignRepository;
     private final JwtUtils jwtUtils;
     private final ReservationRepository reservationRepository;
+    private final Auth0Service auth0Service;
 
     public ProofOfDisplayService(
             EmailService emailService,
@@ -38,7 +38,8 @@ public class ProofOfDisplayService {
             MediaRepository mediaRepository,
             AdCampaignRepository adCampaignRepository,
             JwtUtils jwtUtils,
-            ReservationRepository reservationRepository
+            ReservationRepository reservationRepository,
+            Auth0Service auth0Service
     ) {
         this.emailService = emailService;
         this.employeeRepository = employeeRepository;
@@ -46,6 +47,7 @@ public class ProofOfDisplayService {
         this.adCampaignRepository = adCampaignRepository;
         this.jwtUtils = jwtUtils;
         this.reservationRepository = reservationRepository;
+        this.auth0Service = auth0Service;
     }
 
     public void sendProofEmail(Jwt jwt, ProofOfDisplayRequest request) {
@@ -90,16 +92,17 @@ public class ProofOfDisplayService {
                 throw new ReservationNotFoundException(mediaId.toString(), campaignId);
             }
 
-            // Resolve advertiser email (campaign's business)
+            // Resolve advertiser email via Auth0 Management API (always up-to-date)
             String advertiserBusinessId = campaign.getBusinessId().getBusinessId();
 
             List<Employee> advertiserEmployees =
                     employeeRepository.findAllByBusinessId_BusinessId(advertiserBusinessId);
 
             String advertiserEmail = advertiserEmployees.stream()
-                    .map(Employee::getEmail)
-                    .filter(email -> email != null && !email.isBlank())
+                    .map(Employee::getUserId)
+                    .filter(uid -> uid != null && !uid.isBlank())
                     .findFirst()
+                    .map(auth0Service::getUserEmailByUserId)
                     .orElseThrow(() -> new AdvertiserEmailNotFoundException(advertiserBusinessId));
 
             //  Build email body

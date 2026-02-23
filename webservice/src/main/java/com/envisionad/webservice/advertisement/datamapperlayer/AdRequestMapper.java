@@ -12,7 +12,6 @@ public interface AdRequestMapper {
     @Mapping(target = "campaign", ignore = true)
 
     @Mapping(target = "adType", ignore = true)
-    @Mapping(target = "adDurationSeconds", ignore = true)
 
     Ad requestModelToEntity(AdRequestModel adRequestModel);
 

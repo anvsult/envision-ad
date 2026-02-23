@@ -57,6 +57,13 @@ okta:
     issuer: "https://${AUTH0_DOMAIN:test.auth0.com}/"
     audience: ${AUTH0_AUDIENCE:test-audience}
 
+auth0:
+  management:
+    client-id: ${AUTH0_MGMT_CLIENT_ID:test-mgmt-client-id}
+    client-secret: ${AUTH0_MGMT_CLIENT_SECRET:test-mgmt-client-secret}
+    audience: https://${AUTH0_DOMAIN:test.auth0.com}/api/v2/
+    token-url: https://${AUTH0_MGMT_DOMAIN:test.auth0.com}/oauth/token
+    base-url: https://${AUTH0_MGMT_DOMAIN:test.auth0.com}/
 app:
   base:
     url: ${APP_BASE_URL:http://localhost:8080}

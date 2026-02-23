@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Modal, TextInput, Select, Button, Group, Box, Text, Stack, ThemeIcon, Alert, Badge } from '@mantine/core';
+import React, { useState } from 'react';
+import { Modal, TextInput, Button, Group, Box, Text, Stack, ThemeIcon, Alert, Badge } from '@mantine/core';
 import { useForm } from '@mantine/form';
-import { IconUpload, IconCheck, IconInfoCircle } from '@tabler/icons-react';
+import { IconUpload, IconCheck, IconAlertCircle } from '@tabler/icons-react';
 import { AdRequestDTO } from "@/entities/ad";
 import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary';
 import { useTranslations } from 'next-intl'
+
+const MAX_VIDEO_DURATION_SECONDS = 30;
 
 interface AddAdModalProps {
     opened: boolean;
@@ -18,14 +20,12 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
 
     // Cloudinary State
     const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
-    const [originalVideoDuration, setOriginalVideoDuration] = useState<number | null>(null);
-    const [trimWarning, setTrimWarning] = useState<string | null>(null);
+    const [videoTooLong, setVideoTooLong] = useState(false);
 
     const form = useForm({
         initialValues: {
             name: "",
             adType: "IMAGE",
-            adDurationSeconds: "15",
         },
         validate: {
             name: (value) => (value.length < 2 ? t('validation.nameTooShort') : null),
@@ -36,8 +36,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
     const handleReset = () => {
         form.reset();
         setUploadedFileUrl(null);
-        setOriginalVideoDuration(null);
-        setTrimWarning(null);
+        setVideoTooLong(false);
     };
 
     const handleClose = () => {
@@ -45,31 +44,23 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
         onClose();
     };
 
-    // --- Trimming Checker ---
-    useEffect(() => {
-        const selectedDuration = parseInt(form.values.adDurationSeconds);
-
-        if (form.values.adType === 'VIDEO' && originalVideoDuration && originalVideoDuration > selectedDuration) {
-            setTrimWarning(t('alerts.croppingMessage', { orig: Math.round(originalVideoDuration), keep: selectedDuration }));
-        } else {
-            setTrimWarning(null);
-        }
-    }, [form.values.adDurationSeconds, originalVideoDuration, form.values.adType, t]);
-
     // --- Cloudinary Success Callback ---
     const handleUploadSuccess = (results: CloudinaryUploadWidgetResults) => {
         if (typeof results.info === 'object' && results.info.secure_url) {
-            setUploadedFileUrl(results.info.secure_url);
-
             const type = results.info.resource_type === 'video' ? 'VIDEO' : 'IMAGE';
             form.setFieldValue('adType', type);
 
             if (type === 'VIDEO' && results?.info?.duration != null) {
                 const durationNum = Number(results.info.duration);
-                setOriginalVideoDuration(Number.isFinite(durationNum) ? durationNum : null);
-            } else {
-                setOriginalVideoDuration(null);
+                if (Number.isFinite(durationNum) && durationNum > MAX_VIDEO_DURATION_SECONDS) {
+                    setVideoTooLong(true);
+                    setUploadedFileUrl(null);
+                    return;
+                }
             }
+
+            setVideoTooLong(false);
+            setUploadedFileUrl(results.info.secure_url);
         }
     };
 
@@ -79,25 +70,10 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
 
         setSubmitting(true);
         try {
-            let finalUrl = uploadedFileUrl;
-            const durationInt = parseInt(values.adDurationSeconds);
-
-            if (
-                values.adType === 'VIDEO' &&
-                originalVideoDuration &&
-                originalVideoDuration > durationInt
-            ) {
-                finalUrl = uploadedFileUrl.replace(
-                    '/upload/',
-                    `/upload/so_0,eo_${durationInt}/`
-                );
-            }
-
             await onSuccess({
                 name: values.name,
                 adType: values.adType as "IMAGE" | "VIDEO",
-                adDurationSeconds: durationInt,
-                adUrl: finalUrl
+                adUrl: uploadedFileUrl,
             });
 
             // Only runs if no error was thrown
@@ -110,15 +86,6 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
             setSubmitting(false);
         }
     };
-
-
-
-
-    const durationOptions = [
-        { value: '10', label: t('duration.10') },
-        { value: '15', label: t('duration.15') },
-        { value: '30', label: t('duration.30') },
-    ];
 
     const widgetOptions = {
         sources: ['local', 'url'] as ('local' | 'url')[],
@@ -137,15 +104,6 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                             placeholder={t('placeholders.name')}
                             required
                             {...form.getInputProps('name')}
-                        />
-
-                        {/* Duration select remains in place */}
-                        <Select
-                            label={t('labels.duration')}
-                            data={durationOptions}
-                            required
-                            allowDeselect={false}
-                            {...form.getInputProps('adDurationSeconds')}
                         />
 
                         <Box>
@@ -182,9 +140,21 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                     </Group>
                                 )}
                             </CldUploadWidget>
-                            {!uploadedFileUrl && form.isTouched() && (
+                            {!uploadedFileUrl && form.isTouched() && !videoTooLong && (
                                 <Text c="red" size="xs" mt={4}>{t('validation.fileRequired')}</Text>
                             )}
+
+                            {videoTooLong && (
+                                <Alert
+                                    variant="light"
+                                    color="red"
+                                    icon={<IconAlertCircle />}
+                                    mt="sm"
+                                >
+                                    {t('validation.videoTooLong', { max: MAX_VIDEO_DURATION_SECONDS })}
+                                </Alert>
+                            )}
+
                             {/* Show detected media type under the upload widget as a non-interactive Badge */}
                             <Box mt="sm">
                                 <Text size="sm" fw={500} mb={4}>{t('labels.type')}</Text>
@@ -195,20 +165,6 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
                                     <Text size="xs" color="dimmed">{t('description.autoDetect')}</Text>
                                 </Group>
                             </Box>
-
-                            {trimWarning && (
-                                <Alert
-                                    variant="light"
-                                    color="orange"
-                                    title={t('alerts.croppingTitle')}
-                                    icon={<IconInfoCircle />}
-                                    mt="sm"
-                                >
-                                    {trimWarning}
-                                </Alert>
-                            )}
-
-
                         </Box>
 
                         <Group justify="flex-end" mt="md">

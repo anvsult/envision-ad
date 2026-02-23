@@ -202,6 +202,7 @@ export default function AdminMediaReviewPage() {
             onClose={closeConfirm}
             centered
             keepMounted={false}
+            closeButtonProps={{ "aria-label": t1("close") }}
             title={
               confirmAction === "approve"
                   ? t1("approveMediaConfirmation")

@@ -90,7 +90,7 @@ export default function AdminMetricsPage() {
 
   if (loading) {
     return (
-        <Center py="xl" role="status" aria-live="polite" aria-label={t("loadingPendingMedia")}>
+        <Center py="xl" role="status" aria-live="polite" aria-label={t("loading")}>
           <Loader role="img"/>
         </Center>
     );
@@ -175,7 +175,7 @@ export default function AdminMetricsPage() {
               align="center"
               justify="center"
               gap="xl"
-              wrap="nowrap"
+              wrap="wrap"
               style={{ width: "100%" }}
           >
             <div

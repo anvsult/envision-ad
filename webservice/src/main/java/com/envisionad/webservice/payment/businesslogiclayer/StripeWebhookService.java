@@ -6,6 +6,7 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignReposit
 import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundException;
 import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.config.Auth0Service;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -44,10 +45,11 @@ public class StripeWebhookService {
     private final AdCampaignRepository adCampaignRepository;
     private final AdCampaignService adCampaignService;
     private final StripeAccountRepository stripeAccountRepository;
+    private final Auth0Service auth0Service;
 
 
     public StripeWebhookService(PaymentIntentRepository paymentIntentRepository,
-                                ReservationRepository reservationRepository, EmailService emailService, EmployeeRepository employeeRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, AdCampaignService adCampaignService, StripeAccountRepository stripeAccountRepository) {
+                                ReservationRepository reservationRepository, EmailService emailService, EmployeeRepository employeeRepository, MediaRepository mediaRepository, AdCampaignRepository adCampaignRepository, AdCampaignService adCampaignService, StripeAccountRepository stripeAccountRepository, Auth0Service auth0Service) {
         this.paymentIntentRepository = paymentIntentRepository;
         this.reservationRepository = reservationRepository;
         this.emailService = emailService;
@@ -56,6 +58,7 @@ public class StripeWebhookService {
         this.adCampaignRepository = adCampaignRepository;
         this.adCampaignService = adCampaignService;
         this.stripeAccountRepository = stripeAccountRepository;
+        this.auth0Service = auth0Service;
     }
 
     @Transactional
@@ -262,9 +265,18 @@ public class StripeWebhookService {
         String mediaOwnerBusinessId = media.getBusinessId().toString();
         List<Employee> mediaOwners = employeeRepository.findAllByBusinessId_BusinessId(mediaOwnerBusinessId);
         List<String> mediaOwnerEmailAddresses = mediaOwners.stream()
-                .map(Employee::getEmail)
-                .filter(email -> email != null && !email.isEmpty())
+                .map(Employee::getUserId)
+                .filter(uid -> uid != null && !uid.isBlank())
                 .distinct()
+                .map(uid -> {
+                    try {
+                        return auth0Service.getUserEmailByUserId(uid);
+                    } catch (Exception e) {
+                        log.warn("Failed to fetch email for userId {} from Auth0: {}", uid, e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(email -> email != null && !email.isEmpty())
                 .toList();
 
         if (!mediaOwnerEmailAddresses.isEmpty()) {

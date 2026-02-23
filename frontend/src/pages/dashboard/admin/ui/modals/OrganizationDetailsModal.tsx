@@ -69,6 +69,7 @@ export function OrganizationDetailsModal({
             onClose={handleModalClose}
             title={t("verificationDetails")}
             size="lg"
+            closeButtonProps={{ "aria-label": t("close") }}
         >
             <Stack gap="md">
                 <Stack gap={4}>
@@ -131,7 +132,7 @@ export function OrganizationDetailsModal({
                             <Button variant="default" onClick={handleCancelDeny}>
                                 {t("cancel")}
                             </Button>
-                            <Button color="red" onClick={handleConfirmDeny} disabled={!reason.trim()}>
+                            <Button color="red" variant="outline" onClick={handleConfirmDeny} disabled={!reason.trim()}>
                                 {t("deny")}
                             </Button>
                         </>
@@ -140,16 +141,16 @@ export function OrganizationDetailsModal({
                             <Button variant="default" onClick={handleCancelApprove}>
                                 {t("cancel")}
                             </Button>
-                            <Button color="green" onClick={handleConfirmApprove}>
+                            <Button onClick={handleConfirmApprove}>
                                 {t("approve")}
                             </Button>
                         </>
                     ) : (
                         <>
-                            <Button color="red" onClick={handleDenyClick}>
+                            <Button color="red" variant="outline"  onClick={handleDenyClick}>
                                 {t("deny")}
                             </Button>
-                            <Button color="green" onClick={handleApproveClick}>
+                            <Button onClick={handleApproveClick}>
                                 {t("approve")}
                             </Button>
                         </>

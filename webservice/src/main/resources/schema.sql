@@ -68,7 +68,6 @@ CREATE TABLE employee
     employee_id VARCHAR(36) UNIQUE NOT NULL,
     user_id     VARCHAR(36) UNIQUE NOT NULL,
     business_id VARCHAR(36)  NOT NULL,
-    email       VARCHAR(255),
 
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
@@ -144,7 +143,6 @@ CREATE TABLE ads
     ad_id VARCHAR(36) UNIQUE NOT NULL,
     name VARCHAR(255) NOT NULL,
     ad_url VARCHAR(512) NOT NULL,
-    ad_duration_seconds INTEGER NOT NULL,
     ad_type VARCHAR(50) NOT NULL,
 
     ad_campaign_ref_id INTEGER REFERENCES ad_campaigns(id) ON DELETE CASCADE

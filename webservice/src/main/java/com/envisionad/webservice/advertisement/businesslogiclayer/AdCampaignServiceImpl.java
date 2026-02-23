@@ -125,12 +125,6 @@ public class AdCampaignServiceImpl implements AdCampaignService {
             throw new InvalidAdTypeException(adRequestModel.getAdType());
         }
 
-        try {
-            newAd.setAdDurationSeconds(AdDuration.fromSeconds(adRequestModel.getAdDurationSeconds()));
-        } catch (Exception e) { // Catch validation errors from AdDuration constructor
-            throw new InvalidAdDurationException(adRequestModel.getAdDurationSeconds());
-        }
-
         newAd.setCampaign(adCampaign);
         adCampaign.getAds().add(newAd);
 

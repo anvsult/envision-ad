@@ -62,11 +62,12 @@ function AdCarousel({ ads }: { ads: Ad[] }) {
     const next = () => setActiveIndex((i) => (i === ads.length - 1 ? 0 : i + 1));
 
     useEffect(() => {
+        const adCarouselDuration = 5 * 1000; // 5 seconds per ad
         if (current.adType !== "IMAGE") return;
 
         const timer = setTimeout(() => {
             setActiveIndex((i) => (i === ads.length - 1 ? 0 : i + 1));
-        }, current.adDurationSeconds * 1000);
+        }, adCarouselDuration);
 
         return () => clearTimeout(timer);
     }, [activeIndex, current, ads.length]);

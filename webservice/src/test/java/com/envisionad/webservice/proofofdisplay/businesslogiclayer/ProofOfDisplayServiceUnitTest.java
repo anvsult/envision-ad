@@ -6,6 +6,7 @@ import com.envisionad.webservice.advertisement.exceptions.AdCampaignNotFoundExce
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.Employee;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.config.Auth0Service;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.exceptions.MediaNotFoundException;
@@ -52,6 +53,9 @@ class ProofOfDisplayServiceUnitTest {
 
     @Mock
     private JwtUtils jwtUtils;
+
+    @Mock
+    private Auth0Service auth0Service;
 
     private UUID mediaUuid;
 
@@ -107,8 +111,9 @@ class ProofOfDisplayServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
 
         Employee emp1 = mock(Employee.class);
-        when(emp1.getEmail()).thenReturn("advertiser@company.com");
+        when(emp1.getUserId()).thenReturn("auth0|advertiser123");
         when(employeeRepository.findAllByBusinessId_BusinessId("biz-999")).thenReturn(List.of(emp1));
+        when(auth0Service.getUserEmailByUserId("auth0|advertiser123")).thenReturn("advertiser@company.com");
 
         ArgumentCaptor<String> toCaptor = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> subjectCaptor = ArgumentCaptor.forClass(String.class);
@@ -226,9 +231,9 @@ class ProofOfDisplayServiceUnitTest {
         when(adCampaignRepository.findByCampaignId_CampaignId("camp-123")).thenReturn(campaign);
 
         Employee e1 = mock(Employee.class);
-        when(e1.getEmail()).thenReturn("   ");
+        when(e1.getUserId()).thenReturn("   ");
         Employee e2 = mock(Employee.class);
-        when(e2.getEmail()).thenReturn(null);
+        when(e2.getUserId()).thenReturn(null);
 
         when(employeeRepository.findAllByBusinessId_BusinessId("biz-999")).thenReturn(List.of(e1, e2));
 

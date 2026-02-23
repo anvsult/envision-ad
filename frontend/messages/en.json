@@ -193,12 +193,13 @@
       "decreaseComparedToLastPeriod": "Decrease compared to last period"
     },
     "sections": {
-      "earningsTrendWeekly": "Earnings Trend (Weekly)",
-      "earningsTrendAllTime": "Earnings Trend (All-time)",
+      "earningsTrend": "Reservation Activity",
       "revenueByLocation": "Revenue by Location",
-      "revenueByMedia": "Revenue by Media",
+      "revenueByMediaLocation": "Revenue by Media Location",
       "activeCampaignDetails": "Active Campaigns Details",
-      "payoutHistory": "Payout History"
+      "payoutHistory": "Payout History",
+      "performanceMetrics": "Performance Metrics",
+      "mediaReservations": "Media Reservations"
     },
     "table": {
       "transactionId": "Transaction ID",
@@ -211,7 +212,11 @@
     },
     "period": {
       "allTime": "All-time",
-      "weekly": "Weekly"
+      "yearly": "Yearly",
+      "monthly": "Monthly",
+      "weekly": "Weekly",
+      "custom": "Custom",
+      "customPlaceholder": "Select date range..."
     },
     "emptyState": {
       "noData": "No data available"
@@ -219,6 +224,11 @@
     "payoutStatus": {
       "paid": "PAID",
       "processing": "PROCESSING"
+    },
+    "earningsTrend": {
+      "totalAmount": "Total Earnings",
+      "reservations": "Number of reservations",
+      "averageValue": "Average per reservation"
     }
   },
   "homepage": {
@@ -301,7 +311,7 @@
       "resolution": "Resolution",
       "width": "Width",
       "height": "Height",
-      "loopDuration": "Loop duration",
+      "loopDuration": "Advertisement duration (sec)",
       "weeklyImpressions": "Weekly Impressions"
     },
     "scheduleTitle": "Schedule",
@@ -356,7 +366,7 @@
   },
   "browse": {
     "searchTitle": "Title",
-    "searchAddress": "Address",
+    "searchAddress": "City",
     "languages": {
       "primary": "en",
       "fallback": "fr-CA"
@@ -662,7 +672,7 @@
       "mediaName": "Media Name",
       "mediaImage": "Media Image",
       "typeOfDisplay": "Type of display",
-      "loopDuration": "Loop duration (sec)",
+      "loopDuration": "Advertisement duration (sec)",
       "resolution": "Resolution (px)",
       "resolutionWidth": "Resolution - Width (px)",
       "resolutionHeight": "Resolution - Height (px)",
@@ -681,11 +691,11 @@
       "selectType": "Select type",
       "loopDuration": "Ex. 12",
       "resolution": "Ex. 1920x1080",
-      "resolutionWidth": "Ex. 1920",
-      "resolutionHeight": "Ex. 1080",
-      "aspectRatio": "Ex. 16:9",
-      "aspectRatioWidth": "Ex. 16",
-      "aspectRatioHeight": "Ex. 9",
+      "resolutionWidth": "Ex. 1080",
+      "resolutionHeight": "Ex. 1920",
+      "aspectRatio": "Ex. 9:16",
+      "aspectRatioWidth": "Ex. 9",
+      "aspectRatioHeight": "Ex. 16",
       "width": "Ex. 80",
       "height": "Ex. 200",
       "price": "CAD$50.00",
@@ -759,7 +769,6 @@
     "labels": {
       "name": "Name",
       "type": "Type",
-      "duration": "Duration (seconds)",
       "media": "Media"
     },
     "placeholders": {
@@ -787,13 +796,10 @@
       "imageUploaded": "Image Uploaded",
       "videoUploaded": "Video Uploaded"
     },
-    "alerts": {
-      "croppingTitle": "Automatic Cropping",
-      "croppingMessage": "Video is {orig}s. It will be cropped to the first {keep}s."
-    },
     "validation": {
       "nameTooShort": "Name too short",
-      "fileRequired": "File is required"
+      "fileRequired": "File is required",
+      "videoTooLong": "Video must be {max} seconds or shorter"
     }
   },
   "adRequests": {
@@ -1004,7 +1010,7 @@
       "addAd": {
         "success": {
           "title": "Success",
-          "message": "Ad added"
+          "message": "Ad created successfully"
         },
         "error": {
           "title": "Error",
@@ -1129,6 +1135,7 @@
       "organization": "Organization",
       "requestDate": "Date Requested",
       "noOrganizationsPending": "No organizations pending verification status review.",
+      "close": "Close",
       "verificationDetails": "Verification Details",
       "approveConfirmMessage": "Are you sure you want to approve this organization?",
       "denyReason": "Denial Reason",
