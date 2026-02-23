@@ -46,9 +46,11 @@ export function OrganizationProvider({ children }: { children: ReactNode }) {
             const status = (error as { response?: { status?: number } })?.response?.status;
             if (status === 404) {
                 setOrganization(null);
-                if (!pathname.endsWith('/invite') && !hasRedirected.current) {
+                if (!pathname.endsWith('/invite')) {
+                    if (!hasRedirected.current){
+                        router.push('/dashboard');
+                    }
                     hasRedirected.current = true;
-                    router.push('/dashboard');
                 }
             } else {
                 console.error('Failed to fetch organization:', error);
