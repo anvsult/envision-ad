@@ -1,15 +1,11 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
-import com.envisionad.webservice.media.DataAccessLayer.Media;
-import com.envisionad.webservice.media.DataAccessLayer.Status;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 

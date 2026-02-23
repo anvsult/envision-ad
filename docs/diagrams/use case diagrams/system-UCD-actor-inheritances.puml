@@ -1,0 +1,27 @@
+@startuml
+
+title <u>Actor Inheritances For Use Cases -- System</u>
+
+left to right direction
+
+skinparam rectangle {
+    Padding 40
+    Margin 40
+}
+
+actor Advertiser as ADV
+actor "Media Owner" as MO
+actor "Organization Owner" as OW
+actor Admin as ADM
+actor "Guest User" as GU
+
+
+ADV --|> GU
+MO --|> GU
+
+OW --|> ADV
+OW --|> MO
+
+ADM --|> GU
+
+@enduml

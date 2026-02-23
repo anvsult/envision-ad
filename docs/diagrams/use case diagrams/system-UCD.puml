@@ -1,0 +1,137 @@
+@startuml
+
+title <u>Use Case Diagram -- System</u>
+
+left to right direction
+
+skinparam rectangle {
+    Padding 40
+    Margin 40
+}
+
+rectangle "<img:https://cdn-icons-png.flaticon.com/512/3889/3889548.png{scale=0.12}>" as HG <<Temporal>>
+skinparam rectangle<<Temporal>> {
+    BorderColor white
+    BackgroundColor white
+}
+actor Advertiser as ADV
+actor "Media Owner" as MO
+actor "Organization Owner" as OW
+actor Admin as ADM
+actor "Guest User" as GU
+
+
+' --- Hourglass actor for temporal use cases ---
+
+
+rectangle "Envision Ad" {
+'    --------- Guest User Use Cases ---------
+    usecase "UC-01 Browse Media Listings" as Browse
+    usecase "UC- View Media Listing Details" as ViewMediaDetails
+
+'    --------- Advertiser Use Cases ---------
+    usecase "UC- Create Reservation" as CreateReservation
+    usecase "UC-02 Pay for Reservation" as Pay
+    usecase "UC- View Reservations" as ViewReservations
+    usecase "UC- Manage Ad Campaigns" as ManageAdCampaigns
+    usecase "UC- View Payment History" as ViewPaymentHistory
+    'Not sure about this one
+    usecase "UC- Create Ad Campaign" as CreateAdCampaign
+
+'    --------- Media Owner Use Cases ---------
+    usecase "UC-09 Manage Media Listing" as ManageListing
+    usecase "UC-06 Submit Proof of Display" as SubmitProof
+    usecase "UC-4 Manage Reservation" as ManageReservation
+    usecase "UC-04.1 Approve Reservation" as ApproveReservation
+    usecase "UC-04.2 Deny Reservation" as DenyReservation
+    usecase "UC- Perform Stripe Onboarding" as StripeOnboarding
+
+'    --------- Organization Owner Use Cases ---------
+    usecase "UC- Request Organization Verification" as RequestOrgVerification
+    usecase "UC- Manage Employees" as ManageEmployees
+    usecase "UC- Edit Organization Details" as EditOrgDetails
+
+'    --------- Admin Use Cases ---------
+    usecase "UC- Review Organization" as ReviewOrg
+    usecase "UC- Approve Organization" as ApproveOrg
+    usecase "UC- Deny Organization" as DenyOrg
+    usecase "UC- Ban User" as BanUser
+
+'   ---------- Temporal Use Cases ---------
+    usecase "UC_ Send Proof Reminder" as SendEmailReminder
+
+    note right of SendEmailReminder
+        This use case is triggered by a scheduled job that runs daily.
+        It checks for reservations with upcoming proof of display deadlines
+        and sends reminder emails to the respective media owners.
+    end note
+
+' ==============================================================================
+
+'    --------- Guest User Relationships ---------
+    GU -- Browse
+    GU --- ViewMediaDetails
+
+    note bottom of GU
+        All Guest User Use Cases are
+        inherited to all other users.
+        Detailed in the Actor Inheritance diagram.
+    end note
+
+'    --------- Advertiser Relationships ---------
+    note right of ViewReservations
+        Advertisers can view their
+        PENDING, APPROVED,
+        CONFIRMED, and DENIED
+        reservations
+    end note
+
+    ADV -- CreateReservation
+    ADV -- ManageAdCampaigns
+    ADV -- Pay
+    ADV -- CreateAdCampaign
+    ADV -- ViewReservations
+    ADV -- ViewPaymentHistory
+
+
+'    --------- Media Owner Relationships ---------
+    MO -- ManageListing
+    MO -- SubmitProof
+    MO -- ManageReservation
+    MO -- StripeOnboarding
+'    --------- Organization Owner Relationships
+    OW - RequestOrgVerification
+    OW -- ManageEmployees
+    OW -- EditOrgDetails
+
+'    --------- Admin Relationships ---------
+    ADM - ReviewOrg
+    ADM -- BanUser
+
+'    --------- Temporal Use Case Relationships ---------
+    HG -- SendEmailReminder
+
+' ==============================================================================
+    ViewReservations <-- Pay : <<extends>>
+    CreateAdCampaign <-- CreateReservation : <<includes>>
+    ViewMediaDetails <-- CreateReservation : <<extends>>
+    ApproveReservation ..> CreateReservation : <<includes>>
+    Pay .> ApproveReservation: <<includes>>
+
+    Browse <-- ViewMediaDetails : <<extends>>
+    ReviewOrg ..> RequestOrgVerification : <<includes>>
+
+    ManageAdCampaigns <-- CreateAdCampaign : <<extends>>
+
+'    ManageReservation <- ApproveReservation : <<extends>>
+'    DenyReservation -> ManageReservation : <<extends>>
+    ManageReservation <-- ApproveReservation : <<extends>>
+    ManageReservation <-- DenyReservation : <<extends>>
+
+    ReviewOrg <-- ApproveOrg : <<extends>>
+hide stereotypes
+    ReviewOrg <-- DenyOrg : <<extends>>
+}
+
+
+@enduml

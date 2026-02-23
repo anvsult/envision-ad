@@ -15,7 +15,7 @@
     box-shadow: 0 2px 3px rgba(0,0,0,0.5);
     font-size: medium;
     font-weight: bold;
-    margin: 0px;
+    margin: 0;
     transition: all 0.1s ease;
     width: fit-content;
     padding-top: 2px;
@@ -41,7 +41,7 @@
     background-color: white;
     border-radius: 24px;
     margin: 5px;
-    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
 }
 
 .leaflet-popup-tip-container {
