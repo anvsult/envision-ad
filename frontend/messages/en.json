@@ -571,7 +571,8 @@
       "pending": "Ads pending",
       "status": "Status",
       "update": "Next Update",
-      "price": "Price"
+      "price": "Price",
+      "actions": "Actions"
     },
     "status": {
       "active": "Active",
@@ -626,6 +627,14 @@
     },
     "page": {
       "title": "My Media"
+    },
+    "pagination": {
+      "previous": "Previous page",
+      "next": "Next page",
+      "first": "First page",
+      "last": "Last page",
+      "dots": "More pages",
+      "page": "Page {page}"
     }
   },
   "proofOfDisplay": {

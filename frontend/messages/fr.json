@@ -627,6 +627,14 @@
     },
     "page": {
       "title": "Mes Médias"
+    },
+    "pagination": {
+      "previous": "Page précédente",
+      "next": "Page suivante",
+      "first": "Première page",
+      "last": "Dernière page",
+      "dots": "Plus de pages",
+      "page": "{page} Page"
     }
   },
   "proofOfDisplay": {

@@ -81,7 +81,7 @@ export default function ProofMediaTable({
                                     <Text size="xs" c="dimmed">
                                         {t("table.displayed")}
                                     </Text>
-                                    <Text fw={700} c="blue">
+                                    <Text fw={700} c="blue.9">
                                         {getDisplayedCount(row)}
                                     </Text>
                                 </Stack>
@@ -90,7 +90,7 @@ export default function ProofMediaTable({
                                     <Text size="xs" c="dimmed">
                                         {t("table.pending")}
                                     </Text>
-                                    <Text fw={700} c="orange">
+                                    <Text fw={700} c="dark.9">
                                         {row.pending}
                                     </Text>
                                 </Stack>
@@ -153,7 +153,7 @@ export default function ProofMediaTable({
                                     </Table.Td>
 
                                     <Table.Td w={120} ta="center">
-                                        <Text fw={700} c="orange">
+                                        <Text fw={700} c="dark.9">
                                             {row.pending}
                                         </Text>
                                     </Table.Td>
@@ -181,7 +181,24 @@ export default function ProofMediaTable({
 
             {rows.length > pageSize && (
                 <Group justify="flex-end" p="sm">
-                    <Pagination total={totalPages} value={page} onChange={setRawPage} />
+                    <Pagination
+                        total={totalPages}
+                        value={page}
+                        onChange={setRawPage}
+                        color="dark"
+                        variant="filled"
+                        getControlProps={(control) => {
+                            if (control === "previous") return { "aria-label": t("pagination.previous") };
+                            if (control === "next") return { "aria-label": t("pagination.next") };
+                            if (control === "first") return { "aria-label": t("pagination.first") };
+                            if (control === "last") return { "aria-label": t("pagination.last") };
+                            return {};
+                        }}
+                        getItemProps={(item) => ({
+                            "aria-label": t("pagination.page", { page: item }),
+                            "aria-current": item === page ? "page" : undefined,
+                        })}
+                    />
                 </Group>
             )}
         </Paper>

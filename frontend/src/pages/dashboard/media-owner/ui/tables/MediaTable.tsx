@@ -1,7 +1,7 @@
 "use client";
 
 import { MediaRow, MediaRowData } from "./MediaRow";
-import { Paper, ScrollArea, Table, Text, Card, Group, Avatar, Badge, Stack } from "@mantine/core";
+import { Paper, ScrollArea, Table, Text, Card, Group, Avatar, Badge, Stack, VisuallyHidden } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { MediaActions } from "./MediaActions";
 import {useTranslations} from "next-intl";
@@ -100,6 +100,9 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
               <Table.Th miw={140}>{t("status")}</Table.Th>
               <Table.Th miw={100}>{t("update")}</Table.Th>
               <Table.Th w={100} miw={90}>{t("price")}</Table.Th>
+              <Table.Th w={50} miw={40} ta="center">
+                <VisuallyHidden>{t("actions")}</VisuallyHidden>
+              </Table.Th>
             </Table.Tr>
           </Table.Thead>
           <Table.Tbody>
