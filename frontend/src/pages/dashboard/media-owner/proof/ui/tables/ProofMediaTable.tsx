@@ -188,14 +188,14 @@ export default function ProofMediaTable({
                         color="dark"
                         variant="filled"
                         getControlProps={(control) => {
-                            if (control === "previous") return { "aria-label": "Previous page" };
-                            if (control === "next") return { "aria-label": "Next page" };
-                            if (control === "first") return { "aria-label": "First page" };
-                            if (control === "last") return { "aria-label": "Last page" };
+                            if (control === "previous") return { "aria-label": t("pagination.previous") };
+                            if (control === "next") return { "aria-label": t("pagination.next") };
+                            if (control === "first") return { "aria-label": t("pagination.first") };
+                            if (control === "last") return { "aria-label": t("pagination.last") };
                             return {};
                         }}
                         getItemProps={(item) => ({
-                            "aria-label": `Page ${item}`,
+                            "aria-label": t("pagination.page", { page: item }),
                             "aria-current": item === page ? "page" : undefined,
                         })}
                     />                </Group>
