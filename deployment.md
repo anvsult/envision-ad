@@ -86,11 +86,11 @@ This will give you a url that you can open on your machine and paste the provide
 ```bash
 doppler login
 ```
-You can then simply prefix your build command with `doppler run --` to inject the envs
-```bash
-doppler run -- docker compose up --build
-```
+After logging in, make sure the correct Doppler project and config are selected for this environment. You can either:
 
+- Run `doppler setup` once on the instance and choose the appropriate project and config when prompted, then use the shorter form:
+  ```bash
+  doppler run -- docker compose up --build
 There are other ways to achieve this. Here is the documentation:
 - https://docs.doppler.com/docs/docker-compose
 
@@ -106,14 +106,14 @@ To set up a new EC2 instance for deployment, follow these steps:
    ssh -i /path/to/your-key.pem ec2-user@your-ec2-instance-public-dns
    ```
 3. Install the Doppler CLI by following the steps outlined in the "Infrastructure Setup" section above.
-4. Install Docker and Docker Compose:
+4. Install Docker (Docker Compose V2 is included as a plugin on Amazon Linux 2023):
    ```bash
    sudo dnf update -y
    sudo dnf install docker -y
    sudo systemctl start docker
    sudo systemctl enable docker
-   sudo dnf install docker-compose -y
-   ```
+   # Verify that the Docker Compose V2 plugin is available
+   sudo docker compose version
    By default, the ec2-user cannot run docker commands without sudo. To make your GitHub Actions or manual Doppler commands work seamlessly, add the user to the docker group.
    ```bash
    sudo usermod -aG docker ec2-user
@@ -171,15 +171,9 @@ To set up a new EC2 instance for deployment, follow these steps:
    ```bash
    sudo certbot certonly --standalone -d envision-ad.ca -d www.envision-ad.ca
    ```
-3. Create the directory for Let's Encrypt configurations:
-   ```bash
-   sudo mkdir -p /etc/letsencrypt
-   ```
-4. Download the recommended SSL options for Nginx:
+3. Download the recommended SSL options for Nginx:
    ```bash
    sudo curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf -o /etc/letsencrypt/options-ssl-nginx.conf
-   ```
-5. Generate Diffie-Hellman parameters:
    ```bash
    sudo openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048
    ```
