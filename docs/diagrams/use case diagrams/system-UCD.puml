@@ -39,11 +39,15 @@ rectangle "Envision Ad" {
     usecase "UC- Create Ad Campaign" as CreateAdCampaign
 
 '    --------- Media Owner Use Cases ---------
-    usecase "UC-09 Manage Media Listing" as ManageListing
+    usecase "UC-08 Manage Media Listing" as ManageListing
+    usecase "UC-08.1 Create Media" as CreateListing
+    usecase "UC-08.2 Update Media" as UpdateListing
+    usecase "UC-08.3 Delete Media" as DeleteListing
     usecase "UC-06 Submit Proof of Display" as SubmitProof
-    usecase "UC-4 Manage Reservation" as ManageReservation
-    usecase "UC-04.1 Approve Reservation" as ApproveReservation
-    usecase "UC-04.2 Deny Reservation" as DenyReservation
+    usecase "UC-11 Manage Reservation" as ManageReservation
+
+    usecase "UC-11.1 Approve Reservation" as ApproveReservation
+    usecase "UC-11.2 Deny Reservation" as DenyReservation
     usecase "UC- Perform Stripe Onboarding" as StripeOnboarding
 
 '    --------- Organization Owner Use Cases ---------
@@ -56,6 +60,9 @@ rectangle "Envision Ad" {
     usecase "UC- Approve Organization" as ApproveOrg
     usecase "UC- Deny Organization" as DenyOrg
     usecase "UC- Ban User" as BanUser
+    usecase "UC-07 Manage Media Request" as ManageMediaRequest
+    usecase "UC-07.1 Approve Media Request" as ApproveMediaRequest
+    usecase "UC-07.2 Deny Media Request" as DenyMediaRequest
 
 '   ---------- Temporal Use Cases ---------
     usecase "UC_ Send Proof Reminder" as SendEmailReminder
@@ -107,6 +114,7 @@ rectangle "Envision Ad" {
 '    --------- Admin Relationships ---------
     ADM - ReviewOrg
     ADM -- BanUser
+    ADM -- ManageMediaRequest
 
 '    --------- Temporal Use Case Relationships ---------
     HG -- SendEmailReminder
@@ -129,6 +137,13 @@ rectangle "Envision Ad" {
     ManageReservation <-- DenyReservation : <<extends>>
 
     ReviewOrg <-- ApproveOrg : <<extends>>
+
+    ManageMediaRequest <-- ApproveMediaRequest : <<extends>>
+    ManageMediaRequest <-- DenyMediaRequest : <<extends>>
+
+    ManageListing <-- CreateListing : <<extends>>
+    ManageListing <-- UpdateListing : <<extends>>
+    ManageListing <-- DeleteListing : <<extends>>
 hide stereotypes
     ReviewOrg <-- DenyOrg : <<extends>>
 }

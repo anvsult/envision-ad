@@ -1,90 +1,137 @@
- @startuml
-    !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
-    !define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
-    !include DEVICONS/java.puml
-    !include DEVICONS/html5.puml
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
-    !define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
-    !include DEVICONS2/npm_original_wordmark.puml
-    !include DEVICONS2/typescript.puml
-    !include DEVICONS2/javascript.puml
+!define DEVICONS2 https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons2
+!include DEVICONS2/npm_original_wordmark.puml
+!include DEVICONS2/typescript.puml
+!include DEVICONS2/nextjs_original.puml
+!include DEVICONS2/react_original.puml
 
-    allowmixing
-    SetDefaultLegendEntries("")
-
+allowmixing
+SetDefaultLegendEntries("")
 !theme plain
 
-AddElementTag("java", $shape=EightSidedShape(), $bgColor="Green", $fontColor="white", $legendText="Java File \neight sided")
-AddElementTag("typescript", $shape=RoundedBoxShape(), $bgColor="DodgerBlue", $fontColor="white", $legendText="TSX File")
-AddElementTag("html", $shape=RoundedBoxShape(), $bgColor="OrangeRed", $fontColor="white", $legendText="HTML Files")
-AddElementTag("npm_libraries", $shape=EightSidedShape(), $bgColor="Red", $fontColor="white" ,$legendText="NPM Libraries\neight sided")
-AddElementTag("TSX_component", $shape=EightSidedShape(), $bgColor="Blue", $fontColor="white" ,$legendText="TSX Component\neight sided")
+' ─── Tags ───────────────────────────────────────────────
+AddElementTag("page",       $shape=RoundedBoxShape(), $bgColor="#0055CC", $fontColor="white",  $legendText="Page (Next.js route)")
+AddElementTag("feature",    $shape=RoundedBoxShape(), $bgColor="#6A0DAD", $fontColor="white",  $legendText="Feature (FSD feature slice)")
+AddElementTag("widget",     $shape=RoundedBoxShape(), $bgColor="#2E7D32", $fontColor="white",  $legendText="Widget (composite UI block)")
+AddElementTag("entity",     $shape=EightSidedShape(), $bgColor="#37474F", $fontColor="white",  $legendText="Entity (domain model / store)")
+AddElementTag("shared_ui",  $shape=RoundedBoxShape(), $bgColor="#00838F", $fontColor="white",  $legendText="Shared UI component")
+AddElementTag("shared_api", $shape=EightSidedShape(), $bgColor="#EF6C00", $fontColor="white",  $legendText="Shared API / lib utility")
+AddElementTag("npm_lib",    $shape=EightSidedShape(), $bgColor="#B71C1C", $fontColor="white",  $legendText="NPM Library")
+AddElementTag("external",   $shape=EightSidedShape(), $bgColor="#1B5E20", $fontColor="white",  $legendText="External Service")
 
+' ─── External services (outside the rectangle) ──────────
+Container(backendApi, "Backend REST API", "REST / HTTPS+JSON", "Core application server.", $tags="external")
+Container(auth0Service, "Auth0", "OAuth 2.0 / OIDC", "Identity provider — authentication & authorisation.", $tags="external")
 
-    rectangle "React Application" as frontend #line.dashed {
-            'pages'
-            Container(indexHtml, "Index.html", "HTML", "React Landing page for the user, contains all the scripts.", $sprite="html5", $tags="html")
-            Container(indexJs, "Index.js", "Component: React Component", "React entry point, contains all the components.", $sprite="javascript", $tags="typescript")
-            Container(appJs, "App.js", "Component: React Component", "Main component, contains will be empty because of React Router.", $sprite="javascript", $tags="typescript")
-            Container(layout, "layout.tsx", "Component: React Component", "Layout director.", $sprite="typescript", $tags="typescript")
-            Container(mediaOwnerDashboard, "mediaOwnerDashboard.tsx", "Component: React Component", "Media Owner dashboard page.", $sprite="typescript", $tags="TypeScript")
-            Container(advertiserDashboard, "advertiserDashboard.tsx", "Component: React Component", "Advertiser dashboard page.", $sprite="typescript", $tags="TypeScript")
-            Container(adminDashboard, "adminDashboard.tsx", "Component: React Component", "Admin dashboard page.", $sprite="typescript", $tags="TypeScript")
-            Container(browseMedia, "browseMedia.tsx", "Component: React Component", "Media browsing page.", $sprite="typescript", $tags="TypeScript")
-            Container(mediaDetails, "mediaDetails.tsx", "Component: React Component", "Media details page.", $sprite="typescript", $tags="TypeScript")
-            Container(reactRouter, "React Router", "Library: NPM Library", "Allows the user to navigate through the website.", $sprite="npm_original_wordmark", $tags="npm_libraries")
-            Container(axios, "Axios", "Library: NPM Library", "Allows the user to make HTTP requests.", $sprite="npm_original_wordmark", $tags="npm_libraries")
-            Container(home, "home.tsx", "Component: React Component", "Home page.", $sprite="typescript", $tags="typescript")
-            Container(login, "login.tsx", "Component: React Component", "Login page.", $sprite="typescript", $tags="typescript")
-            Container(register, "register.tsx", "Component: React Component", "Register page.", $sprite="typescript", $tags="typescript")
+rectangle "Next.js Frontend  [Feature-Sliced Design]" as frontend #line.dashed {
 
-            'components'
-            Container(nav, "nav.tsx", "Component: React Component", "Navigation bar component.", $sprite="typescript", $tags="TSX_component")
-            Container(footer, "footer.tsx", "Component: React Component", "Footer component.", $sprite="typescript", $tags="TSX_component")
-            Container(newMedia, "newMedia.tsx", "Component: React Component", "Modal to Reserve a new Media.", $sprite="typescript", $tags="TSX_component")
-            Container(reserveMedia, "reserveMedia.tsx", "Component: React Component", "Modal to add a new media.", $sprite="typescript", $tags="TSX_component")
-
-            'links'
-            indexHtml -[dashed]-> indexJs  : **Imports**
-
-            indexJs -[dashed]-> appJs  : **Imports**
-            indexJs -[dashed]-> layout  : **Imports**
-            indexJs -[dashed]-> appJs  : **Imports**
-            indexJs -[dashed]-> login  : **Imports**
-            indexJs -[dashed]-> register  : **Imports**
-            indexJs -[dashed]-> home  : **Imports**
-            indexJs -[dashed]-> mediaOwnerDashboard  : **Imports**
-            indexJs -[dashed]-> advertiserDashboard  : **Imports**
-            indexJs -[dashed]-> adminDashboard  : **Imports**
-            indexJs -[dashed]-> browseMedia  : **Imports**
-            indexJs -[dashed]-> mediaDetails  : **Imports**
-
-            layout -[dashed]-> nav  : **Imports**
-            layout -[dashed]-> footer  : **Imports**
-            mediaOwnerDashboard -[dashed]-> newMedia : **Imports**
-            mediaDetails -[dashed]-> reserveMedia  : **Imports**
-
-            login -[dashed]-> axios  : **Imports**
-            register -[dashed]-> axios  : **Imports**
-            mediaOwnerDashboard -[dashed]-> axios  : **Imports**
-            newMedia -[dashed]-> axios  : **Imports**
-            reserveMedia -[dashed]-> axios  : **Imports**
-            advertiserDashboard -[dashed]-> axios  : **Imports**
-            adminDashboard -[dashed]-> axios  : **Imports**
-
-            appJs -[dashed]-> reactRouter  : **Imports**
-            nav -[dashed]-> reactRouter  : **Imports**
-            login -[dashed]-> reactRouter  : **Imports**
-            register -[dashed]-> reactRouter  : **Imports**
-            browseMedia -[dashed]-> reactRouter  : **Imports**
+    ' ── NPM / Third-party libraries ─────────────────────
+    rectangle "Third-party Libraries" as libs #line.dotted {
+        Container(axiosLib,     "Axios",          "NPM Library", "HTTP client, wrapped in shared/api/axios.ts.",        $sprite="npm_original_wordmark", $tags="npm_lib")
+        Container(auth0Sdk,     "Auth0 Next.js",  "NPM Library", "Auth0 SDK used in shared/api/auth0.ts.",              $sprite="npm_original_wordmark", $tags="npm_lib")
+        Container(nextIntl,     "next-intl",       "NPM Library", "i18n routing & translation, configured in shared/lib/i18n.", $sprite="npm_original_wordmark", $tags="npm_lib")
+        Container(mantineLib,   "Mantine UI",      "NPM Library", "Component library wrapped by shared/ui.",             $sprite="npm_original_wordmark", $tags="npm_lib")
+        Container(nextRouter,   "Next.js Router",  "NPM Library", "File-based routing & navigation.",                    $sprite="npm_original_wordmark", $tags="npm_lib")
     }
 
-AddElementTag("service", $shape=EightSidedShape(), $bgColor="Green", $fontColor="white", $legendText="API \neight sided")
+    ' ── Shared layer ────────────────────────────────────
+    rectangle "shared/" as sharedLayer #line.dashed {
+        Container(axiosInstance, "axios.ts",       "Shared / API", "Axios instance with base URL, interceptors, auth headers.", $sprite="typescript", $tags="shared_api")
+        Container(auth0Client,   "auth0.ts",        "Shared / API", "Auth0 server-side client (session, callbacks).",              $sprite="typescript", $tags="shared_api")
+        Container(i18nLib,       "lib/i18n/",       "Shared / Lib", "next-intl configuration, locale routing middleware.",         $sprite="typescript", $tags="shared_api")
+        Container(helperExports, "lib/index.ts",    "Shared / Lib", "Public utility/helper exports.",                              $sprite="typescript", $tags="shared_api")
+        Container(globalTypes,   "types/index.ts",  "Shared / Types","Global interfaces: Pagination, ApiResponse, etc.",           $sprite="typescript", $tags="shared_api")
+        Container(buttonUi,      "ui/Button/",      "Shared / UI",  "Mantine Button wrapper with project tokens.",                 $sprite="typescript", $tags="shared_ui")
+        Container(backButtonUi,  "ui/BackButton.tsx","Shared / UI",  "Reusable back-navigation button.",                           $sprite="typescript", $tags="shared_ui")
+        Container(uiIndex,       "ui/index.ts",     "Shared / UI",  "Public re-exports for all shared UI components.",             $sprite="typescript", $tags="shared_ui")
+    }
 
-Container(api, "API", "REST API", "API for the Corso System.", $sprite="java", $tags="service")
+    ' ── Entities layer ──────────────────────────────────
+    rectangle "entities/" as entitiesLayer #line.dashed {
+        Container(userEntity,    "user/",     "Entity", "User domain model, selectors, and store slice.",    $sprite="typescript", $tags="entity")
+        Container(sessionEntity, "session/",  "Entity", "Session state, token storage and refresh logic.",  $sprite="typescript", $tags="entity")
+    }
 
-axios -[dashed]------> api  : **Makes API Call**\n[HTTPS/JSON]
+    ' ── Features layer ──────────────────────────────────
+    rectangle "features/" as featuresLayer #line.dashed {
+        Container(authFeature,      "auth/",           "Feature", "Login / Register / Logout flows (forms + mutations).",           $sprite="typescript", $tags="feature")
+        Container(i18nSwitcher,     "locale-switcher/","Feature", "Language-selection UI and locale persistence.",                  $sprite="typescript", $tags="feature")
+        Container(profileFeature,   "profile/",        "Feature", "View and edit user profile.",                                    $sprite="typescript", $tags="feature")
+        Container(dashboardFeature, "dashboard/",      "Feature", "Role-specific dashboard data fetching and display logic.",       $sprite="typescript", $tags="feature")
+    }
 
+    ' ── Widgets layer ───────────────────────────────────
+    rectangle "widgets/" as widgetsLayer #line.dashed {
+        Container(navbarWidget,  "Navbar/",   "Widget", "Top navigation bar — links, locale switcher, auth state.",  $sprite="typescript", $tags="widget")
+        Container(footerWidget,  "Footer/",   "Widget", "Site-wide footer with links and legal info.",                $sprite="typescript", $tags="widget")
+        Container(sidebarWidget, "Sidebar/",  "Widget", "Collapsible side navigation for authenticated users.",       $sprite="typescript", $tags="widget")
+    }
+
+    ' ── Pages / App Router ──────────────────────────────
+    rectangle "app/  (Next.js App Router)" as pagesLayer #line.dashed {
+        Container(rootLayout,     "layout.tsx",         "Page / Layout", "Root layout: fonts, providers, navbar, footer.",             $sprite="typescript", $tags="page")
+        Container(homePage,       "[locale]/page.tsx",  "Page",          "Public home / landing page.",                                 $sprite="typescript", $tags="page")
+        Container(loginPage,      "login/page.tsx",     "Page",          "Authentication entry — delegates to auth feature.",           $sprite="typescript", $tags="page")
+        Container(registerPage,   "register/page.tsx",  "Page",          "New-user registration — delegates to auth feature.",          $sprite="typescript", $tags="page")
+        Container(dashboardPage,  "dashboard/page.tsx", "Page",          "Protected dashboard — rendered after session check.",         $sprite="typescript", $tags="page")
+        Container(profilePage,    "profile/page.tsx",   "Page",          "User profile view/edit page.",                                $sprite="typescript", $tags="page")
+        Container(apiAuthRoute,   "api/auth/[...auth0]/route.ts","Page / API Route","Next.js API route handling Auth0 callbacks.",       $sprite="typescript", $tags="page")
+    }
+
+    ' ── Internal relationships ───────────────────────────
+
+    ' Shared lib wiring
+    axiosInstance -[dashed]-> axiosLib      : uses
+    auth0Client   -[dashed]-> auth0Sdk      : uses
+    i18nLib       -[dashed]-> nextIntl      : configures
+    buttonUi      -[dashed]-> mantineLib    : wraps
+    uiIndex       -[dashed]-> buttonUi      : re-exports
+    uiIndex       -[dashed]-> backButtonUi  : re-exports
+
+    ' Entities use shared
+    userEntity    -[dashed]-> axiosInstance : HTTP via
+    sessionEntity -[dashed]-> auth0Client   : reads session
+
+    ' Features use shared + entities
+    authFeature      -[dashed]-> axiosInstance  : API calls
+    authFeature      -[dashed]-> userEntity     : updates
+    authFeature      -[dashed]-> sessionEntity  : manages
+    profileFeature   -[dashed]-> axiosInstance  : API calls
+    profileFeature   -[dashed]-> userEntity     : reads/updates
+    dashboardFeature -[dashed]-> axiosInstance  : API calls
+    dashboardFeature -[dashed]-> userEntity     : reads role
+
+    ' Widgets use features + shared UI
+    navbarWidget -[dashed]-> i18nSwitcher : embeds
+    navbarWidget -[dashed]-> uiIndex      : uses Button
+    navbarWidget -[dashed]-> nextRouter   : navigation
+    navbarWidget -[dashed]-> sessionEntity: auth state
+    footerWidget -[dashed]-> uiIndex      : uses shared UI
+    sidebarWidget -[dashed]-> nextRouter  : navigation
+
+    ' Pages compose widgets + features
+    rootLayout    -[dashed]-> navbarWidget   : renders
+    rootLayout    -[dashed]-> footerWidget   : renders
+    rootLayout    -[dashed]-> sidebarWidget  : renders
+    rootLayout    -[dashed]-> i18nLib        : locale provider
+
+    homePage      -[dashed]-> rootLayout    : extends
+    loginPage     -[dashed]-> authFeature   : delegates to
+    registerPage  -[dashed]-> authFeature   : delegates to
+    dashboardPage -[dashed]-> dashboardFeature : renders
+    dashboardPage -[dashed]-> sessionEntity   : guards route
+    profilePage   -[dashed]-> profileFeature  : renders
+    profilePage   -[dashed]-> backButtonUi    : uses
+
+    apiAuthRoute  -[dashed]-> auth0Client   : handles callback
+}
+
+' ── Cross-boundary relationships ─────────────────────────
+axiosInstance -[dashed]--> backendApi  : **REST API Calls**\n[HTTPS / JSON]
+auth0Client   -[dashed]--> auth0Service : **OIDC / OAuth 2.0**\n[HTTPS]
+apiAuthRoute  -[dashed]--> auth0Service : **Auth Callback**\n[HTTPS]
 
 SHOW_LEGEND()
 @enduml
