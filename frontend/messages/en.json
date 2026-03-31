@@ -364,7 +364,12 @@
   },
   "mediacard": {
     "perWeek": "{price} per week",
-    "weeklyImpressions": "~{weeklyImpressions} weekly impressions"
+    "weeklyImpressions": "~{weeklyImpressions} impressions par semaine",
+    "typeOfDisplay": {
+      "DIGITAL": "Digital",
+      "PHYSICAL": "Physical"
+    }
+
   },
   "browse": {
     "searchTitle": "Title",
