@@ -22,7 +22,7 @@ export const theme = createTheme({
     ],
     blue: [
       '#e7f5ff', '#d0ebff', '#a5d8ff', '#74c0fc', '#4dabf7',
-      '#339af0', '#046ead', '#1c7ed6', '#1971c2', '#1864ab',
+      '#339af0', '#0795ED', '#1c7ed6', '#1971c2', '#1864ab',
     ],
     gray: [
       '#f6f8fb',
