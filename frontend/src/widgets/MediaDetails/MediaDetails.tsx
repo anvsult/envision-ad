@@ -95,7 +95,7 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
         {/* Columns */}
         <Group align="stretch" gap="50px">
           {/* Left Column */}
-          <Stack gap="sm" style={{ flex: 2, minWidth: 320, width: 430 }}>
+          <Stack gap="sm" style={{ flex: "2 1 250px", minWidth: 200, maxWidth: 500}}>
             {/* Media Image */}
             <Anchor
               component="button"
