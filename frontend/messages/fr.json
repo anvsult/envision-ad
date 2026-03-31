@@ -368,7 +368,7 @@
     "weeklyImpressions": "~{weeklyImpressions} impressions par semaine",
     "typeOfDisplay": {
       "DIGITAL": "Numérique",
-      "PHYSICAL": "Affiche"
+      "POSTER": "Affiche"
     }
   },
   "browse": {

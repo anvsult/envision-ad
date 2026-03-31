@@ -364,10 +364,10 @@
   },
   "mediacard": {
     "perWeek": "{price} per week",
-    "weeklyImpressions": "~{weeklyImpressions} impressions par semaine",
+    "weeklyImpressions": "~{weeklyImpressions} impressions per week",
     "typeOfDisplay": {
       "DIGITAL": "Digital",
-      "PHYSICAL": "Physical"
+      "POSTER": "Poster"
     }
 
   },
