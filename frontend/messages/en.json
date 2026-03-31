@@ -367,7 +367,7 @@
     "weeklyImpressions": "~{weeklyImpressions} impressions per week",
     "typeOfDisplay": {
       "DIGITAL": "Digital",
-      "PHYSICAL": "Physical"
+      "POSTER": "Poster"
     }
 
   },

@@ -52,6 +52,7 @@ function MediaCard({
                        dailyImpressions,
                        schedule,
                        mobileWidth,
+                       imageRatio
                    }: MediaCardProps) {
     const mobileBreakpoint = mobileWidth ?? "575px";
     const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint})`);
@@ -79,12 +80,12 @@ function MediaCard({
 
     const imageBlock = (
         <AspectRatio
-            ratio={1}
+            ratio={imageRatio}
             w={isMobile && !isXsMobile ? 170 : "100%"}
             miw={isMobile && !isXsMobile ? 132 : undefined}
         >
             <Paper className={styles.imagecontainer} radius="md" shadow="xs">
-                <AspectRatio ratio={1}>
+                <AspectRatio ratio={imageRatio}>
                     <Image
                         src={imageUrl}
                         alt={title}
@@ -127,7 +128,7 @@ function MediaCard({
                 </Text>
 
                 <Group gap={6} wrap="nowrap" align="center">
-                    <IconEye size={15} stroke={1.8} />
+                    <IconEye size={15} stroke={1.8} aria-hidden="true" focusable={false} />
                     <Text
                         id={"MediaCardImpressions" + index}
                         size={isXsMobile ? "xs" : "sm"}
@@ -147,7 +148,9 @@ function MediaCard({
                         lineClamp={1}
                         m={0}
                     >
-                        {"\u{1F4CD}"} {locationText}
+                        {/* Location emoji for visual emphasis */}
+                        <span aria-hidden="true" tabIndex={-1} style={{ display: "inline-block", verticalAlign: "text-bottom"}}>{"\u{1F4CD}"}</span>
+                        {locationText}
                     </Text>
                 )}
             </Stack>
@@ -158,7 +161,7 @@ function MediaCard({
                 <Box>
                     <Text
                         id={"MediaCardPrice" + index}
-                        size={isXsMobile ? "xl" : isMobile ? "xl" : "xl"}
+                        size={"xl"}
                         fw={800}
                         c="blue.7"
                         m={0}
