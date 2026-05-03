@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: frontend
     build:
       context: ./frontend
 #      Since Next.js has a client and a server side, it needs some secrets at
@@ -55,6 +56,7 @@ services:
         max-file: "3"
 
   webservice:
+    container_name: backend
     build:
       context: ./webservice
       dockerfile: Dockerfile
@@ -98,6 +100,7 @@ services:
         max-file: "5"
 
   reverse-proxy:
+    container_name: reverse-proxy
     image: nginx:alpine
     ports:
       - "80:80"
