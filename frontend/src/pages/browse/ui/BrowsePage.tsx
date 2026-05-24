@@ -15,7 +15,14 @@ import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
-import MapView from '@/widgets/Map/MapView';
+
+// import MapView from '@/widgets/Map/MapView';
+import dynamic from 'next/dynamic';
+const MapView = dynamic(
+    () => import ('@/widgets/Map/MapView'),
+    { ssr: false }
+)
+
 import { useMediaQuery } from '@mantine/hooks';
 import { groupBy } from '@/shared/lib/groupBy';
 
