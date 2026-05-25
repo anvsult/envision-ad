@@ -134,7 +134,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, null, null, null, null, null);
+                                pageable, null, null, null, null, null, null, null, null, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -151,7 +151,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, titleFilter, null, null, null, null, null, null, null, null, null);
+                                pageable, titleFilter, null, null, null, null, null, null, null, null, null, null);
 
                 // Assert
                 ArgumentCaptor<Specification<Media>> specCaptor = ArgumentCaptor.forClass(Specification.class);
@@ -170,7 +170,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, minPrice, maxPrice, null, null, null, null, null, null);
+                                pageable, null, null, minPrice, maxPrice, null, null, null, null, null, null, null);
 
                 // Assert
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -186,7 +186,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, minPrice, null, null, null, null, null, null, null);
+                                pageable, null, null, minPrice, null, null, null, null, null, null, null, null);
 
                 // Assert
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -202,7 +202,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, maxPrice, null, null, null, null, null, null);
+                                pageable, null, null, null, maxPrice, null, null, null, null, null, null, null);
 
                 // Assert
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -218,7 +218,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, minImpressions, null, null, null, null, null);
+                                pageable, null, null, null, null, minImpressions, null, null, null, null, null, null);
 
                 // Assert
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -234,7 +234,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, null, null, null, bounds, null);
+                                pageable, null, null, null, null, null, null, null, null, bounds, null, null);
 
                 // Assert - Should use regular pagination
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -255,7 +255,7 @@ class MediaServiceUnitTest {
                 // Act
                 mediaService.getAllFilteredActiveMedia(
                                 pageable, title, business1Id, minPrice, maxPrice, minImpressions, null, null, null,
-                                bounds, media2.getId().toString());
+                                bounds, media2.getId().toString(), null);
 
                 // Assert
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -274,7 +274,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -297,7 +297,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -319,7 +319,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -339,7 +339,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -363,7 +363,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert
                 assertNotNull(result);
@@ -381,7 +381,7 @@ class MediaServiceUnitTest {
 
                 // Act - Missing userLat
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", null, -79.347015, null, null);
+                                pageable, null, null, null, null, null, "nearest", null, -79.347015, null, null, null);
 
                 // Assert - Should use regular pagination instead of distance sorting
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -396,7 +396,7 @@ class MediaServiceUnitTest {
 
                 // Act - Missing userLng
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", 43.651070, null, null, null);
+                                pageable, null, null, null, null, null, "nearest", 43.651070, null, null, null, null);
 
                 // Assert - Should use regular pagination instead of distance sorting
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -411,7 +411,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "price", 43.651070, -79.347015, null, null);
+                                pageable, null, null, null, null, null, "price", 43.651070, -79.347015, null, null, null);
 
                 // Assert - Should use regular pagination
                 verify(mediaRepository).findAll(any(Specification.class), eq(pageable));
@@ -438,7 +438,7 @@ class MediaServiceUnitTest {
                 pageable, null, null, null, null,
                 null, "weeklyImpressions,asc",
                 null, null, null, null
-        );
+        , null);
 
         // Assert
         List<Media> content = result.getContent();
@@ -467,7 +467,7 @@ class MediaServiceUnitTest {
                 pageable, null, null, null, null,
                 null, "weeklyImpressions,desc",
                 null, null, null, null
-        );
+        , null);
 
         // Assert
         List<Media> content = result.getContent();
@@ -496,7 +496,7 @@ class MediaServiceUnitTest {
                 pageable, null, null, null, null,
                 null, "weeklyImpressions,desc",
                 null, null, null, null
-        );
+        , null);
 
         // Assert
         assertEquals(1, result.getContent().size());
@@ -524,7 +524,7 @@ class MediaServiceUnitTest {
                 pageable, null, null, null, null,
                 null, "weeklyImpressions,asc",
                 null, null, null, null
-        );
+        , null);
 
         // Assert
         assertNotNull(result);
@@ -643,7 +643,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert - Should be sorted: media1 (closest), media2 (medium), media3
                 // (farthest)
@@ -674,7 +674,7 @@ class MediaServiceUnitTest {
 
                 // Act
                 Page<Media> result = mediaService.getAllFilteredActiveMedia(
-                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null);
+                                pageable, null, null, null, null, null, "nearest", userLat, userLng, null, null, null);
 
                 // Assert - Both should be returned as they're at the same distance
                 assertEquals(2, result.getContent().size());

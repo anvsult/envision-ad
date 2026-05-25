@@ -4,6 +4,9 @@ import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationResponseModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.venue.dataaccesslayer.Venue;
+import com.envisionad.webservice.venue.dataaccesslayer.VenueRepository;
+import com.envisionad.webservice.venue.presentationlayer.models.VenueResponseModel;
 
 import org.springframework.stereotype.Component;
 
@@ -12,9 +15,11 @@ import java.util.List;
 @Component
 public class MediaResponseMapper {
     private final BusinessRepository businessRepository;
+    private final VenueRepository venueRepository;
 
-    public MediaResponseMapper(BusinessRepository businessRepository) {
+    public MediaResponseMapper(BusinessRepository businessRepository, VenueRepository venueRepository) {
         this.businessRepository = businessRepository;
+        this.venueRepository = venueRepository;
     }
 
     public MediaResponseModel entityToResponseModel(Media media) {
@@ -47,6 +52,17 @@ public class MediaResponseMapper {
             } else {
                 response.setBusinessName("");
             }
+        }
+
+        if (media.getVenueId() != null) {
+            venueRepository.findByVenueId(media.getVenueId()).ifPresent(venue -> {
+                VenueResponseModel venueResponse = new VenueResponseModel();
+                venueResponse.setVenueId(venue.getVenueId());
+                venueResponse.setNameEn(venue.getNameEn());
+                venueResponse.setNameFr(venue.getNameFr());
+                venueResponse.setColorCode(venue.getColorCode());
+                response.setVenue(venueResponse);
+            });
         }
 
         // Using Cloudinary URL

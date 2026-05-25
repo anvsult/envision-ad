@@ -74,7 +74,8 @@ public class MediaServiceImpl implements MediaService {
             Double userLat,
             Double userLng,
             List<Double> bounds,
-            String excludedId
+            String excludedId,
+            List<String> venueIds
     ) {
 
         // FILTERING
@@ -102,6 +103,10 @@ public class MediaServiceImpl implements MediaService {
 
         if (bounds != null) {
             spec = spec.and(MediaSpecifications.withinBounds(bounds));
+        }
+
+        if (venueIds != null && !venueIds.isEmpty()) {
+            spec = spec.and(MediaSpecifications.venueIdIn(venueIds));
         }
 
         // Sort by Nearest
@@ -267,6 +272,7 @@ public class MediaServiceImpl implements MediaService {
         existingMedia.setSchedule(requestModel.getSchedule());
         existingMedia.setImageUrl(normalizedNewUrl);
         existingMedia.setPreviewConfiguration(requestModel.getPreviewConfiguration());
+        existingMedia.setVenueId(requestModel.getVenueId());
 
         // Set status to pending after update
         existingMedia.setStatus(Status.PENDING);

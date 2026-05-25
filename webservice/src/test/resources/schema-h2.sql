@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business CASCADE;
 DROP TABLE IF EXISTS address CASCADE;
 DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS venue CASCADE;
 
 CREATE TABLE address
 (
@@ -74,6 +75,15 @@ CREATE TABLE verification
             ON DELETE CASCADE
 );
 
+CREATE TABLE venue
+(
+    id               INT AUTO_INCREMENT PRIMARY KEY,
+    venue_id         VARCHAR(36) UNIQUE NOT NULL,
+    name_en          VARCHAR(100) NOT NULL,
+    name_fr          VARCHAR(100) NOT NULL,
+    color_code       VARCHAR(7) NOT NULL
+);
+
 CREATE TABLE media
 (
     media_id           VARCHAR(36) PRIMARY KEY,
@@ -93,5 +103,6 @@ CREATE TABLE media
     status             VARCHAR(50),
     image_file_name    VARCHAR(512),
     image_content_type VARCHAR(100),
-    image_data         BLOB
+    image_data         BLOB,
+    venue_id           VARCHAR(36)
 );

@@ -5,6 +5,7 @@ import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
 import com.envisionad.webservice.media.PresentationLayer.Models.MediaResponseModel;
+import com.envisionad.webservice.venue.dataaccesslayer.VenueRepository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,11 +19,13 @@ class MediaResponseMapperTest {
 
     private MediaResponseMapper mapper;
     private BusinessRepository businessRepository;
+    private VenueRepository venueRepository;
 
     @BeforeEach
     void setUp() {
         businessRepository = Mockito.mock(BusinessRepository.class);
-        mapper = new MediaResponseMapper(businessRepository);
+        venueRepository = Mockito.mock(VenueRepository.class);
+        mapper = new MediaResponseMapper(businessRepository, venueRepository);
     }
 
     @Test

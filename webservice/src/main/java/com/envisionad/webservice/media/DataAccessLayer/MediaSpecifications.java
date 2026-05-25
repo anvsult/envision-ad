@@ -72,6 +72,13 @@ public class MediaSpecifications {
                 : cb.notEqual(root.get("id"), excludedId);
     }
 
+    public static Specification<Media> venueIdIn(List<String> venueIds) {
+        return (root, query, cb) -> {
+            if (venueIds == null || venueIds.isEmpty()) return null;
+            return root.get("venueId").in(venueIds);
+        };
+    }
+
     public static Specification<Media> withinBounds(List<Double> bounds) {
         return (root, query, cb) -> {
             if (bounds == null || bounds.size() != 4) {
