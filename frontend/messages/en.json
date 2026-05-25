@@ -70,7 +70,8 @@
     "admin": {
       "metrics": "Metrics",
       "pendingMedia": "Pending Media",
-      "pendingOrganizations": "Verification Requests"
+      "pendingOrganizations": "Verification Requests",
+      "venues": "Venue Tags"
     }
   },
   "advertiserMetrics": {
@@ -1546,6 +1547,46 @@
     "buttons": {
       "cancel": "Cancel",
       "create": "Create"
+    }
+  },
+  "venueManagement": {
+    "title": "Venue Tags",
+    "addVenue": "Add Venue",
+    "table": {
+      "color": "Color",
+      "nameEn": "Name (EN)",
+      "nameFr": "Name (FR)",
+      "mediaCount": "Media",
+      "actions": "Actions",
+      "noVenues": "No venue tags yet. Create your first one to get started."
+    },
+    "form": {
+      "createTitle": "Create Venue Tag",
+      "editTitle": "Edit Venue Tag",
+      "nameEnLabel": "Name (English)",
+      "nameEnPlaceholder": "e.g. Gym",
+      "nameFrLabel": "Name (French)",
+      "nameFrPlaceholder": "e.g. Gymnase",
+      "colorCodeLabel": "Color",
+      "cancel": "Cancel",
+      "create": "Create",
+      "update": "Update"
+    },
+    "delete": {
+      "title": "Delete Venue Tag",
+      "message": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "mediaWarning": "This venue tag is currently assigned to {count} media listing(s). Deleting it will remove the tag from all associated media.",
+      "confirm": "Delete",
+      "cancel": "Cancel"
+    },
+    "notifications": {
+      "created": "Venue tag created successfully.",
+      "updated": "Venue tag updated successfully.",
+      "deleted": "Venue tag deleted successfully.",
+      "loadFailed": "Failed to load venue tags.",
+      "createFailed": "Failed to create venue tag.",
+      "updateFailed": "Failed to update venue tag.",
+      "deleteFailed": "Failed to delete venue tag."
     }
   }
 }

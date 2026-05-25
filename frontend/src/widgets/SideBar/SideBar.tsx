@@ -10,6 +10,7 @@ import {
     IconChartDots,
     IconFileDescription,
     IconSpeakerphone,
+    IconTag,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";
@@ -126,6 +127,16 @@ export default function SideBar() {
                 label={t("admin.pendingOrganizations")}
                 leftSection={<IconDiscountCheck size={20} stroke={1.5} />}
                 active={pathname?.includes("/dashboard/admin/organization/verification")}
+            />
+        ),
+        permissions.includes("manage:venues") && (
+            <NavLink
+                key="venues"
+                component={Link}
+                href="/dashboard/admin/venues"
+                label={t("admin.venues")}
+                leftSection={<IconTag size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/admin/venues")}
             />
         ),
     ].filter(Boolean);
