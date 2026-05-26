@@ -718,6 +718,7 @@
       "height": "Hauteur (cm)",
       "price": "Prix (par semaine)",
       "dailyImpressions": "Impressions quotidiennes",
+      "venueType": "Type de lieu",
       "previewCorners": "Prévisualiser et définir les coins",
       "dragCorners": "Faites glisser les coins pour correspondre à la zone d'affichage"
     },

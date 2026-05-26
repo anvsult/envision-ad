@@ -719,6 +719,7 @@
       "height": "Height (cm)",
       "price": "Price (per week)",
       "dailyImpressions": "Daily impressions",
+      "venueType": "Venue Type",
       "previewCorners": "Preview & Set Corners",
       "dragCorners": "Drag corners to match the display area"
     },

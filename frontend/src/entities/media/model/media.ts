@@ -1,5 +1,6 @@
 import { LatLngBounds, LatLngLiteral } from "leaflet";
 import {MediaLocation} from "@/entities/media-location";
+import {Venue} from "@/entities/venue";
 
 export enum MediaStatusEnum {
     ACTIVE = "ACTIVE",
@@ -28,6 +29,7 @@ export interface Media {
     previewConfiguration: string;
     businessId: string;
     businessName: string;
+    venue?: Venue | null;
 }
 
 export interface MediaRequestDTO {
@@ -45,6 +47,7 @@ export interface MediaRequestDTO {
     schedule: MonthlyScheduleModel | null;
     imageUrl: string | null;
     previewConfiguration: string | null;
+    venueId?: string | null;
 }
 
 export interface MediaListResponseDTO {
@@ -68,6 +71,7 @@ export interface FilteredActiveMediaProps {
     latLng?: LatLngLiteral | null,
     bounds?: LatLngBounds | null,
     excludedId?: string | null,
+    venueIds?: string[] | null,
     page?: number,
     size?: number
 }

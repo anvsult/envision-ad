@@ -82,7 +82,8 @@ export function useMediaList() {
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: buildScheduleFromForm(formState),
             imageUrl: formState.imageUrl,
-            previewConfiguration: formState.previewConfiguration
+            previewConfiguration: formState.previewConfiguration,
+            venueId: formState.venueId
         };
 
         try {
@@ -121,7 +122,8 @@ export function useMediaList() {
             schedule: buildScheduleFromForm(formState),
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
-            previewConfiguration: formState.previewConfiguration
+            previewConfiguration: formState.previewConfiguration,
+            venueId: formState.venueId
         };
 
         try {

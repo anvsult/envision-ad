@@ -18,6 +18,7 @@ export interface MediaFormState {
     errors: Record<string, string>;
     imageUrl: string | null;
     previewConfiguration: string | null;
+    venueId: string | null;
 }
 
 const getInitialFormState = (): MediaFormState => ({
@@ -72,6 +73,7 @@ const getInitialFormState = (): MediaFormState => ({
         return obj;
     })(),
     errors: {},
+    venueId: null,
 });
 
 export function useMediaForm() {
