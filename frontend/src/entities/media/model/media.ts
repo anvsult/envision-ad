@@ -1,4 +1,4 @@
-import { LatLngBounds, LatLngLiteral } from "leaflet";
+import type { LatLngBounds, LatLngLiteral } from "leaflet";
 import {MediaLocation} from "@/entities/media-location";
 import {Venue} from "@/entities/venue";
 

@@ -17,7 +17,7 @@ import { Media } from "@/entities/media";
 import { ReserveMediaModal } from "@/widgets/Media/Modals/ReserveMediaModal";
 import { MediaCardCarouselLoader, MediaCardStackLoader } from "@/widgets/Carousel/CardCarousel";
 import { FilteredActiveMediaProps } from "@/entities/media/model/media";
-import { LatLngLiteral } from "leaflet";
+import type { LatLngLiteral } from "leaflet";
 import { ReservationStatus } from "@/entities/reservation";
 import { usePermissions } from "@/app/providers";
 import { useUser } from "@auth0/nextjs-auth0/client";
