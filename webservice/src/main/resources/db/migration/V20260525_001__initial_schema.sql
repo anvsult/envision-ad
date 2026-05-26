@@ -1,31 +1,6 @@
--- ===================================================================================
--- DEPRECATED: This file is no longer used by the application.
--- Schema is now managed by Flyway migrations in db/migration/.
--- This file is kept for reference only. Do not modify.
--- ===================================================================================
-
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
--- 1. Clean up old tables (Order matters: drop tables with FKs first)
-DROP TABLE IF EXISTS payment_intents CASCADE;
-DROP TABLE IF EXISTS stripe_accounts CASCADE;
-DROP TABLE IF EXISTS reservations CASCADE;
--- Drop tables that have foreign keys to `media` first, then `media` itself.
-DROP TABLE IF EXISTS media CASCADE;
-DROP TABLE IF EXISTS venue CASCADE;
-DROP TABLE IF EXISTS media_location CASCADE;
-DROP TABLE IF EXISTS employee CASCADE;
-DROP TABLE IF EXISTS business_roles CASCADE;
-DROP TABLE IF EXISTS verification CASCADE;
-DROP TABLE IF EXISTS business CASCADE;
-DROP TABLE IF EXISTS address CASCADE;
-DROP TABLE IF EXISTS ad_campaigns CASCADE;
-DROP TABLE IF EXISTS ads CASCADE;
-DROP TABLE IF EXISTS invitation CASCADE;
-
-
--- 2. Create Address Table (Must be first because Business links to it)
 CREATE TABLE address
 (
     id       SERIAL PRIMARY KEY,
@@ -36,7 +11,6 @@ CREATE TABLE address
     country  VARCHAR(255) NOT NULL
 );
 
--- 3. Create Business Table
 CREATE TABLE business
 (
     id           SERIAL PRIMARY KEY,
@@ -92,7 +66,6 @@ CREATE TABLE invitation
     CONSTRAINT fk_business FOREIGN KEY (business_id) REFERENCES business (business_id) ON DELETE CASCADE
 );
 
--- 4. Create Media Location Table
 CREATE TABLE media_location (
     media_location_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
@@ -107,16 +80,6 @@ CREATE TABLE media_location (
     business_id UUID NOT NULL
 );
 
--- 5. Create Venue Table
-CREATE TABLE venue (
-    id SERIAL PRIMARY KEY,
-    venue_id VARCHAR(36) UNIQUE NOT NULL,
-    name_en VARCHAR(100) NOT NULL,
-    name_fr VARCHAR(100) NOT NULL,
-    color_code VARCHAR(7) NOT NULL
-);
-
--- 6. Create Media Table
 CREATE TABLE media (
     media_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     media_location_id UUID NOT NULL
@@ -140,11 +103,9 @@ CREATE TABLE media (
     image_content_type VARCHAR(100),
     image_data         bytea,
     business_id        UUID,
-    venue_id           VARCHAR(36) REFERENCES venue(venue_id) ON DELETE SET NULL,
     preview_configuration JSONB
 );
 
--- 5. Create Ad Campaigns Table
 CREATE TABLE ad_campaigns
 (
     id SERIAL PRIMARY KEY,
@@ -153,7 +114,6 @@ CREATE TABLE ad_campaigns
     name VARCHAR(255) NOT NULL
 );
 
--- 6. Create Ads Table
 CREATE TABLE ads
 (
     id SERIAL PRIMARY KEY,
@@ -185,7 +145,6 @@ CREATE TABLE reservations
     media_id UUID REFERENCES media(media_id) ON DELETE CASCADE
 );
 
--- 7. Create Stripe Accounts Table (for Stripe Connect)
 CREATE TABLE stripe_accounts
 (
     id BIGSERIAL PRIMARY KEY,
@@ -198,20 +157,16 @@ CREATE TABLE stripe_accounts
     CONSTRAINT fk_business_stripe FOREIGN KEY (business_id) REFERENCES business(business_id) ON DELETE CASCADE
 );
 
--- 8. Create Payment Intents Table (for tracking Stripe payments)
 CREATE TABLE payment_intents
 (
     id BIGSERIAL PRIMARY KEY,
     stripe_payment_intent_id VARCHAR(255) UNIQUE,
     stripe_session_id VARCHAR(255) UNIQUE,
     reservation_id VARCHAR(36) UNIQUE,
-    business_id VARCHAR(36) NOT NULL, -- Which media owner/business is receiving the payment
+    business_id VARCHAR(36) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     currency VARCHAR(3) DEFAULT 'CAD',
     status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-    -- Note: No foreign key constraint on reservation_id to allow temporary/pending reservations
-    -- that haven't been saved to the reservations table yet (e.g., "temp-123456789")
 );
