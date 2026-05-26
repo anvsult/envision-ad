@@ -16,7 +16,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -30,7 +29,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestcontainersConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessMediaControllerIntegrationTest {
 
     private final String BASE_URI = "/api/v1/businesses/{businessId}/media";
@@ -60,6 +58,10 @@ class BusinessMediaControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        mediaRepository.deleteAll();
+        mediaLocationRepository.deleteAll();
+        businessRepository.deleteAll();
+
         // Setup user ID and business ID
         userId = "auth0|65702e81e9661e14ab3aac89";
         businessId = UUID.randomUUID().toString();

@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -29,7 +28,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestcontainersConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessControllerIntegrationTest {
 
     private final String BASE_URI_BUSINESSES = "/api/v1/businesses";
@@ -57,6 +55,12 @@ class BusinessControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        clearInvocations(emailService);
+        verificationRepository.deleteAll();
+        invitationRepository.deleteAll();
+        employeeRepository.deleteAll();
+        businessRepository.deleteAll();
+
         // --- Seed data (replaces data-h2.sql) ---
         Address addr1 = new Address("123 Baker St", "Montreal", "QC", "H3Z 2Y7", "Canada");
         Address addr2 = new Address("500 Tech Blvd", "Toronto", "ON", "M5V 2T6", "Canada");

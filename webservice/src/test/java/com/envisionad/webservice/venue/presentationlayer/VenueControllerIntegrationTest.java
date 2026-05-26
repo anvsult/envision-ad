@@ -1,6 +1,6 @@
 package com.envisionad.webservice.venue.presentationlayer;
 
-import com.envisionad.webservice.config.TestcontainersConfig;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.venue.dataaccesslayer.Venue;
 import com.envisionad.webservice.venue.dataaccesslayer.VenueRepository;
 import com.envisionad.webservice.venue.presentationlayer.models.VenueRequestModel;
@@ -8,34 +8,18 @@ import com.envisionad.webservice.venue.presentationlayer.models.VenueResponseMod
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(TestcontainersConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class VenueControllerIntegrationTest {
+class VenueControllerIntegrationTest extends BaseIntegrationTest {
 
     private static final String BASE_URI = "/api/v1/venues";
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
 
     @Autowired
     private VenueRepository venueRepository;
@@ -44,6 +28,8 @@ class VenueControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        venueRepository.deleteAll();
+
         Jwt adminJwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")
                 .claim("sub", "auth0|admin123")

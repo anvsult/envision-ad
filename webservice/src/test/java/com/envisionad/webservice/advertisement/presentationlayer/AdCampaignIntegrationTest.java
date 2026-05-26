@@ -15,7 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
@@ -29,7 +28,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestcontainersConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class AdCampaignIntegrationTest {
     private final String BASE_URI_AD_CAMPAIGNS = "/api/v1/businesses/{businessId}/campaigns";
 
@@ -58,6 +56,7 @@ public class AdCampaignIntegrationTest {
     @BeforeEach
     void setUp() {
         // Clear all data from previous tests to avoid constraint violations
+        reservationRepository.deleteAll();
         adCampaignRepository.deleteAll();
         employeeRepository.deleteAll();
         businessRepository.deleteAll();

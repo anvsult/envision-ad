@@ -23,7 +23,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -40,7 +39,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 @Import(TestcontainersConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MediaControllerIntegrationTest {
 
         private final String BASE_URI_MEDIA = "/api/v1/media";
@@ -72,6 +70,9 @@ class MediaControllerIntegrationTest {
 
         @BeforeEach
         void setUp() {
+                mediaRepository.deleteAll();
+                mediaLocationRepository.deleteAll();
+
                 Jwt jwt = Jwt.withTokenValue("mock-token")
                                 .header("alg", "none")
                                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
