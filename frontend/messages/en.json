@@ -386,6 +386,7 @@
         "actionName": "Filter:",
         "price": "Price (CAD$)",
         "impressions": "Minimum impressions",
+        "venue": "Venue Type",
         "from": "From",
         "to": "To",
         "showresults": "Add filter"
@@ -578,6 +579,7 @@
       "status": "Status",
       "update": "Next Update",
       "price": "Price",
+      "venue": "Venue",
       "actions": "Actions"
     },
     "status": {

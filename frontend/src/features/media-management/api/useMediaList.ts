@@ -40,7 +40,8 @@ export function useMediaList({
                     dailyImpressions: m.dailyImpressions ?? 0,
                     schedule: m.schedule,
                     typeOfDisplay: m.typeOfDisplay,
-                    imageUrl: m.imageUrl
+                    imageUrl: m.imageUrl,
+                    venue: m.venue ?? null
                     }));
 
                 setMedias(items);

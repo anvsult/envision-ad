@@ -63,9 +63,16 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
               </Group>
 
               <Group justify="space-between" align="center">
-                <Badge color={getStatusColor(row.status)} variant="light">
-                  {row.status}
-                </Badge>
+                <Group gap="xs">
+                  <Badge color={getStatusColor(row.status)} variant="light">
+                    {row.status}
+                  </Badge>
+                  {row.venue && (
+                    <Badge color={row.venue.colorCode} variant="filled" size="sm">
+                      {row.venue.nameEn}
+                    </Badge>
+                  )}
+                </Group>
                 <Text fw={600} c="teal">{row.price}</Text>
               </Group>
             </Card>
@@ -100,6 +107,7 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
               <Table.Th miw={140}>{t("status")}</Table.Th>
               <Table.Th miw={100}>{t("update")}</Table.Th>
               <Table.Th w={100} miw={90}>{t("price")}</Table.Th>
+              <Table.Th miw={100}>{t("venue")}</Table.Th>
               <Table.Th w={50} miw={40} ta="center">
                 <VisuallyHidden>{t("actions")}</VisuallyHidden>
               </Table.Th>
@@ -118,7 +126,7 @@ export function MediaTable({ rows, onEdit, onDelete, onToggleStatus }: MediaTabl
               ))
             ) : (
               <Table.Tr>
-                <Table.Td colSpan={8}>
+                <Table.Td colSpan={9}>
                   <Text ta="center" c="dimmed" py="xl">
                     {t("noMedia")}
                   </Text>

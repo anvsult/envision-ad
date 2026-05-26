@@ -127,12 +127,16 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
                 {getJoinedAddress([media.mediaLocation.street, media.mediaLocation.city, media.mediaLocation.province])}
               </Text>
               <Text size="sm">{media.businessName}</Text>
-              {activeAdsCount !== null && 
+              {activeAdsCount !== null &&
                 <Text size="sm" c="dimmed">
                   {t("currentlyDisplaying", { count: activeAdsCount })}
                 </Text>
               }
-              
+              {media.venue && (
+                <Badge color={media.venue.colorCode} variant="filled" size="md" style={{ alignSelf: "flex-start" }}>
+                  {locale === "fr" ? media.venue.nameFr : media.venue.nameEn}
+                </Badge>
+              )}
             </Stack>
 
             <Divider />

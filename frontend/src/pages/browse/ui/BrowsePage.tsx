@@ -6,6 +6,7 @@ import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
+import { FilterVenuePopover } from '@/widgets/BrowseActions/FilterVenuePopover';
 import { useTranslations } from "next-intl";
 import { IconMap, IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
@@ -53,6 +54,7 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
+  const [venueIds, setVenueIds] = useState<string[]>([]);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
   
 
@@ -75,12 +77,13 @@ function BrowsePage() {
     minPrice,
     maxPrice,
     minWeeklyImpressions: minImpressions,
+    venueIds: venueIds.length > 0 ? venueIds : null,
     sort: sortBy,
     latLng: location,
     bounds: bbox,
     page: activePage - 1,
     size: ITEMS_PER_PAGE
-  }), [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox, activePage]);
+  }), [titleFilter, minPrice, maxPrice, minImpressions, venueIds, sortBy, location, bbox, activePage]);
 
   const { medias: media, totalPages } = useMediaList({
     filteredMediaProps: filteredMediaProps,
@@ -91,7 +94,7 @@ function BrowsePage() {
   // Reset to first page whenever any filter (not page itself) changes
   useEffect(() => {
     setActivePage(1);
-  }, [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox]);
+  }, [titleFilter, minPrice, maxPrice, minImpressions, venueIds, sortBy, location, bbox]);
 
   const groupedMedia = useMemo(() => {
     const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");
@@ -211,6 +214,7 @@ function BrowsePage() {
       <>
         <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')} ariaLabel='Minimum Impressions Input'/>
+        <FilterVenuePopover id='VenueFilter' selectedVenueIds={venueIds} setSelectedVenueIds={setVenueIds} />
       </>
     )
   }

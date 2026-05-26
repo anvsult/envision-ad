@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { MediaActions } from "./MediaActions";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 import { MediaStatusEnum } from "@/entities/media/model/media";
+import { Venue } from "@/entities/venue";
 
 export interface MediaRowData {
   id: string | number;
@@ -16,6 +17,7 @@ export interface MediaRowData {
   status: MediaStatusEnum;
   timeUntil: string;
   price: string;
+  venue?: Venue | null;
 }
 
 interface MediaRowProps {
@@ -94,6 +96,16 @@ export function MediaRow({ row, onEdit, onDelete, onToggleStatus }: MediaRowProp
           <Text size="sm" fw={700} c="var(--mantine-color-teal-9)">
             {formatCurrency(parseFloat(row.price), { locale })}
           </Text>
+        </Table.Td>
+
+        <Table.Td>
+          {row.venue ? (
+            <Badge color={row.venue.colorCode} variant="filled" size="sm" radius="sm">
+              {locale === "fr" ? row.venue.nameFr : row.venue.nameEn}
+            </Badge>
+          ) : (
+            <Text size="xs" c="dimmed">—</Text>
+          )}
         </Table.Td>
 
         {/* ACTIONS COLUMN */}

@@ -111,6 +111,7 @@ export function MediaLocationsTable({
                                             <Table.Th w={120} ta="right">{tMedia("status")}</Table.Th>
                                             <Table.Th w={120} ta="right">{tMedia("update")}</Table.Th>
                                             <Table.Th w={140} ta="right">{tMedia("price")}</Table.Th>
+                                            <Table.Th miw={100}>{tMedia("venue")}</Table.Th>
                                             <Table.Th w={60} ta="right">
                                                 <VisuallyHidden>{tMedia("actions")}</VisuallyHidden>
                                             </Table.Th>
@@ -128,7 +129,8 @@ export function MediaLocationsTable({
                                                     pending: 0,      // Placeholder
                                                     status: media.status ?? MediaStatusEnum.ACTIVE,
                                                     timeUntil: "-",  // Placeholder
-                                                    price: media.price?.toString() ?? "0.00"
+                                                    price: media.price?.toString() ?? "0.00",
+                                                    venue: media.venue ?? null
                                                 }}
                                                 onEdit={onEditMedia}
                                                 onDelete={onDeleteMedia}

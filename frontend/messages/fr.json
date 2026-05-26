@@ -386,6 +386,7 @@
         "actionName": "Filtres:",
         "price": "Prix ($CA)",
         "impressions": "Impressions minimum",
+        "venue": "Type de lieu",
         "from": "Minimum",
         "to": "Maximum",
         "showresults": "Ajouter le filtre"
@@ -577,7 +578,8 @@
       "pending": "Annonces en attente",
       "status": "Statut",
       "update": "Prochaine mise à jour",
-      "price": "Prix"
+      "price": "Prix",
+      "venue": "Lieu"
     },
     "status": {
       "active": "Actif",
@@ -1360,7 +1362,8 @@
       "mediaType": "Type",
       "resolution": "Résolution",
       "noAssignedMedia": "Aucun média attribué pour le moment.",
-      "edit": "Modifier"
+      "edit": "Modifier",
+      "deleteLocationAria": "Supprimer l'emplacement {name}"
     },
     "notifications": {
       "loadFailed": {

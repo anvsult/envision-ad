@@ -13,6 +13,7 @@ import {
 import styles from "./MediaCard.module.css";
 import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
+import { Venue } from "@/entities/venue";
 import { useMediaQuery } from "@mantine/hooks";
 import { MediaLocation } from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
@@ -36,6 +37,7 @@ export interface MediaCardProps {
     dailyImpressions: number;
     schedule: MonthlyScheduleModel;
     mobileWidth?: string;
+    venue?: Venue | null;
 }
 
 function MediaCard({
@@ -52,7 +54,8 @@ function MediaCard({
                        dailyImpressions,
                        schedule,
                        mobileWidth,
-                       imageRatio
+                       imageRatio,
+                       venue
                    }: MediaCardProps) {
     const mobileBreakpoint = mobileWidth ?? "575px";
     const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint})`);
@@ -152,6 +155,13 @@ function MediaCard({
                         <span aria-hidden="true" tabIndex={-1} style={{ display: "inline-block", verticalAlign: "text-bottom"}}>{"\u{1F4CD}"}</span>
                         {locationText}
                     </Text>
+                )}
+                {venue && (
+                    <Badge size="xs" color={venue.colorCode} variant="filled" style={{ maxWidth: "100%" }}>
+                        <Text size="xs" truncate>
+                            {locale === "fr" ? venue.nameFr : venue.nameEn}
+                        </Text>
+                    </Badge>
                 )}
             </Stack>
 
