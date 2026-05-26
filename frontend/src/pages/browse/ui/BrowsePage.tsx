@@ -39,9 +39,8 @@ function BrowsePage() {
   const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
   
   // Lists
-  const ITEMS_PER_PAGE = 16;
+  const ITEMS_PER_PAGE = 32;
   const [activePage, setActivePage] = useState<number>(1);
-  const [totalPages] = useState<number>(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -81,11 +80,16 @@ function BrowsePage() {
     size: ITEMS_PER_PAGE
   }), [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox, activePage]);
 
-  const media = useMediaList({ 
-    filteredMediaProps: filteredMediaProps, 
+  const { medias: media, totalPages } = useMediaList({
+    filteredMediaProps: filteredMediaProps,
     loadingLocation: locationStatus === 'loading',
     setMediaStatus
   });
+
+  // Reset to first page whenever any filter (not page itself) changes
+  useEffect(() => {
+    setActivePage(1);
+  }, [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox]);
 
   const groupedMedia = useMemo(() => {
     const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");

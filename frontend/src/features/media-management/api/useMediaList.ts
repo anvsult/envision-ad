@@ -8,12 +8,13 @@ export function useMediaList({
   filteredMediaProps, loadingLocation, setMediaStatus
 }: UseMediaListProps) {
     const [medias, setMedias] = useState<MediaCardProps[]>([]);
-    
+    const [totalPages, setTotalPages] = useState<number>(1);
+
     useEffect(() => {
         if (filteredMediaProps.sort === SpecialSort.nearest && loadingLocation) {
             return;
         }
-        
+
         let cancelled = false;
 
         async function loadMedia() {
@@ -43,7 +44,8 @@ export function useMediaList({
                     }));
 
                 setMedias(items);
-                
+                setTotalPages(data.totalPages ?? 1);
+
                 if (items.length > 0) {
                     setMediaStatus?.('success');
                 } else {
@@ -63,6 +65,6 @@ export function useMediaList({
         };
     },[filteredMediaProps, loadingLocation, setMediaStatus]);
 
-    return medias;
-    
+    return { medias, totalPages };
+
 }
