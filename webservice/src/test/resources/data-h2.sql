@@ -1,3 +1,10 @@
+-- ===================================================================================
+-- DEPRECATED: This file is no longer used by the application.
+-- Tests now use Testcontainers with a real PostgreSQL database.
+-- Test data is created programmatically in each test's @BeforeEach method.
+-- This file is kept for reference only. Do not modify.
+-- ===================================================================================
+
 INSERT INTO address (street, city, state, zip_code, country)
 VALUES ('123 Baker St', 'Montreal', 'QC', 'H3Z 2Y7', 'Canada'),
        ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),

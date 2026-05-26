@@ -1,3 +1,10 @@
+-- ===================================================================================
+-- DEPRECATED: This file is no longer used by the application.
+-- Tests now use Testcontainers with a real PostgreSQL database.
+-- Schema is managed by Hibernate ddl-auto in tests.
+-- This file is kept for reference only. Do not modify.
+-- ===================================================================================
+
 DROP TABLE IF EXISTS verification CASCADE;
 DROP TABLE IF EXISTS invitation CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;

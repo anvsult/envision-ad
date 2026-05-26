@@ -1,5 +1,6 @@
 package com.envisionad.webservice.venue.presentationlayer;
 
+import com.envisionad.webservice.config.TestcontainersConfig;
 import com.envisionad.webservice.venue.dataaccesslayer.Venue;
 import com.envisionad.webservice.venue.dataaccesslayer.VenueRepository;
 import com.envisionad.webservice.venue.presentationlayer.models.VenueRequestModel;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -22,10 +24,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-        "spring.datasource.url=jdbc:h2:mem:venue-db",
-        "spring.sql.init.mode=never"
-})
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Import(TestcontainersConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class VenueControllerIntegrationTest {
 

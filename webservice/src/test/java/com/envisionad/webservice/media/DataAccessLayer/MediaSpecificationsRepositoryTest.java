@@ -1,11 +1,14 @@
 package com.envisionad.webservice.media.DataAccessLayer;
 
+import com.envisionad.webservice.config.TestcontainersConfig;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
@@ -16,10 +19,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DataJpaTest(properties = {
-        "spring.datasource.url=jdbc:h2:mem:spec-test-db",
-        "spring.sql.init.mode=never"
-})
+@DataJpaTest
+@Import(TestcontainersConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class MediaSpecificationsRepositoryTest {
 
     @Autowired

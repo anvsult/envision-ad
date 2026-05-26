@@ -3,11 +3,13 @@ package com.envisionad.webservice.business.presentationlayer;
 import com.envisionad.webservice.business.dataaccesslayer.*;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessRequestModel;
 import com.envisionad.webservice.business.presentationlayer.models.InvitationRequestModel;
+import com.envisionad.webservice.config.TestcontainersConfig;
 import com.envisionad.webservice.utils.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -16,16 +18,17 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = { "spring.datasource.url=jdbc:h2:mem:user-db" })
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Import(TestcontainersConfig.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class BusinessControllerIntegrationTest {
 
@@ -54,6 +57,118 @@ class BusinessControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        // --- Seed data (replaces data-h2.sql) ---
+        Address addr1 = new Address("123 Baker St", "Montreal", "QC", "H3Z 2Y7", "Canada");
+        Address addr2 = new Address("500 Tech Blvd", "Toronto", "ON", "M5V 2T6", "Canada");
+        Address addr3 = new Address("789 Stanley Park Dr", "Vancouver", "BC", "V6G 3E2", "Canada");
+        Address addr4 = new Address("404 Rocky View Rd", "Calgary", "AB", "T3K 5Y6", "Canada");
+        Address addr5 = new Address("88 Parliament Hill", "Ottawa", "ON", "K1A 0A6", "Canada");
+
+        Roles mediaOwnerAndAdvertiser = new Roles();
+        mediaOwnerAndAdvertiser.setMediaOwner(true);
+        mediaOwnerAndAdvertiser.setAdvertiser(true);
+
+        Roles advertiserOnly = new Roles();
+        advertiserOnly.setAdvertiser(true);
+
+        Roles mediaOwnerOnly = new Roles();
+        mediaOwnerOnly.setMediaOwner(true);
+
+        Business b1 = new Business();
+        b1.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11"));
+        b1.setName("Mom & Pop Bakery");
+        b1.setOwnerId("auth0|6934e8515479d2b6d3cf7575");
+        b1.setOrganizationSize(OrganizationSize.SMALL);
+        b1.setAddress(addr1);
+        b1.setRoles(mediaOwnerAndAdvertiser);
+        b1.setVerified(true);
+
+        Business b2 = new Business();
+        b2.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"));
+        b2.setName("TechGiant Solutions");
+        b2.setOwnerId("auth0|696a89137cfdb558ea4a4a4a");
+        b2.setOrganizationSize(OrganizationSize.ENTERPRISE);
+        b2.setAddress(addr2);
+        b2.setRoles(advertiserOnly);
+        b2.setVerified(false);
+
+        Business b3 = new Business();
+        b3.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33"));
+        b3.setName("Lotus Yoga Studio");
+        b3.setOwnerId("auth0|696a88eb347945897ef17093");
+        b3.setOrganizationSize(OrganizationSize.LARGE);
+        b3.setAddress(addr3);
+        b3.setRoles(mediaOwnerOnly);
+        b3.setVerified(false);
+
+        Business b4 = new Business();
+        b4.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b44"));
+        b4.setName("Prairie Oil & Gas");
+        b4.setOrganizationSize(OrganizationSize.ENTERPRISE);
+        b4.setAddress(addr4);
+        b4.setRoles(mediaOwnerOnly);
+        b4.setVerified(false);
+
+        Business b5 = new Business();
+        b5.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b55"));
+        b5.setName("Capital Consulting");
+        b5.setOrganizationSize(OrganizationSize.MEDIUM);
+        b5.setAddress(addr5);
+        b5.setRoles(advertiserOnly);
+        b5.setVerified(false);
+
+        businessRepository.saveAll(List.of(b1, b2, b3, b4, b5));
+
+        Employee emp1 = new Employee();
+        emp1.setEmployeeId(new EmployeeIdentifier("94471b2f-8e87-4f47-bb14-604b8c4a32e6"));
+        emp1.setUserId("auth0|6934e8515479d2b6d3cf7575");
+        emp1.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11"));
+
+        Employee emp2 = new Employee();
+        emp2.setEmployeeId(new EmployeeIdentifier("f0252067-78a2-41ea-ba88-34280aea7056"));
+        emp2.setUserId("auth0|696a89137cfdb558ea4a4a4a");
+        emp2.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"));
+
+        Employee emp3 = new Employee();
+        emp3.setEmployeeId(new EmployeeIdentifier("9c881832-3489-4518-b7a2-2e0ecdb659f2"));
+        emp3.setUserId("auth0|695d67069dadc99900c81a0f");
+        emp3.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"));
+
+        Employee emp4 = new Employee();
+        emp4.setEmployeeId(new EmployeeIdentifier("1f9b5afd-f206-447c-97b0-22002a4ff137"));
+        emp4.setUserId("auth0|696a88eb347945897ef17093");
+        emp4.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b33"));
+
+        employeeRepository.saveAll(List.of(emp1, emp2, emp3, emp4));
+
+        Invitation inv1 = new Invitation();
+        inv1.setInvitationId(new InvitationIdentifier("6bb9b68a-a072-4f28-aaa0-601087d03401"));
+        inv1.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"));
+        inv1.setEmail("test@email.com");
+        inv1.setToken("1dd9f712-d3e8-4714-a1dd-08d95012b122");
+        inv1.setTimeExpires(LocalDateTime.now().plusHours(1));
+
+        invitationRepository.save(inv1);
+
+        Verification v1 = new Verification();
+        v1.setVerificationId(new VerificationIdentifier("636e63e2-a3c0-4171-ac90-bfad8aeb6613"));
+        v1.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11"));
+        v1.setStatus(VerificationStatus.DENIED);
+        v1.setComments("Application denied due to invalid address entered");
+
+        Verification v2 = new Verification();
+        v2.setVerificationId(new VerificationIdentifier("75472797-b9e0-4e53-bdf8-81ffe57d9fa5"));
+        v2.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b11"));
+        v2.setStatus(VerificationStatus.APPROVED);
+
+        Verification v3 = new Verification();
+        v3.setVerificationId(new VerificationIdentifier("cf4dc890-d86c-48c4-9a8b-7705e0420da3"));
+        v3.setBusinessId(new BusinessIdentifier("b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22"));
+        v3.setStatus(VerificationStatus.PENDING);
+
+        verificationRepository.saveAll(List.of(v1, v2, v3));
+
+        // --- JWT mocks ---
         Jwt admin = Jwt.withTokenValue("admin-token")
                 .header("alg", "none")
                 .claim("sub", "auth0|696a89377cfdb558ea4a4a61")
