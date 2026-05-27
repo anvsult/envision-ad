@@ -92,6 +92,12 @@ test.finalizedBy jacocoTestReport
 check.dependsOn jacocoTestCoverageVerification
 
 tasks.named('test') {
+    // Run test classes in parallel; integration tests serialized via @ResourceLock("integration-db")
+    systemProperty 'junit.jupiter.execution.parallel.enabled', 'true'
+    systemProperty 'junit.jupiter.execution.parallel.mode.default', 'same_thread'
+    systemProperty 'junit.jupiter.execution.parallel.mode.classes.default', 'concurrent'
+    systemProperty 'junit.jupiter.execution.parallel.config.strategy', 'dynamic'
+    systemProperty 'junit.jupiter.execution.parallel.config.dynamic.factor', '1'
     useJUnitPlatform()
     testLogging {
         events "passed", "skipped", "failed"

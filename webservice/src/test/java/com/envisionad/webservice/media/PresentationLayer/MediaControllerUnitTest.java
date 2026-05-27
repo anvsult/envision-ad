@@ -11,15 +11,16 @@ import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
@@ -31,22 +32,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = MediaController.class)
+@ExtendWith(MockitoExtension.class)
 class MediaControllerUnitTest {
 
-        @MockitoBean
+        @Mock
         private MediaService mediaService;
 
-        @MockitoBean
+        @Mock
         private MediaRequestMapper requestMapper;
 
-        @MockitoBean
+        @Mock
         private MediaResponseMapper responseMapper;
 
-        @MockitoBean
-        private BusinessService businessService; // Added Mock
+        @Mock
+        private BusinessService businessService;
 
-        @Autowired
+        @InjectMocks
         private MediaController mediaController;
 
         private Media media;

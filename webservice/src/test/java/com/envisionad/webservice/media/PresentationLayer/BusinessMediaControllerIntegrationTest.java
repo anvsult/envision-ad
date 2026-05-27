@@ -3,6 +3,8 @@ package com.envisionad.webservice.media.PresentationLayer;
 import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
+import com.envisionad.webservice.business.dataaccesslayer.Employee;
+import com.envisionad.webservice.business.dataaccesslayer.EmployeeIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
 import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.media.DataAccessLayer.*;
@@ -13,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -26,7 +26,7 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
 
     private final String BASE_URI = "/api/v1/businesses/{businessId}/media";
 
-    @MockitoBean
+    @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
@@ -47,6 +47,7 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
     void setUp() {
         mediaRepository.deleteAll();
         mediaLocationRepository.deleteAll();
+        employeeRepository.deleteAll();
         businessRepository.deleteAll();
 
         // Setup user ID and business ID
@@ -69,9 +70,18 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
         business2.setOwnerId(userId);
         businessRepository.save(business2);
 
-        // Mock employee repository to allow access for this user to both businesses
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId)).thenReturn(true);
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(userId, businessId_noMedia)).thenReturn(true);
+        // Create employee records so the real repository grants access to both businesses
+        Employee employee1 = new Employee();
+        employee1.setEmployeeId(new EmployeeIdentifier());
+        employee1.setUserId(userId);
+        employee1.setBusinessId(new BusinessIdentifier(businessId));
+        employeeRepository.save(employee1);
+
+        Employee employee2 = new Employee();
+        employee2.setEmployeeId(new EmployeeIdentifier());
+        employee2.setUserId(userId);
+        employee2.setBusinessId(new BusinessIdentifier(businessId_noMedia));
+        employeeRepository.save(employee2);
 
         // Create a media location
         MediaLocation location = new MediaLocation();
@@ -245,9 +255,6 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
                 .build();
 
         when(jwtDecoder.decode("different-mock-token")).thenReturn(jwt);
-
-        // Mock employee repository to deny access for this user
-        when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(differentUserId, businessId)).thenReturn(false);
 
         webTestClient.get()
                 .uri(BASE_URI, businessId)
