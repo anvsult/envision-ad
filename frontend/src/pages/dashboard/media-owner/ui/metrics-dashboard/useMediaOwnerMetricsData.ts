@@ -39,7 +39,6 @@ export function useMediaOwnerMetricsData() {
     const [revenueByMediaLocationPage, setRevenueByMediaLocationPage] = useState(1);
     const { organization } = useOrganization();
     const [mediaOwnerReservations, setMediaOwnerReservations] = useState<ReservationResponseDTO[]>([]);
-    const [revenueByMediaPage, setRevenueByMediaPage] = useState(1);
     const [earningsKpis, setEarningsKpis] = useState<MetricsKpi[]>(() => buildEarningsKpis([], 0));
 
     const [activeCampaignDetailsPage, setActiveCampaignDetailsPage] = useState(1);
@@ -125,7 +124,6 @@ export function useMediaOwnerMetricsData() {
 
                 if (reservationsResult.status === "fulfilled") {
                     setMediaOwnerReservations(Array.isArray(reservationsResult.value) ? reservationsResult.value : []);
-                    setRevenueByMediaPage(1);
                     setMediaOwnerReservations(
                         Array.isArray(reservationsResult.value)
                             ? reservationsResult.value

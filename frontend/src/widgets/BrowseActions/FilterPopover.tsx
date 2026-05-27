@@ -40,30 +40,39 @@ export function FilterNumberInput({value, setValue, label, placeholder, prefix, 
 interface FilterPopoverProps {
     id?: string;
     buttonName: string;
-    applyActions: ()=> void;
+    isActive?: boolean;
+    applyActions: () => void;
+    onReset?: () => void;
+    onOpen?: () => void;
     children?: React.ReactNode;
 }
 
-function FilterPopover({id, buttonName, applyActions, children}: FilterPopoverProps){
+function FilterPopover({id, buttonName, isActive, applyActions, onReset, onOpen, children}: FilterPopoverProps){
     const t = useTranslations('browse.browseactions.filters');
     const [opened, setOpened] = useState(false);
-    
+
     const handleApply = useCallback(() => {
         applyActions();
         setOpened(false);
     }, [applyActions]);
 
+    const handleReset = useCallback(() => {
+        onReset?.();
+        setOpened(false);
+    }, [onReset]);
+
     function toggleOpen() {
-        setOpened(!opened)
+        if (!opened) onOpen?.();
+        setOpened(!opened);
     }
-    
+
     useEffect(() => {
         if (!opened) return;
 
         const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === "Enter") {
-            handleApply();
-        }
+            if (event.key === "Enter") {
+                handleApply();
+            }
         };
 
         window.addEventListener("keydown", handleKeyDown);
@@ -72,16 +81,21 @@ function FilterPopover({id, buttonName, applyActions, children}: FilterPopoverPr
   
     return(
         <Popover id={id} opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted >
-            <PopoverTarget >
-                <Button onClick={toggleOpen} variant="white" rightSection={<IconChevronDown/>} size="xs">{buttonName}</Button>
+            <PopoverTarget>
+                <Button onClick={toggleOpen} variant={isActive ? "light" : "white"} color={isActive ? "blue" : undefined} rightSection={<IconChevronDown />} size="xs">{buttonName}</Button>
             </PopoverTarget>
             <PopoverDropdown>
                 {children}
-                <Group justify="flex-end" mt="md">
-                <Button size="xs" onClick={handleApply}>
-                    {t("showresults")}
-                </Button>
-            </Group>
+                <Group justify={onReset ? "space-between" : "flex-end"} mt="md">
+                    {onReset && (
+                        <Button size="xs" variant="subtle" color="red" onClick={handleReset}>
+                            {t("clear")}
+                        </Button>
+                    )}
+                    <Button size="xs" onClick={handleApply}>
+                        {t("showresults")}
+                    </Button>
+                </Group>
             </PopoverDropdown>
             
         </Popover>
@@ -100,15 +114,30 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
     const t = useTranslations('browse.browseactions.filters');
     const [draftMin, setDraftMin] = useState<number | null>(minPrice ?? null);
     const [draftMax, setDraftMax] = useState<number | null>(maxPrice ?? null);
-    
 
     function handleApply() {
         setMinPrice(draftMin);
         setMaxPrice(draftMax);
     }
 
+    function handleReset() {
+        setDraftMin(null);
+        setDraftMax(null);
+        setMinPrice(null);
+        setMaxPrice(null);
+    }
+
+    function getPriceLabel() {
+        if (minPrice != null && maxPrice != null) return `$${minPrice} – $${maxPrice}`;
+        if (minPrice != null) return `≥ $${minPrice}`;
+        if (maxPrice != null) return `≤ $${maxPrice}`;
+        return t('price');
+    }
+
+    const isActive = minPrice != null || maxPrice != null;
+
     return(
-        <FilterPopover id={id} buttonName={t('price')} applyActions={handleApply}>
+        <FilterPopover id={id} buttonName={getPriceLabel()} isActive={isActive} applyActions={handleApply} onReset={isActive ? handleReset : undefined} onOpen={() => { setDraftMin(minPrice ?? null); setDraftMax(maxPrice ?? null); }}>
             <Group gap='lg' >
                 <FilterNumberInput
                     label={t('from')}
@@ -135,14 +164,21 @@ export function FilterPricePopover({id, minPrice, maxPrice, setMinPrice, setMaxP
 
 export function FilterValuePopover({id, value, setValue, label, placeholder, prefix, ariaLabel}: FilterNumberInputProps) {
     const [draftValue, setdraftValue] = useState<number | null>(value ?? null);
-    
 
     function handleApply() {
         setValue(draftValue);
     }
 
+    function handleReset() {
+        setdraftValue(null);
+        setValue(null);
+    }
+
+    const activeLabel = value != null ? `≥ ${prefix ?? ""}${value.toLocaleString()}` : label;
+    const isActive = value != null;
+
     return(
-        <FilterPopover id={id} buttonName={label} applyActions={handleApply}>
+        <FilterPopover id={id} buttonName={activeLabel} isActive={isActive} applyActions={handleApply} onReset={isActive ? handleReset : undefined} onOpen={() => setdraftValue(value ?? null)}>
             <Group gap='lg'>
                 <FilterNumberInput
                     label={label}

@@ -387,6 +387,8 @@
         "price": "Price (CAD$)",
         "impressions": "Minimum impressions",
         "venue": "Venue Type",
+        "reset": "Reset filters",
+        "clear": "Clear",
         "from": "From",
         "to": "To",
         "showresults": "Add filter"
@@ -1571,6 +1573,7 @@
       "nameFrLabel": "Name (French)",
       "nameFrPlaceholder": "e.g. Gymnase",
       "colorCodeLabel": "Color",
+      "nameTooLong": "Name must be 20 characters or fewer",
       "cancel": "Cancel",
       "create": "Create",
       "update": "Update"
