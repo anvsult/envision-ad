@@ -124,7 +124,6 @@ export function useMediaOwnerMetricsData() {
 
                 if (reservationsResult.status === "fulfilled") {
                     setMediaOwnerReservations(Array.isArray(reservationsResult.value) ? reservationsResult.value : []);
-                    setRevenueByMediaPage(1);
                     setMediaOwnerReservations(
                         Array.isArray(reservationsResult.value)
                             ? reservationsResult.value
