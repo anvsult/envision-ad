@@ -26,7 +26,7 @@ function escapeLike(input: string): string {
 
 
 export async function getAllFilteredActiveMedia(
-    {title, businessId, minPrice, maxPrice, minWeeklyImpressions, sort, latLng, bounds, excludedId, page, size}: FilteredActiveMediaProps
+    {title, businessId, minPrice, maxPrice, minWeeklyImpressions, sort, latLng, bounds, excludedId, venueIds, page, size}: FilteredActiveMediaProps
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 

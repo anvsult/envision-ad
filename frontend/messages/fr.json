@@ -387,6 +387,7 @@
         "price": "Prix ($CA)",
         "impressions": "Impressions minimum",
         "venue": "Type de lieu",
+        "reset": "Réinitialiser les filtres",
         "from": "Minimum",
         "to": "Maximum",
         "showresults": "Ajouter le filtre"
@@ -1571,6 +1572,7 @@
       "nameFrLabel": "Nom (Français)",
       "nameFrPlaceholder": "ex. Gymnase",
       "colorCodeLabel": "Couleur",
+      "nameTooLong": "Le nom doit contenir 20 caractères ou moins",
       "cancel": "Annuler",
       "create": "Créer",
       "update": "Mettre à jour"
