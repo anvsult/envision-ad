@@ -4,20 +4,16 @@ import com.envisionad.webservice.business.dataaccesslayer.Business;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessIdentifier;
 import com.envisionad.webservice.business.dataaccesslayer.BusinessRepository;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
-import com.envisionad.webservice.config.TestcontainersConfig;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.media.DataAccessLayer.*;
 import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,19 +21,10 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(TestcontainersConfig.class)
-class BusinessMediaControllerIntegrationTest {
+class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
 
     private final String BASE_URI = "/api/v1/businesses/{businessId}/media";
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
 
     @MockitoBean
     private EmployeeRepository employeeRepository;

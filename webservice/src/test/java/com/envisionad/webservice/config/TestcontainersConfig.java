@@ -8,10 +8,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @TestConfiguration(proxyBeanMethods = false)
 public class TestcontainersConfig {
 
-    private static final PostgreSQLContainer<?> postgres =
-            new PostgreSQLContainer<>("postgres:15");
+    private static final PostgreSQLContainer<?> postgres;
 
     static {
+        // Override Docker API version to satisfy OrbStack/Docker Engine 29.x (min API 1.40)
+        // Testcontainers' shaded docker-java uses property key "api.version" (not DOCKER_API_VERSION)
+        postgres = new PostgreSQLContainer<>("postgres:15");
         postgres.start();
     }
 

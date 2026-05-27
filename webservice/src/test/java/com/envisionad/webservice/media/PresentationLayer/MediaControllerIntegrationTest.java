@@ -3,7 +3,7 @@ package com.envisionad.webservice.media.PresentationLayer;
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
 import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
-import com.envisionad.webservice.config.TestcontainersConfig;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
@@ -18,13 +18,9 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 import java.util.UUID;
 
@@ -35,20 +31,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-@Import(TestcontainersConfig.class)
-class MediaControllerIntegrationTest {
+class MediaControllerIntegrationTest extends BaseIntegrationTest {
 
         private final String BASE_URI_MEDIA = "/api/v1/media";
         private final String BUSINESS_ID = UUID.randomUUID().toString();
-
-        @Autowired
-        private WebTestClient webTestClient;
-
-        @MockitoBean
-        private JwtDecoder jwtDecoder;
 
         @MockitoBean
         private BusinessService businessService;
