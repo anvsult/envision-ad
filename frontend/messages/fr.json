@@ -388,6 +388,7 @@
         "impressions": "Impressions minimum",
         "venue": "Type de lieu",
         "reset": "Réinitialiser les filtres",
+        "clear": "Effacer",
         "from": "Minimum",
         "to": "Maximum",
         "showresults": "Ajouter le filtre"

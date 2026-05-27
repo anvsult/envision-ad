@@ -388,6 +388,7 @@
         "impressions": "Minimum impressions",
         "venue": "Venue Type",
         "reset": "Reset filters",
+        "clear": "Clear",
         "from": "From",
         "to": "To",
         "showresults": "Add filter"

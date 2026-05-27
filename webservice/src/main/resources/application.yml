@@ -16,10 +16,10 @@ spring:
     baseline-on-migrate: true
     baseline-version: "20260525.001"
   mail:
-    host: ${SPRING_EMAIL_SMTP}
-    port: ${SPRING_EMAIL_PORT}
-    username: ${SPRING_EMAIL_USER}
-    password: ${SPRING_EMAIL_PASSWORD}
+    host: ${EMAIL_SMTP}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_USER}
+    password: ${EMAIL_PASSWORD}
     properties:
       mail:
         smtp:

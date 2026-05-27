@@ -86,6 +86,10 @@ export async function getAllFilteredActiveMedia(
         params.append("size", size.toString());
     }
 
+    if (venueIds && venueIds.length > 0) {
+        venueIds.forEach(id => params.append("venueIds", id));
+    }
+
     const response = await axiosInstance.get(`/media/active?${params.toString()}`);
 
     return response.data;
