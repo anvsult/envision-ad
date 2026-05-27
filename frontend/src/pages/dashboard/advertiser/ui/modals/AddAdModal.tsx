@@ -78,7 +78,7 @@ export function AddAdModal({ opened, onClose, onSuccess }: AddAdModalProps) {
 
             // Only runs if no error was thrown
             handleReset();
-        } catch (e) {
+        } catch {
             // Do nothing.
             // Parent already handled notifications.
             // Form remains intact.

@@ -24,9 +24,6 @@ export function FilterVenuePopover({ id, selectedVenueIds, setSelectedVenueIds }
         getAllVenues(locale).then(setVenues).catch(() => setVenues([]));
     }, [locale]);
 
-    useEffect(() => {
-        setDraft(selectedVenueIds);
-    }, [selectedVenueIds]);
 
     function toggleDraft(venueId: string) {
         setDraft(prev =>
@@ -63,7 +60,7 @@ export function FilterVenuePopover({ id, selectedVenueIds, setSelectedVenueIds }
     return (
         <Popover id={id} opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted>
             <PopoverTarget>
-                <Button onClick={() => setOpened(o => !o)} variant={isActive ? "light" : "white"} color={isActive ? "blue" : undefined} rightSection={<IconChevronDown />} size="xs">
+                <Button onClick={() => { if (!opened) setDraft(selectedVenueIds); setOpened(o => !o); }} variant={isActive ? "light" : "white"} color={isActive ? "blue" : undefined} rightSection={<IconChevronDown />} size="xs">
                     {getButtonLabel()}
                 </Button>
             </PopoverTarget>
