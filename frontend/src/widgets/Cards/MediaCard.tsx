@@ -82,23 +82,41 @@ function MediaCard({
     }
 
     const imageBlock = (
-        <AspectRatio
-            ratio={imageRatio}
-            w={isMobile && !isXsMobile ? 170 : "100%"}
-            miw={isMobile && !isXsMobile ? 132 : undefined}
-        >
-            <Paper className={styles.imagecontainer} radius="md" shadow="xs">
-                <AspectRatio ratio={imageRatio}>
-                    <Image
-                        src={imageUrl}
-                        alt={title}
-                        className={styles.image}
-                        fit="cover"
-                        fallbackSrc={ImgNotFound(t2("imageNotFound"))}
-                    />
-                </AspectRatio>
-            </Paper>
-        </AspectRatio>
+        <div style={{
+            position: "relative",
+            width: isMobile && !isXsMobile ? 170 : "100%",
+            minWidth: isMobile && !isXsMobile ? 132 : undefined,
+        }}>
+            <AspectRatio ratio={imageRatio}>
+                <Paper className={styles.imagecontainer} radius="md" shadow="xs">
+                    <AspectRatio ratio={imageRatio}>
+                        <Image
+                            src={imageUrl}
+                            alt={title}
+                            className={styles.image}
+                            fit="cover"
+                            fallbackSrc={ImgNotFound(t2("imageNotFound"))}
+                        />
+                    </AspectRatio>
+                </Paper>
+            </AspectRatio>
+            {venue && (
+                <Badge
+                    size="lg"
+                    color={venue.colorCode}
+                    variant="filled"
+                    style={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
+                        maxWidth: "calc(100% - 16px)",
+                        pointerEvents: "none",
+                    }}
+                >
+                    {locale === "fr" ? venue.nameFr : venue.nameEn}
+                </Badge>
+            )}
+        </div>
     );
 
     const contentBlock = (
@@ -155,13 +173,6 @@ function MediaCard({
                         <span aria-hidden="true" tabIndex={-1} style={{ display: "inline-block", verticalAlign: "text-bottom"}}>{"\u{1F4CD}"}</span>
                         {locationText}
                     </Text>
-                )}
-                {venue && (
-                    <Badge size="xs" color={venue.colorCode} variant="filled" style={{ maxWidth: "100%" }}>
-                        <Text size="xs" truncate>
-                            {locale === "fr" ? venue.nameFr : venue.nameEn}
-                        </Text>
-                    </Badge>
                 )}
             </Stack>
 
