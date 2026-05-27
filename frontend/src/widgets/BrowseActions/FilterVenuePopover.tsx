@@ -24,6 +24,7 @@ export function FilterVenuePopover({ id, selectedVenueIds, setSelectedVenueIds }
         getAllVenues(locale).then(setVenues).catch(() => setVenues([]));
     }, [locale]);
 
+
     function toggleDraft(venueId: string) {
         setDraft(prev =>
             prev.includes(venueId) ? prev.filter(id => id !== venueId) : [...prev, venueId]
@@ -35,17 +36,32 @@ export function FilterVenuePopover({ id, selectedVenueIds, setSelectedVenueIds }
         setOpened(false);
     }
 
+    function handleReset() {
+        setDraft([]);
+        setSelectedVenueIds([]);
+        setOpened(false);
+    }
+
     if (venues.length === 0) return null;
 
-    const buttonLabel = selectedVenueIds.length > 0
-        ? `${t("venue")} (${selectedVenueIds.length})`
-        : t("venue");
+    const isActive = selectedVenueIds.length > 0;
+
+    function getButtonLabel() {
+        if (!isActive) return t("venue");
+        const names = selectedVenueIds.map(id => {
+            const v = venues.find(v => v.venueId === id);
+            return v ? (locale === "fr" ? v.nameFr : v.nameEn) : null;
+        }).filter(Boolean) as string[];
+        if (names.length === 1) return names[0];
+        if (names.length === 2) return names.join(", ");
+        return `${names[0]}, ${names[1]} +${names.length - 2}`;
+    }
 
     return (
         <Popover id={id} opened={opened} onChange={setOpened} trapFocus position="bottom" withArrow shadow="md" keepMounted>
             <PopoverTarget>
-                <Button onClick={() => setOpened(o => !o)} variant="white" rightSection={<IconChevronDown />} size="xs">
-                    {buttonLabel}
+                <Button onClick={() => { if (!opened) setDraft(selectedVenueIds); setOpened(o => !o); }} variant={isActive ? "light" : "white"} color={isActive ? "blue" : undefined} rightSection={<IconChevronDown />} size="xs">
+                    {getButtonLabel()}
                 </Button>
             </PopoverTarget>
             <PopoverDropdown>
@@ -70,7 +86,12 @@ export function FilterVenuePopover({ id, selectedVenueIds, setSelectedVenueIds }
                         })}
                     </Group>
                 </Stack>
-                <Group justify="flex-end" mt="md">
+                <Group justify={isActive ? "space-between" : "flex-end"} mt="md">
+                    {isActive && (
+                        <Button size="xs" variant="subtle" color="red" onClick={handleReset}>
+                            {t("clear")}
+                        </Button>
+                    )}
                     <Button size="xs" onClick={handleApply}>
                         {t("showresults")}
                     </Button>

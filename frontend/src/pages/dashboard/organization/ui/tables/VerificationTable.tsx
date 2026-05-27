@@ -3,7 +3,7 @@
 import {Accordion, Table, Text, Badge, ScrollArea, Group, Loader, ActionIcon, Tooltip} from "@mantine/core";
 import {useLocale, useTranslations} from "next-intl";
 import {VerificationResponseDTO} from "@/entities/organization/model/verification";
-import {useEffect, useRef, useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import translate from "translate";
 import {IconLanguage} from "@tabler/icons-react";
 
@@ -77,7 +77,7 @@ export function VerificationHistoryTable({verifications}: VerificationHistoryTab
         return () => {
             isMounted = false;
         };
-    }, [verificationIdKey, locale]);
+    }, [verificationIdKey, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggleShowOriginal = (verificationId: string) => {
         setCommentStates((prev) => ({

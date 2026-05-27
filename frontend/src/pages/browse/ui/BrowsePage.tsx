@@ -209,12 +209,30 @@ function BrowsePage() {
     }
   }, [mapVisible, onMove])
 
+  const hasActiveFilters = titleFilter !== "" || addressSearch !== "" || minPrice !== null || maxPrice !== null || minImpressions !== null || venueIds.length > 0;
+
+  function resetFilters() {
+    setDraftTitleFilter("");
+    setTitleFilter("");
+    setDraftAddressSearch("");
+    setAddressSearch("");
+    setMinPrice(null);
+    setMaxPrice(null);
+    setMinImpressions(null);
+    setVenueIds([]);
+  }
+
   function filters(){
     return(
       <>
         <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')} ariaLabel='Minimum Impressions Input'/>
         <FilterVenuePopover id='VenueFilter' selectedVenueIds={venueIds} setSelectedVenueIds={setVenueIds} />
+        {hasActiveFilters && (
+          <Button size="xs" variant="subtle" color="red" onClick={resetFilters}>
+            {t('browseactions.filters.reset')}
+          </Button>
+        )}
       </>
     )
   }

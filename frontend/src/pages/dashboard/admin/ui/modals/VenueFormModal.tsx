@@ -40,7 +40,9 @@ export function VenueFormModal({ opened, onClose, onSave, venue }: VenueFormModa
     const validate = (): boolean => {
         const newErrors: typeof errors = {};
         if (!nameEn.trim()) newErrors.nameEn = t("nameEnLabel");
+        else if (nameEn.trim().length > 20) newErrors.nameEn = t("nameTooLong");
         if (!nameFr.trim()) newErrors.nameFr = t("nameFrLabel");
+        else if (nameFr.trim().length > 20) newErrors.nameFr = t("nameTooLong");
         if (!colorCode || !/^#[0-9A-Fa-f]{6}$/.test(colorCode)) newErrors.colorCode = t("colorCodeLabel");
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -71,7 +73,7 @@ export function VenueFormModal({ opened, onClose, onSave, venue }: VenueFormModa
                     value={nameEn}
                     onChange={(e) => setNameEn(e.currentTarget.value)}
                     error={errors.nameEn}
-                    maxLength={100}
+                    maxLength={20}
                     required
                 />
                 <TextInput
@@ -80,7 +82,7 @@ export function VenueFormModal({ opened, onClose, onSave, venue }: VenueFormModa
                     value={nameFr}
                     onChange={(e) => setNameFr(e.currentTarget.value)}
                     error={errors.nameFr}
-                    maxLength={100}
+                    maxLength={20}
                     required
                 />
                 <ColorInput
