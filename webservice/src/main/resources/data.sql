@@ -1,3 +1,9 @@
+-- ===================================================================================
+-- DEPRECATED: This file is no longer used by the application.
+-- Seed data was loaded once into the persistent database.
+-- This file is kept for reference only. Do not modify.
+-- ===================================================================================
+
 INSERT INTO address (street, city, state, zip_code, country)
 VALUES ('900 Rue Riverside', 'Saint-Lambert', 'QC', 'J4P 3P2', 'Canada'),
        ('500 Tech Blvd', 'Toronto', 'ON', 'M5V 2T6', 'Canada'),

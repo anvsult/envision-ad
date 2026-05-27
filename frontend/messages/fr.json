@@ -70,7 +70,8 @@
     "admin": {
       "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
-      "pendingOrganizations": "Demandes de vérification"
+      "pendingOrganizations": "Demandes de vérification",
+      "venues": "Tags de lieu"
     }
   },
   "advertiserMetrics": {
@@ -385,6 +386,7 @@
         "actionName": "Filtres:",
         "price": "Prix ($CA)",
         "impressions": "Impressions minimum",
+        "venue": "Type de lieu",
         "from": "Minimum",
         "to": "Maximum",
         "showresults": "Ajouter le filtre"
@@ -576,7 +578,8 @@
       "pending": "Annonces en attente",
       "status": "Statut",
       "update": "Prochaine mise à jour",
-      "price": "Prix"
+      "price": "Prix",
+      "venue": "Lieu"
     },
     "status": {
       "active": "Actif",
@@ -717,6 +720,7 @@
       "height": "Hauteur (cm)",
       "price": "Prix (par semaine)",
       "dailyImpressions": "Impressions quotidiennes",
+      "venueType": "Type de lieu",
       "previewCorners": "Prévisualiser et définir les coins",
       "dragCorners": "Faites glisser les coins pour correspondre à la zone d'affichage"
     },
@@ -1358,7 +1362,8 @@
       "mediaType": "Type",
       "resolution": "Résolution",
       "noAssignedMedia": "Aucun média attribué pour le moment.",
-      "edit": "Modifier"
+      "edit": "Modifier",
+      "deleteLocationAria": "Supprimer l'emplacement {name}"
     },
     "notifications": {
       "loadFailed": {
@@ -1545,6 +1550,46 @@
     "buttons": {
       "cancel": "Annuler",
       "create": "Créer"
+    }
+  },
+  "venueManagement": {
+    "title": "Tags de lieu",
+    "addVenue": "Ajouter un lieu",
+    "table": {
+      "color": "Couleur",
+      "nameEn": "Nom (EN)",
+      "nameFr": "Nom (FR)",
+      "mediaCount": "Médias",
+      "actions": "Actions",
+      "noVenues": "Aucun tag de lieu. Créez le premier pour commencer."
+    },
+    "form": {
+      "createTitle": "Créer un tag de lieu",
+      "editTitle": "Modifier un tag de lieu",
+      "nameEnLabel": "Nom (Anglais)",
+      "nameEnPlaceholder": "ex. Gym",
+      "nameFrLabel": "Nom (Français)",
+      "nameFrPlaceholder": "ex. Gymnase",
+      "colorCodeLabel": "Couleur",
+      "cancel": "Annuler",
+      "create": "Créer",
+      "update": "Mettre à jour"
+    },
+    "delete": {
+      "title": "Supprimer le tag de lieu",
+      "message": "Êtes-vous sûr de vouloir supprimer « {name} » ? Cette action est irréversible.",
+      "mediaWarning": "Ce tag de lieu est actuellement assigné à {count} média(s). Le supprimer retirera le tag de tous les médias associés.",
+      "confirm": "Supprimer",
+      "cancel": "Annuler"
+    },
+    "notifications": {
+      "created": "Tag de lieu créé avec succès.",
+      "updated": "Tag de lieu mis à jour avec succès.",
+      "deleted": "Tag de lieu supprimé avec succès.",
+      "loadFailed": "Échec du chargement des tags de lieu.",
+      "createFailed": "Échec de la création du tag de lieu.",
+      "updateFailed": "Échec de la mise à jour du tag de lieu.",
+      "deleteFailed": "Échec de la suppression du tag de lieu."
     }
   }
 }

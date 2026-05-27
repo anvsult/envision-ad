@@ -30,7 +30,8 @@ public interface MediaService {
             Double userLat,
             Double userLng,
             List<Double> bounds,
-            String excludedId);
+            String excludedId,
+            List<String> venueIds);
 
     Media getMediaById(UUID id);
 

@@ -3,6 +3,7 @@
 import React from "react";
 import { Select, TextInput, Tooltip } from "@mantine/core";
 import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
+import { VenuePillSelector } from "@/pages/dashboard/media-owner/ui/components/VenuePillSelector";
 
 interface MediaDetailsFormProps {
   formState: MediaFormState;
@@ -331,6 +332,12 @@ export function MediaDetailsForm({
           handleRestrictedChange("dailyImpressions", e.currentTarget.value, /[^0-9]/g)
         }
         error={formState.errors["dailyImpressions"]}
+      />
+
+      <div style={{ height: 12 }} />
+      <VenuePillSelector
+        selectedVenueId={formState.venueId}
+        onSelect={(id) => onFieldChange("venueId", id)}
       />
     </>
   );

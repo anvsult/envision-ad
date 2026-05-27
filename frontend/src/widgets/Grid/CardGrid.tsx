@@ -24,7 +24,7 @@ export function MediaCardGrid({id, medias, size}: MediaCardGridProps) {
             <CardGrid>
                 {medias.map((media) => (
                     <GridCol key={id ? `${id}-${media.index}` : media.index} span={{base: 12 , xs: 6 * size, sm: 4 * size, md: 3 * size, lg: 3 * size}}>
-                        <MediaCard 
+                        <MediaCard
                             index={id ? id + media.index : media.index}
                             href={media.href}
                             imageUrl={media.imageUrl}
@@ -34,11 +34,11 @@ export function MediaCardGrid({id, medias, size}: MediaCardGridProps) {
                             mediaLocation={media.mediaLocation}
                             aspectRatio={media.aspectRatio}
                             typeOfDisplay={media.typeOfDisplay}
-                            price={media.price} 
-                            dailyImpressions={media.dailyImpressions} 
+                            price={media.price}
+                            dailyImpressions={media.dailyImpressions}
                             schedule={media.schedule}
-                            resolution={media.resolution} 
-                            /* TODO: Add dateAdded props when supported by MediaCard */
+                            resolution={media.resolution}
+                            venue={media.venue}
                         />
                     </GridCol>
               ))}

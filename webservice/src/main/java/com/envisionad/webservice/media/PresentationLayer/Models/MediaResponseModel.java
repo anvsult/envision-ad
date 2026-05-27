@@ -5,6 +5,8 @@ import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.envisionad.webservice.venue.presentationlayer.models.VenueResponseModel;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -28,6 +30,7 @@ public class MediaResponseModel {
     private String imageUrl;
     private String businessId;
     private String businessName;
+    private VenueResponseModel venue;
     private String previewConfiguration;
 
 

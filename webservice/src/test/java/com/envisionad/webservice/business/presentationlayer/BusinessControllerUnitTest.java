@@ -10,12 +10,13 @@ import com.envisionad.webservice.business.presentationlayer.models.BusinessReque
 import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -27,16 +28,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = BusinessController.class)
+@ExtendWith(MockitoExtension.class)
 class BusinessControllerUnitTest {
 
-    @MockitoBean
+    @Mock
     private BusinessService businessService;
 
-    @MockitoBean
+    @Mock
     private BusinessMapper businessMapper;
 
-    @Autowired
+    @InjectMocks
     private BusinessController businessController;
 
     private Business business;

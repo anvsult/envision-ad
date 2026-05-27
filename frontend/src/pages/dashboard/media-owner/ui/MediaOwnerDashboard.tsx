@@ -119,7 +119,8 @@ export default function MediaOwnerPage() {
                 activeMonths,
                 errors: {},
                 imageUrl: backend.imageUrl ?? null,
-                previewConfiguration: backend.previewConfiguration ?? null
+                previewConfiguration: backend.previewConfiguration ?? null,
+                venueId: backend.venue?.venueId ?? null
             });
 
             setEditingId(String(id));

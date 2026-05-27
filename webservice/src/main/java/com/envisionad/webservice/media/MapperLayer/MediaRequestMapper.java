@@ -36,6 +36,7 @@ public class MediaRequestMapper {
         media.setDailyImpressions(request.getDailyImpressions());
         media.setImageUrl(request.getImageUrl());
         media.setPreviewConfiguration(request.getPreviewConfiguration());
+        media.setVenueId(request.getVenueId());
 
         if (request.getBusinessId() != null) {
             media.setBusinessId(UUID.fromString(request.getBusinessId()));

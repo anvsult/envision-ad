@@ -1,31 +1,14 @@
-#for h2
 spring:
-  h2:
-    console:
-      enabled: true
-
-  datasource:
-    url: jdbc:h2:mem:user-db;DB_CLOSE_DELAY=-1;NON_KEYWORDS=YEAR
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+  flyway:
+    enabled: false
 
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: create-drop         #let jpa create the schema
+      ddl-auto: create
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         auto-quote-keyword: true
-    defer-datasource-initialization: true
-
-  sql:
-    init:
-      platform: h2
-      mode: always
-      schema-locations: classpath:schema-h2.sql
-      data-locations: classpath:data-h2.sql
 
   mail:
     host: ${EMAIL_SMTP:localhost}
@@ -50,7 +33,7 @@ management:
       show-details: when-authorized
   health:
     mail:
-      enabled: false  # Disable mail health check
+      enabled: false
 
 okta:
   oauth2:

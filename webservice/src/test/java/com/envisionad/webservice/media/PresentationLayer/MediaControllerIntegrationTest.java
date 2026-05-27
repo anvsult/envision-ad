@@ -1,9 +1,10 @@
 package com.envisionad.webservice.media.PresentationLayer;
 
-import com.envisionad.webservice.business.presentationlayer.models.BusinessResponseModel;
-import com.envisionad.webservice.business.businesslogiclayer.BusinessService;
-import com.envisionad.webservice.business.dataaccesslayer.EmployeeRepository;
+import com.envisionad.webservice.business.dataaccesslayer.*;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocation;
+import com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
 import com.envisionad.webservice.media.DataAccessLayer.TypeOfDisplay;
@@ -12,66 +13,51 @@ import com.envisionad.webservice.media.PresentationLayer.Models.ScheduleModel;
 import com.envisionad.webservice.media.PresentationLayer.Models.WeeklyScheduleEntry;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccount;
 import com.envisionad.webservice.payment.dataaccesslayer.StripeAccountRepository;
-import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
-import java.util.UUID;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-                "spring.datasource.url=jdbc:h2:mem:user-db",
-                "spring.sql.init.mode=never"
-})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class MediaControllerIntegrationTest {
+class MediaControllerIntegrationTest extends BaseIntegrationTest {
 
         private final String BASE_URI_MEDIA = "/api/v1/media";
         private final String BUSINESS_ID = UUID.randomUUID().toString();
 
         @Autowired
-        private WebTestClient webTestClient;
+        private BusinessRepository businessRepository;
 
-        @MockitoBean
-        private JwtDecoder jwtDecoder;
-
-        @MockitoBean
-        private BusinessService businessService;
-
-        @MockitoBean
+        @Autowired
         private EmployeeRepository employeeRepository;
 
-        @MockitoBean
+        @Autowired
         private StripeAccountRepository stripeAccountRepository;
 
         @Autowired
         private MediaRepository mediaRepository;
 
         @Autowired
-        private com.envisionad.webservice.media.DataAccessLayer.MediaLocationRepository mediaLocationRepository;
+        private MediaLocationRepository mediaLocationRepository;
 
         private String mediaId;
         private String mediaLocationId;
 
         @BeforeEach
         void setUp() {
+                mediaRepository.deleteAll();
+                mediaLocationRepository.deleteAll();
+                stripeAccountRepository.deleteAll();
+                employeeRepository.deleteAll();
+                businessRepository.deleteAll();
+
                 Jwt jwt = Jwt.withTokenValue("mock-token")
                                 .header("alg", "none")
                                 .claim("sub", "auth0|65702e81e9661e14ab3aac89")
@@ -84,29 +70,46 @@ class MediaControllerIntegrationTest {
                                                 "update:business",
                                                 "update:media"))
                                 .build();
-
                 when(jwtDecoder.decode("mock-token")).thenReturn(jwt);
 
-                BusinessResponseModel businessResponseModel = new BusinessResponseModel();
-                businessResponseModel.setBusinessId(BUSINESS_ID);
-                when(businessService.getBusinessByUserId(any(), anyString())).thenReturn(businessResponseModel);
+                // Create Business (required by BusinessService.getBusinessByUserId)
+                Business business = new Business();
+                business.setBusinessId(new BusinessIdentifier(BUSINESS_ID));
+                business.setName("Test Business");
+                business.setOwnerId("auth0|65702e81e9661e14ab3aac89");
+                business.setOrganizationSize(OrganizationSize.SMALL);
+                business.setVerified(true);
+                Address address = new Address();
+                address.setStreet("123 Test St");
+                address.setCity("Toronto");
+                address.setState("ON");
+                address.setZipCode("M5H 1A1");
+                address.setCountry("Canada");
+                business.setAddress(address);
+                Roles roles = new Roles();
+                roles.setMediaOwner(true);
+                business.setRoles(roles);
+                businessRepository.save(business);
 
-                // Mock employee repository to validate user is employee of business
-                when(employeeRepository.existsByUserIdAndBusinessId_BusinessId(
-                        "auth0|65702e81e9661e14ab3aac89",
-                        BUSINESS_ID
-                )).thenReturn(true);
+                // Create Employee (required by BusinessService.getBusinessByUserId and media auth checks)
+                Employee employee = new Employee();
+                employee.setEmployeeId(new EmployeeIdentifier());
+                employee.setUserId("auth0|65702e81e9661e14ab3aac89");
+                employee.setBusinessId(new BusinessIdentifier(BUSINESS_ID));
+                employeeRepository.save(employee);
 
-                com.envisionad.webservice.media.DataAccessLayer.MediaLocation location = new com.envisionad.webservice.media.DataAccessLayer.MediaLocation();
+                // Create StripeAccount (required to pass onboarding check when adding media)
+                StripeAccount stripeAccount = new StripeAccount();
+                stripeAccount.setBusinessId(BUSINESS_ID);
+                stripeAccount.setStripeAccountId("acct_test_" + BUSINESS_ID.replace("-", "").substring(0, 16));
+                stripeAccount.setOnboardingComplete(true);
+                stripeAccount.setChargesEnabled(true);
+                stripeAccount.setPayoutsEnabled(true);
+                stripeAccountRepository.save(stripeAccount);
+
+                MediaLocation location = new MediaLocation();
                 location.setName("Downtown Billboard A");
                 location.setBusinessId(UUID.fromString(BUSINESS_ID));
-
-                // Mock StripeAccountRepository to prevent StripeAccountNotOnboardedException
-                StripeAccount mockStripeAccount = mock(StripeAccount.class);
-                when(mockStripeAccount.isOnboardingComplete()).thenReturn(true);
-                when(mockStripeAccount.isChargesEnabled()).thenReturn(true);
-                when(mockStripeAccount.isPayoutsEnabled()).thenReturn(true);
-                when(stripeAccountRepository.findByBusinessId(anyString())).thenReturn(Optional.of(mockStripeAccount));
                 location.setCountry("Canada");
                 location.setProvince("ON");
                 location.setCity("Toronto");

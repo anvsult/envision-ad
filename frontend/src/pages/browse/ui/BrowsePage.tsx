@@ -6,16 +6,19 @@ import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
 import { FilterPricePopover, FilterValuePopover } from '@/widgets/BrowseActions/FilterPopover';
+import { FilterVenuePopover } from '@/widgets/BrowseActions/FilterVenuePopover';
 import { useTranslations } from "next-intl";
 import { IconMap, IconSearch } from '@tabler/icons-react';
 import { AddressDetails, GetAddressDetails, GetUserGeoLocation, SearchLocations} from '@/shared/lib/geolocation';
 
-import { LatLngBounds, LatLngLiteral, Map } from 'leaflet';
+import type { LatLngBounds, LatLngLiteral, Map } from 'leaflet';
 import { MediaStatus } from '@/entities/media/model/media';
 import { LocationStatus } from '@/shared/lib/geolocation/LocationService';
 import { useMediaList } from '@/features/media-management/api/useMediaList';
 import { SortOptions } from '@/features/media-management/api/getAllFilteredActiveMedia';
-import MapView from '@/widgets/Map/MapView';
+import dynamic from 'next/dynamic';
+
+const MapView = dynamic(() => import('@/widgets/Map/MapView'), { ssr: false });
 import { useMediaQuery } from '@mantine/hooks';
 import { groupBy } from '@/shared/lib/groupBy';
 
@@ -39,9 +42,8 @@ function BrowsePage() {
   const searchLanguage = `${t('languages.primary')},${t('languages.fallback')}`
   
   // Lists
-  const ITEMS_PER_PAGE = 16;
+  const ITEMS_PER_PAGE = 32;
   const [activePage, setActivePage] = useState<number>(1);
-  const [totalPages] = useState<number>(1);
   
   // Filters
   const [draftTitleFilter, setDraftTitleFilter] = useState("");
@@ -52,6 +54,7 @@ function BrowsePage() {
   const [minPrice, setMinPrice] = useState<number|null>(null);
   const [maxPrice, setMaxPrice] = useState<number|null>(null);
   const [minImpressions, setMinImpressions] = useState<number|null>(null);
+  const [venueIds, setVenueIds] = useState<string[]>([]);
   const [location, setLocation] = useState<LatLngLiteral | null>(null);
   
 
@@ -74,18 +77,24 @@ function BrowsePage() {
     minPrice,
     maxPrice,
     minWeeklyImpressions: minImpressions,
+    venueIds: venueIds.length > 0 ? venueIds : null,
     sort: sortBy,
     latLng: location,
     bounds: bbox,
     page: activePage - 1,
     size: ITEMS_PER_PAGE
-  }), [titleFilter, minPrice, maxPrice, minImpressions, sortBy, location, bbox, activePage]);
+  }), [titleFilter, minPrice, maxPrice, minImpressions, venueIds, sortBy, location, bbox, activePage]);
 
-  const media = useMediaList({ 
-    filteredMediaProps: filteredMediaProps, 
+  const { medias: media, totalPages } = useMediaList({
+    filteredMediaProps: filteredMediaProps,
     loadingLocation: locationStatus === 'loading',
     setMediaStatus
   });
+
+  // Reset to first page whenever any filter (not page itself) changes
+  useEffect(() => {
+    setActivePage(1);
+  }, [titleFilter, minPrice, maxPrice, minImpressions, venueIds, sortBy, location, bbox]);
 
   const groupedMedia = useMemo(() => {
     const groups = groupBy(media, m => m.mediaLocation?.id ?? "unknown");
@@ -205,6 +214,7 @@ function BrowsePage() {
       <>
         <FilterPricePopover id='PriceFilter' minPrice={minPrice} maxPrice={maxPrice} setMinPrice={setMinPrice} setMaxPrice={setMaxPrice} />
         <FilterValuePopover id='ImpressionsFilter' value={minImpressions} setValue={setMinImpressions} label={t('browseactions.filters.impressions')} placeholder={t('browseactions.filters.impressions')} ariaLabel='Minimum Impressions Input'/>
+        <FilterVenuePopover id='VenueFilter' selectedVenueIds={venueIds} setSelectedVenueIds={setVenueIds} />
       </>
     )
   }
