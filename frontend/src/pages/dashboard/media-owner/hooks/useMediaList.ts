@@ -35,7 +35,8 @@ export function useMediaList() {
                     pending: 0,
                     status: m.status ?? MediaStatusEnum.PENDING,
                     timeUntil: "-",
-                    price: `${Number(m.price)}`
+                    price: `${Number(m.price)}`,
+                    venue: m.venue ?? null
                 }));
                 setMedia(mapped);
             } catch (err) {
@@ -82,7 +83,8 @@ export function useMediaList() {
             dailyImpressions: Number(formState.dailyImpressions),
             schedule: buildScheduleFromForm(formState),
             imageUrl: formState.imageUrl,
-            previewConfiguration: formState.previewConfiguration
+            previewConfiguration: formState.previewConfiguration,
+            venueId: formState.venueId
         };
 
         try {
@@ -121,7 +123,8 @@ export function useMediaList() {
             schedule: buildScheduleFromForm(formState),
             typeOfDisplay: formState.displayType,
             imageUrl: formState.imageUrl,
-            previewConfiguration: formState.previewConfiguration
+            previewConfiguration: formState.previewConfiguration,
+            venueId: formState.venueId
         };
 
         try {
@@ -134,7 +137,8 @@ export function useMediaList() {
                             name: updated.title,
                             image: updated.imageUrl ?? r.image,
                             status: updated.status ?? r.status,
-                            price: updated.price ? `${Number(updated.price).toFixed(2)}` : r.price
+                            price: updated.price ? `${Number(updated.price).toFixed(2)}` : r.price,
+                            venue: updated.venue ?? null
                         }
                         : r
                 )

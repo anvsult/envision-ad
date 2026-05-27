@@ -13,6 +13,7 @@ import {
 import styles from "./MediaCard.module.css";
 import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
+import { Venue } from "@/entities/venue";
 import { useMediaQuery } from "@mantine/hooks";
 import { MediaLocation } from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
@@ -36,6 +37,7 @@ export interface MediaCardProps {
     dailyImpressions: number;
     schedule: MonthlyScheduleModel;
     mobileWidth?: string;
+    venue?: Venue | null;
 }
 
 function MediaCard({
@@ -52,7 +54,8 @@ function MediaCard({
                        dailyImpressions,
                        schedule,
                        mobileWidth,
-                       imageRatio
+                       imageRatio,
+                       venue
                    }: MediaCardProps) {
     const mobileBreakpoint = mobileWidth ?? "575px";
     const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint})`);
@@ -79,23 +82,41 @@ function MediaCard({
     }
 
     const imageBlock = (
-        <AspectRatio
-            ratio={imageRatio}
-            w={isMobile && !isXsMobile ? 170 : "100%"}
-            miw={isMobile && !isXsMobile ? 132 : undefined}
-        >
-            <Paper className={styles.imagecontainer} radius="md" shadow="xs">
-                <AspectRatio ratio={imageRatio}>
-                    <Image
-                        src={imageUrl}
-                        alt={title}
-                        className={styles.image}
-                        fit="cover"
-                        fallbackSrc={ImgNotFound(t2("imageNotFound"))}
-                    />
-                </AspectRatio>
-            </Paper>
-        </AspectRatio>
+        <div style={{
+            position: "relative",
+            width: isMobile && !isXsMobile ? 170 : "100%",
+            minWidth: isMobile && !isXsMobile ? 132 : undefined,
+        }}>
+            <AspectRatio ratio={imageRatio}>
+                <Paper className={styles.imagecontainer} radius="md" shadow="xs">
+                    <AspectRatio ratio={imageRatio}>
+                        <Image
+                            src={imageUrl}
+                            alt={title}
+                            className={styles.image}
+                            fit="cover"
+                            fallbackSrc={ImgNotFound(t2("imageNotFound"))}
+                        />
+                    </AspectRatio>
+                </Paper>
+            </AspectRatio>
+            {venue && (
+                <Badge
+                    size="lg"
+                    color={venue.colorCode}
+                    variant="filled"
+                    style={{
+                        position: "absolute",
+                        top: 8,
+                        left: 8,
+                        maxWidth: "calc(100% - 16px)",
+                        pointerEvents: "none",
+                    }}
+                >
+                    {locale === "fr" ? venue.nameFr : venue.nameEn}
+                </Badge>
+            )}
+        </div>
     );
 
     const contentBlock = (

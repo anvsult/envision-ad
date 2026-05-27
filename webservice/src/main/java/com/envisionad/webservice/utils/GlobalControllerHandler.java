@@ -3,6 +3,7 @@ package com.envisionad.webservice.utils;
 import com.envisionad.webservice.advertisement.exceptions.*;
 import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.reservation.exceptions.*;
+import com.envisionad.webservice.venue.exceptions.VenueNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -136,6 +137,12 @@ public class GlobalControllerHandler {
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(AdvertiserEmailNotFoundException.class)
     public HttpErrorInfo handleAdvertiserEmailNotFoundException(AdvertiserEmailNotFoundException ex) {
+        return createHttpErrorInfo(NOT_FOUND, ex);
+    }
+
+    @ResponseStatus(NOT_FOUND)
+    @ExceptionHandler(VenueNotFoundException.class)
+    public HttpErrorInfo handleVenueNotFoundException(VenueNotFoundException ex) {
         return createHttpErrorInfo(NOT_FOUND, ex);
     }
 

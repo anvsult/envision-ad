@@ -1,0 +1,105 @@
+"use client";
+
+import { Modal, Stack, TextInput, ColorInput, Group, Button } from "@mantine/core";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { Venue, VenueRequestDTO } from "@/entities/venue";
+
+interface VenueFormModalProps {
+    opened: boolean;
+    onClose: () => void;
+    onSave: (data: VenueRequestDTO) => Promise<void>;
+    venue: Venue | null;
+}
+
+export function VenueFormModal({ opened, onClose, onSave, venue }: VenueFormModalProps) {
+    const t = useTranslations("venueManagement.form");
+    const [nameEn, setNameEn] = useState("");
+    const [nameFr, setNameFr] = useState("");
+    const [colorCode, setColorCode] = useState("#3B82F6");
+    const [saving, setSaving] = useState(false);
+    const [errors, setErrors] = useState<{ nameEn?: string; nameFr?: string; colorCode?: string }>({});
+
+    const isEdit = venue !== null;
+
+    useEffect(() => {
+        if (opened) {
+            if (venue) {
+                setNameEn(venue.nameEn);
+                setNameFr(venue.nameFr);
+                setColorCode(venue.colorCode);
+            } else {
+                setNameEn("");
+                setNameFr("");
+                setColorCode("#3B82F6");
+            }
+            setErrors({});
+        }
+    }, [opened, venue]);
+
+    const validate = (): boolean => {
+        const newErrors: typeof errors = {};
+        if (!nameEn.trim()) newErrors.nameEn = t("nameEnLabel");
+        if (!nameFr.trim()) newErrors.nameFr = t("nameFrLabel");
+        if (!colorCode || !/^#[0-9A-Fa-f]{6}$/.test(colorCode)) newErrors.colorCode = t("colorCodeLabel");
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = async () => {
+        if (!validate()) return;
+        setSaving(true);
+        try {
+            await onSave({ nameEn: nameEn.trim(), nameFr: nameFr.trim(), colorCode });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    return (
+        <Modal
+            opened={opened}
+            onClose={onClose}
+            title={isEdit ? t("editTitle") : t("createTitle")}
+            size="md"
+            centered
+        >
+            <Stack gap="md">
+                <TextInput
+                    label={t("nameEnLabel")}
+                    placeholder={t("nameEnPlaceholder")}
+                    value={nameEn}
+                    onChange={(e) => setNameEn(e.currentTarget.value)}
+                    error={errors.nameEn}
+                    maxLength={100}
+                    required
+                />
+                <TextInput
+                    label={t("nameFrLabel")}
+                    placeholder={t("nameFrPlaceholder")}
+                    value={nameFr}
+                    onChange={(e) => setNameFr(e.currentTarget.value)}
+                    error={errors.nameFr}
+                    maxLength={100}
+                    required
+                />
+                <ColorInput
+                    label={t("colorCodeLabel")}
+                    value={colorCode}
+                    onChange={setColorCode}
+                    error={errors.colorCode}
+                    format="hex"
+                    required
+                />
+                <Group justify="flex-end" mt="md">
+                    <Button variant="default" onClick={onClose}>
+                        {t("cancel")}
+                    </Button>
+                    <Button onClick={handleSubmit} loading={saving}>
+                        {isEdit ? t("update") : t("create")}
+                    </Button>
+                </Group>
+            </Stack>
+        </Modal>
+    );
+}

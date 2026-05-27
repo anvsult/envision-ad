@@ -1,3 +1,9 @@
+-- ===================================================================================
+-- DEPRECATED: This file is no longer used by the application.
+-- Schema is now managed by Flyway migrations in db/migration/.
+-- This file is kept for reference only. Do not modify.
+-- ===================================================================================
+
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
@@ -7,6 +13,7 @@ DROP TABLE IF EXISTS stripe_accounts CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
 -- Drop tables that have foreign keys to `media` first, then `media` itself.
 DROP TABLE IF EXISTS media CASCADE;
+DROP TABLE IF EXISTS venue CASCADE;
 DROP TABLE IF EXISTS media_location CASCADE;
 DROP TABLE IF EXISTS employee CASCADE;
 DROP TABLE IF EXISTS business_roles CASCADE;
@@ -100,7 +107,16 @@ CREATE TABLE media_location (
     business_id UUID NOT NULL
 );
 
--- 5. Create Media Table
+-- 5. Create Venue Table
+CREATE TABLE venue (
+    id SERIAL PRIMARY KEY,
+    venue_id VARCHAR(36) UNIQUE NOT NULL,
+    name_en VARCHAR(100) NOT NULL,
+    name_fr VARCHAR(100) NOT NULL,
+    color_code VARCHAR(7) NOT NULL
+);
+
+-- 6. Create Media Table
 CREATE TABLE media (
     media_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     media_location_id UUID NOT NULL
@@ -124,6 +140,7 @@ CREATE TABLE media (
     image_content_type VARCHAR(100),
     image_data         bytea,
     business_id        UUID,
+    venue_id           VARCHAR(36) REFERENCES venue(venue_id) ON DELETE SET NULL,
     preview_configuration JSONB
 );
 

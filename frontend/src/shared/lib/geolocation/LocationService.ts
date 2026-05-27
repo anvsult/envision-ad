@@ -1,5 +1,5 @@
 
-import { LatLngLiteral } from 'leaflet'; 
+import type { LatLngLiteral } from 'leaflet';
 
 interface LatLngSession {
   lat: number;

@@ -4,6 +4,7 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaign;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignIdentifier;
 import com.envisionad.webservice.advertisement.dataaccesslayer.AdCampaignRepository;
 import com.envisionad.webservice.business.dataaccesslayer.*;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.media.DataAccessLayer.Media;
 import com.envisionad.webservice.media.DataAccessLayer.MediaRepository;
 import com.envisionad.webservice.media.DataAccessLayer.Status;
@@ -17,13 +18,8 @@ import com.envisionad.webservice.reservation.presentationlayer.models.Reservatio
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
 
 import java.math.BigDecimal;
@@ -34,25 +30,13 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-        "spring.datasource.url=jdbc:h2:mem:reservation-db",
-        "spring.sql.init.mode=never"
-})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-class ReservationControllerIntegrationTest {
+class ReservationControllerIntegrationTest extends BaseIntegrationTest {
 
     private static final String BASE_URI_RESERVATIONS = "/api/v1/media/{mediaId}/reservations";
     private static final String USER_ID = "auth0|65702e81e9661e14ab3aac89";
     private static final String OTHER_USER_ID = "auth0|65702e81e9661e14ab3aac90";
     private static final String BUSINESS_ID = "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22";
-
-    @Autowired
-    private WebTestClient webTestClient;
-
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
 
     @Autowired
     private MediaRepository mediaRepository;
@@ -77,6 +61,13 @@ class ReservationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        reservationRepository.deleteAll();
+        adCampaignRepository.deleteAll();
+        mediaRepository.deleteAll();
+        mediaLocationRepository.deleteAll();
+        employeeRepository.deleteAll();
+        businessRepository.deleteAll();
+
         // Setup JWT mock
         Jwt jwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")

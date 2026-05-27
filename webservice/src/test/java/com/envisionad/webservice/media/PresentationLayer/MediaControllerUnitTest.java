@@ -11,15 +11,16 @@ import com.envisionad.webservice.media.MapperLayer.MediaResponseMapper;
 import com.envisionad.webservice.media.PresentationLayer.Models.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.math.BigDecimal;
@@ -31,22 +32,22 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = MediaController.class)
+@ExtendWith(MockitoExtension.class)
 class MediaControllerUnitTest {
 
-        @MockitoBean
+        @Mock
         private MediaService mediaService;
 
-        @MockitoBean
+        @Mock
         private MediaRequestMapper requestMapper;
 
-        @MockitoBean
+        @Mock
         private MediaResponseMapper responseMapper;
 
-        @MockitoBean
-        private BusinessService businessService; // Added Mock
+        @Mock
+        private BusinessService businessService;
 
-        @Autowired
+        @InjectMocks
         private MediaController mediaController;
 
         private Media media;
@@ -288,21 +289,21 @@ class MediaControllerUnitTest {
                 Page<MediaResponseModel> responsePage = new PageImpl<>(List.of(responseModel));
 
                 when(mediaService.getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null,
-                                null, null))
+                                null, null, null))
                                 .thenReturn(mediaPage);
                 when(responseMapper.entityToResponseModel(media))
                                 .thenReturn(responseModel);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, null, null, null, null,
                                 null,
-                                null, null, null, null, null);
+                                null, null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
                 assertEquals(1, body.getTotalElements());
 
                 verify(mediaService).getAllFilteredActiveMedia(pageable, null, null, null, null, null, null, null, null,
-                                null, null);
+                                null, null, null);
         }
 
         @Test
@@ -321,7 +322,8 @@ class MediaControllerUnitTest {
                                 50.0,
                                 50.0,
                                 bounds,
-                                mediaId.toString()))
+                                mediaId.toString(),
+                                null))
                                 .thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media))
@@ -338,7 +340,8 @@ class MediaControllerUnitTest {
                                 50.0,
                                 50.0,
                                 bounds,
-                                mediaId.toString());
+                                mediaId.toString(),
+                                null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -351,14 +354,14 @@ class MediaControllerUnitTest {
                 Page<Media> mediaPage = new PageImpl<>(List.of(media));
 
                 when(mediaService.getAllFilteredActiveMedia(pageable, "Test", null, null, null, null, null, null, null,
-                                null, null))
+                                null, null, null))
                                 .thenReturn(mediaPage);
                 when(responseMapper.entityToResponseModel(media))
                                 .thenReturn(responseModel);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "Test", null, null,
                                 null,
-                                null, null, null, null, null, null);
+                                null, null, null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -371,12 +374,12 @@ class MediaControllerUnitTest {
                 Page<Media> emptyPage = Page.empty();
 
                 when(mediaService.getAllFilteredActiveMedia(pageable, "NoMatch", null, null, null, null, null, null,
-                                null, null, null))
+                                null, null, null, null))
                                 .thenReturn(emptyPage);
 
                 ResponseEntity<?> response = mediaController.getAllFilteredActiveMedia(pageable, "NoMatch", null, null,
                                 null,
-                                null, null, null, null, null, null);
+                                null, null, null, null, null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 Page<?> body = (Page<?>) response.getBody();
@@ -394,7 +397,7 @@ class MediaControllerUnitTest {
                 businessId,
                 null, null, null,
                 null, null, null,
-                null, null
+                null, null, null
         )).thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
@@ -405,7 +408,7 @@ class MediaControllerUnitTest {
                                 businessId,
                                 null, null, null,
                                 null, null, null,
-                                null, null);
+                                null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
         }
@@ -418,6 +421,7 @@ class MediaControllerUnitTest {
                                         null,
                                         null,
                                         BigDecimal.valueOf(-1),
+                                        null,
                                         null,
                                         null,
                                         null,
@@ -445,6 +449,7 @@ class MediaControllerUnitTest {
                                         null,
                                         null,
                                         null,
+                                        null,
                                         null);
                 });
 
@@ -461,6 +466,7 @@ class MediaControllerUnitTest {
                                         null,
                                         BigDecimal.valueOf(50),
                                         BigDecimal.valueOf(10),
+                                        null,
                                         null,
                                         null,
                                         null,
@@ -487,6 +493,7 @@ class MediaControllerUnitTest {
                         null,
                         null,
                         null,
+                        null,
                         null);
             });
 
@@ -504,7 +511,7 @@ class MediaControllerUnitTest {
                                 null, null, null, null, null,
                                 "nearest",
                                 50.0, 50.0,
-                                null, null)).thenReturn(mediaPage);
+                                null, null, null)).thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
 
@@ -513,7 +520,7 @@ class MediaControllerUnitTest {
                                 null, null, null, null, null,
                                 "nearest",
                                 50.0, 50.0,
-                                null, null);
+                                null, null, null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
         }
@@ -529,7 +536,7 @@ class MediaControllerUnitTest {
                 null,
                 "weeklyImpressions,asc",
                 null, null,
-                null, null
+                null, null, null
         )).thenReturn(mediaPage);
 
         when(responseMapper.entityToResponseModel(media))
@@ -541,7 +548,7 @@ class MediaControllerUnitTest {
                 null,
                 "weeklyImpressions,asc",
                 null, null,
-                null, null
+                null, null, null
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -552,7 +559,7 @@ class MediaControllerUnitTest {
                 null,
                 "weeklyImpressions,asc",
                 null, null,
-                null, null
+                null, null, null
         );
     }
 
@@ -567,7 +574,7 @@ class MediaControllerUnitTest {
                 null,
                 "weeklyImpressions,desc",
                 null, null,
-                null, null
+                null, null, null
         )).thenReturn(mediaPage);
 
         when(responseMapper.entityToResponseModel(media))
@@ -579,7 +586,7 @@ class MediaControllerUnitTest {
                 null,
                 "weeklyImpressions,desc",
                 null, null,
-                null, null
+                null, null, null
         );
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -599,6 +606,7 @@ class MediaControllerUnitTest {
                                         null,
                                         null,
                                         invalidBounds,
+                                        null,
                                         null);
                 });
 
@@ -615,7 +623,7 @@ class MediaControllerUnitTest {
                                 pageable,
                                 null, null, null, null, null,
                                 null, null, null,
-                                null, mediaId.toString())).thenReturn(mediaPage);
+                                null, mediaId.toString(), null)).thenReturn(mediaPage);
 
                 when(responseMapper.entityToResponseModel(media)).thenReturn(responseModel);
 
@@ -623,14 +631,14 @@ class MediaControllerUnitTest {
                                 pageable,
                                 null, null, null, null, null,
                                 null, null, null,
-                                null, mediaId.toString());
+                                null, mediaId.toString(), null);
 
                 assertEquals(HttpStatus.OK, response.getStatusCode());
                 verify(mediaService).getAllFilteredActiveMedia(
                                 pageable,
                                 null, null, null, null, null,
                                 null, null, null,
-                                null, mediaId.toString());
+                                null, mediaId.toString(), null);
         }
 
         @Test

@@ -17,4 +17,6 @@ public interface MediaRepository extends JpaRepository<Media, UUID>, JpaSpecific
 
     @EntityGraph(attributePaths = "mediaLocation")
     List<Media> findByStatus(Status status);
+
+    long countByVenueId(String venueId);
 }

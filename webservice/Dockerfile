@@ -3,7 +3,8 @@ FROM gradle:8.4-jdk21 AS builder
 WORKDIR /home/gradle/project
 COPY --chown=gradle:gradle . .
 # ensure gradlew is executable and strip CRLF if present, then run it with bash to avoid shebang/permission issues
-RUN sed -i 's/\r$//' ./gradlew || true \
+RUN --mount=type=cache,target=/home/gradle/.gradle \
+    sed -i 's/\r$//' ./gradlew || true \
   && chmod +x ./gradlew \
   && bash ./gradlew clean bootJar -x test --no-daemon
 

@@ -86,7 +86,6 @@ export async function getAllFilteredActiveMedia(
         params.append("size", size.toString());
     }
 
-
     const response = await axiosInstance.get(`/media/active?${params.toString()}`);
 
     return response.data;

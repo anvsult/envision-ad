@@ -1,0 +1,10 @@
+CREATE TABLE venue (
+    id SERIAL PRIMARY KEY,
+    venue_id VARCHAR(36) UNIQUE NOT NULL,
+    name_en VARCHAR(100) NOT NULL,
+    name_fr VARCHAR(100) NOT NULL,
+    color_code VARCHAR(7) NOT NULL
+);
+
+ALTER TABLE media
+    ADD COLUMN venue_id VARCHAR(36) REFERENCES venue(venue_id) ON DELETE SET NULL;

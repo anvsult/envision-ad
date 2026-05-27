@@ -4,18 +4,14 @@ import com.envisionad.webservice.advertisement.dataaccesslayer.*;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdCampaignRequestModel;
 import com.envisionad.webservice.advertisement.presentationlayer.models.AdRequestModel;
 import com.envisionad.webservice.business.dataaccesslayer.*;
+import com.envisionad.webservice.config.BaseIntegrationTest;
 import com.envisionad.webservice.reservation.dataaccesslayer.Reservation;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationRepository;
 import com.envisionad.webservice.reservation.dataaccesslayer.ReservationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,15 +19,9 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.datasource.url=jdbc:h2:mem:ad-db"})
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class AdCampaignIntegrationTest {
+public class AdCampaignIntegrationTest extends BaseIntegrationTest {
     private final String BASE_URI_AD_CAMPAIGNS = "/api/v1/businesses/{businessId}/campaigns";
-
-    @Autowired
-    private WebTestClient webTestClient;
 
     @Autowired
     private AdCampaignRepository adCampaignRepository;
@@ -41,9 +31,6 @@ public class AdCampaignIntegrationTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
-
-    @MockitoBean
-    private JwtDecoder jwtDecoder;
 
     private BusinessIdentifier businessId;
     private static final String TEST_USER_ID = "auth0|696a88eb347945897ef17093";
@@ -55,6 +42,7 @@ public class AdCampaignIntegrationTest {
     @BeforeEach
     void setUp() {
         // Clear all data from previous tests to avoid constraint violations
+        reservationRepository.deleteAll();
         adCampaignRepository.deleteAll();
         employeeRepository.deleteAll();
         businessRepository.deleteAll();

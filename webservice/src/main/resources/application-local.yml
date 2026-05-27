@@ -3,8 +3,3 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
-  sql:
-    init:
-      platform: psql
-      mode: always
-      schema-locations: classpath:schema.sql

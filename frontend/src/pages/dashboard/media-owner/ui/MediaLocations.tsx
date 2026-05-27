@@ -221,7 +221,8 @@ export default function MediaLocations() {
                 activeMonths,
                 errors: {},
                 imageUrl: backend.imageUrl ?? null,
-                previewConfiguration: backend.previewConfiguration ?? null
+                previewConfiguration: backend.previewConfiguration ?? null,
+                venueId: backend.venue?.venueId ?? null
             });
 
             setEditingMediaId(String(id));

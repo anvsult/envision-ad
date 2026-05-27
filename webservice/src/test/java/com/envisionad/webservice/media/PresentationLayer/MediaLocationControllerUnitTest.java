@@ -11,11 +11,12 @@ import com.envisionad.webservice.media.PresentationLayer.Models.MediaLocationRes
 import com.envisionad.webservice.media.exceptions.MediaLocationValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.oauth2.jwt.Jwt;
 
 import java.util.List;
@@ -25,21 +26,21 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest(classes = MediaLocationController.class)
+@ExtendWith(MockitoExtension.class)
 class MediaLocationControllerUnitTest {
 
-    @MockitoBean
+    @Mock
     private MediaLocationService mediaLocationService;
-    @MockitoBean
+    @Mock
     private BusinessService businessService;
 
-    @MockitoBean
+    @Mock
     private MediaLocationRequestMapper requestMapper;
 
-    @MockitoBean
+    @Mock
     private MediaLocationResponseMapper responseMapper;
 
-    @Autowired
+    @InjectMocks
     private MediaLocationController mediaLocationController;
 
     private MediaLocation mediaLocation;
@@ -66,7 +67,6 @@ class MediaLocationControllerUnitTest {
     @Test
     void createMediaLocation_ShouldReturnCreated() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getSubject()).thenReturn("auth0|123");
 
         when(requestMapper.requestModelToEntity(any(MediaLocationRequestModel.class))).thenReturn(mediaLocation);
         when(mediaLocationService.createMediaLocation(any(MediaLocation.class), any(Jwt.class)))
@@ -83,7 +83,6 @@ class MediaLocationControllerUnitTest {
     @Test
     void getAllMediaLocations_WhenValid_ShouldReturnOk() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getSubject()).thenReturn("auth0|123");
 
         when(mediaLocationService.getAllMediaLocations(jwt, businessId)).thenReturn(List.of(mediaLocation));
         when(responseMapper.entityListToResponseModelList(any())).thenReturn(List.of(responseModel));
@@ -101,7 +100,6 @@ class MediaLocationControllerUnitTest {
     @Test
     void getAllMediaLocations_WhenBusinessIdInvalid_ShouldReturnBadRequest() {
         Jwt jwt = mock(Jwt.class);
-        when(jwt.getSubject()).thenReturn("auth0|123");
 
         when(mediaLocationService.getAllMediaLocations(jwt, businessId))
                 .thenThrow(new IllegalArgumentException("Business ID is required"));
