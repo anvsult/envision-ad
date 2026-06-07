@@ -99,7 +99,8 @@ function MediaCard({
                             fit="cover"
                             fallbackSrc={ImgNotFound(t2("imageNotFound"))}
                             onLoad={() => setImageLoaded(true)}
-                            style={{ opacity: imageLoaded ? 1 : 0 }}
+                            onError={() => setImageLoaded(true)}
+                            style={{ opacity: imageLoaded || !imageUrl ? 1 : 0 }}
                         />
                     </AspectRatio>
                 </Paper>
