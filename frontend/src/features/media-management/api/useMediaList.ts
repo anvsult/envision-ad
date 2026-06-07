@@ -15,15 +15,15 @@ export function useMediaList({
             return;
         }
 
-        let cancelled = false;
+        const controller = new AbortController();
 
         async function loadMedia() {
             setMediaStatus?.("loading");
 
             try {
-                const data = await getAllFilteredActiveMedia(filteredMediaProps);
+                const data = await getAllFilteredActiveMedia(filteredMediaProps, controller.signal);
 
-                if (cancelled) return;
+                if (controller.signal.aborted) return;
 
                 const items = (data.content || [])
                     .filter((m) => m.id != null)
@@ -53,7 +53,7 @@ export function useMediaList({
                     setMediaStatus?.('empty');
                 }
                 } catch {
-                    if (!cancelled) {
+                    if (!controller.signal.aborted) {
                         setMediaStatus?.('error');
                     }
                 }
@@ -62,7 +62,7 @@ export function useMediaList({
         loadMedia();
 
         return () => {
-            cancelled = true;
+            controller.abort();
         };
     },[filteredMediaProps, loadingLocation, setMediaStatus]);
 

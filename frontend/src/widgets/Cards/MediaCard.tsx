@@ -15,6 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
 import { Venue } from "@/entities/venue";
 import { useMediaQuery } from "@mantine/hooks";
+import { useState } from "react";
 import { MediaLocation } from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
@@ -60,6 +61,7 @@ function MediaCard({
     const mobileBreakpoint = mobileWidth ?? "575px";
     const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint})`);
     const isXsMobile = useMediaQuery(`(max-width: 420px)`);
+    const [imageLoaded, setImageLoaded] = useState(false);
 
     const t = useTranslations("mediacard");
     const t2 = useTranslations("mediaPage");
@@ -96,6 +98,8 @@ function MediaCard({
                             className={styles.image}
                             fit="cover"
                             fallbackSrc={ImgNotFound(t2("imageNotFound"))}
+                            onLoad={() => setImageLoaded(true)}
+                            style={{ opacity: imageLoaded ? 1 : 0 }}
                         />
                     </AspectRatio>
                 </Paper>

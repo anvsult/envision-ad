@@ -102,6 +102,12 @@ function BrowsePage() {
   }, [media]);
 
   useEffect(() => {
+    // Nothing to resolve when there's no address and sort isn't "nearest"
+    if (sortBy !== SpecialSort.nearest && !addressSearch) {
+      setLocationStatus('idle');
+      return;
+    }
+
     let cancelled = false;
 
     async function resolveLocation() {

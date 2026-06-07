@@ -26,7 +26,8 @@ function escapeLike(input: string): string {
 
 
 export async function getAllFilteredActiveMedia(
-    {title, businessId, minPrice, maxPrice, minWeeklyImpressions, sort, latLng, bounds, excludedId, venueIds, page, size}: FilteredActiveMediaProps
+    {title, businessId, minPrice, maxPrice, minWeeklyImpressions, sort, latLng, bounds, excludedId, venueIds, page, size}: FilteredActiveMediaProps,
+    signal?: AbortSignal
 ): Promise<MediaListResponseDTO> {
     const params = new URLSearchParams();
 
@@ -90,7 +91,7 @@ export async function getAllFilteredActiveMedia(
         venueIds.forEach(id => params.append("venueIds", id));
     }
 
-    const response = await axiosInstance.get(`/media/active?${params.toString()}`);
+    const response = await axiosInstance.get(`/media/active?${params.toString()}`, { signal });
 
     return response.data;
 }

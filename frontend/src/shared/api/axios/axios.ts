@@ -1,4 +1,5 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 declare module 'axios' {
     export interface AxiosRequestConfig {
@@ -18,21 +19,55 @@ const axiosInstance = axios.create({
     },
 });
 
+let cachedToken: string | null = null;
+let cachedTokenExp = 0;
+let tokenFetchPromise: Promise<string | null> | null = null;
+
+// Buffer in seconds — refetch before the token actually expires
+const EXP_BUFFER = 60;
+
+async function getToken(): Promise<string | null> {
+    const now = Math.floor(Date.now() / 1000);
+
+    if (cachedToken && cachedTokenExp - EXP_BUFFER > now) {
+        return cachedToken;
+    }
+
+    // If a fetch is already in flight, reuse it to avoid duplicate requests
+    if (tokenFetchPromise) return tokenFetchPromise;
+
+    tokenFetchPromise = (async () => {
+        try {
+            const response = await fetch('/api/auth0/token');
+            if (response.ok) {
+                const { accessToken } = await response.json();
+                if (accessToken) {
+                    const { exp } = jwtDecode<{ exp: number }>(accessToken);
+                    cachedToken = accessToken;
+                    cachedTokenExp = exp;
+                    return accessToken;
+                }
+            }
+            cachedToken = null;
+            return null;
+        } catch (error) {
+            console.error("Axios: Failed to inject auth token", error);
+            cachedToken = null;
+            return null;
+        } finally {
+            tokenFetchPromise = null;
+        }
+    })();
+
+    return tokenFetchPromise;
+}
+
 axiosInstance.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-        // Only attempt to get the token on the client side
         if (typeof window !== 'undefined') {
-            try {
-                // Fetch the token from your internal Next.js Auth0 route
-                const response = await fetch('/api/auth0/token');
-                if (response.ok) {
-                    const { accessToken } = await response.json();
-                    if (accessToken) {
-                        config.headers.Authorization = `Bearer ${accessToken}`;
-                    }
-                }
-            } catch (error) {
-                console.error("Axios: Failed to inject auth token", error);
+            const token = await getToken();
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
             }
         }
         return config;
