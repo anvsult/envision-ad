@@ -16,7 +16,6 @@ export interface Media {
     mediaOwnerName: string;
     mediaLocation: MediaLocation;
     resolution: string;
-    aspectRatio: string;
     loopDuration: number | null;
     width: number | null;
     height: number | null;
@@ -39,7 +38,6 @@ export interface MediaRequestDTO {
     typeOfDisplay: string | null;
     loopDuration: number;
     resolution: string;
-    aspectRatio: string;
     width: number;
     height: number;
     price: number;

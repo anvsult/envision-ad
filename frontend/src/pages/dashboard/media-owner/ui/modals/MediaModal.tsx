@@ -235,9 +235,6 @@ export function MediaModal({
                         if (!formState.resolution.trim() || !/^\d+x\d+$/.test(formState.resolution)) {
                             newErrors["resolution"] = t("errors.resolutionRequired");
                         }
-                        if (!formState.aspectRatio.trim() || !/^\d+:\d+$/.test(formState.aspectRatio)) {
-                            newErrors["aspectRatio"] = t("errors.aspectRatioRequired");
-                        }
                     } else if (formState.displayType === 'POSTER') {
                         if (!formState.widthCm) {
                             newErrors["widthCm"] = t("errors.widthRequired");

@@ -148,7 +148,6 @@ export function MediaDetails({media, loading, error, activeAdsCount, children}: 
               {(() => {
                 const rows: [string, string][] = [
                   [t("details.type"), typeLabel],
-                  [t("details.aspectRatio"), media.aspectRatio || "N/A"],
                   [t("details.resolution"), media.resolution || "N/A"],
                   [t("details.width"), widthLabel],
                   [t("details.height"), heightLabel],

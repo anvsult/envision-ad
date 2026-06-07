@@ -29,7 +29,6 @@ class MediaRequestValidatorTest {
         request.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         request.setLoopDuration(10);
         request.setResolution("1920x1080");
-        request.setAspectRatio("16:9");
         request.setImageUrl("http://example.com/image.jpg");
         request.setPreviewConfiguration("{\"corners\": []}");
 
@@ -167,24 +166,6 @@ class MediaRequestValidatorTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
                 () -> MediaRequestValidator.validateMediaRequest(request));
         assertEquals("Resolution is required for Digital displays", exception.getMessage());
-    }
-
-    @Test
-    void validateMediaRequest_Digital_AspectRatioIsNull_ShouldThrowException() {
-        request.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-        request.setAspectRatio(null);
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> MediaRequestValidator.validateMediaRequest(request));
-        assertEquals("Aspect ratio is required for Digital displays", exception.getMessage());
-    }
-
-    @Test
-    void validateMediaRequest_Digital_AspectRatioIsEmpty_ShouldThrowException() {
-        request.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
-        request.setAspectRatio("");
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> MediaRequestValidator.validateMediaRequest(request));
-        assertEquals("Aspect ratio is required for Digital displays", exception.getMessage());
     }
 
     // --- Poster Display Tests ---

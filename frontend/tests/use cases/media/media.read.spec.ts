@@ -32,8 +32,6 @@ test.describe("Manage Media - Read", () => {
             loopDuration: "15",
             resolutionWidth: "1920",
             resolutionHeight: "1080",
-            aspectRatioWidth: "16",
-            aspectRatioHeight: "9",
             weeklyPrice: "333.77",
             dailyImpressions: "12000",
         });

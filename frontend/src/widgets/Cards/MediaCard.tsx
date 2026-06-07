@@ -15,7 +15,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { getJoinedAddress, MonthlyScheduleModel } from "@/entities/media";
 import { Venue } from "@/entities/venue";
 import { useMediaQuery } from "@mantine/hooks";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MediaLocation } from "@/entities/media-location";
 import { formatCurrency } from "@/shared/lib/formatCurrency";
 import calculateWeeklyImpressions from "@/features/media-management/api/calculateWeeklyImpressions";
@@ -30,7 +30,6 @@ export interface MediaCardProps {
     organizationName: string;
     mediaLocation?: MediaLocation;
     resolution: string;
-    aspectRatio: string;
     price: number;
     typeOfDisplay: string;
     imageUrl?: string | null;
@@ -48,7 +47,6 @@ function MediaCard({
                        title,
                        organizationName,
                        mediaLocation,
-                       aspectRatio,
                        resolution,
                        typeOfDisplay,
                        price,
@@ -62,6 +60,10 @@ function MediaCard({
     const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint})`);
     const isXsMobile = useMediaQuery(`(max-width: 420px)`);
     const [imageLoaded, setImageLoaded] = useState(false);
+
+    useEffect(() => {
+        setImageLoaded(false);
+    }, [imageUrl]);
 
     const t = useTranslations("mediacard");
     const t2 = useTranslations("mediaPage");
@@ -200,9 +202,6 @@ function MediaCard({
                 </Box>
 
                 <Group gap="xs" wrap="wrap">
-                    <Badge size="xs" variant="outline" color="gray">
-                        {aspectRatio}
-                    </Badge>
                     <Badge size="xs" variant="outline" color="gray">
                         {resolution}
                     </Badge>

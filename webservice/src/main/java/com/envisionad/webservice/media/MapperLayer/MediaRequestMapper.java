@@ -26,7 +26,6 @@ public class MediaRequestMapper {
         media.setTitle(request.getTitle());
         media.setResolution(request.getResolution());
         media.setTypeOfDisplay(request.getTypeOfDisplay());
-        media.setAspectRatio(request.getAspectRatio());
         media.setLoopDuration(request.getLoopDuration());
         media.setSchedule(request.getSchedule());
         media.setStatus(request.getStatus());

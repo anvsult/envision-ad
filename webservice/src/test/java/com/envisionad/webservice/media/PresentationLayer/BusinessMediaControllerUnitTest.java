@@ -89,7 +89,7 @@ class BusinessMediaControllerUnitTest {
         responseModel1.setPrice(new BigDecimal("150.00"));
         responseModel1.setStatus(Status.ACTIVE);
         responseModel1.setResolution("1920x1080");
-        responseModel1.setAspectRatio("16:9");
+
         responseModel1.setLoopDuration(30);
         responseModel1.setDailyImpressions(25000);
         responseModel1.setSchedule(schedule);
@@ -107,7 +107,7 @@ class BusinessMediaControllerUnitTest {
         responseModel2.setPrice(new BigDecimal("200.00"));
         responseModel2.setStatus(Status.ACTIVE);
         responseModel2.setResolution("1080x1920");
-        responseModel2.setAspectRatio("9:16");
+
         responseModel2.setLoopDuration(null);
         responseModel2.setDailyImpressions(30000);
         responseModel2.setSchedule(schedule);

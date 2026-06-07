@@ -127,7 +127,7 @@ class MediaControllerIntegrationTest extends BaseIntegrationTest {
                 media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
                 media.setLoopDuration(30);
                 media.setResolution("1920x1080");
-                media.setAspectRatio("16:9");
+
                 media.setWidth(1920.0);
                 media.setHeight(1080.0);
                 media.setPrice(new BigDecimal("150.00"));
@@ -164,7 +164,6 @@ class MediaControllerIntegrationTest extends BaseIntegrationTest {
                 requestModel.setWidth(1920.0);
                 requestModel.setHeight(1080.0);
                 requestModel.setResolution("1920x1080");
-                requestModel.setAspectRatio("16:9");
                 requestModel.setLoopDuration(15);
 
                 ScheduleModel schedule = new ScheduleModel();
@@ -241,7 +240,6 @@ class MediaControllerIntegrationTest extends BaseIntegrationTest {
                 updateRequest.setPrice(new BigDecimal("300.00"));
                 updateRequest.setDailyImpressions(2000);
                 updateRequest.setResolution("1920x1080");
-                updateRequest.setAspectRatio("16:9");
                 updateRequest.setLoopDuration(20);
                 updateRequest.setSchedule(schedule);
                 updateRequest.setImageUrl("http://example.com/updated_image.jpg");

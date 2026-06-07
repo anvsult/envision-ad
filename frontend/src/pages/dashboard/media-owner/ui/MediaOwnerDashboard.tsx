@@ -109,7 +109,6 @@ export default function MediaOwnerPage() {
                 resolution: backend.resolution ?? "",
                 displayType: backend.typeOfDisplay ?? null,
                 loopDuration: backend.loopDuration != null ? String(backend.loopDuration) : "",
-                aspectRatio: backend.aspectRatio ?? "",
                 widthCm: backend.width != null ? String(backend.width) : "",
                 heightCm: backend.height != null ? String(backend.height) : "",
                 weeklyPrice: backend.price != null ? Number(backend.price).toFixed(2) : "",

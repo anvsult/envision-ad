@@ -28,8 +28,6 @@ interface FillMediaFormInput {
     loopDuration?: string;
     resolutionWidth?: string;
     resolutionHeight?: string;
-    aspectRatioWidth?: string;
-    aspectRatioHeight?: string;
     widthCm?: string;
     heightCm?: string;
 }
@@ -42,8 +40,6 @@ interface EditFormAssertionInput {
     loopDuration?: string;
     resolutionWidth?: string;
     resolutionHeight?: string;
-    aspectRatioWidth?: string;
-    aspectRatioHeight?: string;
     widthCm?: string;
     heightCm?: string;
 }
@@ -280,10 +276,6 @@ export default class MediaDashboardPage {
     modalResolutionWidthInput = () => this.page.getByLabel('Resolution - Width (px)');
     modalResolutionHeightInput = () => this.page.getByLabel('Resolution - Height (px)');
 
-    // Aspect Ratio split inputs
-    modalAspectRatioWidthInput = () => this.page.getByLabel('Aspect ratio - Width');
-    modalAspectRatioHeightInput = () => this.page.getByLabel('Aspect ratio - Height');
-
     // Poster dimensions
     modalWidthInput = () => this.page.getByLabel('Width (cm)');
     modalHeightInput = () => this.page.getByLabel('Height (cm)');
@@ -320,12 +312,6 @@ export default class MediaDashboardPage {
             }
             if (input.resolutionHeight) {
                 await this.modalResolutionHeightInput().fill(input.resolutionHeight);
-            }
-            if (input.aspectRatioWidth) {
-                await this.modalAspectRatioWidthInput().fill(input.aspectRatioWidth);
-            }
-            if (input.aspectRatioHeight) {
-                await this.modalAspectRatioHeightInput().fill(input.aspectRatioHeight);
             }
         } else {
             if (input.widthCm) {
@@ -420,12 +406,6 @@ export default class MediaDashboardPage {
         }
         if (input.resolutionHeight !== undefined) {
             await expect(this.modalResolutionHeightInput()).toHaveValue(input.resolutionHeight);
-        }
-        if (input.aspectRatioWidth !== undefined) {
-            await expect(this.modalAspectRatioWidthInput()).toHaveValue(input.aspectRatioWidth);
-        }
-        if (input.aspectRatioHeight !== undefined) {
-            await expect(this.modalAspectRatioHeightInput()).toHaveValue(input.aspectRatioHeight);
         }
         if (input.widthCm !== undefined) {
             await expect(this.modalWidthInput()).toHaveValue(input.widthCm);

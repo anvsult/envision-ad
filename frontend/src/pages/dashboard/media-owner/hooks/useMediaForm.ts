@@ -7,7 +7,6 @@ export interface MediaFormState {
     resolution: string;
     displayType: string | null;
     loopDuration: string;
-    aspectRatio: string;
     widthCm: string;
     heightCm: string;
     weeklyPrice: string;
@@ -30,7 +29,6 @@ const getInitialFormState = (): MediaFormState => ({
     resolution: "",
     displayType: "DIGITAL",
     loopDuration: "",
-    aspectRatio: "",
     widthCm: "",
     heightCm: "",
     weeklyPrice: "",

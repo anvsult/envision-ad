@@ -17,7 +17,6 @@ export interface MockMedia {
     typeOfDisplay: "DIGITAL" | "POSTER";
     loopDuration: number;
     resolution: string;
-    aspectRatio: string;
     width: number;
     height: number;
     schedule: {
@@ -134,7 +133,6 @@ export const createSeedMedia = (): MockMedia[] => [
         typeOfDisplay: "DIGITAL",
         loopDuration: 15,
         resolution: "1920x1080",
-        aspectRatio: "16:9",
         width: 0,
         height: 0,
         schedule: {
@@ -168,7 +166,6 @@ export const createSeedMedia = (): MockMedia[] => [
         typeOfDisplay: "DIGITAL",
         loopDuration: 12,
         resolution: "1080x1920",
-        aspectRatio: "9:16",
         width: 0,
         height: 0,
         schedule: {
@@ -246,7 +243,6 @@ const toMediaResponse = (media: MockMedia, locationStore: MockLocation[]) => {
         mediaOwnerName: media.mediaOwnerName,
         mediaLocation: location,
         resolution: media.resolution,
-        aspectRatio: media.aspectRatio,
         loopDuration: media.loopDuration,
         width: media.width,
         height: media.height,
@@ -588,7 +584,6 @@ export const attachMediaCrudRoutes = async (
                         : "DIGITAL",
                 loopDuration: Number(payload.loopDuration ?? 0),
                 resolution: String(payload.resolution ?? ""),
-                aspectRatio: String(payload.aspectRatio ?? ""),
                 width: Number(payload.width ?? 0),
                 height: Number(payload.height ?? 0),
                 schedule: (payload.schedule as MockMedia["schedule"]) ?? {
@@ -644,7 +639,6 @@ export const attachMediaCrudRoutes = async (
                         : "DIGITAL",
                 loopDuration: Number(payload.loopDuration ?? existingMedia.loopDuration),
                 resolution: String(payload.resolution ?? existingMedia.resolution),
-                aspectRatio: String(payload.aspectRatio ?? existingMedia.aspectRatio),
                 width: Number(payload.width ?? existingMedia.width),
                 height: Number(payload.height ?? existingMedia.height),
                 price: Number(payload.price ?? existingMedia.price),

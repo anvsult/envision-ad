@@ -79,7 +79,6 @@ export function MediaDetailsForm({
           onFieldChange("displayType", val);
           if (val === "POSTER") {
             onFieldChange("resolution", "");
-            onFieldChange("aspectRatio", "");
           }
           if (val === "DIGITAL") {
             onFieldChange("widthCm", "");
@@ -168,60 +167,6 @@ export function MediaDetailsForm({
             </Tooltip>
           </div>
 
-          <div style={{ height: 12 }} />
-          <div style={{ height: 12 }} />
-          <div style={{ display: "flex", gap: 8 }}>
-            <Tooltip
-              label={t("tooltips.max2")}
-              opened={focusedField === "arWidth" && isMaxLength(formState.aspectRatio.split(":")[0] || "", 2)}
-              withArrow
-              position="right"
-              color="orange"
-            >
-              <TextInput
-                label={t("labels.aspectRatioWidth")}
-                placeholder={t("placeholders.aspectRatioWidth")}
-                value={formState.aspectRatio ? formState.aspectRatio.split(":")[0] : ""}
-                onChange={(e) => {
-                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
-                  const currentHeight = formState.aspectRatio ? formState.aspectRatio.split(":")[1] : "";
-                  const newAr = `${val}:${currentHeight || ""}`;
-                  onFieldChange("aspectRatio", newAr === ":" ? "" : newAr);
-                }}
-                onFocus={() => handleFocus("arWidth")}
-                onBlur={handleBlur}
-                maxLength={2}
-                required
-                style={{ flex: 1 }}
-                error={formState.errors["aspectRatio"]}
-              />
-            </Tooltip>
-            <Tooltip
-              label={t("tooltips.max2")}
-              opened={focusedField === "arHeight" && isMaxLength(formState.aspectRatio.split(":")[1] || "", 2)}
-              withArrow
-              position="right"
-              color="orange"
-            >
-              <TextInput
-                label={t("labels.aspectRatioHeight")}
-                placeholder={t("placeholders.aspectRatioHeight")}
-                value={formState.aspectRatio ? formState.aspectRatio.split(":")[1] : ""}
-                onChange={(e) => {
-                  const val = e.currentTarget.value.replace(/[^0-9]/g, "");
-                  const currentWidth = formState.aspectRatio ? formState.aspectRatio.split(":")[0] : "";
-                  const newAr = `${currentWidth || ""}:${val}`;
-                  onFieldChange("aspectRatio", newAr === ":" ? "" : newAr);
-                }}
-                onFocus={() => handleFocus("arHeight")}
-                onBlur={handleBlur}
-                maxLength={2}
-                required
-                style={{ flex: 1 }}
-                error={formState.errors["aspectRatio"]}
-              />
-            </Tooltip>
-          </div>
         </>
       )}
 

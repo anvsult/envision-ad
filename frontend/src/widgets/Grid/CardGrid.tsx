@@ -33,7 +33,6 @@ export function MediaCardGrid({id, medias, size}: MediaCardGridProps) {
                             organizationId={media.organizationId}
                             organizationName={media.organizationName}
                             mediaLocation={media.mediaLocation}
-                            aspectRatio={media.aspectRatio}
                             typeOfDisplay={media.typeOfDisplay}
                             price={media.price}
                             dailyImpressions={media.dailyImpressions}

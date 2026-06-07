@@ -42,8 +42,6 @@ test.describe("Manage Media - Create", () => {
             loopDuration: "15",
             resolutionWidth: "1920",
             resolutionHeight: "1080",
-            aspectRatioWidth: "16",
-            aspectRatioHeight: "9",
             weeklyPrice: "250.50",
             dailyImpressions: "12345",
         });
