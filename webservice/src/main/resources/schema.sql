@@ -127,7 +127,6 @@ CREATE TABLE media (
     type_of_display VARCHAR(50) NOT NULL,
     loop_duration INTEGER,
     resolution VARCHAR(50),
-    aspect_ratio VARCHAR(20),
     width DOUBLE PRECISION,
     height DOUBLE PRECISION,
     price DECIMAL(10, 2),

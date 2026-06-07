@@ -45,9 +45,6 @@ public class Media {
     @Column(name = "resolution")
     private String resolution;
 
-    @Column(name = "aspect_ratio")
-    private String aspectRatio;
-
     @Column(name = "width")
     private Double width;
 

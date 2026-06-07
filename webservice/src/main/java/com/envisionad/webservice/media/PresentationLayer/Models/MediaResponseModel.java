@@ -20,7 +20,6 @@ public class MediaResponseModel {
     private TypeOfDisplay typeOfDisplay;
     private Integer loopDuration;
     private String resolution;
-    private String aspectRatio;
     private Double width;
     private Double height;
     private BigDecimal price;

@@ -91,7 +91,7 @@ class MediaControllerUnitTest {
                 media.setPrice(new BigDecimal("100.00"));
                 media.setStatus(Status.ACTIVE);
                 media.setResolution("1920x1080");
-                media.setAspectRatio("16:9");
+
                 media.setLoopDuration(30);
                 media.setSchedule(schedule);
 
@@ -105,7 +105,7 @@ class MediaControllerUnitTest {
                 responseModel.setPrice(new BigDecimal("100.00"));
                 responseModel.setStatus(Status.ACTIVE);
                 responseModel.setResolution("1920x1080");
-                responseModel.setAspectRatio("16:9");
+
                 responseModel.setLoopDuration(30);
                 responseModel.setDailyImpressions(1000);
                 responseModel.setSchedule(schedule);
@@ -119,7 +119,7 @@ class MediaControllerUnitTest {
                 requestModel.setStatus(Status.ACTIVE);
                 requestModel.setDailyImpressions(1000);
                 requestModel.setResolution("1920x1080");
-                requestModel.setAspectRatio("16:9");
+
                 requestModel.setLoopDuration(30);
                 requestModel.setSchedule(schedule);
                 requestModel.setImageUrl("http://example.com/image.jpg");
@@ -244,15 +244,6 @@ class MediaControllerUnitTest {
                         mediaController.addMedia(null, requestModel);
                 });
                 assertEquals("Resolution cannot exceed 20 characters", exception.getMessage());
-        }
-
-        @Test
-        void addMedia_AspectRatioExceedsLimit_ShouldThrowException() {
-                requestModel.setAspectRatio("A".repeat(11));
-                IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-                        mediaController.addMedia(null, requestModel);
-                });
-                assertEquals("Aspect ratio cannot exceed 10 characters", exception.getMessage());
         }
 
         @Test

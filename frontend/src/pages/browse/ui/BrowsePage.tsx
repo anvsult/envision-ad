@@ -1,7 +1,7 @@
 'use client'
 
 import {ActionIcon, Autocomplete, Button, Container, Group, Loader, Pagination, Stack, Text, TextInput} from '@mantine/core';
-import { MediaCardGrid } from '@/widgets/Grid/CardGrid';
+import { MediaCardGrid, SkeletonMediaCardGrid } from '@/widgets/Grid/CardGrid';
 import BrowseActions from '@/widgets/BrowseActions/BrowseActions';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {SpecialSort} from "@/features/media-management/api";
@@ -102,6 +102,13 @@ function BrowsePage() {
   }, [media]);
 
   useEffect(() => {
+    // Nothing to resolve when there's no address and sort isn't "nearest"
+    if (sortBy !== SpecialSort.nearest && !addressSearch) {
+      setLocation(null);
+      setLocationStatus('idle');
+      return;
+    }
+
     let cancelled = false;
 
     async function resolveLocation() {
@@ -292,7 +299,7 @@ function BrowsePage() {
                   <MapView center={location ?? defaultPos} zoom={defaultZoom} medias={groupedMedia} setMap={setMap} isMobile={isMobile} isMobileVertical={isMobileVertical}/>
                 </Container> 
                 :
-                (locationStatus === 'loading' || (mediaStatus === 'loading' && sortBy === SpecialSort.nearest)) ? (
+                locationStatus === 'loading' && sortBy === SpecialSort.nearest ? (
                   <Stack h="20em" justify="center" align="center">
                     <Loader />
                   </Stack>
@@ -309,6 +316,9 @@ function BrowsePage() {
                     <Text size="32px">{t('nomedia.notfound')}</Text>
                     <Text>{t('nomedia.changefilters')}</Text>
                   </Stack>
+                ) : mediaStatus === 'loading' || mediaStatus === 'idle' ? ( // 'idle' covers the gap while location resolves before the first fetch
+
+                  <SkeletonMediaCardGrid size={(!isMobile && mapVisible) ? 2 : 1} />
                 ) : (
                   <MediaCardGrid medias={media} size={(!isMobile && mapVisible) ? 2 : 1} />
                 )}

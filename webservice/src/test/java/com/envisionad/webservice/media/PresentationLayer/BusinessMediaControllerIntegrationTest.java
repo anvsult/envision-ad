@@ -114,7 +114,7 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
         media1.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         media1.setLoopDuration(30);
         media1.setResolution("1920x1080");
-        media1.setAspectRatio("16:9");
+
         media1.setWidth(1920.0);
         media1.setHeight(1080.0);
         media1.setPrice(new BigDecimal("150.00"));
@@ -134,7 +134,6 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
         media2.setTypeOfDisplay(TypeOfDisplay.POSTER);
         media2.setLoopDuration(null);
         media2.setResolution("1080x1920");
-        media2.setAspectRatio("9:16");
         media2.setWidth(1080.0);
         media2.setHeight(1920.0);
         media2.setPrice(new BigDecimal("200.00"));
@@ -154,7 +153,6 @@ class BusinessMediaControllerIntegrationTest extends BaseIntegrationTest {
         media3.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         media3.setLoopDuration(30);
         media3.setResolution("1920x1080");
-        media3.setAspectRatio("16:9");
         media3.setWidth(1920.0);
         media3.setHeight(1080.0);
         media3.setPrice(new BigDecimal("150.00"));

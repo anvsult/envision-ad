@@ -711,7 +711,7 @@ class MediaServiceUnitTest {
         requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         requestModel.setLoopDuration(10);
         requestModel.setResolution("1920x1080");
-        requestModel.setAspectRatio("16:9");
+
         requestModel.setSchedule(media1.getSchedule());
         requestModel.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
         requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
@@ -742,7 +742,7 @@ class MediaServiceUnitTest {
         requestModel.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         requestModel.setLoopDuration(10);
         requestModel.setResolution("1920x1080");
-        requestModel.setAspectRatio("16:9");
+
         requestModel.setSchedule(media1.getSchedule());
         requestModel.setImageUrl(sameUrl);
         requestModel.setPreviewConfiguration("{\"topLeft\":{\"x\":0,\"y\":0},\"topRight\":{\"x\":100,\"y\":0},\"bottomLeft\":{\"x\":0,\"y\":100},\"bottomRight\":{\"x\":100,\"y\":100}}");
@@ -767,7 +767,6 @@ class MediaServiceUnitTest {
         media1.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         media1.setLoopDuration(20);
         media1.setResolution("1920x1080");
-        media1.setAspectRatio("16:9");
         media1.setImageUrl("https://res.cloudinary.com/demo/image/upload/v1/sample.png");
 
         MediaRequestModel requestModel = new MediaRequestModel();
@@ -796,7 +795,6 @@ class MediaServiceUnitTest {
         assertEquals(96.0, media1.getHeight());
         assertNull(media1.getLoopDuration());
         assertNull(media1.getResolution());
-        assertNull(media1.getAspectRatio());
         verify(mediaRepository).save(media1);
     }
 

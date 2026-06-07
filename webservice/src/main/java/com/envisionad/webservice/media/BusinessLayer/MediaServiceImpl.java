@@ -256,7 +256,6 @@ public class MediaServiceImpl implements MediaService {
         if (requestModel.getTypeOfDisplay() == TypeOfDisplay.DIGITAL) {
             existingMedia.setLoopDuration(requestModel.getLoopDuration());
             existingMedia.setResolution(requestModel.getResolution());
-            existingMedia.setAspectRatio(requestModel.getAspectRatio());
             // Clear poster fields
             existingMedia.setWidth(null);
             existingMedia.setHeight(null);
@@ -266,7 +265,6 @@ public class MediaServiceImpl implements MediaService {
             // Clear digital fields
             existingMedia.setLoopDuration(null);
             existingMedia.setResolution(null);
-            existingMedia.setAspectRatio(null);
         }
 
         existingMedia.setSchedule(requestModel.getSchedule());

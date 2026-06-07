@@ -32,7 +32,6 @@ public class MediaResponseMapper {
         response.setResolution(media.getResolution());
         response.setLoopDuration(media.getLoopDuration());
         response.setTypeOfDisplay(media.getTypeOfDisplay());
-        response.setAspectRatio(media.getAspectRatio());
         response.setSchedule(media.getSchedule());
         response.setStatus(media.getStatus());
         response.setWidth(media.getWidth());

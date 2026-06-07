@@ -1,5 +1,6 @@
 import { Grid, GridCol } from "@mantine/core";
 import MediaCard, { MediaCardProps } from "../Cards/MediaCard";
+import SkeletonMediaCard from "../Cards/SkeletonMediaCard";
 
 interface CardGridProps {
     children?: React.ReactNode; 
@@ -32,7 +33,6 @@ export function MediaCardGrid({id, medias, size}: MediaCardGridProps) {
                             organizationId={media.organizationId}
                             organizationName={media.organizationName}
                             mediaLocation={media.mediaLocation}
-                            aspectRatio={media.aspectRatio}
                             typeOfDisplay={media.typeOfDisplay}
                             price={media.price}
                             dailyImpressions={media.dailyImpressions}
@@ -44,6 +44,23 @@ export function MediaCardGrid({id, medias, size}: MediaCardGridProps) {
               ))}
             </CardGrid>
     )
+}
+
+interface SkeletonMediaCardGridProps {
+    count?: number;
+    size: number;
+}
+
+export function SkeletonMediaCardGrid({ count = 8, size }: SkeletonMediaCardGridProps) {
+    return (
+        <CardGrid>
+            {Array.from({ length: count }).map((_, i) => (
+                <GridCol key={i} span={{ base: 12, xs: 6 * size, sm: 4 * size, md: 3 * size, lg: 3 * size }}>
+                    <SkeletonMediaCard />
+                </GridCol>
+            ))}
+        </CardGrid>
+    );
 }
 
 export default CardGrid;

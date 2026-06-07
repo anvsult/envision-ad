@@ -1,6 +1,6 @@
 "use client";
 
-import {Button, Modal, ScrollArea, Grid, Text} from "@mantine/core";
+import {Button, Divider, Modal, Grid, Text} from "@mantine/core";
 import {useMemo} from "react";
 import {IconUpload} from "@tabler/icons-react";
 import {CldUploadWidget, CloudinaryUploadWidgetResults} from "next-cloudinary";
@@ -78,7 +78,6 @@ export function MediaModal({
             centered
             overlayProps={{opacity: 0.55}}
         >
-            <ScrollArea style={{height: 600}}>
                 <div style={{paddingRight: 8, overflowX: 'hidden'}}>
                     <Grid gutter="xl">
                         {/* LEFT COLUMN: FORM */}
@@ -91,7 +90,7 @@ export function MediaModal({
 
                         {/* RIGHT COLUMN: UPLOAD */}
                         <Grid.Col span={{base: 12, md: 6}}>
-                            <Text size="sm" fw={500} mb={4}>
+                            <Text size="md" fw={600} mb={4}>
                                 {t("labels.mediaImage")} <span style={{color: "var(--mantine-color-red-6)"}}>*</span>
                             </Text>
 
@@ -138,7 +137,7 @@ export function MediaModal({
                                 </div>
                             ) : (
                                 <div>
-                                    <Text size="sm" fw={500} mb={4}>
+                                    <Text size="xs" c="dimmed" mb={4}>
                                         {t("labels.previewCorners")}
                                     </Text>
 
@@ -186,7 +185,7 @@ export function MediaModal({
                         </Grid.Col>
                     </Grid>
 
-                    <div style={{height: 24}}/>
+                    <Divider my="lg" />
 
                     <ScheduleSelector
                         formState={formState}
@@ -194,8 +193,6 @@ export function MediaModal({
                         onDayTimeChange={onDayTimeChange}
                     />
                 </div>
-            </ScrollArea>
-
             <div
                 style={{
                     display: "flex",
@@ -234,9 +231,6 @@ export function MediaModal({
                         }
                         if (!formState.resolution.trim() || !/^\d+x\d+$/.test(formState.resolution)) {
                             newErrors["resolution"] = t("errors.resolutionRequired");
-                        }
-                        if (!formState.aspectRatio.trim() || !/^\d+:\d+$/.test(formState.aspectRatio)) {
-                            newErrors["aspectRatio"] = t("errors.aspectRatioRequired");
                         }
                     } else if (formState.displayType === 'POSTER') {
                         if (!formState.widthCm) {

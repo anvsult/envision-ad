@@ -130,7 +130,6 @@ class ReservationControllerIntegrationTest extends BaseIntegrationTest {
         media.setTypeOfDisplay(TypeOfDisplay.DIGITAL);
         media.setLoopDuration(30);
         media.setResolution("1920x1080");
-        media.setAspectRatio("16:9");
         media.setWidth(1920.0);
         media.setHeight(1080.0);
         media.setPrice(new BigDecimal("150.00"));

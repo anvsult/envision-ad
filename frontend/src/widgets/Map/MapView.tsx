@@ -170,7 +170,6 @@ export default function MapView({center, zoom, setMap, medias, isMobile, isMobil
                         title={m.title}
                         organizationId={m.organizationId}
                         organizationName={m.organizationName}
-                        aspectRatio={m.aspectRatio}
                         typeOfDisplay={m.typeOfDisplay}
                         price={m.price} 
                         dailyImpressions={m.dailyImpressions}

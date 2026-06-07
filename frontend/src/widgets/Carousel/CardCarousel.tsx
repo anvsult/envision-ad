@@ -55,12 +55,11 @@ export function MediaCardCarousel({id, title, medias, slideSize, imageRatio}: Me
                             organizationId={media.organizationId}
                             organizationName={media.organizationName}
                             mediaLocation={media.mediaLocation}
-                            aspectRatio={media.aspectRatio}
                             typeOfDisplay={media.typeOfDisplay}
-                            price={media.price} 
+                            price={media.price}
                             dailyImpressions={media.dailyImpressions}
                             schedule={media.schedule}
-                            resolution={media.resolution} 
+                            resolution={media.resolution}
                         />
                     </Carousel.Slide>
                 ))}
@@ -103,12 +102,11 @@ export function MediaCardStackLoader({id, title, filteredMediaProps}: MediaCardC
                     organizationId={media.organizationId}
                     organizationName={media.organizationName}
                     mediaLocation={media.mediaLocation}
-                    aspectRatio={media.aspectRatio}
                     typeOfDisplay={media.typeOfDisplay}
-                    price={media.price} 
+                    price={media.price}
                     dailyImpressions={media.dailyImpressions}
                     schedule={media.schedule}
-                    resolution={media.resolution} 
+                    resolution={media.resolution}
                 />
             ))}
                 
