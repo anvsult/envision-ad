@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Checkbox, TextInput } from "@mantine/core";
+import { Checkbox, Stack, Text, TextInput } from "@mantine/core";
 import type { MediaFormState } from "@/pages/dashboard/media-owner/hooks/useMediaForm";
 
 import { useTranslations } from "next-intl";
@@ -23,9 +23,8 @@ export function ScheduleSelector({
   const t = useTranslations("mediaModal");
 
   return (
-    <>
-      <div style={{ height: 18 }} />
-      <h3>{t("sections.months")}</h3>
+    <Stack gap="sm">
+      <Text size="md" fw={600}>{t("sections.months")}</Text>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
         {Object.keys(formState.activeMonths).map((m) => (
           <Checkbox
@@ -42,8 +41,7 @@ export function ScheduleSelector({
         ))}
       </div>
 
-      <div style={{ height: 18 }} />
-      <h3>{t("sections.schedule")}</h3>
+      <Text size="md" fw={600} mt="sm">{t("sections.schedule")}</Text>
       <div
         style={{
           display: "grid",
@@ -73,7 +71,7 @@ export function ScheduleSelector({
           />
         ))}
       </div>
-    </>
+    </Stack>
   );
 }
 
