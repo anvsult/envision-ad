@@ -104,6 +104,7 @@ function BrowsePage() {
   useEffect(() => {
     // Nothing to resolve when there's no address and sort isn't "nearest"
     if (sortBy !== SpecialSort.nearest && !addressSearch) {
+      setLocation(null);
       setLocationStatus('idle');
       return;
     }
