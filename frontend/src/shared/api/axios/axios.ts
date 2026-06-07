@@ -19,19 +19,34 @@ const axiosInstance = axios.create({
     },
 });
 
-let cachedToken: string | null = null;
-let cachedTokenExp = 0;
-let tokenFetchPromise: Promise<string | null> | null = null;
-
+const TOKEN_STORAGE_KEY = 'auth_token';
 // Buffer in seconds — refetch before the token actually expires
 const EXP_BUFFER = 60;
+let tokenFetchPromise: Promise<string | null> | null = null;
+
+function getCachedToken(): string | null {
+    try {
+        const stored = sessionStorage.getItem(TOKEN_STORAGE_KEY);
+        if (!stored) return null;
+
+        const { exp } = jwtDecode<{ exp: number }>(stored);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (exp - EXP_BUFFER > now) {
+            return stored;
+        }
+
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        return null;
+    } catch {
+        sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+        return null;
+    }
+}
 
 async function getToken(): Promise<string | null> {
-    const now = Math.floor(Date.now() / 1000);
-
-    if (cachedToken && cachedTokenExp - EXP_BUFFER > now) {
-        return cachedToken;
-    }
+    const cached = getCachedToken();
+    if (cached) return cached;
 
     // If a fetch is already in flight, reuse it to avoid duplicate requests
     if (tokenFetchPromise) return tokenFetchPromise;
@@ -42,17 +57,13 @@ async function getToken(): Promise<string | null> {
             if (response.ok) {
                 const { accessToken } = await response.json();
                 if (accessToken) {
-                    const { exp } = jwtDecode<{ exp: number }>(accessToken);
-                    cachedToken = accessToken;
-                    cachedTokenExp = exp;
+                    sessionStorage.setItem(TOKEN_STORAGE_KEY, accessToken);
                     return accessToken;
                 }
             }
-            cachedToken = null;
             return null;
         } catch (error) {
             console.error("Axios: Failed to inject auth token", error);
-            cachedToken = null;
             return null;
         } finally {
             tokenFetchPromise = null;
