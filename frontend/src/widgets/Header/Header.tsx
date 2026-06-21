@@ -10,7 +10,7 @@ import {
     ScrollArea,
     Divider,
     Burger,
-    Menu,
+    Menu, NavLink,
 } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import React, { useEffect } from "react";
@@ -341,32 +341,20 @@ export function Header({ bookMeetingUrl }: { bookMeetingUrl: string | null }) {
                                     </Box>
                                     <Text size="sm" fw={500}>{user.nickname || user.name || "User"}</Text>
                                 </Group>
-                                <a href="/profile" style={{
-                                    textDecoration: "none",
-                                    color: "var(--mantine-color-text)",
-                                    fontWeight: 400,
-                                    padding: "10px 12px",
-                                    borderRadius: 12,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 10,
-                                }}>
-                                    <IconUser size={18} aria-hidden="true" />
-                                    {t("profile")}
-                                </a>
-                                <a href="/auth/logout" style={{
-                                    textDecoration: "none",
-                                    color: "var(--mantine-color-red-6)",
-                                    fontWeight: 400,
-                                    padding: "10px 12px",
-                                    borderRadius: 12,
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 10,
-                                }}>
-                                    <IconLogout size={18} aria-hidden="true" />
-                                    {t("logout")}
-                                </a>
+                                <NavLink
+                                    component="a"
+                                    href="/profile"
+                                    label={t("profile")}
+                                    leftSection={<IconUser size={18} />}
+                                    styles={{ root: { borderRadius: 12 } }}
+                                />
+                                <NavLink
+                                    component="a"
+                                    href="/auth/logout"
+                                    label={t("logout")}
+                                    leftSection={<IconLogout size={18} />}
+                                    styles={{ root: { borderRadius: 12, color: "var(--mantine-color-red-6)" } }}
+                                />
                             </Stack>
                         ) : (
                             <a href={`/auth/login?ui_locales=${locale}`} style={{ textDecoration: "none" }}>
