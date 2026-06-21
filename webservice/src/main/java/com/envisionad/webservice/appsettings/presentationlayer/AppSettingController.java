@@ -4,6 +4,7 @@ import com.envisionad.webservice.appsettings.businesslogiclayer.AppSettingServic
 import com.envisionad.webservice.appsettings.dataaccesslayer.AppSetting;
 import com.envisionad.webservice.appsettings.presentationlayer.models.AppSettingRequestModel;
 import com.envisionad.webservice.appsettings.presentationlayer.models.AppSettingResponseModel;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,10 @@ public class AppSettingController {
     }
 
     @PutMapping("/{key}")
-    @PreAuthorize("hasAuthority('manage:venues')")
+    @PreAuthorize("hasAuthority('manage:settings')")
     public ResponseEntity<AppSettingResponseModel> upsert(
             @PathVariable String key,
-            @RequestBody AppSettingRequestModel request) {
+            @Valid @RequestBody AppSettingRequestModel request) {
         AppSetting saved = service.upsert(key, request.getValue());
         AppSettingResponseModel model = new AppSettingResponseModel();
         model.setKey(saved.getKey());

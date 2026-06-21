@@ -31,7 +31,7 @@ class AppSettingControllerIntegrationTest extends BaseIntegrationTest {
         Jwt adminJwt = Jwt.withTokenValue("mock-token")
                 .header("alg", "none")
                 .claim("sub", "auth0|admin123")
-                .claim("permissions", List.of("manage:venues"))
+                .claim("permissions", List.of("manage:settings"))
                 .build();
         when(jwtDecoder.decode(anyString())).thenReturn(adminJwt);
     }
@@ -102,6 +102,20 @@ class AppSettingControllerIntegrationTest extends BaseIntegrationTest {
                 .expectStatus().isOk()
                 .expectBody(AppSettingResponseModel.class)
                 .value(model -> assertEquals("https://calendly.com/updated", model.getValue()));
+    }
+
+    @Test
+    void upsert_blankValue_returnsBadRequest() {
+        AppSettingRequestModel request = new AppSettingRequestModel();
+        request.setValue("   ");
+
+        webTestClient.put()
+                .uri(BASE_URI + "/book-meeting-url")
+                .header("Authorization", "Bearer mock-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(request)
+                .exchange()
+                .expectStatus().isBadRequest();
     }
 
     @Test
