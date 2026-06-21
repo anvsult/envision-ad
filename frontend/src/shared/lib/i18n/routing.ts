@@ -90,6 +90,10 @@ export const routing = defineRouting({
       en: "/dashboard/admin/venues",
       fr: "/tableau-de-bord/admin/lieux",
     },
+    "/dashboard/admin/settings": {
+      en: "/dashboard/admin/settings",
+      fr: "/tableau-de-bord/admin/parametres",
+    },
 
     //organization dashboard
     '/dashboard/organization/overview': {

@@ -42,7 +42,11 @@
       }
     },
     "profile": "Profile",
-    "logout": "Logout"
+    "logout": "Logout",
+    "bookMeeting": "Book Meeting",
+    "bookMeetingUrlNotSet": "The Book Meeting URL has not been configured yet.",
+    "navigate": "Navigate",
+    "account": "Account"
   },
   "sideBar": {
     "mediaOwnerTitle": "Media Owner",
@@ -71,7 +75,8 @@
       "metrics": "Metrics",
       "pendingMedia": "Pending Media",
       "pendingOrganizations": "Verification Requests",
-      "venues": "Venue Tags"
+      "venues": "Venue Tags",
+      "settings": "Settings"
     }
   },
   "advertiserMetrics": {
@@ -369,7 +374,6 @@
       "DIGITAL": "Digital",
       "POSTER": "Poster"
     }
-
   },
   "browse": {
     "searchTitle": "Title",
@@ -1215,6 +1219,16 @@
         "advertisers": "Advertisers",
         "basedOn": "Based on users with platform roles.",
         "ariaLabel": "User Role Distribution Chart showing {total} total users, with {mediaOwners} media owners and {advertisers} advertisers."
+      }
+    },
+    "settingsPage": {
+      "title": "Platform Settings",
+      "bookMeetingUrlLabel": "Book Meeting URL",
+      "bookMeetingUrlDescription": "The Calendly (or other scheduling) link shown in the navbar Book Meeting button.",
+      "save": "Save",
+      "notifications": {
+        "saved": "Setting saved successfully.",
+        "saveFailed": "Failed to save setting."
       }
     }
   },

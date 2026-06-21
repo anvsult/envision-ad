@@ -50,6 +50,21 @@ export default async function RootLayout({
     const session = await auth0.getSession();
     const user = session?.user;
 
+    const baseUrl = process.env.DOCKER === "true"
+        ? process.env.WEBSERVICE_API_URL
+        : process.env.NEXT_PUBLIC_API_URL;
+
+    let bookMeetingUrl: string | null = null;
+    try {
+        const res = await fetch(`${baseUrl}/settings/book-meeting-url`, { cache: "no-store" });
+        if (res.ok) {
+            const data = await res.json();
+            bookMeetingUrl = data.value ?? null;
+        }
+    } catch {
+        // leave null — Header will show a toast when admin clicks Book Meeting
+    }
+
     return (
             <html
                 lang={locale}
@@ -68,8 +83,11 @@ export default async function RootLayout({
                             <MantineProvider theme={theme}>
                                 <ModalsProvider>
                                     <Notifications/>
-                                    <Header />
-                                    {children}
+                                    <Header bookMeetingUrl={bookMeetingUrl} />
+                                    {/* 20px (navbar top offset) + 56px (navbar height) + 16px breathing room */}
+                                    <div style={{ paddingTop: 92 }}>
+                                        {children}
+                                    </div>
                                     <Footer />
                                 </ModalsProvider>
                             </MantineProvider>

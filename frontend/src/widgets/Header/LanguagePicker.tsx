@@ -1,5 +1,5 @@
 import { useTransition } from "react";
-import { Button, Group, Text } from "@mantine/core";
+import { Button } from "@mantine/core";
 import { useRouter, usePathname } from "@/shared/lib/i18n/navigation";
 import { useLocale } from "next-intl";
 import Image from "next/image";
@@ -51,34 +51,19 @@ export function LanguagePicker() {
   };
 
   const current =
-      locales.find((item) => item.locale === currentLocale) || locales[0];
+      locales.find((item) => item.locale !== currentLocale) || locales[1];
 
   return (
       <Button
           onClick={handleToggle}
           disabled={isPending}
-          variant="subtle"
+          variant="transparent"
           radius="xl"
           px="xs"
           aria-label="Switch language"
-          leftSection={
-            <Image src={current.image} width={20} height={20} alt={current.alt} />
-          }
-          styles={{
-            root: {
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              border: "1px solid rgba(0,0,0,0.1)",
-              color: "var(--mantine-color-gray-7)",
-            },
-          }}
+          styles={{ root: { display: "inline-flex", alignItems: "center", minWidth: "unset" } }}
       >
-        <Group component="span" gap={4}>
-          <Text component="span" size="sm" fw={600}>
-            {current.label}
-          </Text>
-        </Group>
+        <Image src={current.image} width={20} height={20} alt={current.alt} />
       </Button>
   );
 }
