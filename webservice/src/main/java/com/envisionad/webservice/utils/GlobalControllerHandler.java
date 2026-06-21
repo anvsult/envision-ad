@@ -5,6 +5,7 @@ import com.envisionad.webservice.business.exceptions.*;
 import com.envisionad.webservice.reservation.exceptions.*;
 import com.envisionad.webservice.venue.exceptions.VenueNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -156,6 +157,12 @@ public class GlobalControllerHandler {
     @ExceptionHandler(ReservationAlreadyProcessedException.class)
     public HttpErrorInfo handleReservationAlreadyProcessedException(ReservationAlreadyProcessedException ex) {
         return createHttpErrorInfo(CONFLICT, ex);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public HttpErrorInfo handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {
+        return createHttpErrorInfo(BAD_REQUEST, ex);
     }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)

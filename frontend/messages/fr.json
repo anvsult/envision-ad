@@ -42,7 +42,11 @@
       }
     },
     "profile": "Profil",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "bookMeeting": "Prendre rendez-vous",
+    "bookMeetingUrlNotSet": "L'URL de prise de rendez-vous n'a pas encore été configurée.",
+    "navigate": "Navigation",
+    "account": "Compte"
   },
   "sideBar": {
     "mediaOwnerTitle": "Propriétaire de médias",
@@ -71,7 +75,8 @@
       "metrics": "Métriques",
       "pendingMedia": "Médias en attente",
       "pendingOrganizations": "Demandes de vérification",
-      "venues": "Tags de lieu"
+      "venues": "Tags de lieu",
+      "settings": "Paramètres"
     }
   },
   "advertiserMetrics": {
@@ -1214,6 +1219,16 @@
         "advertisers": "Annonceurs",
         "basedOn": "Basé sur les utilisateurs ayant des rôles sur la plateforme.",
         "ariaLabel": "Graphique de répartition des rôles des utilisateurs montrant {total} utilisateurs au total, avec {mediaOwners} propriétaires de médias et {advertisers} annonceurs."
+      }
+    },
+    "settingsPage": {
+      "title": "Paramètres de la plateforme",
+      "bookMeetingUrlLabel": "URL de prise de rendez-vous",
+      "bookMeetingUrlDescription": "Le lien Calendly (ou autre outil de planification) affiché dans le bouton « Prendre rendez-vous » de la barre de navigation.",
+      "save": "Enregistrer",
+      "notifications": {
+        "saved": "Paramètre enregistré avec succès.",
+        "saveFailed": "Échec de l'enregistrement du paramètre."
       }
     }
   },

@@ -11,6 +11,7 @@ import {
     IconFileDescription,
     IconSpeakerphone,
     IconTag,
+    IconSettings,
 } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
 import { usePermissions } from "@/app/providers/PermissionProvider";
@@ -137,6 +138,16 @@ export default function SideBar() {
                 label={t("admin.venues")}
                 leftSection={<IconTag size={20} stroke={1.5} />}
                 active={pathname?.includes("/dashboard/admin/venues")}
+            />
+        ),
+        permissions.includes("manage:settings") && (
+            <NavLink
+                key="settings"
+                component={Link}
+                href="/dashboard/admin/settings"
+                label={t("admin.settings")}
+                leftSection={<IconSettings size={20} stroke={1.5} />}
+                active={pathname?.includes("/dashboard/admin/settings")}
             />
         ),
     ].filter(Boolean);
