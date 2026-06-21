@@ -137,7 +137,7 @@ function MediaCard({
                 <Text
                     id={"MediaCardOrganizationName" + index}
                     size={isXsMobile ? "xs" : "sm"}
-                    c="dimmed"
+                    c="blue.6"
                     lineClamp={1}
                     m={0}
                 >
@@ -191,9 +191,14 @@ function MediaCard({
                         id={"MediaCardPrice" + index}
                         size={"xl"}
                         fw={800}
-                        c="blue.7"
                         m={0}
-                        style={{ lineHeight: 1.1 }}
+                        style={{
+                            lineHeight: 1.1,
+                            background: "linear-gradient(135deg, #00BFFF 0%, #A855F7 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            backgroundClip: "text",
+                        }}
                     >
                         {t("perWeek", {
                             price: formatCurrency(price, { locale }),
